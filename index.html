@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Character Animation</title>
 
 <style>
+
 body{
   margin:0;
   height:100vh;
@@ -23,6 +23,9 @@ body{
 .layer{
   position:absolute;
   inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 .layer img{
@@ -30,6 +33,15 @@ body{
   height:100%;
   object-fit:contain;
 }
+
+/* stack order */
+
+.layer1{ z-index:1; }
+.layer3{ z-index:2; }
+.layer2{ z-index:3; }
+.layer4{ z-index:4; }
+
+/* animations */
 
 .layer1{
   animation: expandSlow 6s ease-in-out infinite alternate;
@@ -44,30 +56,31 @@ body{
 }
 
 .layer4{
-  transform-origin:center;
   animation: shrinkCenter 5s ease-in-out infinite alternate;
+  transform-origin:center;
 }
 
 @keyframes expandSlow{
   from{ transform:scale(1); }
-  to{ transform:scale(1.08); }
+  to{ transform:scale(1.06); }
 }
 
 @keyframes expandFast{
   from{ transform:scale(1); }
-  to{ transform:scale(1.15); }
+  to{ transform:scale(1.12); }
 }
 
 @keyframes hover{
-  0%{ transform:translateY(-10px); }
-  50%{ transform:translateY(10px); }
-  100%{ transform:translateY(-10px); }
+  0%{ transform:translateY(-8px); }
+  50%{ transform:translateY(8px); }
+  100%{ transform:translateY(-8px); }
 }
 
 @keyframes shrinkCenter{
   from{ transform:scaleY(1); }
   to{ transform:scaleY(0.85); }
 }
+
 </style>
 </head>
 
@@ -79,12 +92,12 @@ body{
     <img src="images/layer1.png">
   </div>
 
-  <div class="layer layer2">
-    <img src="images/layer2.png">
-  </div>
-
   <div class="layer layer3">
     <img src="images/layer3.png">
+  </div>
+
+  <div class="layer layer2">
+    <img src="images/layer2.png">
   </div>
 
   <div class="layer layer4">
