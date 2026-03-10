@@ -173,7 +173,9 @@ function centerSol(){
   sol.style.transform = `translate(-50%,-50%) translateY(${floatOffset}px)`
   sol.style.opacity = 1
 }
+// After sol is centered
 centerSol()
+setSolColor('gold')  // <-- apply initial colors
 window.addEventListener('resize', centerSol)
 
 // FLAME FLOAT + LAG
