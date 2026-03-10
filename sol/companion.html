@@ -136,21 +136,46 @@ const midFlame=document.getElementById("midFlame")
 
 let dragging=false
 
-/* flame lag system */
+/* flame position (separate from core) */
 
 let flameX=0
 let flameY=0
+
 let targetX=0
 let targetY=0
 
+/* max distance so core never hits outer edge */
+
+const maxRadius=30
+const safeRadius=maxRadius*0.9
+
+/* flame lag animation */
+
 function animateFlame(){
 
-flameX+=(targetX-flameX)*0.18
-flameY+=(targetY-flameY)*0.18
+let dx = targetX - flameX
+let dy = targetY - flameY
 
-outerFlame.style.transform=`translate(calc(-50% + ${flameX}px),calc(-50% + ${flameY}px))`
-midFlame.style.transform=`translate(calc(-50% + ${flameX*0.7}px),calc(-50% + ${flameY*0.7}px))`
-glow.style.transform=`translate(calc(-50% + ${flameX*0.4}px),calc(-50% + ${flameY*0.4}px))`
+flameX += dx * 0.18
+flameY += dy * 0.18
+
+/* clamp so core stays inside circle */
+
+let dist=Math.sqrt(flameX*flameX+flameY*flameY)
+
+if(dist>safeRadius){
+flameX*=safeRadius/dist
+flameY*=safeRadius/dist
+}
+
+outerFlame.style.transform=
+`translate(calc(-50% + ${flameX}px),calc(-50% + ${flameY}px))`
+
+midFlame.style.transform=
+`translate(calc(-50% + ${flameX*0.75}px),calc(-50% + ${flameY*0.75}px))`
+
+glow.style.transform=
+`translate(calc(-50% + ${flameX*0.5}px),calc(-50% + ${flameY*0.5}px))`
 
 requestAnimationFrame(animateFlame)
 
@@ -164,7 +189,7 @@ sol.addEventListener("mousedown",(e)=>{
 
 dragging=true
 
-/* bounce reaction */
+/* bounce */
 
 core.animate([
 {transform:'translate(-50%,-50%) scale(1,1)'},
@@ -173,8 +198,6 @@ core.animate([
 {transform:'translate(-50%,-50%) scale(1,.9)'}
 ],
 {duration:350,easing:'ease-out'})
-
-/* stay compressed */
 
 core.style.transform="translate(-50%,-50%) scale(1.05,.85)"
 
@@ -191,17 +214,17 @@ const cy=rect.top+rect.height/2
 
 if(dragging){
 
-/* cursor becomes core center */
+/* cursor = core center */
 
 sol.style.left=e.clientX+"px"
 sol.style.top=e.clientY+"px"
 
 sol.style.transform="translate(-50%,-50%)"
 
-/* flame lag */
+/* flame target lag */
 
-targetX=(cx-e.clientX)*0.4
-targetY=(cy-e.clientY)*0.4
+targetX = (cx - e.clientX) * 0.35
+targetY = (cy - e.clientY) * 0.35
 
 }
 
