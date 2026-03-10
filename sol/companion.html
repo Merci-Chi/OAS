@@ -171,23 +171,27 @@ const midFlame=document.getElementById("midFlame")
 
 let dragging=false
 
-/* FLAME LAG SYSTEM */
+/* flame lag state */
 
 let flameX=0
 let flameY=0
-let targetX=0
-let targetY=0
+
+let velocityX=0
+let velocityY=0
+
+let prevMouseX=0
+let prevMouseY=0
 
 const maxRadius=30
 const safeRadius=maxRadius*0.9
 
+
+/* FLAME PHYSICS LOOP */
+
 function animateFlame(){
 
-let dx=targetX-flameX
-let dy=targetY-flameY
-
-flameX+=dx*0.18
-flameY+=dy*0.18
+flameX += (-velocityX - flameX)*0.15
+flameY += (-velocityY - flameY)*0.15
 
 let dist=Math.sqrt(flameX*flameX+flameY*flameY)
 
@@ -200,10 +204,10 @@ outerFlame.style.transform=
 `translate(calc(-50% + ${flameX}px),calc(-50% + ${flameY}px))`
 
 midFlame.style.transform=
-`translate(calc(-50% + ${flameX*0.75}px),calc(-50% + ${flameY*0.75}px))`
+`translate(calc(-50% + ${flameX*0.7}px),calc(-50% + ${flameY*0.7}px))`
 
 glow.style.transform=
-`translate(calc(-50% + ${flameX*0.5}px),calc(-50% + ${flameY*0.5}px))`
+`translate(calc(-50% + ${flameX*0.45}px),calc(-50% + ${flameY*0.45}px))`
 
 requestAnimationFrame(animateFlame)
 
@@ -211,11 +215,17 @@ requestAnimationFrame(animateFlame)
 
 animateFlame()
 
-/* GRAB */
 
-sol.addEventListener("mousedown",(e)=>{
+/* START DRAG — ONLY CORE */
+
+core.addEventListener("mousedown",(e)=>{
 
 dragging=true
+
+prevMouseX=e.clientX
+prevMouseY=e.clientY
+
+/* bounce */
 
 core.animate([
 {transform:'translate(-50%,-50%) scale(1,1)'},
@@ -229,7 +239,8 @@ core.style.transform="translate(-50%,-50%) scale(1.05,.85)"
 
 })
 
-/* MOVE */
+
+/* DRAG MOVEMENT */
 
 document.addEventListener("mousemove",(e)=>{
 
@@ -237,16 +248,25 @@ const rect=sol.getBoundingClientRect()
 const cx=rect.left+rect.width/2
 const cy=rect.top+rect.height/2
 
+/* dragging */
+
 if(dragging){
+
+velocityX=(e.clientX-prevMouseX)*1.2
+velocityY=(e.clientY-prevMouseY)*1.2
+
+prevMouseX=e.clientX
+prevMouseY=e.clientY
+
+/* cursor becomes core center */
 
 sol.style.left=e.clientX+"px"
 sol.style.top=e.clientY+"px"
 sol.style.transform="translate(-50%,-50%)"
 
-targetX=(cx-e.clientX)*0.35
-targetY=(cy-e.clientY)*0.35
-
 }
+
+/* idle eye tracking */
 
 else{
 
@@ -259,18 +279,19 @@ eyes.style.transform=`translate(${dx}px,${6+dy}px)`
 
 })
 
+
 /* RELEASE */
 
 document.addEventListener("mouseup",()=>{
+
+if(!dragging) return
 
 dragging=false
 
 core.style.transform="translate(-50%,-50%) scale(1)"
 
-targetX=0
-targetY=0
-
 })
+
 
 /* BLINKING */
 
@@ -291,6 +312,7 @@ setTimeout(blink,9000+Math.random()*14000)
 }
 
 scheduleBlink()
+
 
 /* COLOR SETTINGS */
 
