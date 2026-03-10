@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Sol Companion</title>
 <style>
+/* Center the container in the viewport */
 body {
   margin:0;
   height:100vh;
@@ -15,14 +16,15 @@ body {
   font-family:sans-serif;
 }
 
-/* Character container */
-.character {
+/* Character wrapper - all layers inside this */
+.character-wrapper {
   position: relative;
-  width: 120px; /* default md size */
+  width: 120px;  /* default md size */
   height: 120px;
   display:flex;
   justify-content:center;
   align-items:center;
+  transform-origin:center;
 }
 
 /* Ambient glow */
@@ -32,7 +34,7 @@ body {
   border-radius:50%;
   filter: blur(16px);
   background: rgba(251,191,36,0.6);
-  animation: glowPulse 4s infinite; /* slower ambient motion */
+  animation: glowPulse 4s infinite;
 }
 
 /* Particles */
@@ -45,7 +47,7 @@ body {
   bottom:30%;
   left:50%;
   opacity:0;
-  animation: particleRise 3s forwards; /* slower */
+  animation: particleRise 3s forwards;
 }
 
 /* Layers */
@@ -143,16 +145,16 @@ body {
   10%,30%,50% { transform: scaleY(0.3); }
 }
 
+/* Floating/hovering */
 @keyframes floatY {
   0%,100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
-
 </style>
 </head>
 <body>
 
-<div class="character">
+<div class="character-wrapper">
   <div class="glow"></div>
   <div class="layer outerFlame"></div>
   <div class="layer midFlame"></div>
@@ -164,15 +166,15 @@ body {
 </div>
 
 <script>
-// Floating motion (slower)
-const character = document.querySelector('.character');
-character.animate(
+// Floating motion for the whole group
+const wrapper = document.querySelector('.character-wrapper');
+wrapper.animate(
   [{ transform:'translateY(0)'},{ transform:'translateY(-8px)'},{ transform:'translateY(0)'}],
   { duration:6000, iterations:Infinity, easing:'ease-in-out'}
 );
 
-// Particle emission
-const health = 100; // adjust dynamically
+// Particle generation
+const health = 100;
 function spawnParticle() {
   if(health <=50) return;
   const p = document.createElement('div');
@@ -180,7 +182,7 @@ function spawnParticle() {
   const x = Math.random()*40-20;
   p.style.setProperty('--x', `${x}px`);
   p.style.setProperty('--dx', `${Math.random()*20-10}px`);
-  character.appendChild(p);
+  wrapper.appendChild(p);
   setTimeout(()=>p.remove(),3000);
 }
 setInterval(spawnParticle, 1600);
