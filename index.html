@@ -10,6 +10,7 @@ body {
   width:100vw;
   height:100vh;
   overflow:hidden;
+  font-family:sans-serif;
 }
 
 #sol {
@@ -17,20 +18,34 @@ body {
   height:100%;
   position:relative;
 }
-
-iframe {
-  width:100%;
-  height:100%;
-  border:none;
-}
 </style>
 </head>
 <body>
 
-<section id="sol">
-  <!-- Load the companion from its own HTML -->
-  <iframe src="sol/companion.html"></iframe>
-</section>
+<section id="sol"></section>
+
+<script>
+// Fetch the companion HTML and inject it into #sol
+fetch('sol/companion.html')
+  .then(response => response.text())
+  .then(html => {
+    const solSection = document.getElementById('sol');
+    solSection.innerHTML = html;
+
+    // Move all scripts in companion.html to execute after injection
+    solSection.querySelectorAll('script').forEach(oldScript => {
+      const newScript = document.createElement('script');
+      if (oldScript.src) {
+        newScript.src = oldScript.src;
+      } else {
+        newScript.textContent = oldScript.textContent;
+      }
+      document.body.appendChild(newScript);
+      oldScript.remove();
+    });
+  })
+  .catch(err => console.error('Error loading Sol companion:', err));
+</script>
 
 </body>
 </html>
