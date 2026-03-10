@@ -116,6 +116,24 @@ body, html {
   border-radius:50%;
   transition: transform 0.05s linear;
 }
+
+/* PARTICLES */
+#particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index:0;
+}
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -140,6 +158,7 @@ body, html {
       </div>
     </div>
   </div>
+  <div id="particles"></div>
 </section>
 
 <script>
@@ -149,6 +168,7 @@ const eyes = document.getElementById("eyes")
 const glow = document.getElementById("glow")
 const outerFlame = document.getElementById("outerFlame")
 const midFlame = document.getElementById("midFlame")
+const particlesContainer = document.getElementById("particles")
 
 let dragging = false
 let flameX = 0, flameY = 0
@@ -159,6 +179,8 @@ const safeRadius = maxRadius * 0.9
 
 let floatOffset = 0
 let floatDirection = 1
+
+let particleColor = "rgba(251,191,36,0.8)" // default gold
 
 function centerSol(){
   sol.style.left = window.innerWidth/2 + "px"
@@ -240,6 +262,42 @@ function blink(){
 function scheduleBlink(){ setTimeout(blink,9000 + Math.random()*14000) }
 scheduleBlink()
 
+function createParticle(){
+  const p = document.createElement('div')
+  p.className = 'particle'
+  p.style.background = particleColor
+  particlesContainer.appendChild(p)
+  
+  const rect = sol.getBoundingClientRect()
+  const startX = rect.left + rect.width/2 + (Math.random()*40-20)
+  const startY = rect.top + rect.height/2 + (Math.random()*40-20)
+  p.style.left = startX + 'px'
+  p.style.top = startY + 'px'
+  
+  const angle = Math.random() * 2 * Math.PI
+  const speed = Math.random() * 0.5 + 0.3
+  let lifetime = 80 + Math.random()*40
+
+  function animateParticle(){
+    lifetime--
+    if(lifetime <= 0){
+      p.remove()
+      return
+    }
+    const dx = Math.cos(angle) * speed
+    const dy = Math.sin(angle) * speed - lifetime*0.005
+    const currentX = parseFloat(p.style.left)
+    const currentY = parseFloat(p.style.top)
+    p.style.left = (currentX + dx) + 'px'
+    p.style.top = (currentY + dy) + 'px'
+    p.style.opacity = Math.min(lifetime/120,1)
+    requestAnimationFrame(animateParticle)
+  }
+  animateParticle()
+}
+
+setInterval(createParticle, 120)
+
 function setSolColor(type){
   const colors = {
     gold: {core:"#fbbf24", mid:"#f59e0b", outer:"#d97706", glow:"rgba(251,191,36,.35)"},
@@ -254,6 +312,8 @@ function setSolColor(type){
   if(midFlame) midFlame.style.background = `radial-gradient(ellipse at center bottom,${c.mid} 0%,${c.mid}80 40%,transparent 70%)`;
   if(outerFlame) outerFlame.style.background = `radial-gradient(ellipse at center bottom,${c.outer}00 0%,${c.outer}40 50%,${c.outer}00 100%)`;
   if(glow) glow.style.background = `radial-gradient(circle,${c.glow},rgba(0,0,0,0) 70%)`;
+
+  particleColor = c.glow.replace('.35','.8')
 }
 </script>
 
