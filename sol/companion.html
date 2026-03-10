@@ -2,32 +2,65 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sol Companion</title>
+<title>OAS Index</title>
 <style>
-/* FULL SCREEN SOL CONTAINER */
+/* FULL PAGE */
 body, html {
   margin:0;
   padding:0;
   width:100%;
   height:100%;
-  background:transparent;
+  background:#000;
   overflow:hidden;
   font-family:sans-serif;
 }
 
 /* SOL CONTAINER */
+#sol {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* SETTINGS PANEL */
+.sol-settings{
+  position:fixed;
+  top:15px;
+  right:15px;
+  display:flex;
+  gap:8px;
+  padding:8px 10px;
+  background:rgba(0,0,0,.6);
+  border-radius:10px;
+  backdrop-filter:blur(6px);
+  z-index:1000;
+}
+.color{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+}
+.color.gold{background:#fbbf24;}
+.color.magenta{background:#ff3da8;}
+.color.blue{background:#3da5ff;}
+.color.lime{background:#8cff3d;}
+.color.purple{background:#a855f7;}
+
+/* SOL ELEMENTS */
 .sol{
   position:absolute;
   left:50%;
   top:50%;
-  transform:translate(-50%,-50%);
   width:140px;
   height:140px;
-  opacity:0; /* fade-in to prevent flash */
+  opacity:0;
   transition:opacity .3s ease-in;
 }
-
-/* GLOW */
 .glow{
   position:absolute;
   width:130px;
@@ -39,8 +72,6 @@ body, html {
   filter:blur(24px);
   background:radial-gradient(circle,rgba(251,191,36,.35),rgba(251,191,36,0) 70%);
 }
-
-/* FLAMES */
 .outerFlame{
   position:absolute;
   width:98px;
@@ -61,8 +92,6 @@ body, html {
   border-radius:50%;
   background:radial-gradient(ellipse at center bottom,#f59e0b 0%,#f59e0b80 40%,transparent 70%);
 }
-
-/* CORE */
 .core{
   position:absolute;
   width:44px;
@@ -78,8 +107,6 @@ body, html {
   align-items:center;
   transition:transform .15s ease-out;
 }
-
-/* EYES */
 .eyes{
   display:flex;
   gap:6px;
@@ -97,20 +124,32 @@ body, html {
 </head>
 <body>
 
-<div class="sol" id="sol">
-  <div class="glow" id="glow"></div>
-  <div class="outerFlame" id="outerFlame"></div>
-  <div class="midFlame" id="midFlame"></div>
-  <div class="core" id="core">
-    <div class="eyes" id="eyes">
-      <div class="eye"></div>
-      <div class="eye"></div>
-    </div>
-  </div>
+<!-- SETTINGS -->
+<div class="sol-settings">
+  <button class="color gold" onclick="setSolColor('gold')"></button>
+  <button class="color magenta" onclick="setSolColor('magenta')"></button>
+  <button class="color blue" onclick="setSolColor('blue')"></button>
+  <button class="color lime" onclick="setSolColor('lime')"></button>
+  <button class="color purple" onclick="setSolColor('purple')"></button>
 </div>
 
+<!-- SOL CONTAINER -->
+<section id="sol">
+  <div class="sol" id="solEl">
+    <div class="glow" id="glow"></div>
+    <div class="outerFlame" id="outerFlame"></div>
+    <div class="midFlame" id="midFlame"></div>
+    <div class="core" id="core">
+      <div class="eyes" id="eyes">
+        <div class="eye"></div>
+        <div class="eye"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <script>
-const sol = document.getElementById("sol")
+const sol = document.getElementById("solEl")
 const core = document.getElementById("core")
 const eyes = document.getElementById("eyes")
 const glow = document.getElementById("glow")
@@ -127,7 +166,7 @@ const safeRadius = maxRadius * 0.9
 let floatOffset = 0
 let floatDirection = 1
 
-// INITIAL CENTER
+// CENTER SOL
 function centerSol(){
   sol.style.left = window.innerWidth/2 + "px"
   sol.style.top = window.innerHeight/2 + "px"
@@ -171,7 +210,6 @@ core.addEventListener("mousedown",(e)=>{
   core.style.transform = `translate(-50%,-50%) scale(1.05,.85)`
 })
 
-// DRAGGING
 document.addEventListener("mousemove",(e)=>{
   const rect=sol.getBoundingClientRect()
   const cx=rect.left+rect.width/2
@@ -210,174 +248,23 @@ function blink(){
 }
 function scheduleBlink(){ setTimeout(blink,9000 + Math.random()*14000) }
 scheduleBlink()
-</script>
-</body>
-</html>/* FLAMES */
-.outerFlame{
-  position:absolute;
-  width:98px;
-  height:112px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(ellipse at center bottom,#d9770600 0%,#d9770640 50%,#d9770600 100%);
-}
-.midFlame{
-  position:absolute;
-  width:70px;
-  height:88px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(ellipse at center bottom,#f59e0b 0%,#f59e0b80 40%,transparent 70%);
-}
 
-/* CORE */
-.core{
-  position:absolute;
-  width:44px;
-  height:56px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(circle, transparent 0%,#fbbf24 40%,#f59e0b 80%);
-  box-shadow:0 0 40px rgba(251,191,36,.6);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  transition:transform .15s ease-out;
-}
-
-/* EYES */
-.eyes{
-  display:flex;
-  gap:6px;
-  transform:translateY(6px);
-  transition:transform .1s linear;
-}
-.eye{
-  width:7px;
-  height:9px;
-  background:rgba(0,0,0,.65);
-  border-radius:50%;
-  transition: transform 0.05s linear;
-}
-</style>
-</head>
-<body>
-
-<!-- SOL -->
-<div class="sol" id="sol">
-  <div class="glow" id="glow"></div>
-  <div class="outerFlame" id="outerFlame"></div>
-  <div class="midFlame" id="midFlame"></div>
-  <div class="core" id="core">
-    <div class="eyes" id="eyes">
-      <div class="eye"></div>
-      <div class="eye"></div>
-    </div>
-  </div>
-</div>
-
-<script>
-const sol = document.getElementById("sol")
-const core = document.getElementById("core")
-const eyes = document.getElementById("eyes")
-const glow = document.getElementById("glow")
-const outerFlame = document.getElementById("outerFlame")
-const midFlame = document.getElementById("midFlame")
-
-let dragging = false
-let flameX = 0, flameY = 0
-let velocityX = 0, velocityY = 0
-let prevMouseX = 0, prevMouseY = 0
-const maxRadius = 30
-const safeRadius = maxRadius * 0.9
-
-let floatOffset = 0
-let floatDirection = 1
-
-// FLAME/BUBBLE LAG + FLOAT
-function animateFlame(){
-  // float movement up/down
-  floatOffset += floatDirection * 0.1
-  if(floatOffset>4 || floatOffset<-4) floatDirection*=-1
-  sol.style.transform = `translate(-50%,-50%) translateY(${floatOffset}px)`
-
-  // flame lag physics
-  flameX += (-velocityX - flameX)*0.15
-  flameY += (-velocityY - flameY)*0.15
-  let dist = Math.sqrt(flameX*flameX + flameY*flameY)
-  if(dist>safeRadius){ flameX*=safeRadius/dist; flameY*=safeRadius/dist }
-
-  outerFlame.style.transform = `translate(calc(-50% + ${flameX}px),calc(-50% + ${flameY}px))`
-  midFlame.style.transform = `translate(calc(-50% + ${flameX*0.7}px),calc(-50% + ${flameY*0.7}px))`
-  glow.style.transform = `translate(calc(-50% + ${flameX*0.45}px),calc(-50% + ${flameY*0.45}px))`
-
-  requestAnimationFrame(animateFlame)
-}
-animateFlame()
-
-// CORE BOBBLE ON CLICK
-core.addEventListener("mousedown",(e)=>{
-  dragging = true
-  prevMouseX = e.clientX
-  prevMouseY = e.clientY
-
-  core.animate([
-    {transform:'translate(-50%,-50%) scale(1,1)'},
-    {transform:'translate(-50%,-50%) scale(1.1,.85)'},
-    {transform:'translate(-50%,-50%) scale(.95,1.05)'},
-    {transform:'translate(-50%,-50%) scale(1,.9)'}
-  ],{duration:400,easing:'ease-out'})
-  core.style.transform = "translate(-50%,-50%) scale(1.05,.85)"
-})
-
-// DRAG MOVEMENT ONLY ON CORE
-document.addEventListener("mousemove",(e)=>{
-  const rect=sol.getBoundingClientRect()
-  const cx=rect.left+rect.width/2
-  const cy=rect.top+rect.height/2
-
-  if(dragging){
-    velocityX = (e.clientX-prevMouseX)*1.2
-    velocityY = (e.clientY-prevMouseY)*1.2
-    prevMouseX = e.clientX
-    prevMouseY = e.clientY
-
-    // center core on cursor
-    sol.style.left = e.clientX+"px"
-    sol.style.top = e.clientY+"px"
-    sol.style.transform = `translate(-50%,-50%) translateY(${floatOffset}px)`
-  } else {
-    // eyes follow cursor slightly inside core bounds
-    let dx = (e.clientX - cx) * 0.04
-    let dy = (e.clientY - cy) * 0.04
-    // limit to core radius
-    const maxEyeOffset = 8
-    dx = Math.max(-maxEyeOffset, Math.min(maxEyeOffset, dx))
-    dy = Math.max(-maxEyeOffset, Math.min(maxEyeOffset, dy))
-    eyes.style.transform = `translate(${dx}px,${6+dy}px)`
+// COLOR BUTTONS
+function setSolColor(type){
+  const colors = {
+    gold: {core:"#fbbf24", mid:"#f59e0b", outer:"#d97706", glow:"rgba(251,191,36,.35)"},
+    magenta:{core:"#ff6ad5", mid:"#ff3da8", outer:"#c0268c", glow:"rgba(255,61,168,.35)"},
+    blue:{core:"#7dd3fc", mid:"#3da5ff", outer:"#2563eb", glow:"rgba(61,165,255,.35)"},
+    lime:{core:"#d9ff7d", mid:"#8cff3d", outer:"#4d9e1a", glow:"rgba(140,255,61,.35)"},
+    purple:{core:"#d8b4fe", mid:"#a855f7", outer:"#7e22ce", glow:"rgba(168,85,247,.35)"}
   }
-})
-
-document.addEventListener("mouseup",()=>{
-  if(!dragging) return
-  dragging=false
-  core.style.transform="translate(-50%,-50%) scale(1)"
-})
-
-// BLINKING
-function blink(){
-  eyes.style.display="none"
-  setTimeout(()=>{ eyes.style.display="flex" },120)
-  scheduleBlink()
+  let c = colors[type];
+  if(core) core.style.background = `radial-gradient(circle,#fff 0%,${c.core} 40%,${c.mid} 80%)`;
+  if(core) core.style.boxShadow = `0 0 40px ${c.glow}`;
+  if(midFlame) midFlame.style.background = `radial-gradient(ellipse at center bottom,${c.mid} 0%,${c.mid}80 40%,transparent 70%)`;
+  if(outerFlame) outerFlame.style.background = `radial-gradient(ellipse at center bottom,${c.outer}00 0%,${c.outer}40 50%,${c.outer}00 100%)`;
+  if(glow) glow.style.background = `radial-gradient(circle,${c.glow},rgba(0,0,0,0) 70%)`;
 }
-function scheduleBlink(){ setTimeout(blink,9000 + Math.random()*14000) }
-scheduleBlink()
 </script>
 
 </body>
