@@ -116,6 +116,22 @@ body, html {
   border-radius:50%;
   transition: transform 0.05s linear;
 }
+  #particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
 </style>
 </head>
 <body>
@@ -133,7 +149,8 @@ body, html {
     <div class="glow" id="glow"></div>
     <div class="outerFlame" id="outerFlame"></div>
     <div class="midFlame" id="midFlame"></div>
-    <div class="core" id="core">
+    <div class="core" id="core"><!-- Add this inside the <section id="sol">, after the core div -->
+      <div id="particles"></div>
       <div class="eyes" id="eyes">
         <div class="eye"></div>
         <div class="eye"></div>
@@ -254,6 +271,66 @@ function setSolColor(type){
   if(midFlame) midFlame.style.background = `radial-gradient(ellipse at center bottom,${c.mid} 0%,${c.mid}80 40%,transparent 70%)`;
   if(outerFlame) outerFlame.style.background = `radial-gradient(ellipse at center bottom,${c.outer}00 0%,${c.outer}40 50%,${c.outer}00 100%)`;
   if(glow) glow.style.background = `radial-gradient(circle,${c.glow},rgba(0,0,0,0) 70%)`;
+}
+  const particlesContainer = document.getElementById('particles')
+let particleColor = "rgba(251,191,36,0.8)" // default gold
+
+function createParticle(){
+  const p = document.createElement('div')
+  p.className = 'particle'
+  p.style.background = particleColor
+  particlesContainer.appendChild(p)
+  
+  // start position around core
+  const rect = sol.getBoundingClientRect()
+  const startX = rect.left + rect.width/2 + (Math.random()*40-20)
+  const startY = rect.top + rect.height/2 + (Math.random()*40-20)
+  p.style.left = startX + 'px'
+  p.style.top = startY + 'px'
+  
+  const angle = Math.random() * 2 * Math.PI
+  const speed = Math.random() * 0.5 + 0.5
+  const drift = 20 + Math.random()*20
+  let lifetime = 80 + Math.random()*40
+
+  function animateParticle(){
+    lifetime--
+    if(lifetime <= 0){
+      p.remove()
+      return
+    }
+    const dx = Math.cos(angle) * speed
+    const dy = Math.sin(angle) * speed - lifetime*0.01
+    const currentX = parseFloat(p.style.left)
+    const currentY = parseFloat(p.style.top)
+    p.style.left = (currentX + dx) + 'px'
+    p.style.top = (currentY + dy) + 'px'
+    p.style.opacity = Math.min(lifetime/120,1)
+    requestAnimationFrame(animateParticle)
+  }
+  animateParticle()
+}
+
+// continuously spawn particles
+setInterval(createParticle, 120)
+
+// update particle color when changing Sol color
+function setSolColor(type){
+  const colors = {
+    gold: {core:"#fbbf24", mid:"#f59e0b", outer:"#d97706", glow:"rgba(251,191,36,.35)"},
+    magenta:{core:"#ff6ad5", mid:"#ff3da8", outer:"#c0268c", glow:"rgba(255,61,168,.35)"},
+    blue:{core:"#7dd3fc", mid:"#3da5ff", outer:"#2563eb", glow:"rgba(61,165,255,.35)"},
+    lime:{core:"#d9ff7d", mid:"#8cff3d", outer:"#4d9e1a", glow:"rgba(140,255,61,.35)"},
+    purple:{core:"#d8b4fe", mid:"#a855f7", outer:"#7e22ce", glow:"rgba(168,85,247,.35)"}
+  }
+  let c = colors[type];
+  if(core) core.style.background = `radial-gradient(circle,#fff 0%,${c.core} 40%,${c.mid} 80%)`;
+  if(core) core.style.boxShadow = `0 0 40px ${c.glow}`;
+  if(midFlame) midFlame.style.background = `radial-gradient(ellipse at center bottom,${c.mid} 0%,${c.mid}80 40%,transparent 70%)`;
+  if(outerFlame) outerFlame.style.background = `radial-gradient(ellipse at center bottom,${c.outer}00 0%,${c.outer}40 50%,${c.outer}00 100%)`;
+  if(glow) glow.style.background = `radial-gradient(circle,${c.glow},rgba(0,0,0,0) 70%)`;
+  
+  particleColor = c.glow.replace('.35','.8') // particles match glow
 }
 </script>
 
