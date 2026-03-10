@@ -13,29 +13,65 @@ body {
   font-family:sans-serif;
 }
 
+/* Sol container */
 #sol {
   width:100%;
   height:100%;
   position:relative;
 }
+
+/* SETTINGS PANEL */
+.sol-settings{
+  position:fixed;
+  top:15px;
+  right:15px;
+  display:flex;
+  gap:8px;
+  padding:8px 10px;
+  background:rgba(0,0,0,.6);
+  border-radius:10px;
+  backdrop-filter:blur(6px);
+  z-index:1000;
+}
+.color{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+}
+.color.gold{background:#fbbf24;}
+.color.magenta{background:#ff3da8;}
+.color.blue{background:#3da5ff;}
+.color.lime{background:#8cff3d;}
+.color.purple{background:#a855f7;}
 </style>
 </head>
 <body>
 
+<!-- SETTINGS -->
+<div class="sol-settings">
+  <button class="color gold" onclick="setSolColor('gold')"></button>
+  <button class="color magenta" onclick="setSolColor('magenta')"></button>
+  <button class="color blue" onclick="setSolColor('blue')"></button>
+  <button class="color lime" onclick="setSolColor('lime')"></button>
+  <button class="color purple" onclick="setSolColor('purple')"></button>
+</div>
+
 <section id="sol"></section>
 
 <script>
-// Fetch the companion HTML and inject it into #sol
+// Fetch the companion HTML and inject it
 fetch('sol/companion.html')
   .then(response => response.text())
   .then(html => {
     const solSection = document.getElementById('sol');
     solSection.innerHTML = html;
 
-    // Move all scripts in companion.html to execute after injection
+    // Move scripts from companion to execute
     solSection.querySelectorAll('script').forEach(oldScript => {
       const newScript = document.createElement('script');
-      if (oldScript.src) {
+      if(oldScript.src){
         newScript.src = oldScript.src;
       } else {
         newScript.textContent = oldScript.textContent;
@@ -45,6 +81,31 @@ fetch('sol/companion.html')
     });
   })
   .catch(err => console.error('Error loading Sol companion:', err));
+
+// COLOR SETTINGS FUNCTION
+function setSolColor(type){
+  const solEl = document.getElementById('sol');
+  const core = solEl.querySelector('#core');
+  const midFlame = solEl.querySelector('#midFlame');
+  const outerFlame = solEl.querySelector('#outerFlame');
+  const glow = solEl.querySelector('#glow');
+
+  const colors = {
+    gold: {core:"#fbbf24", mid:"#f59e0b", outer:"#d97706", glow:"rgba(251,191,36,.35)"},
+    magenta:{core:"#ff6ad5", mid:"#ff3da8", outer:"#c0268c", glow:"rgba(255,61,168,.35)"},
+    blue:{core:"#7dd3fc", mid:"#3da5ff", outer:"#2563eb", glow:"rgba(61,165,255,.35)"},
+    lime:{core:"#d9ff7d", mid:"#8cff3d", outer:"#4d9e1a", glow:"rgba(140,255,61,.35)"},
+    purple:{core:"#d8b4fe", mid:"#a855f7", outer:"#7e22ce", glow:"rgba(168,85,247,.35)"}
+  }
+
+  let c = colors[type];
+
+  if(core) core.style.background = `radial-gradient(circle,#fff 0%,${c.core} 40%,${c.mid} 80%)`;
+  if(core) core.style.boxShadow = `0 0 40px ${c.glow}`;
+  if(midFlame) midFlame.style.background = `radial-gradient(ellipse at center bottom,${c.mid} 0%,${c.mid}80 40%,transparent 70%)`;
+  if(outerFlame) outerFlame.style.background = `radial-gradient(ellipse at center bottom,${c.outer}00 0%,${c.outer}40 50%,${c.outer}00 100%)`;
+  if(glow) glow.style.background = `radial-gradient(circle,${c.glow},rgba(0,0,0,0) 70%)`;
+}
 </script>
 
 </body>
