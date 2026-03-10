@@ -2,8 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sol Companion</title>
+<title>Sol Companion with Centered Face</title>
 <style>
+:root {
+  --main-color: #fbbf24; /* Default yellow/gold */
+}
+
 body {
   margin:0;
   background:transparent;
@@ -27,7 +31,7 @@ body {
   cursor: grab;
 }
 
-/* Glow Layer */
+/* Glow */
 .glow {
   position:absolute;
   inset:0;
@@ -52,26 +56,30 @@ body {
 .outerFlame {
   width:84px;
   height:96px;
-  background: radial-gradient(ellipse at center bottom, #d9770600 0%, #d9770640 50%, #d9770600 100%);
+  background: radial-gradient(ellipse at center bottom, var(--main-color)00 0%, var(--main-color)40 50%, var(--main-color)00 100%);
   animation: outerFlameAnim 1.6s infinite;
 }
 
 .midFlame {
   width:60px;
   height:78px;
-  background: radial-gradient(ellipse at center bottom, #f59e0b 0%, #f59e0b80 40%, transparent 70%);
+  background: radial-gradient(ellipse at center bottom, var(--main-color) 0%, var(--main-color)80 40%, transparent 70%);
   animation: midFlameAnim 1.2s infinite;
 }
 
-/* Core Layer */
+/* Core with centered face */
 .core {
   width:42px;
-  height:54px;
-  background: radial-gradient(circle at center, #ffffff 0%, #fbbf24 40%, #f59e0b 80%);
+  height:42px; /* make it circular for perfect face center */
+  background: radial-gradient(circle at center, #ffffff 0%, var(--main-color) 40%, var(--main-color) 80%);
   box-shadow:0 0 30px rgba(251,191,36,0.6);
   animation: corePulse 2s infinite;
   position:relative;
   border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:row; /* keep eyes side by side */
 }
 
 /* Eyes */
@@ -80,14 +88,11 @@ body {
   height:8px;
   background: rgba(0,0,0,0.6);
   border-radius:50%;
-  position:absolute;
-  bottom:30%;
+  margin:0 4px; /* spacing between eyes */
 }
-.eye.left { left:25%; }
-.eye.right { right:25%; }
 .eye.blink { animation: blink 6s infinite; }
 
-/* Level Indicator */
+/* Level */
 .level {
   position:absolute;
   bottom:-8px;
@@ -98,8 +103,22 @@ body {
   background: rgba(0,0,0,0.8);
   border:1px solid rgba(251,191,36,0.5);
   border-radius:12px;
-  color:#fbbf24;
+  color: var(--main-color);
   font-weight:bold;
+}
+
+/* Particles */
+.particle {
+  position:absolute;
+  bottom:50%;
+  left:50%;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background: var(--main-color);
+  opacity:0;
+  pointer-events:none;
+  animation: particleRise 2s forwards;
 }
 
 /* Animations */
@@ -108,6 +127,11 @@ body {
 @keyframes midFlameAnim {0%,100%{ transform: translate(-50%, -50%) scale(1);} 50%{ transform: translate(-50%, -50%) scaleX(1.08) scaleY(1.12);}}
 @keyframes corePulse {0%,100%{ transform: translate(-50%, -50%) scale(1);} 50%{ transform: translate(-50%, -50%) scale(1.08);}}
 @keyframes blink {0%,20%,40%,60%,100%{ transform: scaleY(1);} 10%,30%,50%{ transform: scaleY(0.3); }}
+@keyframes particleRise {
+  0% { opacity:0; transform: translate(-50%,0) scale(0.5);}
+  20% { opacity:1; }
+  100% { opacity:0; transform: translate(calc(-50% + var(--dx,0px)),-60px) scale(0.3);}
+}
 </style>
 </head>
 <body>
@@ -117,8 +141,8 @@ body {
   <div class="layer outerFlame"></div>
   <div class="layer midFlame"></div>
   <div class="layer core">
-    <div class="eye left blink"></div>
-    <div class="eye right blink"></div>
+    <div class="eye blink"></div>
+    <div class="eye blink"></div>
   </div>
   <div class="level">LV.1</div>
 </div>
@@ -152,7 +176,31 @@ document.addEventListener('mouseup',()=>{
   isDragging=false;
   wrapper.style.cursor='grab';
 });
+
+// Particle spawn
+function spawnParticle() {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const dx = (Math.random()*40 - 20);
+  p.style.setProperty('--dx', `${dx}px`);
+  wrapper.appendChild(p);
+  setTimeout(()=>p.remove(),2000);
+}
+setInterval(spawnParticle, 300);
+
+// Color selector
+function setColor(color) {
+  document.documentElement.style.setProperty('--main-color', color);
+}
 </script>
+
+<!-- Color Buttons -->
+<div style="position:fixed; top:10px; left:10px; z-index:999;">
+  <button onclick="setColor('#fbbf24')">Yellow</button>
+  <button onclick="setColor('#3b82f6')">Blue</button>
+  <button onclick="setColor('#ef4444')">Red</button>
+  <button onclick="setColor('#10b981')">Green</button>
+</div>
 
 </body>
 </html>
