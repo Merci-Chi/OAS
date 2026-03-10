@@ -13,12 +13,12 @@ body {
   font-family:sans-serif;
 }
 
-/* Wrapper for dragging */
+/* Wrapper for dragging, slightly shifted up (-45% instead of -50%) */
 .character-wrapper {
   position: absolute;
   left:50%;
   top:50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -45%);
   cursor: grab;
 }
 
@@ -72,7 +72,7 @@ body {
   box-shadow:0 0 30px rgba(251,191,36,0.6);
   animation: corePulse 2s infinite;
   position:absolute;
-  bottom:10%; /* shift downward slightly to align head */
+  bottom:10%; /* keeps the head aligned with flames */
   display:flex;
   justify-content:center;
   align-items:center;
@@ -134,9 +134,9 @@ body {
 const wrapper = document.querySelector('.character-wrapper');
 wrapper.animate(
   [
-    { transform:'translate(-50%, -50%) translateY(0)' },
-    { transform:'translate(-50%, -50%) translateY(-8px)' },
-    { transform:'translate(-50%, -50%) translateY(0)'}
+    { transform:'translate(-50%, -45%) translateY(0)' },
+    { transform:'translate(-50%, -45%) translateY(-8px)' },
+    { transform:'translate(-50%, -45%) translateY(0)'}
   ],
   { duration:6000, iterations:Infinity, easing:'ease-in-out'}
 );
