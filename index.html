@@ -2,110 +2,481 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>OAS Index</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OASENSE</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+
 <style>
-body {
-  margin:0;
-  background:#000;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
-  font-family:sans-serif;
+
+:root{
+--bg-dark:#0a0a0f;
+--bg-card:#16162a;
+--bg-lighter:#1a1a2e;
+--gold:#f59e0b;
+--emerald:#10b981;
+--text:#e2e8f0;
 }
 
-/* Sol container */
-#sol {
-  width:100%;
-  height:100%;
-  position:relative;
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
 }
 
-/* SETTINGS PANEL */
-.sol-settings{
-  position:fixed;
-  top:15px;
-  right:15px;
-  display:flex;
-  gap:8px;
-  padding:8px 10px;
-  background:rgba(0,0,0,.6);
-  border-radius:10px;
-  backdrop-filter:blur(6px);
-  z-index:1000;
+body{
+font-family:Inter,sans-serif;
+background:var(--bg-dark);
+color:var(--text);
+overflow-x:hidden;
 }
-.color{
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  border:none;
-  cursor:pointer;
+
+/* NAVBAR */
+
+nav{
+position:fixed;
+top:0;
+width:100%;
+height:70px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 40px;
+background:rgba(22,22,42,.7);
+backdrop-filter:blur(12px);
+z-index:100;
 }
-.color.gold{background:#fbbf24;}
-.color.magenta{background:#ff3da8;}
-.color.blue{background:#3da5ff;}
-.color.lime{background:#8cff3d;}
-.color.purple{background:#a855f7;}
+
+.logo{
+display:flex;
+align-items:center;
+gap:10px;
+font-family:Orbitron;
+font-weight:700;
+font-size:22px;
+}
+
+.logo-box{
+width:32px;
+height:32px;
+background:var(--gold);
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:6px;
+color:black;
+font-weight:900;
+}
+
+nav a{
+color:#ccc;
+text-decoration:none;
+margin-left:20px;
+font-family:Orbitron;
+font-size:14px;
+}
+
+nav a:hover{
+color:var(--gold);
+}
+
+/* HERO */
+
+.hero{
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding-top:100px;
+position:relative;
+}
+
+.hero h1{
+font-family:Orbitron;
+font-size:80px;
+font-weight:900;
+}
+
+.hero h1 span{
+display:block;
+}
+
+.glow{
+color:var(--gold);
+text-shadow:0 0 15px rgba(245,158,11,.6);
+}
+
+.subtitle{
+margin-top:20px;
+font-size:20px;
+color:#aaa;
+max-width:700px;
+margin-left:auto;
+margin-right:auto;
+}
+
+.buttons{
+margin-top:40px;
+display:flex;
+justify-content:center;
+gap:20px;
+flex-wrap:wrap;
+}
+
+button{
+padding:15px 28px;
+font-family:Orbitron;
+font-weight:700;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:16px;
+}
+
+.btn-gold{
+background:var(--gold);
+color:black;
+}
+
+.btn-outline{
+background:var(--bg-card);
+color:white;
+border:1px solid rgba(255,255,255,.2);
+}
+
+.xp{
+margin-bottom:20px;
+display:inline-block;
+padding:6px 14px;
+background:var(--bg-card);
+border:1px solid var(--gold);
+border-radius:20px;
+font-family:Orbitron;
+color:var(--gold);
+}
+
+/* STATS */
+
+.section{
+padding:120px 20px;
+}
+
+.section-title{
+text-align:center;
+font-family:Orbitron;
+font-size:38px;
+margin-bottom:40px;
+}
+
+.stats{
+max-width:700px;
+margin:auto;
+background:var(--bg-card);
+padding:40px;
+border-radius:10px;
+}
+
+.stat{
+margin-bottom:25px;
+}
+
+.stat-name{
+display:flex;
+justify-content:space-between;
+margin-bottom:5px;
+font-family:Orbitron;
+}
+
+.bar{
+height:12px;
+background:var(--bg-lighter);
+border-radius:4px;
+overflow:hidden;
+}
+
+.fill{
+height:100%;
+background:var(--gold);
+width:0%;
+transition:width 1.5s ease;
+}
+
+/* FEATURES */
+
+.features{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:20px;
+max-width:1100px;
+margin:auto;
+}
+
+.feature{
+background:var(--bg-card);
+padding:30px;
+border-radius:10px;
+border:1px solid rgba(255,255,255,.1);
+transition:.3s;
+}
+
+.feature:hover{
+transform:translateY(-6px);
+border-color:var(--gold);
+}
+
+.feature h3{
+font-family:Orbitron;
+margin-bottom:10px;
+}
+
+/* TESTIMONIALS */
+
+.reviews{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:20px;
+max-width:1100px;
+margin:auto;
+}
+
+.review{
+background:var(--bg-card);
+padding:25px;
+border-radius:10px;
+border:1px solid rgba(16,185,129,.3);
+}
+
+.review-name{
+font-weight:bold;
+margin-bottom:8px;
+}
+
+/* CTA */
+
+.cta{
+text-align:center;
+background:var(--bg-lighter);
+padding:100px 20px;
+}
+
+.cta h2{
+font-family:Orbitron;
+font-size:46px;
+margin-bottom:20px;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:40px;
+color:#777;
+border-top:1px solid rgba(255,255,255,.05);
+margin-top:80px;
+}
+
+/* GRID BACKGROUND */
+
+.hero::before{
+content:"";
+position:absolute;
+inset:0;
+background:
+linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.03) 1px, transparent 1px);
+background-size:40px 40px;
+pointer-events:none;
+}
+
 </style>
 </head>
+
 <body>
 
-<!-- SETTINGS -->
-<div class="sol-settings">
-  <button class="color gold" onclick="setSolColor('gold')"></button>
-  <button class="color magenta" onclick="setSolColor('magenta')"></button>
-  <button class="color blue" onclick="setSolColor('blue')"></button>
-  <button class="color lime" onclick="setSolColor('lime')"></button>
-  <button class="color purple" onclick="setSolColor('purple')"></button>
+<nav>
+
+<div class="logo">
+<div class="logo-box">O</div>
+OASENSE
 </div>
 
-<section id="sol"></section>
+<div>
+<a href="#stats">Stats</a>
+<a href="#features">Achievements</a>
+<a href="#reviews">Reviews</a>
+</div>
+
+</nav>
+
+
+<section class="hero">
+
+<div>
+
+<div class="xp">
+<span id="xp">0</span> XP EARNED
+</div>
+
+<h1>
+<span class="glow">LEVEL UP</span>
+<span>YOUR LIFE</span>
+</h1>
+
+<p class="subtitle">
+Master your mind. Build your body. Unlock your true potential in the ultimate real-world RPG.
+</p>
+
+<div class="buttons">
+<button class="btn-gold">BEGIN YOUR QUEST</button>
+<button class="btn-outline">WATCH DEMO</button>
+</div>
+
+</div>
+
+</section>
+
+
+<section id="stats" class="section">
+
+<h2 class="section-title glow">YOUR CHARACTER STATS</h2>
+
+<div class="stats">
+
+<div class="stat">
+<div class="stat-name">MIND <span>85%</span></div>
+<div class="bar"><div class="fill" style="width:85%"></div></div>
+</div>
+
+<div class="stat">
+<div class="stat-name">BODY <span>72%</span></div>
+<div class="bar"><div class="fill" style="width:72%"></div></div>
+</div>
+
+<div class="stat">
+<div class="stat-name">DISCIPLINE <span>91%</span></div>
+<div class="bar"><div class="fill" style="width:91%"></div></div>
+</div>
+
+<div class="stat">
+<div class="stat-name">FOCUS <span>78%</span></div>
+<div class="bar"><div class="fill" style="width:78%"></div></div>
+</div>
+
+</div>
+
+</section>
+
+
+<section id="features" class="section">
+
+<h2 class="section-title">ACHIEVEMENTS</h2>
+
+<div class="features">
+
+<div class="feature">
+<h3>Mental Clarity</h3>
+<p>Unlock deep focus states with guided meditation quests.</p>
+</div>
+
+<div class="feature">
+<h3>Goal Tracking</h3>
+<p>Transform ambitions into daily missions with rewards.</p>
+</div>
+
+<div class="feature">
+<h3>Daily Quests</h3>
+<p>Complete randomized daily challenges to earn XP.</p>
+</div>
+
+<div class="feature">
+<h3>Streak System</h3>
+<p>The longer your streak, the higher your XP multiplier.</p>
+</div>
+
+<div class="feature">
+<h3>Skill Trees</h3>
+<p>Invest skill points into Fitness, Intellect, or Charisma.</p>
+</div>
+
+<div class="feature">
+<h3>Boss Challenges</h3>
+<p>Face fears and bad habits in epic boss battles.</p>
+</div>
+
+</div>
+
+</section>
+
+
+<section id="reviews" class="section">
+
+<h2 class="section-title">PLAYER REVIEWS</h2>
+
+<div class="reviews">
+
+<div class="review">
+<div class="review-name">Alex Chen</div>
+"OASENSE gamified my routine. I'm already level 42."
+</div>
+
+<div class="review">
+<div class="review-name">Sarah Jenkins</div>
+"The stat bars make workouts addictive."
+</div>
+
+<div class="review">
+<div class="review-name">Marcus Thorne</div>
+"The boss challenge helped me quit smoking."
+</div>
+
+</div>
+
+</section>
+
+
+<section class="cta">
+
+<h2 class="glow">READY TO BEGIN?</h2>
+
+<p style="margin-bottom:30px;color:#aaa;">
+Your character is waiting at Level 1.
+</p>
+
+<button class="btn-gold">
+START YOUR JOURNEY — IT'S FREE
+</button>
+
+</section>
+
+
+<footer>
+© 2026 OASENSE
+</footer>
+
 
 <script>
-// Fetch the companion HTML and inject it
-fetch('sol/companion.html')
-  .then(response => response.text())
-  .then(html => {
-    const solSection = document.getElementById('sol');
-    solSection.innerHTML = html;
 
-    // Move scripts from companion to execute
-    solSection.querySelectorAll('script').forEach(oldScript => {
-      const newScript = document.createElement('script');
-      if(oldScript.src){
-        newScript.src = oldScript.src;
-      } else {
-        newScript.textContent = oldScript.textContent;
-      }
-      document.body.appendChild(newScript);
-      oldScript.remove();
-    });
-  })
-  .catch(err => console.error('Error loading Sol companion:', err));
+/* XP counter animation */
 
-// COLOR SETTINGS FUNCTION
-function setSolColor(type){
-  const solEl = document.getElementById('sol');
-  const core = solEl.querySelector('#core');
-  const midFlame = solEl.querySelector('#midFlame');
-  const outerFlame = solEl.querySelector('#outerFlame');
-  const glow = solEl.querySelector('#glow');
+let xp = 0
+let target = 12847
+let steps = 80
+let increment = target / steps
 
-  const colors = {
-    gold: {core:"#fbbf24", mid:"#f59e0b", outer:"#d97706", glow:"rgba(251,191,36,.35)"},
-    magenta:{core:"#ff6ad5", mid:"#ff3da8", outer:"#c0268c", glow:"rgba(255,61,168,.35)"},
-    blue:{core:"#7dd3fc", mid:"#3da5ff", outer:"#2563eb", glow:"rgba(61,165,255,.35)"},
-    lime:{core:"#d9ff7d", mid:"#8cff3d", outer:"#4d9e1a", glow:"rgba(140,255,61,.35)"},
-    purple:{core:"#d8b4fe", mid:"#a855f7", outer:"#7e22ce", glow:"rgba(168,85,247,.35)"}
-  }
+let timer = setInterval(()=>{
 
-  let c = colors[type];
+xp += increment
 
-  if(core) core.style.background = `radial-gradient(circle,#fff 0%,${c.core} 40%,${c.mid} 80%)`;
-  if(core) core.style.boxShadow = `0 0 40px ${c.glow}`;
-  if(midFlame) midFlame.style.background = `radial-gradient(ellipse at center bottom,${c.mid} 0%,${c.mid}80 40%,transparent 70%)`;
-  if(outerFlame) outerFlame.style.background = `radial-gradient(ellipse at center bottom,${c.outer}00 0%,${c.outer}40 50%,${c.outer}00 100%)`;
-  if(glow) glow.style.background = `radial-gradient(circle,${c.glow},rgba(0,0,0,0) 70%)`;
+if(xp >= target){
+xp = target
+clearInterval(timer)
 }
+
+document.getElementById("xp").innerText = Math.floor(xp).toLocaleString()
+
+},30)
+
 </script>
 
 </body>
