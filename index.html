@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,25 +11,57 @@
 <style>
 
 :root{
---bg-dark:#0a0a0f;
---bg-card:#16162a;
---bg-lighter:#1a1a2e;
+--dark:#0a0a0f;
+--card:#16162a;
+--lighter:#1a1a2e;
 --gold:#f59e0b;
+--goldLight:#fbbf24;
 --emerald:#10b981;
 --text:#e2e8f0;
 }
 
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 body{
 font-family:Inter,sans-serif;
-background:var(--bg-dark);
+background:var(--dark);
 color:var(--text);
 overflow-x:hidden;
+}
+
+/* GRID BACKGROUND */
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
+background-size:40px 40px;
+z-index:-2;
+}
+
+/* AMBIENT LIGHT */
+
+body::after{
+content:"";
+position:fixed;
+width:600px;
+height:600px;
+left:50%;
+top:40%;
+transform:translate(-50%,-50%);
+background:radial-gradient(circle,rgba(245,158,11,.18),transparent 70%);
+filter:blur(120px);
+z-index:-1;
+animation:floatLight 12s ease-in-out infinite;
+}
+
+@keyframes floatLight{
+0%{transform:translate(-50%,-50%)}
+50%{transform:translate(-45%,-55%)}
+100%{transform:translate(-50%,-50%)}
 }
 
 /* NAVBAR */
@@ -43,7 +76,7 @@ align-items:center;
 justify-content:space-between;
 padding:0 40px;
 background:rgba(22,22,42,.7);
-backdrop-filter:blur(12px);
+backdrop-filter:blur(10px);
 z-index:100;
 }
 
@@ -57,27 +90,30 @@ font-size:22px;
 }
 
 .logo-box{
-width:32px;
-height:32px;
+width:34px;
+height:34px;
 background:var(--gold);
 display:flex;
 align-items:center;
 justify-content:center;
-border-radius:6px;
-color:black;
+border-radius:8px;
 font-weight:900;
+color:black;
+box-shadow:0 0 20px rgba(245,158,11,.6);
 }
 
 nav a{
+margin-left:24px;
 color:#ccc;
 text-decoration:none;
-margin-left:20px;
 font-family:Orbitron;
 font-size:14px;
+transition:.3s;
 }
 
 nav a:hover{
 color:var(--gold);
+text-shadow:0 0 10px var(--gold);
 }
 
 /* HERO */
@@ -88,33 +124,60 @@ display:flex;
 align-items:center;
 justify-content:center;
 text-align:center;
-padding-top:100px;
-position:relative;
+padding-top:120px;
 }
 
 .hero h1{
 font-family:Orbitron;
-font-size:80px;
+font-size:90px;
 font-weight:900;
-}
-
-.hero h1 span{
-display:block;
+letter-spacing:2px;
 }
 
 .glow{
-color:var(--gold);
-text-shadow:0 0 15px rgba(245,158,11,.6);
+color:var(--goldLight);
+text-shadow:
+0 0 10px rgba(245,158,11,.8),
+0 0 25px rgba(245,158,11,.6),
+0 0 45px rgba(245,158,11,.4);
+animation:glowPulse 3s infinite;
+}
+
+@keyframes glowPulse{
+0%{text-shadow:0 0 10px rgba(245,158,11,.5)}
+50%{text-shadow:0 0 30px rgba(245,158,11,.9)}
+100%{text-shadow:0 0 10px rgba(245,158,11,.5)}
 }
 
 .subtitle{
-margin-top:20px;
-font-size:20px;
-color:#aaa;
 max-width:700px;
-margin-left:auto;
-margin-right:auto;
+margin:20px auto;
+color:#aaa;
+font-size:20px;
 }
+
+/* XP BADGE */
+
+.xp{
+display:inline-block;
+margin-bottom:30px;
+padding:8px 18px;
+border-radius:20px;
+background:var(--card);
+border:1px solid rgba(245,158,11,.5);
+font-family:Orbitron;
+color:var(--gold);
+box-shadow:0 0 20px rgba(245,158,11,.3);
+animation:xpPulse 4s infinite;
+}
+
+@keyframes xpPulse{
+0%{box-shadow:0 0 10px rgba(245,158,11,.2)}
+50%{box-shadow:0 0 30px rgba(245,158,11,.7)}
+100%{box-shadow:0 0 10px rgba(245,158,11,.2)}
+}
+
+/* BUTTONS */
 
 .buttons{
 margin-top:40px;
@@ -125,38 +188,46 @@ flex-wrap:wrap;
 }
 
 button{
-padding:15px 28px;
+padding:16px 30px;
 font-family:Orbitron;
 font-weight:700;
 border:none;
-border-radius:6px;
 cursor:pointer;
+border-radius:8px;
 font-size:16px;
+position:relative;
+overflow:hidden;
 }
 
 .btn-gold{
 background:var(--gold);
 color:black;
+box-shadow:0 0 25px rgba(245,158,11,.6);
+}
+
+.btn-gold::after{
+content:"";
+position:absolute;
+top:0;
+left:-100%;
+width:100%;
+height:100%;
+background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+animation:sweep 3s infinite;
+}
+
+@keyframes sweep{
+0%{left:-100%}
+100%{left:120%}
 }
 
 .btn-outline{
-background:var(--bg-card);
+background:var(--card);
 color:white;
 border:1px solid rgba(255,255,255,.2);
 }
 
-.xp{
-margin-bottom:20px;
-display:inline-block;
-padding:6px 14px;
-background:var(--bg-card);
-border:1px solid var(--gold);
-border-radius:20px;
-font-family:Orbitron;
-color:var(--gold);
-}
-
-/* STATS */
+/* SECTIONS */
 
 .section{
 padding:120px 20px;
@@ -165,41 +236,37 @@ padding:120px 20px;
 .section-title{
 text-align:center;
 font-family:Orbitron;
-font-size:38px;
-margin-bottom:40px;
+font-size:42px;
+margin-bottom:50px;
 }
+
+/* STATS */
 
 .stats{
 max-width:700px;
 margin:auto;
-background:var(--bg-card);
+background:var(--card);
 padding:40px;
 border-radius:10px;
 }
 
 .stat{
-margin-bottom:25px;
-}
-
-.stat-name{
-display:flex;
-justify-content:space-between;
-margin-bottom:5px;
-font-family:Orbitron;
+margin-bottom:30px;
 }
 
 .bar{
 height:12px;
-background:var(--bg-lighter);
-border-radius:4px;
+background:var(--lighter);
+border-radius:6px;
 overflow:hidden;
 }
 
 .fill{
 height:100%;
-background:var(--gold);
 width:0%;
-transition:width 1.5s ease;
+background:linear-gradient(90deg,var(--gold),var(--goldLight));
+box-shadow:0 0 10px var(--gold);
+transition:width 1.6s ease;
 }
 
 /* FEATURES */
@@ -207,86 +274,60 @@ transition:width 1.5s ease;
 .features{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:20px;
+gap:22px;
 max-width:1100px;
 margin:auto;
 }
 
 .feature{
-background:var(--bg-card);
+background:var(--card);
 padding:30px;
-border-radius:10px;
-border:1px solid rgba(255,255,255,.1);
-transition:.3s;
+border-radius:12px;
+border:1px solid rgba(255,255,255,.08);
+transition:.35s;
+position:relative;
+overflow:hidden;
 }
 
 .feature:hover{
-transform:translateY(-6px);
+transform:translateY(-8px) scale(1.03);
 border-color:var(--gold);
+box-shadow:0 0 40px rgba(245,158,11,.35);
 }
 
-.feature h3{
-font-family:Orbitron;
-margin-bottom:10px;
+.feature::before{
+content:"";
+position:absolute;
+top:-50%;
+left:-50%;
+width:200%;
+height:200%;
+background:radial-gradient(circle,rgba(245,158,11,.2),transparent 60%);
+opacity:0;
+transition:.4s;
 }
 
-/* TESTIMONIALS */
-
-.reviews{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:20px;
-max-width:1100px;
-margin:auto;
-}
-
-.review{
-background:var(--bg-card);
-padding:25px;
-border-radius:10px;
-border:1px solid rgba(16,185,129,.3);
-}
-
-.review-name{
-font-weight:bold;
-margin-bottom:8px;
+.feature:hover::before{
+opacity:1;
 }
 
 /* CTA */
 
 .cta{
 text-align:center;
-background:var(--bg-lighter);
-padding:100px 20px;
+padding:120px 20px;
+background:var(--lighter);
 }
 
-.cta h2{
-font-family:Orbitron;
-font-size:46px;
-margin-bottom:20px;
+.cta button{
+margin-top:30px;
 }
-
-/* FOOTER */
 
 footer{
 text-align:center;
 padding:40px;
 color:#777;
-border-top:1px solid rgba(255,255,255,.05);
-margin-top:80px;
-}
-
-/* GRID BACKGROUND */
-
-.hero::before{
-content:"";
-position:absolute;
-inset:0;
-background:
-linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-linear-gradient(90deg,rgba(255,255,255,.03) 1px, transparent 1px);
-background-size:40px 40px;
-pointer-events:none;
+border-top:1px solid rgba(255,255,255,.06);
 }
 
 </style>
@@ -295,7 +336,6 @@ pointer-events:none;
 <body>
 
 <nav>
-
 <div class="logo">
 <div class="logo-box">O</div>
 OASENSE
@@ -304,11 +344,8 @@ OASENSE
 <div>
 <a href="#stats">Stats</a>
 <a href="#features">Achievements</a>
-<a href="#reviews">Reviews</a>
 </div>
-
 </nav>
-
 
 <section class="hero">
 
@@ -320,15 +357,16 @@ OASENSE
 
 <h1>
 <span class="glow">LEVEL UP</span>
-<span>YOUR LIFE</span>
+<br>
+YOUR LIFE
 </h1>
 
 <p class="subtitle">
-Master your mind. Build your body. Unlock your true potential in the ultimate real-world RPG.
+Master your mind. Build your body. Unlock your potential in the ultimate real-world RPG.
 </p>
 
 <div class="buttons">
-<button class="btn-gold">BEGIN YOUR QUEST</button>
+<button class="btn-gold">BEGIN QUEST</button>
 <button class="btn-outline">WATCH DEMO</button>
 </div>
 
@@ -336,37 +374,35 @@ Master your mind. Build your body. Unlock your true potential in the ultimate re
 
 </section>
 
-
 <section id="stats" class="section">
 
-<h2 class="section-title glow">YOUR CHARACTER STATS</h2>
+<h2 class="section-title glow">CHARACTER STATS</h2>
 
 <div class="stats">
 
 <div class="stat">
-<div class="stat-name">MIND <span>85%</span></div>
-<div class="bar"><div class="fill" style="width:85%"></div></div>
+<div>MIND</div>
+<div class="bar"><div class="fill" data-width="85%"></div></div>
 </div>
 
 <div class="stat">
-<div class="stat-name">BODY <span>72%</span></div>
-<div class="bar"><div class="fill" style="width:72%"></div></div>
+<div>BODY</div>
+<div class="bar"><div class="fill" data-width="72%"></div></div>
 </div>
 
 <div class="stat">
-<div class="stat-name">DISCIPLINE <span>91%</span></div>
-<div class="bar"><div class="fill" style="width:91%"></div></div>
+<div>DISCIPLINE</div>
+<div class="bar"><div class="fill" data-width="91%"></div></div>
 </div>
 
 <div class="stat">
-<div class="stat-name">FOCUS <span>78%</span></div>
-<div class="bar"><div class="fill" style="width:78%"></div></div>
+<div>FOCUS</div>
+<div class="bar"><div class="fill" data-width="78%"></div></div>
 </div>
 
 </div>
 
 </section>
-
 
 <section id="features" class="section">
 
@@ -376,108 +412,97 @@ Master your mind. Build your body. Unlock your true potential in the ultimate re
 
 <div class="feature">
 <h3>Mental Clarity</h3>
-<p>Unlock deep focus states with guided meditation quests.</p>
+<p>Unlock deep focus states through guided quests.</p>
 </div>
 
 <div class="feature">
 <h3>Goal Tracking</h3>
-<p>Transform ambitions into daily missions with rewards.</p>
+<p>Turn your ambitions into structured daily missions.</p>
 </div>
 
 <div class="feature">
 <h3>Daily Quests</h3>
-<p>Complete randomized daily challenges to earn XP.</p>
+<p>Complete randomized challenges for bonus XP.</p>
 </div>
 
 <div class="feature">
 <h3>Streak System</h3>
-<p>The longer your streak, the higher your XP multiplier.</p>
+<p>Longer streaks unlock higher XP multipliers.</p>
 </div>
 
 <div class="feature">
 <h3>Skill Trees</h3>
-<p>Invest skill points into Fitness, Intellect, or Charisma.</p>
+<p>Upgrade your character attributes strategically.</p>
 </div>
 
 <div class="feature">
 <h3>Boss Challenges</h3>
-<p>Face fears and bad habits in epic boss battles.</p>
+<p>Face fears and bad habits like epic bosses.</p>
 </div>
 
 </div>
 
 </section>
-
-
-<section id="reviews" class="section">
-
-<h2 class="section-title">PLAYER REVIEWS</h2>
-
-<div class="reviews">
-
-<div class="review">
-<div class="review-name">Alex Chen</div>
-"OASENSE gamified my routine. I'm already level 42."
-</div>
-
-<div class="review">
-<div class="review-name">Sarah Jenkins</div>
-"The stat bars make workouts addictive."
-</div>
-
-<div class="review">
-<div class="review-name">Marcus Thorne</div>
-"The boss challenge helped me quit smoking."
-</div>
-
-</div>
-
-</section>
-
 
 <section class="cta">
 
 <h2 class="glow">READY TO BEGIN?</h2>
 
-<p style="margin-bottom:30px;color:#aaa;">
-Your character is waiting at Level 1.
-</p>
+<p>Your character is waiting at Level 1.</p>
 
 <button class="btn-gold">
-START YOUR JOURNEY — IT'S FREE
+START YOUR JOURNEY
 </button>
 
 </section>
-
 
 <footer>
 © 2026 OASENSE
 </footer>
 
-
 <script>
 
-/* XP counter animation */
+/* XP COUNTER */
 
-let xp = 0
-let target = 12847
-let steps = 80
-let increment = target / steps
+let xp=0
+let target=12847
+let steps=120
+let increment=target/steps
 
-let timer = setInterval(()=>{
+let timer=setInterval(()=>{
 
-xp += increment
+xp+=increment
 
-if(xp >= target){
-xp = target
+if(xp>=target){
+xp=target
 clearInterval(timer)
 }
 
-document.getElementById("xp").innerText = Math.floor(xp).toLocaleString()
+document.getElementById("xp").innerText=Math.floor(xp).toLocaleString()
 
-},30)
+},20)
+
+/* STAT BARS SCROLL ANIMATION */
+
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){
+
+let bars=document.querySelectorAll(".fill")
+
+bars.forEach(bar=>{
+bar.style.width=bar.dataset.width
+})
+
+}
+
+})
+})
+
+observer.observe(document.querySelector("#stats"))
 
 </script>
 
 </body>
 </html>
+```
