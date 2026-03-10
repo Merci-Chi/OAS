@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sol Companion with Centered Face</title>
+<title>Sol Companion Perfect Center</title>
 <style>
 :root {
   --main-color: #fbbf24; /* Default yellow/gold */
@@ -25,16 +25,27 @@ body {
   transform: translate(-50%, -50%);
   width:120px;
   height:120px;
+  cursor: grab;
   display:flex;
   justify-content:center;
   align-items:center;
-  cursor: grab;
+}
+
+/* Layer container to center everything visually */
+.layer-container {
+  position:relative;
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 /* Glow */
 .glow {
   position:absolute;
-  inset:0;
+  width:120px;
+  height:120px;
   border-radius:50%;
   filter: blur(16px);
   background: rgba(251,191,36,0.6);
@@ -47,7 +58,6 @@ body {
   top:50%;
   left:50%;
   transform: translate(-50%, -50%);
-  border-radius:50%;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -67,10 +77,10 @@ body {
   animation: midFlameAnim 1.2s infinite;
 }
 
-/* Core with centered face */
+/* Core */
 .core {
   width:42px;
-  height:42px; /* make it circular for perfect face center */
+  height:42px; /* circular for proper center */
   background: radial-gradient(circle at center, #ffffff 0%, var(--main-color) 40%, var(--main-color) 80%);
   box-shadow:0 0 30px rgba(251,191,36,0.6);
   animation: corePulse 2s infinite;
@@ -79,7 +89,7 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  flex-direction:row; /* keep eyes side by side */
+  flex-direction:row;
 }
 
 /* Eyes */
@@ -88,7 +98,7 @@ body {
   height:8px;
   background: rgba(0,0,0,0.6);
   border-radius:50%;
-  margin:0 4px; /* spacing between eyes */
+  margin:0 4px;
 }
 .eye.blink { animation: blink 6s infinite; }
 
@@ -137,12 +147,14 @@ body {
 <body>
 
 <div class="character-wrapper">
-  <div class="glow"></div>
-  <div class="layer outerFlame"></div>
-  <div class="layer midFlame"></div>
-  <div class="layer core">
-    <div class="eye blink"></div>
-    <div class="eye blink"></div>
+  <div class="layer-container">
+    <div class="glow"></div>
+    <div class="layer outerFlame"></div>
+    <div class="layer midFlame"></div>
+    <div class="layer core">
+      <div class="eye blink"></div>
+      <div class="eye blink"></div>
+    </div>
   </div>
   <div class="level">LV.1</div>
 </div>
