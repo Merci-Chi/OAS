@@ -1,110 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-
+<title>Sol Companion</title>
 <style>
-
-body{
+body {
   margin:0;
   height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
   background:#111;
+  overflow:hidden;
+  font-family:sans-serif;
 }
 
-.character{
-  position:relative;
-  width:300px;
-  height:300px;
+.character {
+  position: relative;
+  width: 120px;
+  height: 120px;
 }
 
-.layer{
+/* Ambient glow */
+.glow {
+  position: absolute;
+  inset:0;
+  border-radius:50%;
+  filter: blur(16px);
+  background: rgba(251,191,36,0.6);
+  animation: glowPulse 2s infinite;
+}
+
+/* Particles */
+.particle {
+  position: absolute;
+  width:3px;
+  height:3px;
+  border-radius:50%;
+  background:#fbbf24;
+  bottom:30%;
+  left:50%;
+  opacity:0;
+  animation: particleRise 1.5s forwards;
+}
+
+/* Main body layers */
+.layer {
   position:absolute;
+  border-radius:50%;
   inset:0;
   display:flex;
   justify-content:center;
   align-items:center;
 }
 
-.layer img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
+.outerFlame {
+  width:84px;
+  height:96px;
+  background: radial-gradient(ellipse at center bottom, #d9770600 0%, #d9770640 50%, #d9770600 100%);
+  animation: outerFlameAnim 0.8s infinite;
 }
 
-/* stack order */
-
-.layer1{ z-index:1; }
-.layer3{ z-index:2; }
-.layer2{ z-index:3; }
-.layer4{ z-index:4; }
-
-/* animations */
-
-.layer1{
-  animation: expandSlow 6s ease-in-out infinite alternate;
+.midFlame {
+  width:60px;
+  height:78px;
+  background: radial-gradient(ellipse at center bottom, #f59e0b 0%, #f59e0b80 40%, transparent 70%);
+  animation: midFlameAnim 0.6s infinite;
+  animation-delay:0.1s;
 }
 
-.layer2{
-  animation: expandFast 4s ease-in-out infinite alternate;
+.core {
+  width:42px;
+  height:54px;
+  background: radial-gradient(circle at center, #ffffff 0%, #fbbf24 40%, #f59e0b 80%);
+  box-shadow: 0 0 30px rgba(251,191,36,0.6);
+  animation: corePulse 1s infinite;
+  position:relative;
 }
 
-.layer3{
-  animation: hover 3s ease-in-out infinite;
+/* Eyes */
+.eye {
+  width:6px;
+  height:8px;
+  background: rgba(0,0,0,0.6);
+  border-radius:50%;
+  position:absolute;
+  bottom:30%;
 }
 
-.layer4{
-  animation: shrinkCenter 5s ease-in-out infinite alternate;
-  transform-origin:center;
+.eye.left { left:25%; }
+.eye.right { right:25%; }
+.eye.blink { animation: blink 3s infinite; }
+
+/* Level indicator */
+.level {
+  position:absolute;
+  bottom:-8px;
+  left:50%;
+  transform: translateX(-50%);
+  padding:2px 4px;
+  font-size:10px;
+  background: rgba(0,0,0,0.8);
+  border:1px solid rgba(251,191,36,0.5);
+  border-radius:12px;
+  color:#fbbf24;
+  font-weight:bold;
 }
 
-@keyframes expandSlow{
-  from{ transform:scale(1); }
-  to{ transform:scale(1.06); }
+/* Animations */
+@keyframes glowPulse {
+  0%,100%{ transform: scale(1); opacity:0.4;}
+  50%{ transform: scale(1.2); opacity:0.6;}
 }
 
-@keyframes expandFast{
-  from{ transform:scale(1); }
-  to{ transform:scale(1.12); }
+@keyframes particleRise {
+  0% { opacity:0; transform: translateY(0) translateX(var(--x,0px)); }
+  50% { opacity:1; }
+  100% { opacity:0; transform: translateY(-50px) translateX(calc(var(--x,0px) + var(--dx,0px))); }
 }
 
-@keyframes hover{
-  0%{ transform:translateY(-8px); }
-  50%{ transform:translateY(8px); }
-  100%{ transform:translateY(-8px); }
+@keyframes outerFlameAnim {
+  0%,100% { transform: scaleX(1) scaleY(1);}
+  50% { transform: scaleX(1.1) scaleY(1.15);}
 }
 
-@keyframes shrinkCenter{
-  from{ transform:scaleY(1); }
-  to{ transform:scaleY(0.85); }
+@keyframes midFlameAnim {
+  0%,100% { transform: scaleX(1) scaleY(1);}
+  50% { transform: scaleX(1.08) scaleY(1.12);}
+}
+
+@keyframes corePulse {
+  0%,100% { transform: scale(1);}
+  50% { transform: scale(1.08);}
+}
+
+@keyframes blink {
+  0%,20%,40%,60%,100% { transform: scaleY(1); }
+  10%,30%,50% { transform: scaleY(0.3); }
+}
+
+/* Floating/hovering */
+@keyframes floatY {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 </style>
 </head>
-
 <body>
 
 <div class="character">
-
-  <div class="layer layer1">
-    <img src="images/layer1.png">
+  <div class="glow"></div>
+  <div class="layer outerFlame"></div>
+  <div class="layer midFlame"></div>
+  <div class="layer core">
+    <div class="eye left blink"></div>
+    <div class="eye right blink"></div>
   </div>
-
-  <div class="layer layer3">
-    <img src="images/layer3.png">
-  </div>
-
-  <div class="layer layer2">
-    <img src="images/layer2.png">
-  </div>
-
-  <div class="layer layer4">
-    <img src="images/layer4.png">
-  </div>
-
+  <div class="level">LV.1</div>
 </div>
+
+<script>
+// Floating animation
+const character = document.querySelector('.character');
+character.animate([{ transform:'translateY(0)'},{ transform:'translateY(-8px)'},{ transform:'translateY(0)'}],
+{ duration:3000, iterations:Infinity, easing:'ease-in-out'});
+
+// Particle generation
+const health = 100; // You can change dynamically
+function spawnParticle() {
+  if(health <=50) return;
+  const p = document.createElement('div');
+  p.className='particle';
+  const x = Math.random()*40-20;
+  p.style.setProperty('--x', `${x}px`);
+  p.style.setProperty('--dx', `${Math.random()*20-10}px`);
+  character.appendChild(p);
+  setTimeout(()=>p.remove(),1500);
+}
+setInterval(spawnParticle, 800);
+</script>
 
 </body>
 </html>
