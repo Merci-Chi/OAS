@@ -1,0 +1,151 @@
+import React, { useEffect, useState } from 'react';
+import { motion, useAnimation } from 'framer-motion';
+
+export default function SolCompanion({ level = 1, health = 100, mood = 'happy', size = 'md' }) {
+  const controls = useAnimation();
+  const [particles, setParticles] = useState([]);
+
+  const sizes = {
+    sm: { container: 60, flame: 30 },
+    md: { container: 120, flame: 60 },
+    lg: { container: 180, flame: 90 },
+  };
+
+  const moodColors = {
+    happy: { core: '#fbbf24', mid: '#f59e0b', outer: '#d97706', glow: 'rgba(251,191,36,0.6)' },
+    focused: { core: '#a78bfa', mid: '#8b5cf6', outer: '#7c3aed', glow: 'rgba(167,139,250,0.6)' },
+    tired: { core: '#94a3b8', mid: '#64748b', outer: '#475569', glow: 'rgba(148,163,184,0.4)' },
+    energized: { core: '#34d399', mid: '#10b981', outer: '#059669', glow: 'rgba(52,211,153,0.6)' },
+  };
+
+  const colors = moodColors[mood] || moodColors.happy;
+  const s = sizes[size];
+
+  // Floating animation
+  useEffect(() => {
+    controls.start({
+      y: [0, -8, 0],
+      transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' }
+    });
+  }, [controls]);
+
+  // Particle generation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (health > 50) {
+        const newParticle = {
+          id: Date.now(),
+          x: Math.random() * 40 - 20,
+          delay: Math.random() * 0.5,
+        };
+        setParticles(prev => [...prev.slice(-5), newParticle]);
+      }
+    }, 800);
+    return () => clearInterval(interval);
+  }, [health]);
+
+  const healthScale = 0.6 + (health / 100) * 0.4;
+  const pulseIntensity = health > 70 ? 1.1 : health > 40 ? 1.05 : 1.02;
+
+  return (
+    <div className="relative" style={{ width: s.container, height: s.container }}>
+      {/* Ambient glow */}
+      <motion.div
+        className="absolute inset-0 rounded-full blur-xl"
+        style={{ background: colors.glow }}
+        animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.6, 0.4] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      />
+
+      {/* Particles */}
+      {particles.map(p => (
+        <motion.div
+          key={p.id}
+          className="absolute w-1.5 h-1.5 rounded-full"
+          style={{ 
+            background: colors.core,
+            left: '50%',
+            bottom: '30%',
+          }}
+          initial={{ opacity: 0, y: 0, x: p.x }}
+          animate={{ opacity: [0, 1, 0], y: -50, x: p.x + (Math.random() * 20 - 10) }}
+          transition={{ duration: 1.5, delay: p.delay }}
+          onAnimationComplete={() => setParticles(prev => prev.filter(pp => pp.id !== p.id))}
+        />
+      ))}
+
+      {/* Main Sol body */}
+      <motion.div
+        animate={controls}
+        className="absolute inset-0 flex items-center justify-center"
+      >
+        {/* Outer flame layer */}
+        <motion.div
+          className="absolute rounded-full"
+          style={{
+            width: s.flame * 1.4 * healthScale,
+            height: s.flame * 1.6 * healthScale,
+            background: `radial-gradient(ellipse at center bottom, ${colors.outer}00 0%, ${colors.outer}40 50%, ${colors.outer}00 100%)`,
+          }}
+          animate={{ 
+            scaleX: [1, 1.1, 1],
+            scaleY: [1, 1.15, 1],
+          }}
+          transition={{ duration: 0.8, repeat: Infinity }}
+        />
+
+        {/* Mid flame layer */}
+        <motion.div
+          className="absolute rounded-full"
+          style={{
+            width: s.flame * healthScale,
+            height: s.flame * 1.3 * healthScale,
+            background: `radial-gradient(ellipse at center bottom, ${colors.mid} 0%, ${colors.mid}80 40%, transparent 70%)`,
+          }}
+          animate={{ 
+            scaleX: [1, 1.08, 1],
+            scaleY: [1, 1.12, 1],
+          }}
+          transition={{ duration: 0.6, repeat: Infinity, delay: 0.1 }}
+        />
+
+        {/* Core */}
+        <motion.div
+          className="relative rounded-full"
+          style={{
+            width: s.flame * 0.7 * healthScale,
+            height: s.flame * 0.9 * healthScale,
+            background: `radial-gradient(ellipse at center, white 0%, ${colors.core} 40%, ${colors.mid} 80%)`,
+            boxShadow: `0 0 ${s.flame/2}px ${colors.glow}`,
+          }}
+          animate={{ scale: [1, pulseIntensity, 1] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        >
+          {/* Eyes */}
+          {size !== 'sm' && (
+            <div className="absolute inset-0 flex items-center justify-center gap-2" style={{ paddingBottom: s.flame * 0.15 }}>
+              <motion.div 
+                className="w-1.5 h-2 bg-black/60 rounded-full"
+                animate={{ scaleY: [1, 0.3, 1] }}
+                transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+              />
+              <motion.div 
+                className="w-1.5 h-2 bg-black/60 rounded-full"
+                animate={{ scaleY: [1, 0.3, 1] }}
+                transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+              />
+            </div>
+          )}
+        </motion.div>
+
+        {/* Level indicator */}
+        <div 
+          className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-black/80 rounded-full border border-amber-500/50"
+          style={{ fontSize: size === 'sm' ? 8 : 10 }}
+        >
+          <span className="text-amber-400 font-bold">LV.{level}</span>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
