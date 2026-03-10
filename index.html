@@ -2,39 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sol Companion</title>
+<title>OAS Index</title>
 <style>
-/* Page setup */
 body {
   margin:0;
   background:#000;
-  font-family:sans-serif;
-  overflow:hidden;
   height:100vh;
   width:100vw;
+  overflow:hidden;
 }
-
-/* Sol section */
 #sol {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow:hidden;
 }
-
-/* Character wrapper - group all layers */
-.character-wrapper {
-  position: absolute; /* so we can move it */
-  width: 120px;
-  height: 120px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  transform-origin:center;
-  cursor: grab;
+iframe {
+  border:0;
+  width:100%;
+  height:100%;
 }
-
-/* Glow */
+</style>
+</head>
+<body>
+<section id="sol">
+  <!-- Embed companion from /OAS/companion/sol/ -->
+  <iframe src="OAS/sol/companion"></iframe>
+</section>
+</body>
+</html>/* Glow */
 .glow {
   position: absolute;
   inset:0;
