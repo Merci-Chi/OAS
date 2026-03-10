@@ -4,30 +4,37 @@
 <meta charset="UTF-8">
 <title>Sol Companion</title>
 <style>
-/* Center the container in the viewport */
+/* Page setup */
 body {
   margin:0;
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#111;
-  overflow:hidden;
+  background:#000;
   font-family:sans-serif;
+  overflow:hidden;
+  height:100vh;
+  width:100vw;
 }
 
-/* Character wrapper - all layers inside this */
-.character-wrapper {
+/* Sol section */
+#sol {
   position: relative;
-  width: 120px;  /* default md size */
+  width: 100%;
+  height: 100%;
+  overflow:hidden;
+}
+
+/* Character wrapper - group all layers */
+.character-wrapper {
+  position: absolute; /* so we can move it */
+  width: 120px;
   height: 120px;
   display:flex;
   justify-content:center;
   align-items:center;
   transform-origin:center;
+  cursor: grab;
 }
 
-/* Ambient glow */
+/* Glow */
 .glow {
   position: absolute;
   inset:0;
@@ -98,7 +105,7 @@ body {
 .eye.right { right:25%; }
 .eye.blink { animation: blink 6s infinite; }
 
-/* Level indicator */
+/* Level */
 .level {
   position:absolute;
   bottom:-8px;
@@ -114,59 +121,31 @@ body {
 }
 
 /* Animations */
-@keyframes glowPulse {
-  0%,100%{ transform: scale(1); opacity:0.4;}
-  50%{ transform: scale(1.2); opacity:0.6;}
-}
-
-@keyframes particleRise {
-  0% { opacity:0; transform: translateY(0) translateX(var(--x,0px)); }
-  50% { opacity:1; }
-  100% { opacity:0; transform: translateY(-50px) translateX(calc(var(--x,0px) + var(--dx,0px))); }
-}
-
-@keyframes outerFlameAnim {
-  0%,100% { transform: scaleX(1) scaleY(1);}
-  50% { transform: scaleX(1.1) scaleY(1.15);}
-}
-
-@keyframes midFlameAnim {
-  0%,100% { transform: scaleX(1) scaleY(1);}
-  50% { transform: scaleX(1.08) scaleY(1.12);}
-}
-
-@keyframes corePulse {
-  0%,100% { transform: scale(1);}
-  50% { transform: scale(1.08);}
-}
-
-@keyframes blink {
-  0%,20%,40%,60%,100% { transform: scaleY(1); }
-  10%,30%,50% { transform: scaleY(0.3); }
-}
-
-/* Floating/hovering */
-@keyframes floatY {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
+@keyframes glowPulse {0%,100%{ transform: scale(1); opacity:0.4;} 50%{ transform: scale(1.2); opacity:0.6;}}
+@keyframes particleRise {0% { opacity:0; transform: translateY(0) translateX(var(--x,0px)); } 50% { opacity:1; } 100% { opacity:0; transform: translateY(-50px) translateX(calc(var(--x,0px) + var(--dx,0px))); }}
+@keyframes outerFlameAnim {0%,100% { transform: scaleX(1) scaleY(1);} 50% { transform: scaleX(1.1) scaleY(1.15);}}
+@keyframes midFlameAnim {0%,100% { transform: scaleX(1) scaleY(1);} 50% { transform: scaleX(1.08) scaleY(1.12);}}
+@keyframes corePulse {0%,100% { transform: scale(1);} 50% { transform: scale(1.08);}}
+@keyframes blink {0%,20%,40%,60%,100% { transform: scaleY(1); } 10%,30%,50% { transform: scaleY(0.3); }}
 </style>
 </head>
 <body>
 
-<div class="character-wrapper">
-  <div class="glow"></div>
-  <div class="layer outerFlame"></div>
-  <div class="layer midFlame"></div>
-  <div class="layer core">
-    <div class="eye left blink"></div>
-    <div class="eye right blink"></div>
+<section id="sol">
+  <div class="character-wrapper" style="left:50%; top:50%;">
+    <div class="glow"></div>
+    <div class="layer outerFlame"></div>
+    <div class="layer midFlame"></div>
+    <div class="layer core">
+      <div class="eye left blink"></div>
+      <div class="eye right blink"></div>
+    </div>
+    <div class="level">LV.1</div>
   </div>
-  <div class="level">LV.1</div>
-</div>
+</section>
 
 <script>
-// Floating motion for the whole group
+// Floating motion for group
 const wrapper = document.querySelector('.character-wrapper');
 wrapper.animate(
   [{ transform:'translateY(0)'},{ transform:'translateY(-8px)'},{ transform:'translateY(0)'}],
@@ -186,6 +165,30 @@ function spawnParticle() {
   setTimeout(()=>p.remove(),3000);
 }
 setInterval(spawnParticle, 1600);
+
+// Make the companion draggable
+let isDragging = false;
+let offsetX=0, offsetY=0;
+
+wrapper.addEventListener('mousedown', (e)=>{
+  isDragging=true;
+  offsetX = e.clientX - wrapper.offsetLeft;
+  offsetY = e.clientY - wrapper.offsetTop;
+  wrapper.style.cursor='grabbing';
+});
+
+document.addEventListener('mousemove',(e)=>{
+  if(!isDragging) return;
+  let left = e.clientX - offsetX;
+  let top = e.clientY - offsetY;
+  wrapper.style.left = `${left}px`;
+  wrapper.style.top = `${top}px`;
+});
+
+document.addEventListener('mouseup',()=>{
+  isDragging=false;
+  wrapper.style.cursor='grab';
+});
 </script>
 
 </body>
