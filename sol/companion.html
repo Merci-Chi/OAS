@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sol Companion Perfect Center</title>
+<title>Sol Companion Centralized</title>
 <style>
 :root {
-  --main-color: #fbbf24; /* Default yellow/gold */
+  --main-color: #fbbf24;
 }
 
 body {
@@ -17,7 +17,6 @@ body {
   font-family:sans-serif;
 }
 
-/* Wrapper */
 .character-wrapper {
   position: absolute;
   left:50%;
@@ -26,12 +25,9 @@ body {
   width:120px;
   height:120px;
   cursor: grab;
-  display:flex;
-  justify-content:center;
-  align-items:center;
 }
 
-/* Layer container to center everything visually */
+/* Container to centralize everything */
 .layer-container {
   position:relative;
   width:100%;
@@ -50,17 +46,18 @@ body {
   filter: blur(16px);
   background: rgba(251,191,36,0.6);
   animation: glowPulse 4s infinite;
-}
-
-/* Flame Layers */
-.layer {
-  position:absolute;
   top:50%;
   left:50%;
   transform: translate(-50%, -50%);
+}
+
+/* Flame layers */
+.layer {
+  position:absolute;
   display:flex;
   justify-content:center;
   align-items:center;
+  left:50%;
 }
 
 .outerFlame {
@@ -68,6 +65,8 @@ body {
   height:96px;
   background: radial-gradient(ellipse at center bottom, var(--main-color)00 0%, var(--main-color)40 50%, var(--main-color)00 100%);
   animation: outerFlameAnim 1.6s infinite;
+  top:50%;
+  transform: translate(-50%, -50%);
 }
 
 .midFlame {
@@ -75,32 +74,23 @@ body {
   height:78px;
   background: radial-gradient(ellipse at center bottom, var(--main-color) 0%, var(--main-color)80 40%, transparent 70%);
   animation: midFlameAnim 1.2s infinite;
+  top:50%;
+  transform: translate(-50%, -50%);
 }
 
-/* Core */
+/* Core (centered orb) */
 .core {
   width:42px;
-  height:42px; /* circular for proper center */
+  height:42px;
   background: radial-gradient(circle at center, #ffffff 0%, var(--main-color) 40%, var(--main-color) 80%);
   box-shadow:0 0 30px rgba(251,191,36,0.6);
   animation: corePulse 2s infinite;
-  position:relative;
+  position:absolute;
   border-radius:50%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:row;
+  top:50%;
+  left:50%;
+  transform: translate(-50%, -50%);
 }
-
-/* Eyes */
-.eye {
-  width:6px;
-  height:8px;
-  background: rgba(0,0,0,0.6);
-  border-radius:50%;
-  margin:0 4px;
-}
-.eye.blink { animation: blink 6s infinite; }
 
 /* Level */
 .level {
@@ -136,7 +126,6 @@ body {
 @keyframes outerFlameAnim {0%,100%{ transform: translate(-50%, -50%) scale(1);} 50%{ transform: translate(-50%, -50%) scaleX(1.1) scaleY(1.15);}}
 @keyframes midFlameAnim {0%,100%{ transform: translate(-50%, -50%) scale(1);} 50%{ transform: translate(-50%, -50%) scaleX(1.08) scaleY(1.12);}}
 @keyframes corePulse {0%,100%{ transform: translate(-50%, -50%) scale(1);} 50%{ transform: translate(-50%, -50%) scale(1.08);}}
-@keyframes blink {0%,20%,40%,60%,100%{ transform: scaleY(1);} 10%,30%,50%{ transform: scaleY(0.3); }}
 @keyframes particleRise {
   0% { opacity:0; transform: translate(-50%,0) scale(0.5);}
   20% { opacity:1; }
@@ -151,10 +140,7 @@ body {
     <div class="glow"></div>
     <div class="layer outerFlame"></div>
     <div class="layer midFlame"></div>
-    <div class="layer core">
-      <div class="eye blink"></div>
-      <div class="eye blink"></div>
-    </div>
+    <div class="layer core"></div>
   </div>
   <div class="level">LV.1</div>
 </div>
@@ -206,7 +192,6 @@ function setColor(color) {
 }
 </script>
 
-<!-- Color Buttons -->
 <div style="position:fixed; top:10px; left:10px; z-index:999;">
   <button onclick="setColor('#fbbf24')">Yellow</button>
   <button onclick="setColor('#3b82f6')">Blue</button>
