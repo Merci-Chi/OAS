@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Sol Companion Centralized</title>
+<title>Sol Companion Central Orb</title>
 <style>
 :root {
   --main-color: #fbbf24;
@@ -27,7 +27,7 @@ body {
   cursor: grab;
 }
 
-/* Container to centralize everything */
+/* Central container for all layers */
 .layer-container {
   position:relative;
   width:100%;
@@ -78,7 +78,7 @@ body {
   transform: translate(-50%, -50%);
 }
 
-/* Core (centered orb) */
+/* Core orb */
 .core {
   width:42px;
   height:42px;
@@ -192,6 +192,7 @@ function setColor(color) {
 }
 </script>
 
+<!-- Color Buttons -->
 <div style="position:fixed; top:10px; left:10px; z-index:999;">
   <button onclick="setColor('#fbbf24')">Yellow</button>
   <button onclick="setColor('#3b82f6')">Blue</button>
