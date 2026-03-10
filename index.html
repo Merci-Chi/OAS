@@ -19,6 +19,9 @@ body {
   position: relative;
   width: 120px;
   height: 120px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
 /* Ambient glow */
@@ -28,7 +31,7 @@ body {
   border-radius:50%;
   filter: blur(16px);
   background: rgba(251,191,36,0.6);
-  animation: glowPulse 2s infinite;
+  animation: glowPulse 4s infinite; /* slower */
 }
 
 /* Particles */
@@ -41,7 +44,7 @@ body {
   bottom:30%;
   left:50%;
   opacity:0;
-  animation: particleRise 1.5s forwards;
+  animation: particleRise 3s forwards; /* slower */
 }
 
 /* Main body layers */
@@ -58,14 +61,14 @@ body {
   width:84px;
   height:96px;
   background: radial-gradient(ellipse at center bottom, #d9770600 0%, #d9770640 50%, #d9770600 100%);
-  animation: outerFlameAnim 0.8s infinite;
+  animation: outerFlameAnim 1.6s infinite; /* slower */
 }
 
 .midFlame {
   width:60px;
   height:78px;
   background: radial-gradient(ellipse at center bottom, #f59e0b 0%, #f59e0b80 40%, transparent 70%);
-  animation: midFlameAnim 0.6s infinite;
+  animation: midFlameAnim 1.2s infinite; /* slower */
   animation-delay:0.1s;
 }
 
@@ -74,7 +77,7 @@ body {
   height:54px;
   background: radial-gradient(circle at center, #ffffff 0%, #fbbf24 40%, #f59e0b 80%);
   box-shadow: 0 0 30px rgba(251,191,36,0.6);
-  animation: corePulse 1s infinite;
+  animation: corePulse 2s infinite; /* slower */
   position:relative;
 }
 
@@ -90,7 +93,7 @@ body {
 
 .eye.left { left:25%; }
 .eye.right { right:25%; }
-.eye.blink { animation: blink 3s infinite; }
+.eye.blink { animation: blink 6s infinite; } /* slower */
 
 /* Level indicator */
 .level {
@@ -144,7 +147,6 @@ body {
   0%,100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
-
 </style>
 </head>
 <body>
@@ -161,13 +163,15 @@ body {
 </div>
 
 <script>
-// Floating animation
+// Floating animation (slower)
 const character = document.querySelector('.character');
-character.animate([{ transform:'translateY(0)'},{ transform:'translateY(-8px)'},{ transform:'translateY(0)'}],
-{ duration:3000, iterations:Infinity, easing:'ease-in-out'});
+character.animate(
+  [{ transform:'translateY(0)'},{ transform:'translateY(-8px)'},{ transform:'translateY(0)'}],
+  { duration:6000, iterations:Infinity, easing:'ease-in-out'}
+);
 
-// Particle generation
-const health = 100; // You can change dynamically
+// Particle generation (slower)
+const health = 100;
 function spawnParticle() {
   if(health <=50) return;
   const p = document.createElement('div');
@@ -176,9 +180,9 @@ function spawnParticle() {
   p.style.setProperty('--x', `${x}px`);
   p.style.setProperty('--dx', `${Math.random()*20-10}px`);
   character.appendChild(p);
-  setTimeout(()=>p.remove(),1500);
+  setTimeout(()=>p.remove(),3000); // match animation duration
 }
-setInterval(spawnParticle, 800);
+setInterval(spawnParticle, 1600); // slower spawn
 </script>
 
 </body>
