@@ -2,25 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>OAS Sol Companion</title>
+<title>Sol Companion</title>
 <style>
 body {
   margin:0;
-  background:#000;
-  height:100vh;
-  width:100vw;
+  background:transparent;
+  width:100%;
+  height:100%;
   overflow:hidden;
   font-family:sans-serif;
 }
 
-/* Sol section */
-#sol {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* Character wrapper - group all layers */
+/* Wrapper for all layers */
 .character-wrapper {
   position: absolute;
   left:50%;
@@ -31,11 +24,10 @@ body {
   display:flex;
   justify-content:center;
   align-items:center;
-  transform-origin:center;
   cursor: grab;
 }
 
-/* Ambient glow */
+/* Glow */
 .glow {
   position:absolute;
   inset:0;
@@ -45,7 +37,7 @@ body {
   animation: glowPulse 4s infinite;
 }
 
-/* Flames and core */
+/* Layers */
 .layer {
   position:absolute;
   top:50%;
@@ -89,12 +81,11 @@ body {
   position:absolute;
   bottom:30%;
 }
-
 .eye.left { left:25%; }
 .eye.right { right:25%; }
 .eye.blink { animation: blink 6s infinite; }
 
-/* Level */
+/* Level indicator */
 .level {
   position:absolute;
   bottom:-8px;
@@ -120,28 +111,26 @@ body {
 </head>
 <body>
 
-<section id="sol">
-  <div class="character-wrapper">
-    <div class="glow"></div>
-    <div class="layer outerFlame"></div>
-    <div class="layer midFlame"></div>
-    <div class="layer core">
-      <div class="eye left blink"></div>
-      <div class="eye right blink"></div>
-    </div>
-    <div class="level">LV.1</div>
+<div class="character-wrapper">
+  <div class="glow"></div>
+  <div class="layer outerFlame"></div>
+  <div class="layer midFlame"></div>
+  <div class="layer core">
+    <div class="eye left blink"></div>
+    <div class="eye right blink"></div>
   </div>
-</section>
+  <div class="level">LV.1</div>
+</div>
 
 <script>
-// Floating motion for the whole wrapper
+// Floating motion
 const wrapper = document.querySelector('.character-wrapper');
 wrapper.animate(
   [{ transform:'translate(-50%, -50%) translateY(0)'},{ transform:'translate(-50%, -50%) translateY(-8px)'},{ transform:'translate(-50%, -50%) translateY(0)'}],
   { duration:6000, iterations:Infinity, easing:'ease-in-out'}
 );
 
-// Particle generation
+// Particle generator
 const health = 100;
 function spawnParticle() {
   if(health <=50) return;
@@ -155,7 +144,7 @@ function spawnParticle() {
 }
 setInterval(spawnParticle, 1600);
 
-// Make companion draggable
+// Draggable
 let isDragging=false, offsetX=0, offsetY=0;
 wrapper.addEventListener('mousedown',(e)=>{
   isDragging=true;
