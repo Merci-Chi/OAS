@@ -4,25 +4,23 @@
 <meta charset="UTF-8">
 <title>OAS Index</title>
 <style>
-body, html {
+body {
   margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
   background:#000;
+  width:100vw;
+  height:100vh;
   overflow:hidden;
   font-family:sans-serif;
 }
 
+/* Sol container */
 #sol {
-  position:absolute;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
+  width:100%;
+  height:100%;
+  position:relative;
 }
 
+/* SETTINGS PANEL */
 .sol-settings{
   position:fixed;
   top:15px;
@@ -47,98 +45,11 @@ body, html {
 .color.blue{background:#3da5ff;}
 .color.lime{background:#8cff3d;}
 .color.purple{background:#a855f7;}
-
-#particles {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  overflow: visible;
-  z-index: 0; /* behind Sol */
-}
-
-.particle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.sol{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:140px;
-  height:140px;
-  opacity:0;
-  transition:opacity .3s ease-in;
-  z-index: 1; /* in front of particles */
-}
-.glow{
-  position:absolute;
-  width:130px;
-  height:130px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  filter:blur(24px);
-  background:radial-gradient(circle,rgba(251,191,36,.35),rgba(251,191,36,0) 70%);
-}
-.outerFlame{
-  position:absolute;
-  width:98px;
-  height:112px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(ellipse at center bottom,#d9770600 0%,#d9770640 50%,#d9770600 100%);
-}
-.midFlame{
-  position:absolute;
-  width:70px;
-  height:88px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(ellipse at center bottom,#f59e0b 0%,#f59e0b80 40%,transparent 70%);
-}
-.core{
-  position:absolute;
-  width:44px;
-  height:56px;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(circle, transparent 0%,#fbbf24 40%,#f59e0b 80%);
-  box-shadow:0 0 40px rgba(251,191,36,.6);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  transition:transform .15s ease-out;
-}
-.eyes{
-  display:flex;
-  gap:6px;
-  transform:translateY(6px);
-  transition:transform .1s linear;
-}
-.eye{
-  width:7px;
-  height:9px;
-  background:rgba(0,0,0,.65);
-  border-radius:50%;
-  transition: transform 0.05s linear;
-}
 </style>
 </head>
 <body>
 
+<!-- SETTINGS -->
 <div class="sol-settings">
   <button class="color gold" onclick="setSolColor('gold')"></button>
   <button class="color magenta" onclick="setSolColor('magenta')"></button>
@@ -147,174 +58,54 @@ body, html {
   <button class="color purple" onclick="setSolColor('purple')"></button>
 </div>
 
-<section id="sol">
-  <div id="particles"></div>
-  <div class="sol" id="solEl">
-    <div class="glow" id="glow"></div>
-    <div class="outerFlame" id="outerFlame"></div>
-    <div class="midFlame" id="midFlame"></div>
-    <div class="core" id="core">
-      <div class="eyes" id="eyes">
-        <div class="eye"></div>
-        <div class="eye"></div>
-      </div>
-    </div>
-  </div>
-</section>
+<section id="sol"></section>
 
 <script>
-const sol = document.getElementById("solEl")
-const core = document.getElementById("core")
-const eyes = document.getElementById("eyes")
-const glow = document.getElementById("glow")
-const outerFlame = document.getElementById("outerFlame")
-const midFlame = document.getElementById("midFlame")
-const particlesContainer = document.getElementById("particles")
+// Fetch the companion HTML and inject it
+fetch('sol/companion.html')
+  .then(response => response.text())
+  .then(html => {
+    const solSection = document.getElementById('sol');
+    solSection.innerHTML = html;
 
-let dragging = false
-let flameX = 0, flameY = 0
-let velocityX = 0, velocityY = 0
-let prevMouseX = 0, prevMouseY = 0
-const maxRadius = 30
-const safeRadius = maxRadius * 0.9
+    // Move scripts from companion to execute
+    solSection.querySelectorAll('script').forEach(oldScript => {
+      const newScript = document.createElement('script');
+      if(oldScript.src){
+        newScript.src = oldScript.src;
+      } else {
+        newScript.textContent = oldScript.textContent;
+      }
+      document.body.appendChild(newScript);
+      oldScript.remove();
+    });
+  })
+  .catch(err => console.error('Error loading Sol companion:', err));
 
-let floatOffset = 0
-let floatDirection = 1
-let particleColor = "rgba(251,191,36,0.8)"
-let idleTimeout = null
+// COLOR SETTINGS FUNCTION
+function setSolColor(type){
+  const solEl = document.getElementById('sol');
+  const core = solEl.querySelector('#core');
+  const midFlame = solEl.querySelector('#midFlame');
+  const outerFlame = solEl.querySelector('#outerFlame');
+  const glow = solEl.querySelector('#glow');
 
-function centerSol(){
-  sol.style.left = window.innerWidth/2 + "px"
-  sol.style.top = window.innerHeight/2 + "px"
-  sol.style.transform = `translate(-50%,-50%) translateY(${floatOffset}px)`
-  sol.style.opacity = 1
-}
-centerSol()
-setSolColor('gold')
-window.addEventListener('resize', centerSol)
-
-function animateFlame(){
-  floatOffset += floatDirection * 0.1
-  if(floatOffset>4 || floatOffset<-4) floatDirection*=-1
-  sol.style.transform = `translate(-50%,-50%) translateY(${floatOffset}px)`
-
-  flameX += (-velocityX - flameX)*0.15
-  flameY += (-velocityY - flameY)*0.15
-  let dist = Math.sqrt(flameX*flameX + flameY*flameY)
-  if(dist>safeRadius){ flameX*=safeRadius/dist; flameY*=safeRadius/dist }
-
-  outerFlame.style.transform = `translate(calc(-50% + ${flameX}px),calc(-50% + ${flameY}px))`
-  midFlame.style.transform = `translate(calc(-50% + ${flameX*0.7}px),calc(-50% + ${flameY*0.7}px))`
-  glow.style.transform = `translate(calc(-50% + ${flameX*0.45}px),calc(-50% + ${flameY*0.45}px))`
-
-  requestAnimationFrame(animateFlame)
-}
-animateFlame()
-
-core.addEventListener("mousedown",(e)=>{
-  dragging = true
-  prevMouseX = e.clientX
-  prevMouseY = e.clientY
-  core.animate([
-    {transform:'translate(-50%,-50%) scale(1,1)'},
-    {transform:'translate(-50%,-50%) scale(1.1,.85)'},
-    {transform:'translate(-50%,-50%) scale(.95,1.05)'},
-    {transform:'translate(-50%,-50%) scale(1,.9)'}
-  ],{duration:400,easing:'ease-out'})
-  core.style.transform = `translate(-50%,-50%) scale(1.05,.85)`
-})
-
-document.addEventListener("mousemove",(e)=>{
-  const rect = sol.getBoundingClientRect()
-  const cx = rect.left + rect.width/2
-  const cy = rect.top + rect.height/2
-
-  if(idleTimeout) clearTimeout(idleTimeout)
-  idleTimeout = setTimeout(()=>{ eyes.style.transform = `translate(0px,6px)` },10000)
-
-  if(dragging){
-    velocityX = (e.clientX-prevMouseX)*1.2
-    velocityY = (e.clientY-prevMouseY)*1.2
-    prevMouseX = e.clientX
-    prevMouseY = e.clientY
-
-    sol.style.left = e.clientX+"px"
-    sol.style.top = e.clientY+"px"
-    sol.style.transform = `translate(-50%,-50%) translateY(${floatOffset}px)`
-  } else {
-    let dx = (e.clientX - cx) * 0.04
-    let dy = (e.clientY - cy) * 0.04
-    const maxEyeOffset = 8
-    dx = Math.max(-maxEyeOffset, Math.min(maxEyeOffset, dx))
-    dy = Math.max(-maxEyeOffset, Math.min(maxEyeOffset, dy))
-    eyes.style.transform = `translate(${dx}px,${6+dy}px)`
+  const colors = {
+    gold: {core:"#fbbf24", mid:"#f59e0b", outer:"#d97706", glow:"rgba(251,191,36,.35)"},
+    magenta:{core:"#ff6ad5", mid:"#ff3da8", outer:"#c0268c", glow:"rgba(255,61,168,.35)"},
+    blue:{core:"#7dd3fc", mid:"#3da5ff", outer:"#2563eb", glow:"rgba(61,165,255,.35)"},
+    lime:{core:"#d9ff7d", mid:"#8cff3d", outer:"#4d9e1a", glow:"rgba(140,255,61,.35)"},
+    purple:{core:"#d8b4fe", mid:"#a855f7", outer:"#7e22ce", glow:"rgba(168,85,247,.35)"}
   }
-})
 
-document.addEventListener("mouseup",()=>{
-  if(!dragging) return
-  dragging=false
-  core.style.transform=`translate(-50%,-50%) scale(1)`
-})
+  let c = colors[type];
 
-function blink(){
-  eyes.style.display="none"
-  setTimeout(()=>{ eyes.style.display="flex" },120)
-  scheduleBlink()
+  if(core) core.style.background = `radial-gradient(circle,#fff 0%,${c.core} 40%,${c.mid} 80%)`;
+  if(core) core.style.boxShadow = `0 0 40px ${c.glow}`;
+  if(midFlame) midFlame.style.background = `radial-gradient(ellipse at center bottom,${c.mid} 0%,${c.mid}80 40%,transparent 70%)`;
+  if(outerFlame) outerFlame.style.background = `radial-gradient(ellipse at center bottom,${c.outer}00 0%,${c.outer}40 50%,${c.outer}00 100%)`;
+  if(glow) glow.style.background = `radial-gradient(circle,${c.glow},rgba(0,0,0,0) 70%)`;
 }
-function scheduleBlink(){ setTimeout(blink,9000 + Math.random()*14000) }
-scheduleBlink()
-
-function createParticle(){
-  const p = document.createElement('div')
-  p.className = 'particle'
-
-  // Random size 2px to 6px
-  const size = 2 + Math.random() * 4
-  p.style.width = size + 'px'
-  p.style.height = size + 'px'
-
-  // Random opacity 0.3 to 0.9
-  p.style.opacity = (0.3 + Math.random()*0.6).toString()
-
-  p.style.background = particleColor
-  particlesContainer.appendChild(p)
-  
-  // Start near Sol core
-  const rect = sol.getBoundingClientRect()
-  const startX = rect.left + rect.width/2 + (Math.random()*40-20)
-  const startY = rect.top + rect.height/2 + (Math.random()*40-20)
-  p.style.left = startX + 'px'
-  p.style.top = startY + 'px'
-  
-  // Floating angle
-  const angle = Math.random() * 2 * Math.PI
-  // Slower speed
-  const speed = 0.1 + Math.random()*0.2
-  let lifetime = 150 + Math.random()*50 // longer lifetime
-
-  function animateParticle(){
-    lifetime--
-    if(lifetime <= 0){ p.remove(); return }
-    
-    // Gentle floating and drifting upwards
-    const dx = Math.cos(angle) * speed
-    const dy = Math.sin(angle) * speed - 0.05
-    const currentX = parseFloat(p.style.left)
-    const currentY = parseFloat(p.style.top)
-    p.style.left = (currentX + dx) + 'px'
-    p.style.top = (currentY + dy) + 'px'
-    
-    // Gradually fade out
-    p.style.opacity = Math.min(lifetime/200, parseFloat(p.style.opacity))
-    
-    requestAnimationFrame(animateParticle)
-  }
-  animateParticle()
-}
-
-// Slightly slower generation for a more natural float
-setInterval(createParticle, 180)
 </script>
 
 </body>
