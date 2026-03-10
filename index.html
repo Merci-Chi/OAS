@@ -1,323 +1,1047 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>OASENSE</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
 
 <style>
 
+/* =========================================================
+ROOT COLORS
+========================================================= */
+
 :root{
---bg-dark:#0a0a0f;
---bg-card:#16162a;
---accent-gold:#f59e0b;
---accent-green:#10b981;
---text-main:#e2e8f0;
+--dark:#0a0a0f;
+--card:#16162a;
+--lighter:#1a1a2e;
+
+--gold:#f59e0b;
+--goldLight:#fbbf24;
+
+--emerald:#10b981;
+
+--text:#e2e8f0;
+}
+
+/* =========================================================
+RESET
+========================================================= */
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-background:var(--bg-dark);
-color:var(--text-main);
 font-family:Inter,sans-serif;
+background:var(--dark);
+color:var(--text);
 overflow-x:hidden;
+scroll-behavior:smooth;
 }
 
-/* fonts */
+/* =========================================================
+GRID BACKGROUND
+========================================================= */
 
-.font-orbitron{font-family:Orbitron,sans-serif}
+body::before{
+content:"";
+position:fixed;
+inset:0;
 
-/* glow */
+background:
+linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
 
-.glow-text-gold{
-text-shadow:0 0 10px rgba(245,158,11,.6),0 0 20px rgba(245,158,11,.3)
-}
-
-.glow-text-green{
-text-shadow:0 0 10px rgba(16,185,129,.6),0 0 20px rgba(16,185,129,.3)
-}
-
-.glow-box-gold{
-box-shadow:0 0 15px rgba(245,158,11,.15);
-border:1px solid rgba(245,158,11,.3)
-}
-
-.glow-box-gold-hover{
-transition:.3s;
-border:1px solid rgba(255,255,255,.1)
-}
-
-.glow-box-gold-hover:hover{
-box-shadow:0 0 25px rgba(245,158,11,.25);
-border:1px solid rgba(245,158,11,.6);
-transform:translateY(-2px)
-}
-
-/* glass */
-
-.glass-panel{
-background:rgba(22,22,42,.7);
-backdrop-filter:blur(12px);
-border:1px solid rgba(255,255,255,.05)
-}
-
-/* grid */
-
-.game-grid{
-background-image:
-linear-gradient(to right,rgba(255,255,255,.03) 1px,transparent 1px),
-linear-gradient(to bottom,rgba(255,255,255,.03) 1px,transparent 1px);
 background-size:40px 40px;
+
+z-index:-3;
 }
 
-/* scrollbar */
+/* =========================================================
+AMBIENT GLOW
+========================================================= */
 
-::-webkit-scrollbar{width:8px}
-::-webkit-scrollbar-track{background:#0a0a0f}
-::-webkit-scrollbar-thumb{background:#1a1a2e;border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:#f59e0b}
+body::after{
+content:"";
+position:fixed;
+
+width:750px;
+height:750px;
+
+left:50%;
+top:40%;
+
+transform:translate(-50%,-50%);
+
+background:
+radial-gradient(circle,rgba(245,158,11,.18),transparent 70%);
+
+filter:blur(120px);
+
+z-index:-2;
+
+animation:floatLight 14s ease-in-out infinite;
+}
+
+@keyframes floatLight{
+
+0%{transform:translate(-50%,-50%)}
+
+50%{transform:translate(-45%,-55%)}
+
+100%{transform:translate(-50%,-50%)}
+
+}
+
+/* =========================================================
+PARTICLES
+========================================================= */
+
+#particles{
+position:fixed;
+inset:0;
+pointer-events:none;
+z-index:-1;
+}
+
+.particle{
+position:absolute;
+width:3px;
+height:3px;
+background:var(--gold);
+border-radius:50%;
+opacity:.6;
+
+animation:floatParticle linear infinite;
+}
+
+@keyframes floatParticle{
+
+0%{
+transform:translateY(0);
+opacity:.2;
+}
+
+100%{
+transform:translateY(-100vh);
+opacity:.8;
+}
+
+}
+
+/* =========================================================
+NAVBAR
+========================================================= */
+
+nav{
+
+position:fixed;
+top:0;
+width:100%;
+height:70px;
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:0 40px;
+
+background:rgba(22,22,42,.7);
+backdrop-filter:blur(10px);
+
+border-bottom:1px solid rgba(255,255,255,.05);
+
+z-index:100;
+
+}
+
+.logo{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+font-family:Orbitron;
+font-weight:700;
+font-size:22px;
+
+}
+
+.logo-box{
+
+width:34px;
+height:34px;
+
+background:var(--gold);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+border-radius:8px;
+
+font-weight:900;
+color:black;
+
+box-shadow:0 0 20px rgba(245,158,11,.7);
+
+}
+
+nav a{
+
+margin-left:26px;
+
+color:#ccc;
+text-decoration:none;
+
+font-family:Orbitron;
+font-size:14px;
+
+transition:.3s;
+
+}
+
+nav a:hover{
+
+color:var(--gold);
+
+text-shadow:0 0 10px var(--gold);
+
+}
+
+/* =========================================================
+HERO
+========================================================= */
+
+.hero{
+
+min-height:100vh;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+text-align:center;
+
+padding-top:120px;
+
+}
+
+.hero h1{
+
+font-family:Orbitron;
+
+font-size:90px;
+font-weight:900;
+
+letter-spacing:2px;
+
+}
+
+/* =========================================================
+GLOW TEXT
+========================================================= */
+
+.glow{
+
+color:var(--goldLight);
+
+text-shadow:
+0 0 10px rgba(245,158,11,.8),
+0 0 25px rgba(245,158,11,.6),
+0 0 45px rgba(245,158,11,.4);
+
+animation:glowPulse 3s infinite;
+
+}
+
+@keyframes glowPulse{
+
+0%{text-shadow:0 0 10px rgba(245,158,11,.5)}
+
+50%{text-shadow:0 0 35px rgba(245,158,11,.9)}
+
+100%{text-shadow:0 0 10px rgba(245,158,11,.5)}
+
+}
+
+.subtitle{
+
+max-width:720px;
+
+margin:20px auto;
+
+color:#aaa;
+
+font-size:20px;
+
+}
+
+/* =========================================================
+XP BADGE
+========================================================= */
+
+.xp{
+
+display:inline-block;
+
+margin-bottom:30px;
+
+padding:8px 18px;
+
+border-radius:20px;
+
+background:var(--card);
+
+border:1px solid rgba(245,158,11,.5);
+
+font-family:Orbitron;
+
+color:var(--gold);
+
+box-shadow:0 0 20px rgba(245,158,11,.3);
+
+animation:xpPulse 4s infinite;
+
+}
+
+@keyframes xpPulse{
+
+0%{box-shadow:0 0 10px rgba(245,158,11,.2)}
+
+50%{box-shadow:0 0 35px rgba(245,158,11,.8)}
+
+100%{box-shadow:0 0 10px rgba(245,158,11,.2)}
+
+}
+
+/* =========================================================
+BUTTONS (RPG STYLE)
+========================================================= */
+
+.buttons{
+
+margin-top:40px;
+
+display:flex;
+justify-content:center;
+gap:20px;
+flex-wrap:wrap;
+
+}
+
+button{
+
+padding:16px 30px;
+
+font-family:Orbitron;
+font-weight:700;
+
+border:none;
+
+cursor:pointer;
+
+border-radius:8px;
+
+font-size:16px;
+
+position:relative;
+
+overflow:hidden;
+
+transition:.3s;
+
+}
+
+.btn-gold{
+
+background:var(--gold);
+
+color:black;
+
+box-shadow:0 0 25px rgba(245,158,11,.7);
+
+}
+
+.btn-gold:hover{
+
+transform:scale(1.06);
+
+box-shadow:0 0 45px rgba(245,158,11,.9);
+
+}
+
+.btn-gold::after{
+
+content:"";
+
+position:absolute;
+top:0;
+left:-100%;
+
+width:100%;
+height:100%;
+
+background:linear-gradient(
+90deg,
+transparent,
+rgba(255,255,255,.6),
+transparent
+);
+
+animation:sweep 3s infinite;
+
+}
+
+@keyframes sweep{
+
+0%{left:-100%}
+100%{left:120%}
+
+}
+
+.btn-outline{
+
+background:var(--card);
+
+color:white;
+
+border:1px solid rgba(255,255,255,.2);
+
+}
+
+.btn-outline:hover{
+
+border-color:var(--gold);
+box-shadow:0 0 15px var(--gold);
+
+}
+
+/* =========================================================
+SECTION BASE
+========================================================= */
+
+.section{
+
+padding:120px 20px;
+
+}
+
+.section-title{
+
+text-align:center;
+
+font-family:Orbitron;
+
+font-size:42px;
+
+margin-bottom:60px;
+
+}
+
+/* =========================================================
+STATS
+========================================================= */
+
+.stats{
+
+max-width:700px;
+
+margin:auto;
+
+background:var(--card);
+
+padding:40px;
+
+border-radius:10px;
+
+}
+
+.stat{
+margin-bottom:30px;
+}
+
+.bar{
+
+height:12px;
+
+background:var(--lighter);
+
+border-radius:6px;
+
+overflow:hidden;
+
+}
+
+.fill{
+
+height:100%;
+
+width:0%;
+
+background:
+linear-gradient(90deg,var(--gold),var(--goldLight));
+
+box-shadow:0 0 12px var(--gold);
+
+transition:width 1.6s ease;
+
+}
+
+/* =========================================================
+FEATURES
+========================================================= */
+
+.features{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(260px,1fr));
+
+gap:22px;
+
+max-width:1100px;
+
+margin:auto;
+
+}
+
+.feature{
+
+background:var(--card);
+
+padding:30px;
+
+border-radius:12px;
+
+border:1px solid rgba(255,255,255,.08);
+
+transition:.35s;
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.feature:hover{
+
+transform:translateY(-8px) scale(1.03);
+
+border-color:var(--gold);
+
+box-shadow:0 0 40px rgba(245,158,11,.35);
+
+}
+
+.feature::before{
+
+content:"";
+
+position:absolute;
+
+top:-50%;
+left:-50%;
+
+width:200%;
+height:200%;
+
+background:
+radial-gradient(circle,rgba(245,158,11,.2),transparent 60%);
+
+opacity:0;
+
+transition:.4s;
+
+}
+
+.feature:hover::before{
+opacity:1;
+}
+
+/* =========================================================
+TESTIMONIALS
+========================================================= */
+
+.reviews{
+
+display:grid;
+
+grid-template-columns:
+repeat(auto-fit,minmax(280px,1fr));
+
+gap:30px;
+
+max-width:1100px;
+
+margin:auto;
+
+}
+
+.review{
+
+background:var(--card);
+
+padding:25px;
+
+border-radius:12px;
+
+border:1px solid rgba(16,185,129,.3);
+
+transition:.3s;
+
+position:relative;
+
+}
+
+.review:hover{
+
+transform:translateY(-6px);
+
+box-shadow:0 0 35px rgba(16,185,129,.4);
+
+}
+
+/* accent line */
+
+.review::before{
+
+content:"";
+
+position:absolute;
+
+top:0;
+left:50%;
+
+transform:translateX(-50%);
+
+width:40%;
+
+height:3px;
+
+background:var(--emerald);
+
+box-shadow:0 0 12px var(--emerald);
+
+}
+
+.review-header{
+
+display:flex;
+align-items:center;
+gap:12px;
+
+margin-bottom:10px;
+
+}
+
+.avatar{
+
+width:45px;
+height:45px;
+
+border-radius:6px;
+
+background:var(--dark);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-family:Orbitron;
+font-weight:700;
+
+color:var(--emerald);
+
+border:1px solid var(--emerald);
+
+position:relative;
+
+}
+
+.level{
+
+position:absolute;
+
+bottom:-8px;
+right:-8px;
+
+background:var(--emerald);
+
+color:black;
+
+font-size:10px;
+
+padding:2px 4px;
+
+border-radius:4px;
+
+font-family:Orbitron;
+
+}
+
+.review-name{
+font-weight:600;
+}
+
+.class{
+font-size:12px;
+color:var(--emerald);
+font-family:Orbitron;
+}
+
+/* stars */
+
+.stars{
+
+color:var(--gold);
+
+margin:8px 0;
+
+}
+
+/* =========================================================
+CTA
+========================================================= */
+
+.cta{
+
+text-align:center;
+
+padding:120px 20px;
+
+background:var(--lighter);
+
+}
+
+/* =========================================================
+FOOTER
+========================================================= */
+
+footer{
+
+text-align:center;
+
+padding:40px;
+
+color:#777;
+
+border-top:1px solid rgba(255,255,255,.06);
+
+}
 
 </style>
+
 </head>
 
-<body class="selection:bg-yellow-500/30">
+<body>
 
-<!-- NAVBAR -->
+<div id="particles"></div>
 
-<nav class="fixed top-0 w-full z-50 glass-panel">
-<div class="max-w-7xl mx-auto flex justify-between items-center h-20 px-6">
+<nav>
 
-<div class="flex items-center gap-2">
-<div class="w-8 h-8 bg-yellow-500 rounded flex items-center justify-center glow-box-gold">
-<span class="font-orbitron text-black font-bold">O</span>
-</div>
-<span class="font-orbitron text-xl text-white glow-text-gold">OASENSE</span>
+<div class="logo">
+<div class="logo-box">O</div>
+OASENSE
 </div>
 
-<div class="hidden md:flex gap-8 font-orbitron text-sm">
-<a href="#stats" class="hover:text-yellow-400">Stats</a>
-<a href="#features" class="hover:text-yellow-400">Achievements</a>
-<a href="#reviews" class="hover:text-yellow-400">Reviews</a>
+<div>
+<a href="#stats">Stats</a>
+<a href="#features">Achievements</a>
+<a href="#reviews">Reviews</a>
 </div>
 
-</div>
 </nav>
 
-<!-- HERO -->
+<section class="hero">
 
-<section class="min-h-screen flex items-center justify-center relative game-grid pt-24">
+<div>
 
-<div class="absolute w-[600px] h-[600px] bg-yellow-500/10 blur-[120px] rounded-full"></div>
-
-<div class="text-center z-10 px-6 max-w-5xl">
-
-<div class="mb-6 glow-box-gold inline-block px-4 py-2 rounded-full font-orbitron text-yellow-400">
+<div class="xp">
 <span id="xp">0</span> XP EARNED
 </div>
 
-<h1 class="font-orbitron text-6xl md:text-8xl font-black">
+<h1>
 
-<div class="glow-text-gold">LEVEL UP</div>
-
-<div class="bg-gradient-to-r from-white to-gray-400 text-transparent bg-clip-text">
+<span class="glow">LEVEL UP</span>
+<br>
 YOUR LIFE
-</div>
 
 </h1>
 
-<p class="mt-6 text-gray-400 max-w-xl mx-auto">
-Master your mind. Build your body. Unlock your true potential in the ultimate real-world RPG.
+<p class="subtitle">
+Master your mind. Build your body. Unlock your potential in the ultimate real-world RPG.
 </p>
 
-<div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+<div class="buttons">
 
-<button class="bg-yellow-500 text-black px-8 py-4 font-orbitron rounded glow-box-gold hover:scale-105 transition">
+<button class="btn-gold">
 BEGIN QUEST
 </button>
 
-<button class="border border-white/20 px-8 py-4 rounded hover:bg-white/10">
+<button class="btn-outline">
 WATCH DEMO
 </button>
 
 </div>
 
 </div>
+
 </section>
 
-<!-- STATS -->
+<section id="stats" class="section">
 
-<section id="stats" class="py-24 border-t border-white/5">
-
-<div class="max-w-4xl mx-auto px-6">
-
-<h2 class="text-center font-orbitron text-4xl glow-text-gold mb-12">
-YOUR CHARACTER STATS
+<h2 class="section-title glow">
+CHARACTER STATS
 </h2>
 
-<div class="bg-[#16162a] p-10 rounded-lg border border-white/10">
+<div class="stats">
 
-<div class="mb-8">
-<div class="flex justify-between mb-2 font-orbitron">
-<span>MIND</span>
-<span>85%</span>
-</div>
-<div class="bg-black/30 h-4 rounded">
-<div class="bg-yellow-500 h-4 rounded w-[85%] shadow-[0_0_10px_rgba(245,158,11,.6)]"></div>
-</div>
+<div class="stat">
+<div>MIND</div>
+<div class="bar"><div class="fill" data-width="85%"></div></div>
 </div>
 
-<div class="mb-8">
-<div class="flex justify-between mb-2 font-orbitron">
-<span>BODY</span>
-<span>72%</span>
-</div>
-<div class="bg-black/30 h-4 rounded">
-<div class="bg-emerald-500 h-4 rounded w-[72%] shadow-[0_0_10px_rgba(16,185,129,.6)]"></div>
-</div>
+<div class="stat">
+<div>BODY</div>
+<div class="bar"><div class="fill" data-width="72%"></div></div>
 </div>
 
-<div class="mb-8">
-<div class="flex justify-between mb-2 font-orbitron">
-<span>DISCIPLINE</span>
-<span>91%</span>
+<div class="stat">
+<div>DISCIPLINE</div>
+<div class="bar"><div class="fill" data-width="91%"></div></div>
 </div>
-<div class="bg-black/30 h-4 rounded">
-<div class="bg-amber-500 h-4 rounded w-[91%]"></div>
-</div>
+
+<div class="stat">
+<div>FOCUS</div>
+<div class="bar"><div class="fill" data-width="78%"></div></div>
 </div>
 
 </div>
 
-</div>
 </section>
 
-<!-- FEATURES -->
+<section id="features" class="section">
 
-<section id="features" class="py-24 bg-[#1a1a2e] border-y border-white/5">
-
-<div class="max-w-7xl mx-auto px-6">
-
-<h2 class="text-center font-orbitron text-4xl mb-16">
+<h2 class="section-title">
 ACHIEVEMENTS UNLOCKED
 </h2>
 
-<div class="grid md:grid-cols-3 gap-6">
+<div class="features">
 
-<div class="bg-[#16162a] p-6 rounded glow-box-gold-hover">
-<h3 class="font-orbitron text-xl text-yellow-400">Mental Clarity</h3>
-<p class="text-gray-400 text-sm mt-2">
-Guided meditation quests and cognitive training.
-</p>
+<div class="feature">
+<h3>Mental Clarity</h3>
+<p>Unlock deep focus states with guided meditation quests and cognitive training exercises.</p>
 </div>
 
-<div class="bg-[#16162a] p-6 rounded glow-box-gold-hover">
-<h3 class="font-orbitron text-xl text-yellow-400">Goal Tracking</h3>
-<p class="text-gray-400 text-sm mt-2">
-Turn long term goals into daily missions.
-</p>
+<div class="feature">
+<h3>Goal Tracking</h3>
+<p>Transform your long-term ambitions into actionable daily missions with clear rewards.</p>
 </div>
 
-<div class="bg-[#16162a] p-6 rounded glow-box-gold-hover">
-<h3 class="font-orbitron text-xl text-yellow-400">Daily Quests</h3>
-<p class="text-gray-400 text-sm mt-2">
-Earn XP and achievement badges.
-</p>
+<div class="feature">
+<h3>Daily Quests</h3>
+<p>Complete randomized daily challenges to earn bonus XP and rare achievement badges.</p>
+</div>
+
+<div class="feature">
+<h3>Streak System</h3>
+<p>Maintain momentum. The longer your streak the higher your XP multiplier.</p>
+</div>
+
+<div class="feature">
+<h3>Skill Trees</h3>
+<p>Invest your earned skill points into specialized paths: Fitness, Intellect, or Charisma.</p>
+</div>
+
+<div class="feature">
+<h3>Boss Challenges</h3>
+<p>Face your biggest fears and bad habits in structured monthly boss battles.</p>
 </div>
 
 </div>
 
-</div>
 </section>
 
-<!-- REVIEWS -->
+<section id="reviews" class="section">
 
-<section id="reviews" class="py-24">
-
-<div class="max-w-7xl mx-auto px-6">
-
-<h2 class="text-center font-orbitron text-4xl glow-text-green mb-16">
+<h2 class="section-title glow">
 PLAYER REVIEWS
 </h2>
 
-<div class="grid md:grid-cols-3 gap-8">
+<div class="reviews">
 
-<div class="bg-[#16162a] border border-emerald-400/20 p-6 rounded">
-<h4 class="text-white font-bold">Alex Chen</h4>
-<p class="text-sm text-gray-400 mt-2">
-“OASENSE gamified my entire routine. I just hit Level 42.”
+<div class="review">
+
+<div class="review-header">
+
+<div class="avatar">
+AC
+<div class="level">LVL 42</div>
+</div>
+
+<div>
+<div class="review-name">Alex Chen ✔</div>
+<div class="class">Mind Monk</div>
+</div>
+
+</div>
+
+<div class="stars">★★★★★</div>
+
+<p>
+"OASENSE completely gamified my morning routine. I used to struggle with consistency, but treating my habits like daily quests changed everything."
 </p>
+
 </div>
 
-<div class="bg-[#16162a] border border-emerald-400/20 p-6 rounded">
-<h4 class="text-white font-bold">Sarah Jenkins</h4>
-<p class="text-sm text-gray-400 mt-2">
-“Watching my discipline stat grow is addictive.”
+<div class="review">
+
+<div class="review-header">
+
+<div class="avatar">
+SJ
+<div class="level">LVL 28</div>
+</div>
+
+<div>
+<div class="review-name">Sarah Jenkins ✔</div>
+<div class="class">Iron Warrior</div>
+</div>
+
+</div>
+
+<div class="stars">★★★★★</div>
+
+<p>
+"The stat tracking is incredibly motivating. Seeing my discipline bar fill up after workouts gives the same dopamine hit as leveling in a game."
 </p>
+
 </div>
 
-<div class="bg-[#16162a] border border-emerald-400/20 p-6 rounded">
-<h4 class="text-white font-bold">Marcus Thorne</h4>
-<p class="text-sm text-gray-400 mt-2">
-“The boss challenge system helped me quit smoking.”
+<div class="review">
+
+<div class="review-header">
+
+<div class="avatar">
+MT
+<div class="level">LVL 55</div>
+</div>
+
+<div>
+<div class="review-name">Marcus Thorne ✔</div>
+<div class="class">Grandmaster</div>
+</div>
+
+</div>
+
+<div class="stars">★★★★★</div>
+
+<p>
+"The Boss Challenges feature helped me quit smoking. Treating cravings like enemy encounters with HP bars changed everything."
 </p>
-</div>
 
 </div>
 
 </div>
+
 </section>
 
-<!-- CTA -->
+<section class="cta">
 
-<section class="py-24 border-t border-white/5 text-center">
-
-<div class="max-w-3xl mx-auto px-6 bg-[#16162a] p-16 rounded glow-box-gold">
-
-<h2 class="font-orbitron text-5xl glow-text-gold mb-6">
+<h2 class="glow">
 READY TO BEGIN?
 </h2>
 
-<p class="text-gray-400 mb-8">
-Your character starts at Level 1.
-</p>
+<p>Your character is waiting at Level 1.</p>
 
-<button class="bg-yellow-500 text-black px-10 py-4 font-orbitron rounded glow-box-gold hover:scale-105">
+<br>
+
+<button class="btn-gold">
 START YOUR JOURNEY
 </button>
 
-</div>
-
 </section>
 
-<!-- FOOTER -->
-
-<footer class="border-t border-white/5 py-10 text-center text-gray-500">
-
-<div class="font-orbitron text-yellow-400 mb-2">OASENSE</div>
-
-<p>© 2026 OASENSE</p>
-
+<footer>
+© 2026 OASENSE
 </footer>
 
 <script>
 
-/* XP counter */
+/* XP COUNTER */
 
+let xp=0
 let target=12847
-let current=0
-let step=target/60
+let steps=120
+let increment=target/steps
 
-let interval=setInterval(()=>{
-current+=step
-if(current>=target){
-current=target
-clearInterval(interval)
+let timer=setInterval(()=>{
+
+xp+=increment
+
+if(xp>=target){
+xp=target
+clearInterval(timer)
 }
-document.getElementById("xp").innerText=Math.floor(current).toLocaleString()
-},40)
+
+document.getElementById("xp").innerText=
+Math.floor(xp).toLocaleString()
+
+},20)
+
+/* STAT BAR ANIMATION */
+
+const observer=new IntersectionObserver(entries=>{
+
+entries.forEach(entry=>{
+
+if(entry.isIntersecting){
+
+document.querySelectorAll(".fill")
+.forEach(bar=>{
+
+bar.style.width=bar.dataset.width
+
+})
+
+}
+
+})
+
+})
+
+observer.observe(document.querySelector("#stats"))
+
+/* PARTICLES */
+
+const container=document.getElementById("particles")
+
+for(let i=0;i<45;i++){
+
+let p=document.createElement("div")
+
+p.className="particle"
+
+p.style.left=Math.random()*100+"%"
+p.style.top=Math.random()*100+"%"
+
+p.style.animationDuration=
+6+Math.random()*12+"s"
+
+p.style.opacity=Math.random()
+
+container.appendChild(p)
+
+}
 
 </script>
 
