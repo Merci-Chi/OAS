@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OASENSE — Level Up Your Life</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+  ROOT
+========================================================= */
+:root {
+  --dark:    #07070e;
+  --card:    #0f0f1c;
+  --border:  #1c1c30;
+  --gold:    #f59e0b;
+  --goldf:   #fbbf24;
+  --emerald: #10b981;
+  --text:    #dde4f0;
+  --muted:   #6b7280;
+  --red:     #ef4444;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family:'Space Grotesk', sans-serif;
+  background:var(--dark);
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* =========================================================
+  GRID BG
+========================================================= */
+body::before {
+  content:"";
+  position:fixed; inset:0;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size:44px 44px;
+  z-index:0;
+  pointer-events:none;
+}
+
+/* =========================================================
+  NAV
+========================================================= */
+nav {
+  position:fixed; top:0; width:100%; z-index:200;
+  height:68px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 48px;
+  background:rgba(7,7,14,.88);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+
+.logo {
+  display:flex; align-items:center; gap:10px;
+  font-family:Orbitron; font-weight:700; font-size:20px;
+  letter-spacing:2px; color:#fff;
+  text-decoration:none;
+}
+.logo-icon {
+  width:32px; height:32px;
+  background:var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  border-radius:6px;
+  font-weight:900; color:#000; font-size:18px;
+}
+
+.nav-links { display:flex; align-items:center; gap:28px; }
+.nav-links a {
+  font-family:Orbitron; font-size:11px; font-weight:600;
+  letter-spacing:1.5px; color:var(--muted);
+  text-decoration:none; transition:color .2s;
+}
+.nav-links a:hover { color:var(--gold); }
+
+.nav-cta {
+  font-family:Orbitron; font-size:11px; font-weight:700;
+  letter-spacing:1.5px; color:#000;
+  background:var(--gold);
+  border:none; border-radius:4px;
+  padding:10px 20px; cursor:pointer;
+  transition:opacity .2s;
+}
+.nav-cta:hover { opacity:.85; }
+
+/* =========================================================
+  HERO
+========================================================= */
+.hero {
+  position:relative; z-index:1;
+  min-height:100vh;
+  display:flex; align-items:flex-start; justify-content:center;
+  padding-top:148px;
+  text-align:center;
+  overflow:hidden;
+}
+
+.hero::after {
+  content:"";
+  position:absolute;
+  width:800px; height:600px;
+  top:10%; left:50%; transform:translateX(-50%);
+  background:radial-gradient(circle, rgba(245,158,11,.08) 0%, transparent 70%);
+  filter:blur(60px);
+  pointer-events:none; z-index:0;
+}
+
+.hero-inner { position:relative; z-index:1; max-width:860px; padding:0 20px; }
+
+.xp-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 16px; border-radius:20px;
+  background:var(--card); border:1px solid rgba(245,158,11,.3);
+  font-family:Orbitron; font-size:11px; font-weight:700;
+  color:var(--gold); letter-spacing:1px;
+  margin-bottom:32px;
+}
+.pulse-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--emerald);
+  animation:pulseDot 1.8s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:.5; transform:scale(.7); }
+}
+
+.hero h1 {
+  font-family:Orbitron; font-weight:900;
+  font-size:clamp(54px,8vw,100px);
+  line-height:1.0; letter-spacing:-1px;
+  color:#fff;
+  margin-bottom:24px;
+}
+.hero h1 .line-gold { display:block; color:var(--goldf); }
+.hero h1 .line-dim  { display:block; color:rgba(255,255,255,.25); }
+
+.hero-sub {
+  max-width:560px; margin:0 auto 40px;
+  font-size:17px; color:var(--muted); line-height:1.7;
+}
+
+.hero-btns { display:flex; justify-content:center; gap:14px; flex-wrap:wrap; }
+
+.btn-primary {
+  position:relative; overflow:hidden;
+  font-family:Orbitron; font-size:13px; font-weight:700;
+  letter-spacing:1.5px; color:#000;
+  background:var(--gold);
+  border:none; border-radius:4px;
+  padding:15px 32px; cursor:pointer;
+  transition:transform .2s;
+}
+.btn-primary:hover { transform:translateY(-2px); }
+.btn-primary::after {
+  content:"";
+  position:absolute; top:0; left:-100%; width:100%; height:100%;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+  animation:shimmer 2.8s infinite;
+}
+@keyframes shimmer { 0%{left:-100%} 100%{left:110%} }
+
+.btn-secondary {
+  font-family:Orbitron; font-size:13px; font-weight:700;
+  letter-spacing:1.5px; color:#fff;
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:4px;
+  padding:15px 32px; cursor:pointer;
+  transition:border-color .2s;
+}
+.btn-secondary:hover { border-color:rgba(255,255,255,.35); }
+
+/* =========================================================
+  SECTION BASE
+========================================================= */
+.section { position:relative; z-index:1; padding:100px 40px; }
+.section-title {
+  font-family:Orbitron; font-weight:800;
+  font-size:clamp(24px,4vw,38px); letter-spacing:1px;
+  color:#fff; text-align:center; margin-bottom:12px;
+}
+.section-sub {
+  text-align:center; color:var(--muted);
+  font-size:15px; max-width:520px; margin:0 auto 60px; line-height:1.7;
+}
+.divider { border:none; border-top:1px solid var(--border); margin:0; }
+
+/* =========================================================
+  STATS
+========================================================= */
+#stats { background:var(--dark); }
+
+.stats-wrap {
+  max-width:740px; margin:0 auto;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:48px 52px;
+  position:relative; overflow:hidden;
+}
+.stats-wrap::before { content:""; position:absolute; top:0; left:0; width:14px; height:14px; border-top:2px solid var(--gold); border-left:2px solid var(--gold); border-radius:2px 0 0 0; }
+.stats-wrap::after  { content:""; position:absolute; top:0; right:0; width:14px; height:14px; border-top:2px solid var(--gold); border-right:2px solid var(--gold); border-radius:0 2px 0 0; }
+.corner-br { position:absolute; bottom:0; right:0; width:14px; height:14px; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold); border-radius:0 0 2px 0; }
+.corner-bl { position:absolute; bottom:0; left:0; width:14px; height:14px; border-bottom:2px solid var(--gold); border-left:2px solid var(--gold); border-radius:0 0 0 2px; }
+
+.stat-row { margin-bottom:32px; }
+.stat-row:last-child { margin-bottom:0; }
+
+.stat-meta {
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-bottom:9px;
+}
+.stat-name {
+  font-family:Orbitron; font-size:12px; font-weight:700;
+  letter-spacing:2px; color:#fff;
+}
+.stat-lvl {
+  font-family:Orbitron; font-size:11px; font-weight:700;
+  letter-spacing:1px; color:var(--muted);
+}
+
+.bar-track {
+  height:10px; background:#08081a;
+  border:1px solid var(--border);
+  border-radius:2px; overflow:hidden; position:relative;
+}
+.bar-grid {
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(
+    90deg, transparent 0px, transparent 9px, rgba(255,255,255,.04) 9px, rgba(255,255,255,.04) 10px
+  );
+}
+.bar-fill {
+  height:100%; width:0%; position:relative;
+  border-radius:2px;
+  transition:width 1.6s cubic-bezier(.4,0,.2,1);
+}
+.bar-fill::after {
+  content:"";
+  position:absolute; top:0; left:0; right:0; height:40%;
+  background:rgba(255,255,255,.18);
+  border-radius:2px 2px 0 0;
+}
+.bar-fill.gold    { background:var(--gold); }
+.bar-fill.emerald { background:var(--emerald); }
+.bar-fill.amber   { background:#f97316; }
+
+/* =========================================================
+  FEATURES
+========================================================= */
+#features { background:#09091a; }
+
+.features-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+  gap:18px; max-width:1100px; margin:0 auto;
+}
+
+.feature-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px; padding:28px 24px;
+  position:relative; overflow:hidden; cursor:default;
+  transition:border-color .25s, transform .25s;
+}
+.feature-card:hover { border-color:rgba(245,158,11,.45); transform:translateY(-4px); }
+.feature-card::before {
+  content:"";
+  position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity:0; transition:opacity .3s;
+}
+.feature-card:hover::before { opacity:1; }
+
+.feature-icon {
+  width:44px; height:44px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; margin-bottom:18px;
+  border:1px solid var(--border);
+}
+.feature-card h3 {
+  font-family:Orbitron; font-size:13px; font-weight:700;
+  letter-spacing:1px; color:#fff; margin-bottom:10px;
+  transition:color .25s;
+}
+.feature-card:hover h3 { color:var(--goldf); }
+.feature-card p { font-size:13px; color:var(--muted); line-height:1.7; }
+
+/* =========================================================
+  SHOP
+========================================================= */
+#shop { background:var(--dark); }
+
+.shop-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(290px,1fr));
+  gap:22px; max-width:1100px; margin:0 auto;
+}
+
+.shop-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; overflow:hidden;
+  transition:transform .25s, border-color .25s;
+}
+.shop-card:hover { transform:translateY(-4px); border-color:rgba(245,158,11,.4); }
+
+.shop-image {
+  height:200px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:60px; position:relative; overflow:hidden;
+}
+.shop-image.apparel { background:linear-gradient(135deg, #0f0f1c, #1a1030); }
+.shop-image.photo   { background:linear-gradient(135deg, #0a1424, #0d1f1a); }
+.shop-image.bundle  { background:linear-gradient(135deg, #1a100a, #1a1508); }
+
+.shop-badge {
+  position:absolute; top:14px; right:14px;
+  font-family:Orbitron; font-size:9px; font-weight:700;
+  letter-spacing:1px; padding:4px 10px; border-radius:3px;
+}
+.badge-new  { background:var(--emerald); color:#000; }
+.badge-hot  { background:var(--red); color:#fff; }
+.badge-sale { background:var(--gold); color:#000; }
+
+.shop-body { padding:22px; }
+.shop-body h3 {
+  font-family:Orbitron; font-size:13px; font-weight:700;
+  letter-spacing:1px; color:#fff; margin-bottom:8px;
+}
+.shop-body p { font-size:13px; color:var(--muted); line-height:1.65; margin-bottom:18px; }
+.shop-footer { display:flex; justify-content:space-between; align-items:center; }
+.shop-price { font-family:Orbitron; font-size:18px; font-weight:800; color:var(--goldf); }
+.shop-price span { font-size:11px; color:var(--muted); font-family:'Space Grotesk'; font-weight:400; }
+.btn-shop {
+  font-family:Orbitron; font-size:10px; font-weight:700;
+  letter-spacing:1px; padding:9px 16px;
+  background:transparent; color:var(--goldf);
+  border:1px solid rgba(245,158,11,.4);
+  border-radius:4px; cursor:pointer;
+  transition:background .2s, color .2s;
+}
+.btn-shop:hover { background:var(--gold); color:#000; }
+
+/* =========================================================
+  DONATE / BOOK
+========================================================= */
+#donate { background:#09091a; }
+
+.donate-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:28px; max-width:1000px; margin:0 auto;
+}
+
+.donate-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:36px 30px;
+  transition:border-color .25s;
+}
+.donate-card:hover { border-color:rgba(245,158,11,.3); }
+.donate-card h3 {
+  font-family:Orbitron; font-size:14px; font-weight:700;
+  letter-spacing:1px; color:#fff; margin-bottom:12px;
+}
+.donate-card p { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:22px; }
+
+.donate-amounts { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+.amt-btn {
+  font-family:Orbitron; font-size:11px; font-weight:700;
+  padding:8px 14px; border-radius:4px; cursor:pointer;
+  background:var(--dark); color:var(--muted);
+  border:1px solid var(--border); transition:all .2s;
+}
+.amt-btn:hover, .amt-btn.active {
+  background:rgba(245,158,11,.1); color:var(--gold); border-color:rgba(245,158,11,.5);
+}
+
+.btn-donate {
+  display:block; width:100%;
+  font-family:Orbitron; font-size:12px; font-weight:700;
+  letter-spacing:1px; padding:14px;
+  background:var(--gold); color:#000;
+  border:none; border-radius:4px; cursor:pointer;
+  transition:opacity .2s;
+}
+.btn-donate:hover { opacity:.85; }
+
+.shoot-tiers { display:flex; flex-direction:column; gap:10px; margin-bottom:22px; }
+.tier {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 16px;
+  background:var(--dark); border:1px solid var(--border); border-radius:6px;
+  cursor:pointer; transition:border-color .2s;
+}
+.tier:hover { border-color:rgba(245,158,11,.5); }
+.tier-name { font-family:Orbitron; font-size:11px; font-weight:700; color:#fff; }
+.tier-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+.tier-price { font-family:Orbitron; font-size:14px; font-weight:800; color:var(--goldf); }
+
+/* =========================================================
+  REVIEWS
+========================================================= */
+#reviews { background:var(--dark); }
+
+.reviews-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px,1fr));
+  gap:20px; max-width:1100px; margin:0 auto;
+}
+
+.review-card {
+  background:var(--card);
+  border:1px solid rgba(16,185,129,.2);
+  border-radius:10px; padding:26px 22px;
+  position:relative; transition:transform .25s;
+}
+.review-card:hover { transform:translateY(-4px); }
+.review-card::before {
+  content:"";
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:36%; height:2px;
+  background:var(--emerald); border-radius:0 0 4px 4px;
+}
+
+.review-header { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+.avatar {
+  width:46px; height:46px; border-radius:6px; flex-shrink:0;
+  background:var(--dark); border:1px solid var(--emerald);
+  display:flex; align-items:center; justify-content:center;
+  font-family:Orbitron; font-weight:700; font-size:12px;
+  color:var(--emerald); position:relative;
+}
+.avatar-level {
+  position:absolute; bottom:-8px; right:-8px;
+  background:var(--emerald); color:#000;
+  font-family:Orbitron; font-size:9px; font-weight:700;
+  padding:2px 5px; border-radius:3px;
+}
+.review-name { font-weight:600; font-size:14px; }
+.review-class { font-family:Orbitron; font-size:10px; color:var(--emerald); letter-spacing:1px; }
+.stars { color:var(--gold); font-size:12px; letter-spacing:2px; margin-bottom:12px; }
+.review-card p { font-size:13px; color:#9ca3af; line-height:1.7; font-style:italic; }
+
+/* =========================================================
+  CTA
+========================================================= */
+.cta {
+  position:relative; z-index:1;
+  padding:120px 40px;
+  background:#09091a; border-top:1px solid var(--border);
+  text-align:center;
+}
+
+.cta-box {
+  max-width:660px; margin:0 auto;
+  background:var(--card); border:1px solid rgba(245,158,11,.2);
+  border-radius:16px; padding:52px 40px;
+  position:relative; overflow:hidden;
+}
+.cta-corner { position:absolute; width:18px; height:18px; }
+.cta-corner.tl { top:0; left:0; border-top:2px solid var(--gold); border-left:2px solid var(--gold); }
+.cta-corner.tr { top:0; right:0; border-top:2px solid var(--gold); border-right:2px solid var(--gold); }
+.cta-corner.bl { bottom:0; left:0; border-bottom:2px solid var(--gold); border-left:2px solid var(--gold); }
+.cta-corner.br { bottom:0; right:0; border-bottom:2px solid var(--gold); border-right:2px solid var(--gold); }
+
+.cta-box h2 {
+  font-family:Orbitron; font-weight:900;
+  font-size:clamp(28px,5vw,48px);
+  color:#fff; margin-bottom:14px; letter-spacing:1px;
+}
+.cta-box h2 span { color:var(--goldf); }
+.cta-box > p { color:var(--muted); font-size:16px; margin-bottom:36px; line-height:1.7; }
+
+.online-indicator {
+  display:inline-flex; align-items:center; gap:8px;
+  font-family:Orbitron; font-size:10px; letter-spacing:1px;
+  color:var(--muted); margin-top:20px;
+}
+
+/* =========================================================
+  FOOTER
+========================================================= */
+footer {
+  position:relative; z-index:1;
+  background:var(--dark); border-top:1px solid var(--border);
+  padding:32px 48px;
+  display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+}
+footer .logo { font-size:16px; }
+.footer-links { display:flex; gap:24px; }
+.footer-links a {
+  color:#4b5563; font-size:13px; text-decoration:none; transition:color .2s;
+}
+.footer-links a:hover { color:var(--gold); }
+footer p { color:#4b5563; font-size:13px; }
+
+/* =========================================================
+  PARTICLES
+========================================================= */
+#particles { position:fixed; inset:0; pointer-events:none; z-index:0; }
+.particle {
+  position:absolute; width:2px; height:2px;
+  background:var(--gold); border-radius:50%;
+  animation:rise linear infinite;
+}
+@keyframes rise {
+  0%   { transform:translateY(0); opacity:0; }
+  10%  { opacity:.5; }
+  90%  { opacity:.3; }
+  100% { transform:translateY(-100vh); opacity:0; }
+}
+
+/* =========================================================
+  RESPONSIVE
+========================================================= */
+@media(max-width:820px){
+  nav { padding:0 20px; }
+  .nav-links { display:none; }
+  .section { padding:80px 20px; }
+  .stats-wrap { padding:32px 22px; }
+  .donate-grid { grid-template-columns:1fr; }
+  footer { flex-direction:column; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<div id="particles"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">
+    <div class="logo-icon">O</div>
+    OASENSE
+  </a>
+  <div class="nav-links">
+    <a href="#stats">Stats</a>
+    <a href="#features">Quests</a>
+    <a href="#shop">Shop</a>
+    <a href="#donate">Book</a>
+    <a href="#reviews">Reviews</a>
+  </div>
+  <button class="nav-cta">START JOURNEY</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div class="xp-badge">
+      <span class="pulse-dot"></span>
+      <span id="xp-counter">0</span>&nbsp;XP EARNED TODAY
+    </div>
+
+    <h1>
+      <span class="line-gold">LEVEL UP</span>
+      YOUR LIFE
+      <span class="line-dim">ONE QUEST AT A TIME</span>
+    </h1>
+
+    <p class="hero-sub">
+      Master your mind. Build your body. Unlock your true potential in the ultimate real-world RPG — where your habits become your character.
+    </p>
+
+    <div class="hero-btns">
+      <button class="btn-primary">BEGIN YOUR QUEST</button>
+      <button class="btn-secondary">WATCH DEMO</button>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- STATS -->
+<section class="section" id="stats">
+  <h2 class="section-title">CHARACTER STATS</h2>
+  <p class="section-sub">Every action you take shapes your character. Track real-world progression across your core attributes.</p>
+
+  <div class="stats-wrap">
+    <div class="corner-br"></div>
+    <div class="corner-bl"></div>
+
+    <div class="stat-row">
+      <div class="stat-meta">
+        <span class="stat-name">MIND</span>
+        <span class="stat-lvl" id="lbl-mind">LVL 0</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-grid"></div>
+        <div class="bar-fill gold" data-pct="85" data-maxlvl="42" id="bar-mind"></div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-meta">
+        <span class="stat-name">BODY</span>
+        <span class="stat-lvl" id="lbl-body">LVL 0</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-grid"></div>
+        <div class="bar-fill emerald" data-pct="72" data-maxlvl="36" id="bar-body"></div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-meta">
+        <span class="stat-name">DISCIPLINE</span>
+        <span class="stat-lvl" id="lbl-disc">LVL 0</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-grid"></div>
+        <div class="bar-fill amber" data-pct="91" data-maxlvl="50" id="bar-disc"></div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-meta">
+        <span class="stat-name">FOCUS</span>
+        <span class="stat-lvl" id="lbl-focus">LVL 0</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-grid"></div>
+        <div class="bar-fill gold" data-pct="78" data-maxlvl="39" id="bar-focus"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <h2 class="section-title">ACHIEVEMENTS UNLOCKED</h2>
+  <p class="section-sub">Your complete toolkit for personal growth — every feature engineered to keep you progressing.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(16,185,129,.1);">🧠</div>
+      <h3>MENTAL CLARITY</h3>
+      <p>Unlock deep focus states with guided meditation quests and cognitive training exercises designed around your schedule.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(245,158,11,.1);">🎯</div>
+      <h3>GOAL TRACKING</h3>
+      <p>Transform long-term ambitions into actionable daily missions. Every milestone earns XP and tangible rewards.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(96,165,250,.1);">⚡</div>
+      <h3>DAILY QUESTS</h3>
+      <p>Complete randomized daily challenges to earn bonus XP and unlock rare achievement badges only available for 24 hours.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(249,115,22,.1);">🔥</div>
+      <h3>STREAK SYSTEM</h3>
+      <p>Maintain your momentum. The longer your streak, the higher your XP multiplier — miss a day and you start over.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(245,158,11,.1);">🏆</div>
+      <h3>SKILL TREES</h3>
+      <p>Invest earned skill points into specialized paths — Fitness, Intellect, or Charisma — and watch your real stats follow.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon" style="background:rgba(167,139,250,.1);">🛡️</div>
+      <h3>BOSS CHALLENGES</h3>
+      <p>Face your biggest fears and bad habits in structured monthly boss battles. Defeat them and earn legendary gear.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- SHOP -->
+<section class="section" id="shop">
+  <h2 class="section-title">WHAT ELSE DO WE HAVE?</h2>
+  <p class="section-sub">Gear up in real life. From apparel that signals your level to photoshoots that capture your transformation story.</p>
+
+  <div class="shop-grid">
+    <div class="shop-card">
+      <div class="shop-image apparel">
+        👕
+        <span class="shop-badge badge-new">NEW DROP</span>
+      </div>
+      <div class="shop-body">
+        <h3>OASENSE APPAREL</h3>
+        <p>Premium streetwear designed for players who show up in real life. Oversized tees, hoodies, and performance pieces — each embroidered with your class emblem.</p>
+        <div class="shop-footer">
+          <div class="shop-price">$38 <span>/ item</span></div>
+          <button class="btn-shop">BROWSE GEAR</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="shop-card">
+      <div class="shop-image photo">
+        📸
+        <span class="shop-badge badge-hot">POPULAR</span>
+      </div>
+      <div class="shop-body">
+        <h3>TRANSFORMATION SHOOT</h3>
+        <p>Document your leveling journey. Professional before &amp; after sessions, character reveal portraits, and progress galleries — your arc, captured on camera.</p>
+        <div class="shop-footer">
+          <div class="shop-price">$120 <span>/ session</span></div>
+          <button class="btn-shop">BOOK NOW</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="shop-card">
+      <div class="shop-image bundle">
+        🎒
+        <span class="shop-badge badge-sale">SAVE 20%</span>
+      </div>
+      <div class="shop-body">
+        <h3>STARTER BUNDLE</h3>
+        <p>The full loadout — one OASENSE hoodie, a 60-minute photoshoot session, and 3 months of premium app access. Best value for new players starting their journey.</p>
+        <div class="shop-footer">
+          <div class="shop-price">$199 <span>/ bundle</span></div>
+          <button class="btn-shop">GET BUNDLE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- DONATE / BOOK -->
+<section class="section" id="donate">
+  <h2 class="section-title">SUPPORT &amp; BOOK</h2>
+  <p class="section-sub">Fund the mission or reserve your photoshoot session directly below.</p>
+
+  <div class="donate-grid">
+    <div class="donate-card">
+      <h3>⚔️ SUPPORT THE GUILD</h3>
+      <p>Every contribution helps us build better quests, expand content, and keep OASENSE free for players who can't afford premium. Your donation directly fuels the mission.</p>
+      <div class="donate-amounts">
+        <button class="amt-btn active" onclick="selectAmt(this)">$5</button>
+        <button class="amt-btn" onclick="selectAmt(this)">$15</button>
+        <button class="amt-btn" onclick="selectAmt(this)">$25</button>
+        <button class="amt-btn" onclick="selectAmt(this)">$50</button>
+        <button class="amt-btn" onclick="selectAmt(this)">$100</button>
+      </div>
+      <button class="btn-donate">DONATE &amp; EARN 500 XP</button>
+    </div>
+
+    <div class="donate-card">
+      <h3>📸 BOOK A PHOTOSHOOT</h3>
+      <p>Choose your session tier below. Each shoot is conducted by an OASENSE-certified photographer trained to capture your transformation story in the best light.</p>
+      <div class="shoot-tiers">
+        <div class="tier" onclick="selectTier(this)">
+          <div>
+            <div class="tier-name">BRONZE SESSION</div>
+            <div class="tier-desc">30 min · 10 edited photos · 1 location</div>
+          </div>
+          <div class="tier-price">$80</div>
+        </div>
+        <div class="tier" onclick="selectTier(this)">
+          <div>
+            <div class="tier-name">SILVER SESSION</div>
+            <div class="tier-desc">60 min · 25 edited photos · 2 locations</div>
+          </div>
+          <div class="tier-price">$120</div>
+        </div>
+        <div class="tier" onclick="selectTier(this)">
+          <div>
+            <div class="tier-name">GOLD SESSION</div>
+            <div class="tier-desc">2 hrs · 50 edited photos · full wardrobe</div>
+          </div>
+          <div class="tier-price">$200</div>
+        </div>
+      </div>
+      <button class="btn-donate">RESERVE YOUR SESSION</button>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- REVIEWS -->
+<section class="section" id="reviews">
+  <h2 class="section-title">PLAYER REVIEWS</h2>
+  <p class="section-sub">Join thousands of players who have already started their journey to greatness.</p>
+
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">AC<div class="avatar-level">LVL 42</div></div>
+        <div>
+          <div class="review-name">Alex Chen ✔</div>
+          <div class="review-class">MIND MONK</div>
+        </div>
+      </div>
+      <div class="stars">★★★★★</div>
+      <p>"OASENSE completely gamified my morning routine. I used to struggle with consistency, but treating my habits like daily quests changed everything. Just hit Level 42!"</p>
+    </div>
+
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">SJ<div class="avatar-level">LVL 28</div></div>
+        <div>
+          <div class="review-name">Sarah Jenkins ✔</div>
+          <div class="review-class">IRON WARRIOR</div>
+        </div>
+      </div>
+      <div class="stars">★★★★★</div>
+      <p>"The stat tracking is incredibly motivating. Seeing my discipline bar fill up after a tough workout gives me the same dopamine hit as leveling in a game."</p>
+    </div>
+
+    <div class="review-card">
+      <div class="review-header">
+        <div class="avatar">MT<div class="avatar-level">LVL 55</div></div>
+        <div>
+          <div class="review-name">Marcus Thorne ✔</div>
+          <div class="review-class">GRANDMASTER</div>
+        </div>
+      </div>
+      <div class="stars">★★★★★</div>
+      <p>"The Boss Challenges feature helped me finally quit smoking. Treating my cravings like enemy encounters with HP bars was the psychological trick I needed."</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-box">
+    <div class="cta-corner tl"></div>
+    <div class="cta-corner tr"></div>
+    <div class="cta-corner bl"></div>
+    <div class="cta-corner br"></div>
+
+    <h2><span>READY</span> TO BEGIN?</h2>
+    <p>Your character is waiting at Level 1. Create your account and start turning daily routines into epic quests.</p>
+
+    <button class="btn-primary" style="font-size:14px; padding:16px 44px;">
+      START YOUR JOURNEY — IT'S FREE
+    </button>
+
+    <div class="online-indicator">
+      <span class="pulse-dot"></span>
+      10,492 PLAYERS ONLINE NOW
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a class="logo" href="#">
+    <div class="logo-icon">O</div>
+    OASENSE
+  </a>
+  <div class="footer-links">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Support</a>
+  </div>
+  <p>© 2026 OASENSE. All rights reserved.</p>
+</footer>
+
+<!-- JS -->
+<script>
+/* ---- XP Counter ---- */
+;(function(){
+  const el = document.getElementById('xp-counter');
+  const target = 12847;
+  const dur = 2200;
+  const steps = 80;
+  const stepVal = target / steps;
+  let cur = 0;
+  const t = setInterval(() => {
+    cur += stepVal;
+    if (cur >= target) { cur = target; clearInterval(t); }
+    el.textContent = Math.floor(cur).toLocaleString();
+  }, dur / steps);
+})();
+
+/* ---- Stat bars + level counters animate on scroll ---- */
+const statData = [
+  { barId:'bar-mind',  lblId:'lbl-mind',  maxLvl:42, pct:85 },
+  { barId:'bar-body',  lblId:'lbl-body',  maxLvl:36, pct:72 },
+  { barId:'bar-disc',  lblId:'lbl-disc',  maxLvl:50, pct:91 },
+  { barId:'bar-focus', lblId:'lbl-focus', maxLvl:39, pct:78 },
+];
+
+function animateStat(s, delay) {
+  const bar = document.getElementById(s.barId);
+  const lbl = document.getElementById(s.lblId);
+  const dur = 1600;
+  const fps = 60;
+  const ticks = Math.round(dur / (1000 / fps));
+  let tick = 0;
+
+  setTimeout(() => {
+    bar.style.width = s.pct + '%';
+    const t = setInterval(() => {
+      tick++;
+      const ease = 1 - Math.pow(1 - Math.min(tick / ticks, 1), 3);
+      lbl.textContent = 'LVL ' + Math.floor(ease * s.maxLvl);
+      if (tick >= ticks) { lbl.textContent = 'LVL ' + s.maxLvl; clearInterval(t); }
+    }, 1000 / fps);
+  }, delay);
+}
+
+let barsAnimated = false;
+const statsEl = document.getElementById('stats');
+const obs = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting && !barsAnimated) {
+    barsAnimated = true;
+    statData.forEach((s, i) => animateStat(s, i * 120));
+  }
+}, { threshold: 0.2 });
+obs.observe(statsEl);
+
+/* ---- Donation amount selector ---- */
+function selectAmt(el) {
+  document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+/* ---- Tier selector ---- */
+function selectTier(el) {
+  document.querySelectorAll('.tier').forEach(t => t.style.borderColor = '');
+  el.style.borderColor = 'rgba(245,158,11,.7)';
+}
+
+/* ---- Particles ---- */
+;(function(){
+  const c = document.getElementById('particles');
+  for (let i = 0; i < 36; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.top  = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 14) + 's';
+    p.style.animationDelay   = (Math.random() * 12) + 's';
+    p.style.opacity = (Math.random() * .4).toString();
+    c.appendChild(p);
+  }
+})();
+</script>
+
+</body>
+</html>
