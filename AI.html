@@ -24,7 +24,6 @@ body{
 /* ── CANVAS BG ── */
 #bgCanvas{position:fixed;inset:0;z-index:0;opacity:.7;}
 
-
 /* ── GLITCH OVERLAY ── */
 body::after{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:8999;
@@ -35,6 +34,1583 @@ body::after{
 
 /* ── NAV ── */
 nav{
+  position:fixed;top:0;left:0;right:0;z-index:5000;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 32px;height:60px;
+  background:rgba(0,0,5,0.85);
+  border-bottom:1px solid rgba(255,0,200,0.3);
+  backdrop-filter:blur(10px);
+}
+.logo{
+  font-family:'Black Ops One',sans-serif;
+  font-size:22px;letter-spacing:4px;color:var(--hot);
+  text-decoration:none;text-shadow:0 0 8px rgba(255,0,200,0.4);
+  animation:logoPulse 4s ease-in-out infinite;
+}
+@keyframes logoPulse{0%,100%{text-shadow:0 0 8px rgba(255,0,200,0.5);}50%{text-shadow:0 0 16px rgba(255,0,200,0.7),0 0 30px rgba(255,0,200,0.2);}}
+.nav-links{display:flex;gap:20px;list-style:none;}
+.nav-links a{
+  color:var(--mute);text-decoration:none;
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  transition:all .2s;
+}
+.nav-links a:hover{color:var(--hot);}
+.nav-btns{display:flex;gap:8px;}
+.nbl{padding:7px 18px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
+.nbl:hover{background:var(--hot);color:#000;box-shadow:0 0 20px var(--hot);}
+.nbr{padding:7px 18px;background:var(--hot);border:1px solid var(--hot);color:#000;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;font-weight:700;transition:all .2s;}
+.nbr:hover{background:transparent;color:var(--hot);}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.hbg span{width:22px;height:1.5px;background:var(--hot);box-shadow:0 0 6px var(--hot);}
+
+/* MOBILE */
+.mob{display:none;position:fixed;inset:0;z-index:4900;background:rgba(0,0,5,0.97);flex-direction:column;align-items:center;justify-content:center;gap:24px;}
+.mob.open{display:flex;}
+.mob a{font-family:'Black Ops One',sans-serif;font-size:32px;letter-spacing:4px;color:var(--txt);text-decoration:none;text-transform:uppercase;transition:all .2s;}
+.mob a:hover{color:var(--hot);text-shadow:0 0 20px var(--hot);}
+
+/* ── HERO ── */
+#hero{
+  min-height:100vh;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;
+  padding:100px 20px 80px;position:relative;z-index:10;
+}
+.hero-smoke{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;
+}
+.smoke-blob{
+  position:absolute;border-radius:50%;filter:blur(80px);
+  animation:smokeFloat 10s ease-in-out infinite;
+}
+.s1{width:500px;height:500px;background:rgba(255,0,200,0.12);top:-100px;right:-100px;animation-delay:0s;}
+.s2{width:400px;height:400px;background:rgba(204,0,255,0.1);bottom:-50px;left:-100px;animation-delay:-4s;}
+.s3{width:300px;height:300px;background:rgba(123,0,255,0.08);top:40%;left:30%;animation-delay:-7s;}
+@keyframes smokeFloat{
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(30px,-20px) scale(1.1);}
+  66%{transform:translate(-20px,30px) scale(.9);}
+}
+.hero-label{
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  letter-spacing:6px;color:var(--hot);text-transform:uppercase;
+  margin-bottom:20px;animation:fadeUp .8s ease both;
+  text-shadow:0 0 10px var(--hot);
+}
+.hero-title{
+  font-family:'Black Ops One',sans-serif;
+  font-size:clamp(64px,14vw,180px);
+  line-height:.85;color:#fff;
+  position:relative;text-transform:uppercase;
+  animation:fadeUp .8s ease .1s both;
+}
+.hero-title .gw{position:relative;display:inline-block;}
+#glitchCanvas{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;z-index:5;
+}
+#glitchWord{
+  font-family:'Black Ops One',sans-serif;
+  font-size:clamp(64px,14vw,180px);
+  display:block;color:#fff;
+  text-transform:uppercase;line-height:.85;
+}
+.hero-title-glow{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(255,0,200,0.2) 0%,transparent 70%);
+  filter:blur(20px);pointer-events:none;
+  animation:glowPulse 3s ease-in-out infinite;
+}
+@keyframes glowPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+.hero-sub{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:clamp(18px,4vw,36px);
+  letter-spacing:8px;text-transform:uppercase;
+  color:var(--hot2);margin-top:16px;
+  text-shadow:0 0 20px var(--hot);
+  animation:fadeUp .8s ease .25s both;
+}
+.hero-desc{
+  font-size:15px;color:var(--mute);line-height:1.8;
+  max-width:500px;margin:20px auto 0;font-weight:300;
+  animation:fadeUp .8s ease .4s both;
+}
+.hero-ctas{
+  display:flex;gap:16px;margin-top:40px;
+  justify-content:center;flex-wrap:wrap;
+  animation:fadeUp .8s ease .55s both;
+}
+.btn-hot{
+  padding:14px 36px;background:transparent;
+  border:1px solid var(--hot);color:var(--hot);
+  font-family:'Black Ops One',sans-serif;font-size:14px;
+  letter-spacing:3px;cursor:pointer;text-decoration:none;
+  display:inline-block;text-transform:uppercase;
+  transition:all .25s;position:relative;overflow:hidden;
+}
+.btn-hot:hover{color:#000;}
+.btn-ghost{
+  padding:14px 36px;background:rgba(255,0,200,0.1);
+  border:1px solid rgba(255,0,200,0.3);color:var(--txt);
+  font-family:'Black Ops One',sans-serif;font-size:14px;
+  letter-spacing:3px;cursor:pointer;text-decoration:none;
+  display:inline-block;text-transform:uppercase;
+  transition:all .25s;
+}
+.btn-ghost:hover{border-color:var(--hot);color:var(--hot);background:rgba(255,0,200,0.15);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── SECTIONS ── */
+section,div.band{position:relative;z-index:10;}
+section{padding:100px 40px;}
+.wrap{max-width:1120px;margin:0 auto;}
+.sec-tag{
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  letter-spacing:5px;color:var(--hot);text-transform:uppercase;
+  margin-bottom:12px;
+}
+.sec-title{
+  font-family:'Black Ops One',sans-serif;
+  font-size:clamp(44px,7vw,96px);
+  text-transform:uppercase;line-height:.9;
+  color:#fff;margin-bottom:48px;
+}
+.sec-title .hot{
+  color:var(--hot);
+  display:inline;
+}
+.vhs-line{
+  height:1px;background:linear-gradient(to right,transparent,rgba(255,0,200,0.45),rgba(204,0,255,0.35),transparent);
+  margin-bottom:40px;
+}
+
+/* ── MANIFESTO BAND ── */
+.band#manifesto{
+  padding:80px 40px;
+  background:linear-gradient(135deg,rgba(255,0,200,0.06) 0%,rgba(0,0,5,1) 40%,rgba(123,0,255,0.06) 100%);
+  border-top:1px solid rgba(255,0,200,0.2);
+  border-bottom:1px solid rgba(255,0,200,0.2);
+  text-align:center;overflow:hidden;
+}
+.mq-wrap{max-width:900px;margin:0 auto;}
+.mq{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;
+  font-size:clamp(22px,4.5vw,58px);
+  text-transform:uppercase;letter-spacing:2px;
+  color:#fff;line-height:1.15;
+}
+.mq .hot-word{
+  color:var(--hot);font-style:italic;
+  text-shadow:0 0 20px var(--hot),0 0 40px var(--hot);
+}
+.mq-by{
+  margin-top:20px;font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:4px;color:var(--mute);
+  text-transform:uppercase;
+}
+
+/* ── SHOP ── */
+#shop{background:var(--void);}
+.filter-row{display:flex;gap:8px;margin-bottom:40px;flex-wrap:wrap;}
+.fb{
+  padding:8px 22px;background:transparent;
+  border:1px solid rgba(255,0,200,0.25);
+  color:var(--mute);font-family:'Share Tech Mono',monospace;
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.fb.on,.fb:hover{border-color:var(--hot);color:var(--hot);box-shadow:0 0 12px rgba(255,0,200,0.2);}
+.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:2px;}
+.pr{
+  background:rgba(255,0,200,0.03);
+  border:1px solid rgba(255,0,200,0.15);
+  transition:all .3s;cursor:pointer;overflow:hidden;position:relative;
+}
+.pr::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,0,200,0.05),transparent);transition:left .4s ease;}
+.pr:hover{border-color:var(--hot);box-shadow:0 0 20px rgba(255,0,200,0.15),inset 0 0 20px rgba(255,0,200,0.03);}
+.pr:hover::before{left:100%;}
+.pi{width:100%;aspect-ratio:1;background:rgba(255,0,200,0.05);display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;}
+.pbdg{position:absolute;top:10px;left:10px;background:var(--hot);color:#000;font-family:'Share Tech Mono',monospace;font-size:8px;font-weight:700;letter-spacing:2px;padding:3px 10px;text-transform:uppercase;box-shadow:0 0 10px var(--hot);}
+.pb{padding:20px 22px 24px;}
+.pn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.pd{font-size:13px;color:var(--mute);line-height:1.6;margin-bottom:16px;}
+.pf{display:flex;align-items:center;justify-content:space-between;}
+.pp{font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--hot);text-shadow:0 0 10px rgba(255,0,200,0.5);}
+.pa{padding:7px 16px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.pa:hover{background:var(--hot);color:#000;box-shadow:0 0 15px var(--hot);}
+.sn{margin-top:36px;padding:16px 22px;border:1px solid rgba(255,0,200,0.2);background:rgba(255,0,200,0.03);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);line-height:1.9;letter-spacing:1px;}
+.sn strong{color:var(--hot);}
+
+/* ── MUSIC ── */
+#music{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
+.tl{display:flex;flex-direction:column;gap:2px;margin-bottom:32px;}
+.tk{
+  display:grid;grid-template-columns:44px 1fr auto auto;
+  align-items:center;gap:16px;padding:18px 22px;
+  background:rgba(255,0,200,0.03);
+  border:1px solid rgba(255,0,200,0.15);
+  transition:all .2s;cursor:pointer;
+}
+.tk:hover{border-color:var(--hot);background:rgba(255,0,200,0.06);}
+.tk.pl{border-color:var(--hot);background:rgba(255,0,200,0.08);box-shadow:0 0 15px rgba(255,0,200,0.1);}
+.tpb{width:38px;height:38px;border-radius:50%;border:1px solid var(--hot);background:transparent;color:var(--hot);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.tpb:hover,.tk.pl .tpb{background:var(--hot);color:#000;box-shadow:0 0 15px var(--hot);}
+.tn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:1.5px;text-transform:uppercase;}
+.tm{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mute);letter-spacing:2px;margin-top:2px;}
+.tbw{flex:1;height:2px;background:rgba(255,0,200,0.15);cursor:pointer;min-width:60px;}
+.tb{height:100%;width:0%;background:linear-gradient(to right,var(--hot),var(--mag));box-shadow:0 0 6px var(--hot);}
+.tt{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);min-width:28px;text-align:right;}
+.sc-link{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:12px 26px;border:1px solid rgba(255,85,0,.5);
+  color:#FF5500;font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-decoration:none;
+  text-transform:uppercase;transition:all .2s;
+}
+.sc-link:hover{background:rgba(255,85,0,0.1);box-shadow:0 0 15px rgba(255,85,0,0.3);}
+
+/* ── BLOG ── */
+#blog{background:var(--void);}
+.bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;}
+.po{background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.15);overflow:hidden;transition:all .3s;}
+.po:hover{border-color:var(--hot);box-shadow:0 0 20px rgba(255,0,200,0.1);}
+.pth{
+  width:100%;height:180px;
+  display:flex;align-items:center;justify-content:center;font-size:48px;
+  position:relative;overflow:hidden;
+}
+.pth::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,5,.8));}
+.ptag{position:absolute;bottom:12px;left:12px;font-family:'Share Tech Mono',monospace;font-size:8px;font-weight:700;letter-spacing:3px;color:var(--hot);text-transform:uppercase;z-index:1;text-shadow:0 0 8px var(--hot);}
+.pbo{padding:20px;}
+.ptit{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;line-height:1.2;}
+.pex{font-size:13px;color:var(--mute);line-height:1.7;margin-bottom:16px;}
+.pft{display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,0,200,0.15);}
+.pau{display:flex;align-items:center;gap:10px;}
+.ppfp{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--hot),var(--mag));display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 8px var(--hot);}
+.pan{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--txt);}
+.pdt{font-size:9px;color:var(--mute);margin-top:2px;}
+.pac{display:flex;gap:6px;}
+.pab{padding:5px 12px;background:transparent;border:1px solid rgba(255,0,200,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .2s;}
+.pab:hover,.pab.lk{border-color:var(--hot);color:var(--hot);text-shadow:0 0 6px var(--hot);}
+
+/* ── PORTFOLIO ── */
+#portfolio{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
+.pg{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;}
+.pi2{background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.12);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:pointer;font-size:28px;transition:all .3s;}
+.pi2:hover{border-color:var(--hot);box-shadow:0 0 20px rgba(255,0,200,0.15);}
+.pi2:hover .ph2{opacity:1;}
+.pi2:nth-child(1){grid-column:span 7;height:280px;}
+.pi2:nth-child(2){grid-column:span 5;height:280px;}
+.pi2:nth-child(3),.pi2:nth-child(4),.pi2:nth-child(5){grid-column:span 4;height:200px;}
+.ph2{position:absolute;inset:0;background:rgba(255,0,200,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0;transition:opacity .3s;}
+.ph2 strong{font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:3px;color:#000;text-transform:uppercase;}
+.ph2 span{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(0,0,0,.7);text-transform:uppercase;}
+
+/* ── BOOKING ── */
+#booking{background:var(--void);}
+.bkg{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.svl{display:flex;flex-direction:column;gap:2px;}
+.sv{padding:18px 20px;background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.12);cursor:pointer;transition:all .2s;display:flex;gap:14px;align-items:flex-start;}
+.sv:hover,.sv.on{border-color:var(--hot);background:rgba(255,0,200,0.06);box-shadow:0 0 15px rgba(255,0,200,0.08);}
+.svi{font-size:20px;flex-shrink:0;}
+.svn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+.svd{font-size:12px;color:var(--mute);line-height:1.6;}
+.pnote{margin-top:20px;padding:14px 18px;border-left:2px solid var(--hot);background:rgba(255,0,200,0.04);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);line-height:1.7;letter-spacing:1px;box-shadow:inset 2px 0 10px rgba(255,0,200,0.1);}
+.fm{display:flex;flex-direction:column;gap:14px;}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;text-shadow:0 0 6px rgba(255,0,200,0.5);}
+.fi,.fta,.fse{background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);color:var(--txt);padding:12px 15px;font-family:'Barlow Condensed',sans-serif;font-size:14px;outline:none;transition:border-color .2s;width:100%;}
+.fi:focus,.fta:focus,.fse:focus{border-color:var(--hot);box-shadow:0 0 10px rgba(255,0,200,0.2);}
+.fta{height:105px;resize:vertical;}
+.fse option{background:#000;}
+.fbtn{padding:14px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .25s;margin-top:2px;position:relative;overflow:hidden;}
+.fbtn::before{content:'';position:absolute;inset:0;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1;}
+.fbtn:hover{color:#000;box-shadow:0 0 20px var(--hot);}
+.fbtn:hover::before{transform:scaleX(1);}
+
+/* ── ABOUT ── */
+#about{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.av{
+  aspect-ratio:3/4;
+  background:linear-gradient(135deg,rgba(255,0,200,0.08),rgba(123,0,255,0.08));
+  border:1px solid rgba(255,0,200,0.2);
+  display:flex;align-items:center;justify-content:center;font-size:80px;
+  position:relative;overflow:hidden;
+}
+.av::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(255,0,200,0.15) 0%,transparent 60%);}
+.av-corner{position:absolute;width:24px;height:24px;border-color:var(--hot);border-style:solid;box-shadow:0 0 8px var(--hot);}
+.av-corner.tl{top:0;left:0;border-width:2px 0 0 2px;}
+.av-corner.tr{top:0;right:0;border-width:2px 2px 0 0;}
+.av-corner.bl{bottom:0;left:0;border-width:0 0 2px 2px;}
+.av-corner.br{bottom:0;right:0;border-width:0 2px 2px 0;}
+.apull{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-style:italic;
+  font-size:clamp(18px,2.5vw,28px);
+  color:var(--hot);line-height:1.4;
+  padding:18px 0 18px 18px;
+  border-left:2px solid var(--hot);
+  text-shadow:0 0 15px rgba(255,0,200,0.5);
+  margin-bottom:24px;
+}
+.abod{font-size:16px;color:var(--mute);line-height:1.9;}
+.abod p+p{margin-top:14px;}
+.socr{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;}
+.slnk{padding:10px 18px;border:1px solid rgba(255,0,200,0.25);color:rgba(255,255,255,0.65);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;transition:all .2s;}
+.slnk:hover{border-color:var(--hot);color:var(--hot);box-shadow:0 0 10px rgba(255,0,200,0.2);}
+
+/* ── REWARDS ── */
+#rewards{background:var(--void);}
+.rtop{
+  text-align:center;padding:48px 32px;
+  background:rgba(255,0,200,0.04);
+  border:1px solid rgba(255,0,200,0.2);
+  margin-bottom:48px;position:relative;overflow:hidden;
+}
+.rtop::before{
+  content:'SOL';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Black Ops One',sans-serif;font-size:200px;
+  color:rgba(255,0,200,0.03);pointer-events:none;white-space:nowrap;
+}
+.rnum{font-family:'Black Ops One',sans-serif;font-size:clamp(60px,10vw,110px);color:var(--hot);text-shadow:0 0 30px var(--hot),0 0 60px rgba(255,0,200,0.4);}
+.rlbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:5px;color:var(--mute);text-transform:uppercase;margin-top:8px;}
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:3px;margin-bottom:24px;}
+.ri{padding:28px 18px;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.15);text-align:center;transition:all .2s;}
+.ri:hover{border-color:var(--hot);box-shadow:0 0 12px rgba(255,0,200,0.1);}
+.ricon{font-size:32px;margin-bottom:12px;}
+.rp{font-family:'Black Ops One',sans-serif;font-size:26px;color:var(--hot);text-shadow:0 0 10px rgba(255,0,200,0.5);}
+.rw{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(255,255,255,0.65);margin-top:6px;line-height:1.6;letter-spacing:1px;}
+.rdm{padding:28px 30px;background:rgba(255,0,200,0.05);border:1px solid rgba(255,0,200,0.2);border-left:3px solid var(--hot);}
+.rdm h4{font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:10px;}
+.rdm p{font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(255,255,255,0.65);line-height:2;letter-spacing:1px;}
+
+/* ── DONATION ── */
+#donation{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
+.dtop{text-align:center;margin-bottom:52px;}
+.raised{font-family:'Black Ops One',sans-serif;font-size:clamp(56px,9vw,110px);color:#fff;line-height:1;}
+.raised span{color:var(--hot);text-shadow:0 0 30px var(--hot);}
+.rsub{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:5px;color:var(--mute);text-transform:uppercase;margin-top:8px;}
+.dd{font-size:14px;color:var(--mute);max-width:400px;margin:14px auto 0;line-height:1.8;}
+.ag2{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:24px;}
+.ab{min-width:76px;padding:13px 18px;text-align:center;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);color:var(--txt);font-family:'Black Ops One',sans-serif;font-size:20px;cursor:pointer;transition:all .2s;}
+.ab:hover,.ab.on{border-color:var(--hot);color:var(--hot);box-shadow:0 0 15px rgba(255,0,200,0.2);}
+.cw{max-width:260px;margin:0 auto 24px;}
+.fr{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:36px;}
+.frb{padding:9px 22px;background:transparent;border:1px solid rgba(255,0,200,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.frb:hover,.frb.on{border-color:var(--hot);color:var(--hot);}
+.db{display:block;margin:0 auto;padding:15px 52px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.db::before{content:'';position:absolute;inset:0;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1;}
+.db:hover{color:#000;box-shadow:0 0 30px var(--hot);}
+.db:hover::before{transform:scaleX(1);}
+
+/* ── NEWSLETTER ── */
+#newsletter{
+  padding:90px 40px;
+  background:linear-gradient(135deg,rgba(255,0,200,0.18) 0%,rgba(20,0,30,0.98) 45%,rgba(123,0,255,0.18) 100%);
+  border-top:1px solid rgba(255,0,200,0.5);
+  border-bottom:1px solid rgba(255,0,200,0.5);
+  text-align:center;
+  position:relative;
+  z-index:10;
+}
+.nlt{font-family:'Black Ops One',sans-serif;font-size:clamp(24px,5vw,56px);color:#fff;text-transform:uppercase;margin-bottom:10px;text-shadow:0 0 30px rgba(255,0,200,0.3);}
+.nlt span{color:var(--hot);text-shadow:0 0 24px var(--hot),0 0 48px rgba(255,0,200,0.4);}
+.nls{font-family:'Share Tech Mono',monospace;font-size:11px;color:#d0a0e0;margin-bottom:32px;letter-spacing:2px;}
+.nlf{display:flex;max-width:420px;margin:0 auto;}
+.nlf input{flex:1;padding:13px 16px;background:rgba(255,0,200,0.05);border:1px solid rgba(255,0,200,0.25);border-right:none;color:var(--txt);font-family:'Barlow Condensed',sans-serif;font-size:14px;outline:none;}
+.nlf input:focus{border-color:var(--hot);}
+.nlf button{padding:13px 24px;background:var(--hot);border:1px solid var(--hot);color:#000;font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;box-shadow:0 0 15px rgba(255,0,200,0.4);}
+.nlf button:hover{background:var(--mag);border-color:var(--mag);}
+
+/* ── CONTACT ── */
+#contact{background:var(--void);}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:60px;}
+.cit{display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-bottom:1px solid rgba(255,0,200,0.12);}
+.cic{font-size:18px;flex-shrink:0;margin-top:2px;}
+.citext h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;color:var(--hot);}
+.citext p{font-size:14px;color:rgba(255,255,255,0.6);line-height:1.7;}
+.cbc{margin-top:22px;padding:22px;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.15);border-left:2px solid var(--hot);}
+.cbc h3{font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:2px;color:var(--hot);text-shadow:0 0 10px rgba(255,0,200,0.5);margin-bottom:8px;text-transform:uppercase;}
+.cbc p{font-size:12px;color:var(--mute);line-height:1.8;margin-bottom:16px;}
+.mp{display:flex;gap:7px;margin-bottom:14px;}
+.mb2{flex:1;padding:10px;text-align:center;background:transparent;border:1px solid rgba(255,0,200,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.mb2.on{border-color:var(--hot);color:var(--hot);}
+
+/* ── CANCEL & FAQ ── */
+.sec2{padding:72px 40px;position:relative;z-index:10;}
+.pc{max-width:740px;margin:0 auto;padding:36px;background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.15);}
+.poli{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;}
+.pit h4{font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--hot);text-transform:uppercase;margin-bottom:7px;}
+.pit p{font-size:12px;color:var(--mute);line-height:1.8;}
+.fw{max-width:680px;margin:0 auto;}
+.fqi{border-bottom:1px solid rgba(255,0,200,0.15);}
+.fqb{width:100%;display:flex;justify-content:space-between;align-items:center;padding:20px 0;background:transparent;border:none;color:var(--txt);cursor:pointer;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.fqa2{color:var(--hot);font-size:18px;transition:transform .3s;flex-shrink:0;margin-left:14px;text-shadow:0 0 6px var(--hot);}
+.fqi.open .fqa2{transform:rotate(45deg);}
+.fqan{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.fqi.open .fqan{max-height:140px;}
+.fqai{padding:0 0 16px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);line-height:1.9;letter-spacing:1px;}
+
+/* ── SOL AI BUTTON + PANEL ── */
+#sol{position:fixed;bottom:24px;right:24px;z-index:6000;}
+.solbtn{
+  padding:11px 28px;
+  border-radius:40px;
+  background:rgba(4,0,12,0.65);
+  border:1px solid rgba(255,0,200,0.7);
+  box-shadow:0 0 18px rgba(255,0,200,0.25),0 4px 20px rgba(0,0,0,0.55);
+  backdrop-filter:blur(14px);
+  cursor:pointer;transition:all .2s;
+  animation:sbp 4s ease-in-out infinite;
+  display:flex;align-items:center;justify-content:center;
+}
+.solbtn:hover{
+  background:rgba(255,0,200,0.15);
+  box-shadow:0 0 28px rgba(255,0,200,0.45),0 4px 22px rgba(0,0,0,0.55);
+  border-color:rgba(255,0,200,1);
+  transform:translateY(-2px);
+}
+@keyframes sbp{
+  0%,100%{box-shadow:0 0 18px rgba(255,0,200,0.25),0 4px 20px rgba(0,0,0,0.55);}
+  50%{box-shadow:0 0 26px rgba(255,0,200,0.4),0 4px 20px rgba(0,0,0,0.55);}
+}
+.solbtn-label{font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:3px;color:#fff;white-space:nowrap;line-height:1;}
+.solp{position:absolute;bottom:56px;right:0;width:310px;background:#000;border:1px solid var(--hot);box-shadow:0 0 30px rgba(255,0,200,.18);display:none;flex-direction:column;overflow:hidden;}
+.solp.open{display:flex;}
+.solh{padding:13px 16px;background:rgba(255,0,200,.07);border-bottom:1px solid rgba(255,0,200,.18);display:flex;align-items:center;gap:10px;}
+.solav{width:28px;height:28px;border-radius:50%;background:rgba(255,0,200,0.15);border:1px solid rgba(255,0,200,0.4);display:flex;align-items:center;justify-content:center;font-size:13px;}
+.soln{font-family:'Black Ops One',sans-serif;font-size:13px;color:var(--hot);letter-spacing:2px;}
+.sols{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--mute);letter-spacing:1px;margin-top:2px;}
+.solx{margin-left:auto;background:none;border:none;color:var(--mute);cursor:pointer;font-size:17px;}
+.solx:hover{color:var(--hot);}
+.solm{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:9px;min-height:170px;max-height:260px;}
+.solmsg{padding:9px 12px;font-family:'Share Tech Mono',monospace;font-size:11px;line-height:1.7;background:rgba(255,0,200,.04);border-left:2px solid var(--hot);color:var(--txt);letter-spacing:.5px;}
+.solmsg.u{align-self:flex-end;background:rgba(255,0,200,.07);border-left:none;border-right:2px solid var(--mag);}
+.solin{padding:9px;border-top:1px solid rgba(255,0,200,.18);display:flex;gap:7px;}
+.solinp{flex:1;padding:8px 12px;background:rgba(255,0,200,.04);border:1px solid rgba(255,0,200,.18);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:11px;outline:none;}
+.solinp:focus{border-color:var(--hot);}
+.solsend{padding:8px 13px;background:var(--hot);border:none;color:#000;font-size:12px;cursor:pointer;font-family:'Black Ops One',sans-serif;transition:all .2s;}
+.solsend:hover{background:var(--mag);}
+
+/* ── SOL CREATURE (fixed, centered above ASK SOL button) ── */
+#solCreatureWrap{
+  position:fixed;
+  bottom:78px;
+  right:14px;
+  width:140px;
+  height:140px;
+  overflow:visible;
+  pointer-events:none;
+  z-index:6001;
+}
+#solParticles{
+  position:absolute;
+  width:100%;height:100%;
+  pointer-events:none;
+  overflow:visible;
+  z-index:0;
+}
+.sol-particle{
+  position:fixed;
+  width:4px;height:4px;
+  border-radius:50%;
+  opacity:0;
+  pointer-events:none;
+}
+.solEl{
+  position:absolute;
+  left:50%;top:50%;
+  width:140px;height:140px;
+  transform:translate(-50%,-50%);
+  z-index:1;
+  pointer-events:auto;
+  cursor:grab;
+}
+.solEl:active{cursor:grabbing;}
+.solGlow{
+  position:absolute;width:130px;height:130px;left:50%;top:50%;
+  transform:translate(-50%,-50%);border-radius:50%;
+  filter:blur(24px);
+  background:radial-gradient(circle,rgba(255,0,200,0.35),rgba(255,0,200,0) 70%);
+}
+.outerFlame{
+  position:absolute;width:98px;height:112px;left:50%;top:50%;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(ellipse at center bottom,rgba(215,0,180,0) 0%,rgba(215,0,180,0.4) 50%,rgba(215,0,180,0) 100%);
+}
+.midFlame{
+  position:absolute;width:70px;height:88px;left:50%;top:50%;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(ellipse at center bottom,#ff00c8 0%,rgba(255,0,200,0.5) 40%,transparent 70%);
+}
+.solCore{
+  position:absolute;width:44px;height:56px;left:50%;top:50%;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,#fff8ff 0%,#ff88ee 25%,#ff00c8 55%,#cc00aa 80%);
+  box-shadow:0 0 40px rgba(255,0,200,0.6), 0 0 12px rgba(255,200,255,0.9) inset;
+  display:flex;justify-content:center;align-items:center;
+  cursor:grab;
+}
+.solCore:active{cursor:grabbing;}
+.solEyes{
+  display:flex;gap:6px;
+  transform:translateY(6px);
+  transition:transform 0.1s linear;
+}
+.solEye{
+  width:7px;height:9px;
+  background:rgba(0,0,0,0.65);
+  border-radius:50%;
+}
+
+/* ── AUTH ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,5,.9);z-index:8000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);padding:20px;}
+.ov.open{display:flex;}
+.mo{background:#000;border:1px solid var(--hot);width:100%;max-width:390px;padding:38px;position:relative;box-shadow:0 0 40px rgba(255,0,200,.3);animation:mi .3s ease;}
+@keyframes mi{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.mx{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:19px;}
+.mx:hover{color:var(--hot);}
+.mt2{font-family:'Black Ops One',sans-serif;font-size:28px;color:#fff;text-transform:uppercase;margin-bottom:5px;letter-spacing:2px;}
+.ms2{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);margin-bottom:22px;letter-spacing:1px;line-height:1.7;}
+.soa{display:flex;flex-direction:column;gap:7px;margin-bottom:18px;}
+.sob{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid rgba(255,0,200,.2);background:rgba(255,0,200,.03);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s;letter-spacing:1px;}
+.sob:hover{border-color:var(--hot);}
+.ord{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.ord::before,.ord::after{content:'';flex:1;height:1px;background:rgba(255,0,200,.2);}
+.ord span{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--mute);letter-spacing:3px;text-transform:uppercase;}
+.pwh{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--mute);letter-spacing:1px;margin-top:4px;}
+.pwbw{height:2px;background:rgba(255,0,200,.15);margin-top:6px;}
+.pwb{height:100%;width:0%;transition:width .3s,background .3s;}
+.msw{text-align:center;margin-top:16px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);}
+.msw a{color:var(--hot);cursor:pointer;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--hot);color:#000;padding:11px 26px;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;letter-spacing:3px;z-index:9000;display:none;white-space:nowrap;box-shadow:0 0 30px var(--hot);}
+
+/* ── FOOTER ── */
+footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px 36px;position:relative;z-index:10;}
+.ftg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;max-width:1120px;margin:0 auto 48px;}
+.ftl{font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:5px;color:var(--hot);text-decoration:none;display:block;margin-bottom:14px;text-transform:uppercase;text-shadow:0 0 15px var(--hot);}
+.ftbr p{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);line-height:1.9;max-width:250px;letter-spacing:1px;}
+.ftcol h4{font-family:'Share Tech Mono',monospace;font-size:8px;font-weight:700;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:18px;text-shadow:0 0 6px var(--hot);}
+.ftcol ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.ftcol ul a{color:var(--mute);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;transition:color .2s;}
+.ftcol ul a:hover{color:var(--hot);}
+.ftbot{max-width:1120px;margin:0 auto;padding-top:28px;border-top:1px solid rgba(255,0,200,.15);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.ftcopy{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,0,200,.3);letter-spacing:2px;}
+.ftlinks{display:flex;gap:16px;flex-wrap:wrap;}
+.ftlinks a{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,0,200,.3);text-decoration:none;transition:color .2s;letter-spacing:1px;}
+.ftlinks a:hover{color:var(--hot);}
+
+/* ── NEED HELP NUDGE ── */
+#needHelp{
+  position:fixed;right:24px;top:80px;
+  z-index:5500;
+  display:flex;align-items:center;gap:6px;
+  opacity:0;transform:translateX(20px);pointer-events:none;
+  transition:opacity .4s ease,transform .4s cubic-bezier(.34,1.56,.64,1);
+}
+#needHelp.peeking{opacity:1;transform:translateX(0);pointer-events:auto;}
+#needHelp.hidden-nh{opacity:0;transform:translateX(20px);pointer-events:none;}
+#needHelp.dismissed{display:none;}
+
+.nh-dismiss{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(4,0,12,0.65);
+  border:1px solid rgba(255,0,200,0.55);
+  box-shadow:0 0 12px rgba(255,0,200,0.18),0 2px 10px rgba(0,0,0,0.5);
+  backdrop-filter:blur(14px);
+  color:rgba(255,255,255,0.55);font-size:11px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.nh-dismiss:hover{
+  background:rgba(255,0,200,0.18);color:#fff;
+  border-color:rgba(255,0,200,1);
+  box-shadow:0 0 20px rgba(255,0,200,0.35);
+}
+.nh-tab{
+  padding:11px 20px;border-radius:40px;
+  background:rgba(4,0,12,0.65);
+  border:1px solid rgba(255,0,200,0.7);
+  box-shadow:0 0 18px rgba(255,0,200,0.25),0 4px 20px rgba(0,0,0,0.55);
+  backdrop-filter:blur(14px);
+  color:#fff;
+  font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:2px;
+  cursor:pointer;user-select:none;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+  animation:sbp 4s ease-in-out infinite;
+  transition:all .2s;
+}
+.nh-tab:hover{
+  background:rgba(255,0,200,0.15);
+  box-shadow:0 0 28px rgba(255,0,200,0.45);
+  border-color:rgba(255,0,200,1);
+  transform:translateY(-1px);
+}
+.nh-tab-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--hot);box-shadow:0 0 7px var(--hot);
+  animation:nhDot 2s ease-in-out infinite;flex-shrink:0;
+}
+@keyframes nhDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.65);}}
+
+.nh-popup{
+  position:fixed;right:24px;top:130px;
+  z-index:5600;width:260px;
+  background:rgba(4,0,12,0.85);
+  border:1px solid rgba(255,0,200,0.5);
+  border-radius:16px;
+  box-shadow:0 0 28px rgba(255,0,200,0.2),0 12px 40px rgba(0,0,0,0.75);
+  backdrop-filter:blur(18px);
+  display:none;flex-direction:column;overflow:hidden;
+}
+.nh-popup.open{display:flex;animation:nhPop .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes nhPop{from{opacity:0;transform:translateY(-12px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+.nh-popup-head{padding:16px 18px 12px;border-bottom:1px solid rgba(255,0,200,0.12);display:flex;justify-content:space-between;align-items:flex-start;}
+.nh-popup-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:2px;color:#fff;}
+.nh-popup-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,0,200,0.6);letter-spacing:1px;margin-top:3px;}
+.nh-close{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);cursor:pointer;font-size:12px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.nh-close:hover{color:#fff;background:rgba(255,0,200,0.22);border-color:var(--hot);}
+.nh-btns{display:flex;flex-direction:column;}
+.nh-btn{padding:14px 18px;background:transparent;border:none;border-bottom:1px solid rgba(255,0,200,0.08);color:var(--txt);font-family:'Black Ops One',sans-serif;font-size:12px;letter-spacing:1.5px;cursor:pointer;text-align:left;transition:all .18s;display:flex;align-items:center;gap:12px;text-transform:uppercase;}
+.nh-btn:last-child{border-bottom:none;}
+.nh-btn:hover{background:rgba(255,0,200,0.09);color:var(--hot);padding-left:24px;}
+.nh-btn-icon{font-size:16px;flex-shrink:0;}
+.nh-btn-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-top:3px;font-weight:normal;text-transform:none;}
+.nh-thanks{padding:20px 18px 22px;text-align:center;display:none;flex-direction:column;align-items:center;gap:10px;}
+.nh-thanks.show{display:flex;}
+.nh-thanks p{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:1px;line-height:1.9;margin:0;}
+.nh-sol-arrow{opacity:0;transform:translateY(-6px);transition:opacity .4s,transform .4s;}
+.nh-sol-arrow.show{opacity:1;transform:translateY(0);}
+.nh-sol-arrow svg{filter:drop-shadow(0 0 8px rgba(255,0,200,0.7));animation:arrowPulse .55s ease-in-out infinite alternate;}
+@keyframes arrowPulse{from{transform:translate(0,0);}to{transform:translate(4px,4px);}}
+
+/* ── CUSTOM SELECT ── */
+.csel{position:relative;width:100%;}
+.csel-selected{background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);color:var(--txt);padding:12px 15px;font-family:'Barlow Condensed',sans-serif;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;user-select:none;}
+.csel-selected:hover,.csel.open .csel-selected{border-color:var(--hot);box-shadow:0 0 10px rgba(255,0,200,0.2);}
+.csel-arrow{font-size:12px;color:var(--hot);transition:transform .2s;}
+.csel.open .csel-arrow{transform:rotate(180deg);}
+.csel-opts{display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:#080008;border:1px solid var(--hot);border-top:none;box-shadow:0 8px 30px rgba(255,0,200,0.2);}
+.csel.open .csel-opts{display:block;}
+.csel-opt{padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(255,0,200,0.12);transition:background .2s;}
+.csel-opt:last-child{border-bottom:none;}
+.csel-opt:hover{background:rgba(255,0,200,0.08);}
+.csel-opt strong{display:block;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;color:var(--txt);margin-bottom:3px;}
+.csel-opt span{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mute);letter-spacing:1px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  nav{padding:0 18px;} .nav-links{display:none;} .hbg{display:flex;}
+  section{padding:72px 20px;} .sec2{padding:56px 20px;}
+  #newsletter{padding:72px 20px;}
+  .bkg,.ag,.cg{grid-template-columns:1fr;gap:40px;}
+  .pi2:nth-child(1){grid-column:span 12;height:240px;}
+  .pi2:nth-child(2){grid-column:span 12;height:200px;}
+  .pi2:nth-child(3),.pi2:nth-child(4),.pi2:nth-child(5){grid-column:span 4;height:150px;}
+  .ftg{grid-template-columns:1fr 1fr;}
+  .poli{grid-template-columns:1fr;}
+  .band#manifesto{padding:60px 20px;}
+}
+@media(max-width:600px){
+  .pi2:nth-child(3),.pi2:nth-child(4),.pi2:nth-child(5){grid-column:span 12;height:140px;}
+  .ftg{grid-template-columns:1fr;}
+  .nlf{flex-direction:column;}
+  .nlf input{border-right:1px solid rgba(255,0,200,.25);border-bottom:none;}
+  .solp{width:calc(100vw - 48px);right:0;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="logo">OASENSE</a>
+  <ul class="nav-links">
+    <li><a href="#shop">Shop</a></li>
+    <li><a href="#music">Music</a></li>
+    <li><a href="#blog">Blog</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#booking">Book</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#donation">Donate</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-btns">
+    <button class="nbl" onclick="oA('login')">Log In</button>
+    <button class="nbr" onclick="oA('signup')">Sign Up</button>
+    <div class="hbg" onclick="tM()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob" id="mob">
+  <a href="#shop" onclick="tM()">Shop</a>
+  <a href="#music" onclick="tM()">Music</a>
+  <a href="#blog" onclick="tM()">Blog</a>
+  <a href="#portfolio" onclick="tM()">Portfolio</a>
+  <a href="#booking" onclick="tM()">Book</a>
+  <a href="#about" onclick="tM()">About</a>
+  <a href="#donation" onclick="tM()">Donate</a>
+  <a href="#rewards" onclick="tM()">Rewards</a>
+  <a href="#contact" onclick="tM()">Contact</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-smoke">
+    <div class="smoke-blob s1"></div>
+    <div class="smoke-blob s2"></div>
+    <div class="smoke-blob s3"></div>
+  </div>
+  <!-- CHANGED: hero label text -->
+  <p class="hero-label">// Mind. Body. Soul. Your Oasis — Make it make sense.</p>
+  <h1 class="hero-title" style="position:relative;display:inline-block;">
+    <div class="hero-title-glow"></div>
+    <span id="glitchWord" style="display:block;">OASENSE</span>
+    <canvas id="glitchCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;"></canvas>
+  </h1>
+  <p class="hero-sub">You Are The Light — Embrace It</p>
+  <p class="hero-desc">Photography · Digital Art · Video · Apparel · Music<br/>A creative studio built to help you wake up to your potential.</p>
+  <div class="hero-ctas">
+    <a href="#shop" class="btn-hot">Enter Shop</a>
+    <a href="#about" class="btn-ghost">Our Story</a>
+  </div>
+</section>
+
+<!-- MANIFESTO BAND -->
+<div class="band" id="manifesto">
+  <div class="mq-wrap">
+    <p class="mq">
+      "It wasn't until I realized —<br/>
+      <span class="hot-word">I am the light myself.</span><br/>
+      That we are ALL the light —<br/>
+      that my life began to transform."
+    </p>
+    <p class="mq-by">— Angel Alvarez · Founder of Oasense</p>
+  </div>
+</div>
+
+<!-- SHOP -->
+<section id="shop">
+  <div class="wrap">
+    <p class="sec-tag">// 01 — The Store</p>
+    <h2 class="sec-title">Shop <span class="hot">Oasense</span></h2>
+    <div class="vhs-line"></div>
+    <div class="filter-row">
+      <button class="fb on" onclick="sf('all',this)">All</button>
+      <button class="fb" onclick="sf('apparel',this)">Apparel</button>
+      <button class="fb" onclick="sf('accessories',this)">Accessories</button>
+      <button class="fb" onclick="sf('digital',this)">Digital</button>
+    </div>
+    <div class="sg" id="sg">
+      <div class="pr" data-c="apparel"><div class="pi">👕<span class="pbdg">New</span></div><div class="pb"><div class="pn">You Are The Light Tee</div><div class="pd">Premium cotton. Wash inside out, cold water, tumble dry low.</div><div class="pf"><span class="pp">$34.99</span><button class="pa">Add to Cart</button></div></div></div>
+      <div class="pr" data-c="apparel"><div class="pi">🧥</div><div class="pb"><div class="pn">Oasense Hoodie</div><div class="pd">Heavyweight fleece. Wear your light, even in the dark.</div><div class="pf"><span class="pp">$64.99</span><button class="pa">Add to Cart</button></div></div></div>
+      <div class="pr" data-c="apparel"><div class="pi">🩱</div><div class="pb"><div class="pn">Rise Crop Top</div><div class="pd">Light &amp; intentional. For those who know their worth.</div><div class="pf"><span class="pp">$28.99</span><button class="pa">Add to Cart</button></div></div></div>
+      <div class="pr" data-c="accessories"><div class="pi">🧢<span class="pbdg">Hot</span></div><div class="pb"><div class="pn">Sol Cap</div><div class="pd">Structured 6-panel, embroidered Oasense logo.</div><div class="pf"><span class="pp">$24.99</span><button class="pa">Add to Cart</button></div></div></div>
+      <div class="pr" data-c="accessories"><div class="pi">📿</div><div class="pb"><div class="pn">Light Pendant</div><div class="pd">Minimalist pendant. Symbol of your inner light.</div><div class="pf"><span class="pp">$19.99</span><button class="pa">Add to Cart</button></div></div></div>
+      <div class="pr" data-c="digital"><div class="pi">🎨<span class="pbdg">Digital</span></div><div class="pb"><div class="pn">Soul Wallpaper Pack</div><div class="pd">12 high-res digital wallpapers by Angel. Instant download.</div><div class="pf"><span class="pp">$9.99</span><button class="pa">Download</button></div></div></div>
+      <div class="pr" data-c="digital"><div class="pi">📖</div><div class="pb"><div class="pn">Awaken — E-Book</div><div class="pd">Angel's guide to creative self-mastery. PDF + EPUB.</div><div class="pf"><span class="pp">$14.99</span><button class="pa">Download</button></div></div></div>
+      <div class="pr" data-c="digital"><div class="pi">🎬</div><div class="pb"><div class="pn">Lightroom Preset Pack</div><div class="pd">20 cinematic presets for editorial creators.</div><div class="pf"><span class="pp">$19.99</span><button class="pa">Download</button></div></div></div>
+    </div>
+    <div class="sn"><strong>Payments:</strong> Visa · Mastercard · Amex · PayPal · Apple Pay &nbsp;|&nbsp; <strong>Standard:</strong> 5–7 days &nbsp;|&nbsp; <strong>Express:</strong> 2–3 days &nbsp;|&nbsp; <strong>Returns:</strong> 30 days, unworn</div>
+  </div>
+</section>
+
+<!-- MUSIC -->
+<section id="music">
+  <div class="wrap">
+    <p class="sec-tag">// 02 — Sound</p>
+    <h2 class="sec-title">Music <span class="hot">Demos</span></h2>
+    <div class="vhs-line"></div>
+    <p style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);margin-bottom:36px;line-height:1.9;letter-spacing:1px;max-width:440px;">Raw sessions from the studio. Angel's sonic world — dark, expansive, honest. Stream here or dive deeper on SoundCloud.</p>
+    <div class="tl">
+      <div class="tk" data-i="0" data-d="222"><button class="tpb" onclick="pT(0)">▶</button><div><div class="tn">SOLXSTATE — AWAKEN</div><div class="tm">Demo · 3:42</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">3:42</div></div>
+      <div class="tk" data-i="1" data-d="258"><button class="tpb" onclick="pT(1)">▶</button><div><div class="tn">SOLXSTATE — INNER LIGHT</div><div class="tm">Demo · 4:18</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">4:18</div></div>
+      <div class="tk" data-i="2" data-d="175"><button class="tpb" onclick="pT(2)">▶</button><div><div class="tn">SOLXSTATE — REBUILD</div><div class="tm">Demo · 2:55</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">2:55</div></div>
+      <div class="tk" data-i="3" data-d="186"><button class="tpb" onclick="pT(3)">▶</button><div><div class="tn">SOLXSTATE — WHY (F34)</div><div class="tm">Demo · 3:06</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">3:06</div></div>
+      <div class="tk" data-i="4" data-d="162"><button class="tpb" onclick="pT(4)">▶</button><div><div class="tn">SOLXSTATE — WARRIOR (MASTERED)</div><div class="tm">Demo · 2:42</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">2:42</div></div>
+    </div>
+    <a href="https://soundcloud.com/solxstate" target="_blank" class="sc-link">☁ Full Catalog on SoundCloud</a>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section id="blog">
+  <div class="wrap">
+    <p class="sec-tag">// 03 — The Feed</p>
+    <h2 class="sec-title">Sol's <span class="hot">Blog</span></h2>
+    <div class="vhs-line"></div>
+    <div class="bg">
+      <div class="po"><div class="pth" style="background:linear-gradient(135deg,#1a0020,#2d0040);">🌅<span class="ptag">Mindset</span></div><div class="pbo"><div class="ptit">You Don't Have to Understand the Journey to Trust It</div><div class="pex">The hardest moments show up as the most necessary ones. Here's what I've been sitting with lately...</div><div class="pft"><div class="pau"><div class="ppfp">☀️</div><div><div class="pan">Sol · Angel Alvarez</div><div class="pdt">Mar 5, 2025</div></div></div><div class="pac"><button class="pab" onclick="lk(this)">♥ <span>47</span></button><button class="pab" onclick="sh()">↗</button></div></div></div></div>
+      <div class="po"><div class="pth" style="background:linear-gradient(135deg,#200010,#400020);">📷<span class="ptag">Photography</span></div><div class="pbo"><div class="ptit">How I Shoot Cinematic Portraits With No Budget</div><div class="pex">Gear matters less than intention. My process for getting that editorial feel with what you already have...</div><div class="pft"><div class="pau"><div class="ppfp">☀️</div><div><div class="pan">Sol · Angel Alvarez</div><div class="pdt">Feb 20, 2025</div></div></div><div class="pac"><button class="pab" onclick="lk(this)">♥ <span>93</span></button><button class="pab" onclick="sh()">↗</button></div></div></div></div>
+      <div class="po"><div class="pth" style="background:linear-gradient(135deg,#100020,#200040);">🔥<span class="ptag">Creative Life</span></div><div class="pbo"><div class="ptit">Building Oasense From Zero — The Real Story</div><div class="pex">Not the highlight reel. The actual rebuilding — the doubt, the grind, the small wins that kept me going...</div><div class="pft"><div class="pau"><div class="ppfp">☀️</div><div><div class="pan">Sol · Angel Alvarez</div><div class="pdt">Jan 10, 2025</div></div></div><div class="pac"><button class="pab" onclick="lk(this)">♥ <span>128</span></button><button class="pab" onclick="sh()">↗</button></div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="wrap">
+    <p class="sec-tag">// 04 — The Work</p>
+    <h2 class="sec-title">Port<span class="hot">folio</span></h2>
+    <div class="vhs-line"></div>
+    <div class="pg">
+      <div class="pi2" style="background:linear-gradient(135deg,#0d0015,#1a0028);">📸<div class="ph2"><strong>Portraits</strong><span>Cinematic</span></div></div>
+      <div class="pi2" style="background:linear-gradient(135deg,#0a0018,#12002a);">🎨<div class="ph2"><strong>Digital Art</strong><span>Originals</span></div></div>
+      <div class="pi2" style="background:linear-gradient(135deg,#180010,#280018);">🎬<div class="ph2"><strong>Video</strong><span>Content</span></div></div>
+      <div class="pi2" style="background:linear-gradient(135deg,#0a0018,#14002a);">✨<div class="ph2"><strong>Branding</strong><span>Identity</span></div></div>
+      <div class="pi2" style="background:linear-gradient(135deg,#12001a,#1e0030);">🌆<div class="ph2"><strong>Lifestyle</strong><span>Editorial</span></div></div>
+    </div>
+    <p style="margin-top:20px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mute);letter-spacing:3px;">FULL PORTFOLIO ON REQUEST · <a href="#contact" style="color:var(--hot);">CONTACT US</a></p>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section id="booking">
+  <div class="wrap">
+    <p class="sec-tag">// 05 — Sessions</p>
+    <h2 class="sec-title">Book a <span class="hot">Shoot</span></h2>
+    <div class="vhs-line"></div>
+    <div class="bkg">
+      <div>
+        <p style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);line-height:1.9;margin-bottom:24px;letter-spacing:1px;">Soul-centered sessions built on intention. Select your session type and share your vision.</p>
+        <div class="svl">
+          <div class="sv on" onclick="pS(this,'Cinematic Portraits')"><div class="svi">📸</div><div><div class="svn">Cinematic Portraits</div><div class="svd">Personal branding and artful lifestyle portraits.</div></div></div>
+          <div class="sv" onclick="pS(this,'Brand / Business')"><div class="svi">👔</div><div><div class="svn">Brand / Business</div><div class="svd">Visual identity for entrepreneurs and creators.</div></div></div>
+          <div class="sv" onclick="pS(this,'Events')"><div class="svi">🎉</div><div><div class="svn">Events</div><div class="svd">Candid and editorial coverage.</div></div></div>
+          <div class="sv" onclick="pS(this,'Video / Content')"><div class="svi">🎬</div><div><div class="svn">Video / Content</div><div class="svd">Short-form, reels, or full production.</div></div></div>
+        </div>
+        <div class="pnote">Pricing is custom to each project. Contact us to discuss your vision — we'll find what works.</div>
+      </div>
+      <div class="fm">
+        <div class="fg"><label class="fl">Your Name</label><input class="fi" placeholder="Full name"/></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="you@example.com"/></div>
+        <div class="fg"><label class="fl">Preferred Date</label><input type="date" class="fi"/></div>
+        <div class="fg"><label class="fl">Session Type</label>
+          <div class="csel" id="cselWrap">
+            <div class="csel-selected" id="cselDisplay" onclick="toggleCsel()">
+              <span id="cselText">📸 Cinematic Portraits</span>
+              <span class="csel-arrow">▾</span>
+            </div>
+            <div class="csel-opts" id="cselOpts">
+              <div class="csel-opt" onclick="pickSel('📸 Cinematic Portraits','Cinematic Portraits')"><strong>📸 CINEMATIC PORTRAITS</strong><span>Personal branding and artful lifestyle portraits.</span></div>
+              <div class="csel-opt" onclick="pickSel('👔 Brand / Business','Brand / Business')"><strong>👔 BRAND / BUSINESS</strong><span>Visual identity for entrepreneurs and creators.</span></div>
+              <div class="csel-opt" onclick="pickSel('🎉 Events','Events')"><strong>🎉 EVENTS</strong><span>Candid and editorial coverage.</span></div>
+              <div class="csel-opt" onclick="pickSel('🎬 Video / Content','Video / Content')"><strong>🎬 VIDEO / CONTENT</strong><span>Short-form, reels, or full production.</span></div>
+              <div class="csel-opt" onclick="pickSel('✨ Other','Other')"><strong>✨ OTHER</strong><span>Have something else in mind? Tell us below.</span></div>
+            </div>
+          </div>
+          <input type="hidden" id="svSel" value="Cinematic Portraits"/>
+        </div>
+        <div class="fg"><label class="fl">Your Vision</label><textarea class="fta" placeholder="Describe the vibe, the purpose, the feeling you want to capture..."></textarea></div>
+        <button class="fbtn" onclick="toast('REQUEST SENT — WE\'LL BE IN TOUCH ✓')">Send Request</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="wrap">
+    <p class="sec-tag">// 06 — Our Story</p>
+    <h2 class="sec-title">About <span class="hot">Angel</span></h2>
+    <div class="vhs-line"></div>
+    <div class="ag">
+      <div class="av">☀️<div class="av-corner tl"></div><div class="av-corner tr"></div><div class="av-corner bl"></div><div class="av-corner br"></div></div>
+      <div>
+        <div class="apull">"I harnessed the power of my light to create Oasense — a purpose bigger than myself, dedicated to helping humanity heal and rise."</div>
+        <div class="abod">
+          <p>I'm Angel Alvarez — photographer, musician, digital artist, content creator, and storyteller. Someone who uses creativity as a tool for self-mastery.</p>
+          <p>Oasense began during one of the most transformative chapters of my life — rebuilding myself, learning to create from truth instead of survival.</p>
+          <p>Through spiritual clothing, books, and content, I inspire others to see their own light. <strong style="color:var(--hot);">You are the light. Embrace it.</strong></p>
+        </div>
+        <div class="socr">
+          <a href="https://www.youtube.com/channel/UCzpmNmYs5r2_8OjG33FNsgA" target="_blank" class="slnk">YouTube</a>
+          <a href="https://discord.com/invite/FG57HKHbwz" target="_blank" class="slnk">Discord</a>
+          <a href="https://www.instagram.com/oasense.shop" target="_blank" class="slnk">Instagram</a>
+          <a href="https://www.facebook.com/profile.php?id=61584155414643" target="_blank" class="slnk">Facebook</a>
+          <a href="https://www.tiktok.com/@solxstate" target="_blank" class="slnk">TikTok</a>
+          <a href="https://soundcloud.com/solxstate" target="_blank" class="slnk">SoundCloud</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REWARDS -->
+<section id="rewards">
+  <div class="wrap">
+    <p class="sec-tag">// 07 — Loyalty</p>
+    <h2 class="sec-title">My <span class="hot">Rewards</span></h2>
+    <div class="vhs-line"></div>
+    <div class="rtop">
+      <div class="rnum">0</div>
+      <div class="rlbl">Your Sol Points</div>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);margin-top:12px;letter-spacing:1px;">Log in to see your balance and redeem rewards</p>
+      <button class="btn-hot" style="margin-top:20px;" onclick="oA('login')">Log In to Check Points</button>
+    </div>
+    <h3 style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:22px;">HOW TO EARN SOL POINTS</h3>
+    <div class="rg">
+      <div class="ri"><div class="ricon">🛍️</div><div class="rp">10 pts</div><div class="rw">Per $1 spent in the shop</div></div>
+      <div class="ri"><div class="ricon">💬</div><div class="rp">50 pts</div><div class="rw">Leave a product review</div></div>
+      <div class="ri"><div class="ricon">📧</div><div class="rp">100 pts</div><div class="rw">Subscribe to newsletter</div></div>
+      <div class="ri"><div class="ricon">📷</div><div class="rp">200 pts</div><div class="rw">Share with #Oasense</div></div>
+      <div class="ri"><div class="ricon">❤️</div><div class="rp">5 pts</div><div class="rw">Like a blog post</div></div>
+      <div class="ri"><div class="ricon">🔗</div><div class="rp">150 pts</div><div class="rw">Refer a friend</div></div>
+      <div class="ri"><div class="ricon">🎂</div><div class="rp">500 pts</div><div class="rw">Birthday bonus</div></div>
+      <div class="ri"><div class="ricon">💸</div><div class="rp">250 pts</div><div class="rw">Make a donation</div></div>
+    </div>
+    <div class="rdm"><h4>Redeem Points</h4><p>500 pts = $5 off · 1,000 pts = $12 off · 2,500 pts = $35 off + exclusive digital content · 5,000 pts = free product</p></div>
+  </div>
+</section>
+
+<!-- DONATION -->
+<section id="donation">
+  <div class="wrap">
+    <p class="sec-tag">// 08 — Support the Mission</p>
+    <h2 class="sec-title">Fuel <span class="hot">The Light</span></h2>
+    <div class="vhs-line"></div>
+    <div class="dtop">
+      <div class="raised"><span>$</span><span id="rn">3,247</span></div>
+      <div class="rsub">Total Raised — Thank You 🙏</div>
+      <p class="dd">Every dollar helps Oasense keep creating resources to help others wake up to their potential.</p>
+    </div>
+    <div class="ag2">
+      <button class="ab" onclick="pA(1,this)">$1</button>
+      <button class="ab" onclick="pA(5,this)">$5</button>
+      <button class="ab on" onclick="pA(10,this)">$10</button>
+      <button class="ab" onclick="pA(25,this)">$25</button>
+      <button class="ab" onclick="pA(50,this)">$50</button>
+      <button class="ab" onclick="pA(100,this)">$100</button>
+      <button class="ab" onclick="pA('other',this)">Other</button>
+    </div>
+    <div class="cw" id="cw" style="display:none;"><input type="number" class="fi" placeholder="Enter amount ($)" id="ca" min="1"/></div>
+    <div class="fr">
+      <button class="frb on" onclick="pF(this)">One-Time</button>
+      <button class="frb" onclick="pF(this)">Weekly</button>
+      <button class="frb" onclick="pF(this)">Monthly</button>
+      <button class="frb" onclick="pF(this)">Yearly</button>
+    </div>
+    <button class="db" onclick="don()">Donate Now ☀️</button>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div id="newsletter">
+  <div class="wrap">
+    <p class="sec-tag" style="text-align:center;display:block;">// Signal</p>
+    <h2 class="nlt">SUBSCRIBE TO OUR<br/><span>NEWSLETTER</span></h2>
+    <p class="nls">Weekly drops — behind-the-scenes, new work, exclusive discounts &amp; spiritual insights.</p>
+    <div class="nlf">
+      <input type="email" placeholder="your@email.com" id="nle"/>
+      <button onclick="jNL()">Join</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <p class="sec-tag">// 09 — Get In Touch</p>
+    <h2 class="sec-title">Contact <span class="hot">Us</span></h2>
+    <div class="vhs-line"></div>
+    <div class="cg">
+      <div>
+        <div class="cit"><div class="cic">📧</div><div class="citext"><h4>Email</h4><p>Messages go directly to our inbox. We reply within 1–2 business days.</p></div></div>
+        <div class="cit"><div class="cic">📍</div><div class="citext"><h4>Location</h4><p>Remote &amp; in-person sessions. Based in the US.</p></div></div>
+        <div class="cit"><div class="cic">📲</div><div class="citext"><h4>Social</h4><p>@oasense.shop on Instagram &amp; Facebook · @solxstate on TikTok &amp; SoundCloud</p></div></div>
+        <div class="cbc">
+          <h3>Open for Collaboration</h3>
+          <p>Always open to working with aligned creators, brands, and dreamers. If your energy matches Oasense's vision — let's build something.</p>
+          <button class="btn-ghost" onclick="document.getElementById('si').value='Collaboration Inquiry'">Start Collab Conversation</button>
+        </div>
+      </div>
+      <div>
+        <div class="fg" style="margin-bottom:14px;"><label class="fl">Preferred Response Method</label><div class="mp"><button class="mb2 on" onclick="pM(this,'email')">📧 Email</button><button class="mb2" onclick="pM(this,'phone')">📱 Phone</button></div></div>
+        <div class="fm">
+          <div class="fg"><label class="fl">Your Name</label><input class="fi" placeholder="Full name"/></div>
+          <div class="fg" id="emailField"><label class="fl">Email Address</label><input type="email" class="fi" placeholder="your@email.com"/></div>
+          <div class="fg" id="phoneField" style="display:none;"><label class="fl">Phone Number</label><input type="tel" class="fi" placeholder="+1 (555) 000-0000"/></div>
+          <div class="fg"><label class="fl">Subject</label><input class="fi" placeholder="What's this about?" id="si"/></div>
+          <div class="fg"><label class="fl">Message</label><textarea class="fta" style="height:130px;" placeholder="Tell us everything. We actually read this."></textarea></div>
+          <button class="fbtn" onclick="toast('MESSAGE SENT — WE\'LL REPLY WITHIN 1–2 DAYS ✓')">Send Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<div class="sec2" id="faq">
+  <div class="wrap">
+    <p class="sec-tag">// Questions</p>
+    <h2 class="sec-title" style="font-size:clamp(28px,4vw,52px);">FAQ</h2>
+    <div class="vhs-line"></div>
+    <div class="fw">
+      <div class="fqi"><button class="fqb" onclick="fq(this)">How do I track my order?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Once your order ships, you'll receive a tracking number via email to follow your package.</div></div></div>
+      <div class="fqi"><button class="fqb" onclick="fq(this)">What is your return policy?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Returns accepted within 30 days. Items must be unworn and in original condition. Contact us to start a return.</div></div></div>
+      <div class="fqi"><button class="fqb" onclick="fq(this)">How do I care for my Oasense tee?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Wash inside out with cold water. Tumble dry on low heat to maintain quality and preserve the print.</div></div></div>
+      <div class="fqi"><button class="fqb" onclick="fq(this)">What payment methods do you accept?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Visa, Mastercard, American Express, PayPal, and Apple Pay.</div></div></div>
+      <div class="fqi"><button class="fqb" onclick="fq(this)">How long does shipping take?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Standard: 5–7 business days. Express: 2–3 business days. Both available at checkout.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ftg">
+    <div class="ftbr">
+      <a href="#hero" class="ftl">OASENSE</a>
+      <p>A creative studio for photography, digital art, video &amp; mindful merchandise. You are the light — embrace it.</p>
+    </div>
+    <div class="ftcol"><h4>Navigate</h4><ul><li><a href="#shop">Shop</a></li><li><a href="#music">Music</a></li><li><a href="#blog">Blog</a></li><li><a href="#portfolio">Portfolio</a></li><li><a href="#booking">Book a Session</a></li><li><a href="#about">About</a></li><li><a href="#donation">Donate</a></li><li><a href="#rewards">Rewards</a></li></ul></div>
+    <div class="ftcol"><h4>Support</h4><ul><li><a href="#faq">FAQ</a></li><li><a href="#contact">Contact</a></li><li><a href="#">Shipping Policy</a></li><li><a href="#">Refund Policy</a></li></ul></div>
+    <div class="ftcol"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms &amp; Conditions</a></li><li><a href="#">Accessibility</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+  </div>
+  <div class="ftbot">
+    <p class="ftcopy">© 2025 OASENSE.SHOP — ALL RIGHTS RESERVED</p>
+    <div class="ftlinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Accessibility</a><a href="#">Shipping</a><a href="#">Refunds</a></div>
+  </div>
+</footer>
+
+<!-- NEED HELP NUDGE -->
+<div id="needHelp">
+  <button class="nh-dismiss" onclick="dismissNH()" title="Dismiss">✕</button>
+  <button class="nh-tab" onclick="openNH()">
+    <span class="nh-tab-dot"></span>
+    NEED HELP?
+  </button>
+</div>
+
+<!-- NEED HELP POPUP -->
+<div class="nh-popup" id="nhPopup">
+  <div class="nh-popup-head">
+    <div>
+      <div class="nh-popup-title">HEY THERE 👋</div>
+      <div class="nh-popup-sub">WHAT BRINGS YOU HERE?</div>
+    </div>
+    <button class="nh-close" onclick="closeNH()">✕</button>
+  </div>
+  <div class="nh-btns" id="nhBtns">
+    <button class="nh-btn" onclick="nhChoice('shop')"><span class="nh-btn-icon">🛍️</span><div><div>ENTER SHOP</div><div class="nh-btn-sub">Browse apparel, accessories &amp; digital</div></div></button>
+    <button class="nh-btn" onclick="nhChoice('contact')"><span class="nh-btn-icon">💬</span><div><div>CONTACT US</div><div class="nh-btn-sub">Book a session or ask a question</div></div></button>
+    <button class="nh-btn" onclick="nhChoice('looking')"><span class="nh-btn-icon">👀</span><div><div>JUST LOOKING</div><div class="nh-btn-sub">Take your time, explore freely</div></div></button>
+  </div>
+  <div class="nh-thanks" id="nhThanks">
+    <p><span style="color:var(--hot);font-family:'Black Ops One',sans-serif;font-size:12px;letter-spacing:2px;text-shadow:0 0 8px rgba(255,0,200,0.6);">HINT:</span> <span style="color:#fff;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;line-height:1.8;">Hold and drag your<br/>Companion</span></p>
+  </div>
+</div>
+
+<!-- SOL CREATURE — fixed independently, floats near bottom-right -->
+<div id="solCreatureWrap">
+  <div id="solParticles"></div>
+  <div class="solEl" id="solEl">
+    <div class="solGlow"    id="solGlow"></div>
+    <div class="outerFlame" id="outerFlame"></div>
+    <div class="midFlame"   id="midFlame"></div>
+    <div class="solCore"    id="solCore">
+      <div class="solEyes"  id="solEyes">
+        <div class="solEye"></div>
+        <div class="solEye"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOL AI button + chat panel (never moves) -->
+<div id="sol">
+  <!-- CHAT PANEL -->
+  <div class="solp" id="solp">
+    <div class="solh">
+      <div class="solav">☀️</div>
+      <div><div class="soln">SOL AI</div><div class="sols">● ONLINE — HERE TO HELP</div></div>
+      <button class="solx" onclick="tSol()">×</button>
+    </div>
+    <div class="solm" id="solm">
+      <div class="solmsg">Hey! I'm Sol ☀️ — your guide to everything Oasense. Ask me about the shop, bookings, music, or anything else!</div>
+    </div>
+    <div class="solin">
+      <input class="solinp" id="solinp" placeholder="Ask Sol anything..." onkeydown="if(event.key==='Enter')sSol()"/>
+      <button class="solsend" onclick="sSol()">↑</button>
+    </div>
+  </div>
+
+  <!-- ASK SOL BUTTON -->
+  <button class="solbtn" onclick="tSol()">
+    <span class="solbtn-label">ASK SOL</span>
+  </button>
+</div>
+
+<!-- AUTH -->
+<div class="ov" id="ov" onclick="cAOut(event)">
+  <div class="mo">
+    <button class="mx" onclick="cA()">×</button>
+    <div id="lv">
+      <div class="mt2">Welcome Back</div>
+      <div class="ms2">Log in to access your Sol Points, orders, and more.</div>
+      <div class="soa"><button class="sob" onclick="soc('Google')">🔵 Continue with Google</button><button class="sob" onclick="soc('Facebook')">🔷 Continue with Facebook</button><button class="sob" onclick="soc('Apple')">⚫ Continue with Apple</button></div>
+      <div class="ord"><span>or</span></div>
+      <div class="fm">
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="your@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" placeholder="••••••••"/></div>
+        <button class="fbtn" onclick="dL()">Log In</button>
+      </div>
+      <div class="msw">Don't have an account? <a onclick="swA('signup')">Sign Up</a></div>
+    </div>
+    <div id="sv" style="display:none;">
+      <div class="mt2">Join Oasense</div>
+      <div class="ms2">Create your account to earn Sol Points and join the journey.</div>
+      <div class="soa"><button class="sob" onclick="soc('Google')">🔵 Continue with Google</button><button class="sob" onclick="soc('Facebook')">🔷 Continue with Facebook</button><button class="sob" onclick="soc('Apple')">⚫ Continue with Apple</button></div>
+      <div class="ord"><span>or</span></div>
+      <div class="fm">
+        <div class="fg"><label class="fl">Full Name</label><input class="fi" placeholder="Your name"/></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="your@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" id="pwin" placeholder="••••••••" oninput="pws()"/><div class="pwh">Min 8 chars · 1 uppercase · 1 number</div><div class="pwbw"><div class="pwb" id="pwb"></div></div></div>
+        <button class="fbtn" onclick="dS()">Create Account</button>
+      </div>
+      <div class="msw">Already have an account? <a onclick="swA('login')">Log In</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── CANVAS SMOKE/PLASMA BG ──
+const cv=document.getElementById('bgCanvas');
+const ctx=cv.getContext('2d');
+let W,H,t=0;
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+const particles=[];
+for(let i=0;i<80;i++){
+  particles.push({
+    x:Math.random()*1000,y:Math.random()*1000,
+    vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
+    r:Math.random()*180+80,
+    a:Math.random()*.08+.01,
+    phase:Math.random()*Math.PI*2,
+    hue:Math.random()*60+300
+  });
+}
+function drawBG(){
+  ctx.clearRect(0,0,W,H);
+  const grad=ctx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,W*.8);
+  grad.addColorStop(0,'rgba(10,0,20,1)');
+  grad.addColorStop(1,'rgba(0,0,5,1)');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+  t+=0.004;
+  particles.forEach(p=>{
+    p.x+=p.vx+Math.sin(t+p.phase)*0.3;
+    p.y+=p.vy+Math.cos(t+p.phase)*0.2;
+    if(p.x<-p.r)p.x=W+p.r;if(p.x>W+p.r)p.x=-p.r;
+    if(p.y<-p.r)p.y=H+p.r;if(p.y>H+p.r)p.y=-p.r;
+    const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+    g.addColorStop(0,`hsla(${p.hue},100%,60%,${p.a})`);
+    g.addColorStop(1,'hsla(0,0%,0%,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+  });
+  if(Math.random()>.97){
+    const y=Math.random()*H;
+    ctx.fillStyle=`rgba(255,0,200,${Math.random()*.04})`;
+    ctx.fillRect(0,y,W,Math.random()*3+1);
+  }
+  requestAnimationFrame(drawBG);
+}
+drawBG();
+
+// ── TITLE GLITCH ──
+(function(){
+  const gc=document.getElementById('glitchCanvas');
+  if(!gc)return;
+  const gctx=gc.getContext('2d');
+  const TEXT='OASENSE';
+  const FONT_FAM="'Black Ops One', sans-serif";
+  let W2=0,H2=0,FS=0;
+  let base=null,pink=null,mag=null;
+  function buildLayers(){
+    function mk(color){
+      const t=document.createElement('canvas');
+      t.width=W2;t.height=H2;
+      const x=t.getContext('2d');
+      x.font=`${FS}px ${FONT_FAM}`;
+      x.textBaseline='middle';x.textAlign='center';
+      x.fillStyle=color;
+      x.fillText(TEXT,W2/2,H2/2);
+      return t;
+    }
+    base=mk('#ffffff');pink=mk('#ff44cc');mag=mk('#cc00ff');
+  }
+  function measure(){
+    const wordEl=document.getElementById('glitchWord');
+    if(!wordEl)return;
+    const r=wordEl.getBoundingClientRect();
+    if(r.width===0)return;
+    W2=gc.width=Math.ceil(r.width)+4;
+    H2=gc.height=Math.ceil(r.height)+4;
+    FS=parseFloat(window.getComputedStyle(wordEl).fontSize);
+    buildLayers();
+  }
+  setTimeout(measure,600);
+  window.addEventListener('resize',()=>setTimeout(measure,150));
+  let glitching=false,gFrame=0,gTotal=0;
+  let acc=0,nextG=rand2(),lastT=performance.now();
+  let rects=[],slices=[];
+  function rand2(){return 3500+Math.random()*7000;}
+  function fire(){
+    if(!base)return;
+    glitching=true;gFrame=0;
+    gTotal=10+Math.floor(Math.random()*20);
+    rects=[];slices=[];
+    const n=6+Math.floor(Math.random()*8);
+    for(let i=0;i<n;i++){
+      const h=1+Math.random()*12,y=Math.random()*H2;
+      const x=Math.random()*W2*0.1,w=W2*0.3+Math.random()*W2*0.65;
+      const t2=Math.random();
+      const col=
+        t2<0.28?`rgba(255,20,200,${0.7+Math.random()*0.3})`
+        :t2<0.52?`rgba(204,0,255,${0.6+Math.random()*0.35})`
+        :t2<0.68?`rgba(255,100,220,${0.55+Math.random()*0.4})`
+        :t2<0.80?`rgba(255,255,255,${0.65+Math.random()*0.35})`
+        :`rgba(0,0,6,${0.85+Math.random()*0.15})`;
+      rects.push({x,y,w,h,col,life:2+Math.floor(Math.random()*10),fr:0});
+    }
+    const ns=1+Math.floor(Math.random()*4);
+    for(let i=0;i<ns;i++){
+      slices.push({y:4+Math.random()*(H2-8),h:5+Math.random()*22,shift:(Math.random()-0.5)*34,colSrc:Math.random()>0.5?pink:mag,life:2+Math.floor(Math.random()*8),fr:0});
+    }
+  }
+  function draw2(){
+    if(!base)return;
+    gctx.clearRect(0,0,W2,H2);
+    gctx.drawImage(base,0,0);
+    if(!glitching)return;
+    let alive=false;
+    slices.forEach(s=>{
+      if(s.fr>=s.life)return;
+      alive=true;
+      const a=1-(s.fr/s.life)*0.45;
+      gctx.save();gctx.globalAlpha=a;
+      gctx.clearRect(0,s.y,W2,s.h);
+      gctx.drawImage(s.colSrc,0,s.y,W2,s.h,s.shift,s.y,W2,s.h);
+      gctx.globalAlpha=a*0.35;
+      gctx.drawImage(base,0,s.y,W2,s.h,-s.shift*0.4,s.y,W2,s.h);
+      gctx.globalAlpha=a*0.9;
+      gctx.fillStyle='rgba(255,0,200,0.8)';gctx.fillRect(0,s.y,W2,1);
+      gctx.fillStyle='rgba(180,0,255,0.6)';gctx.fillRect(0,s.y+s.h-1,W2,1);
+      gctx.restore();s.fr++;
+    });
+    rects.forEach(r=>{
+      if(r.fr>=r.life)return;
+      alive=true;
+      gctx.save();gctx.globalAlpha=1-(r.fr/r.life)*0.55;
+      gctx.fillStyle=r.col;gctx.fillRect(r.x,r.y,r.w,r.h);
+      gctx.restore();r.fr++;
+    });
+    gFrame++;
+    if(gFrame%3===0&&Math.random()>0.45){
+      const yf=Math.random()*H2;
+      rects.push({x:Math.random()*W2*0.2,y:yf,w:8+Math.random()*W2*0.6,h:1+Math.random()*4,col:Math.random()>0.5?'rgba(255,0,200,0.95)':'rgba(220,0,255,0.85)',life:2,fr:0});
+    }
+    if(!alive||gFrame>gTotal+15){
+      glitching=false;gctx.clearRect(0,0,W2,H2);gctx.drawImage(base,0,0);acc=0;nextG=rand2();
+    }
+  }
+  function tick2(now){
+    const dt=now-lastT;lastT=now;
+    if(glitching){draw2();}
+    else{acc+=dt;if(base){gctx.clearRect(0,0,W2,H2);gctx.drawImage(base,0,0);}if(base&&acc>=nextG)fire();}
+    requestAnimationFrame(tick2);
+  }
+  setTimeout(()=>{lastT=performance.now();requestAnimationFrame(tick2);},700);
+})();
+
+// ── CONTACT ──
+function pM(b,m){document.querySelectorAll('.mb2').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('emailField').style.display=m==='email'?'block':'none';document.getElementById('phoneField').style.display=m==='phone'?'block':'none';}
+
+// ── SOL CREATURE ──
+// The creature wrap is position:fixed independently of #sol (ASK SOL button stays put).
+// Dragging uses lerp so Sol lazily follows the cursor center with a soft delay.
+// Text selection is suppressed while dragging.
+(function(){
+  const wrap  = document.getElementById('solCreatureWrap');
+  const solEl = document.getElementById('solEl');
+  const core  = document.getElementById('solCore');
+  const eyes  = document.getElementById('solEyes');
+  const glow  = document.getElementById('solGlow');
+  const outer = document.getElementById('outerFlame');
+  const mid   = document.getElementById('midFlame');
+  if(!solEl) return;
+
+  const particleColor = 'rgba(255,0,200,0.8)';
+  const LERP = 0.09; // drag lag — lower = more delay (0.06–0.12 feels organic)
+
+  // Current and target positions for lerp (center of wrap)
+  let posX = window.innerWidth  - 14 - 70;  // right:14px + half wrap width
+  let posY = window.innerHeight - 78 - 70;  // bottom:78px + half wrap height
+  let targetX = posX;
+  let targetY = posY;
+
+  let dragging    = false;
+  let flameX=0, flameY=0, velocityX=0, velocityY=0;
+  let prevMouseX=0, prevMouseY=0;
+  const safeRadius = 27;
+  let floatOffset=0, floatDir=1;
+  let idleTimeout=null;
+
+  // Apply wrap position (top-left corner, creature is centered inside)
+  function applyPos(){
+    wrap.style.left   = (posX - 70) + 'px';
+    wrap.style.top    = (posY - 70) + 'px';
+    wrap.style.right  = 'auto';
+    wrap.style.bottom = 'auto';
+  }
+
+  // ── main animation loop ──
+  function animLoop(){
+    // Lerp position toward target when dragging
+    if(dragging){
+      posX += (targetX - posX) * LERP;
+      posY += (targetY - posY) * LERP;
+      applyPos();
+    }
+
+    // Float bob (only when not dragging)
+    floatOffset += floatDir * 0.1;
+    if(floatOffset>4 || floatOffset<-4) floatDir *= -1;
+    if(!dragging){
+      solEl.style.transform = `translate(-50%,-50%) translateY(${floatOffset}px)`;
+    } else {
+      solEl.style.transform = `translate(-50%,-50%)`;
+    }
+
+    // Flame physics — trail velocity
+    flameX += (-velocityX - flameX) * 0.15;
+    flameY += (-velocityY - flameY) * 0.15;
+    const dist = Math.sqrt(flameX*flameX + flameY*flameY);
+    if(dist > safeRadius){ flameX*=safeRadius/dist; flameY*=safeRadius/dist; }
+
+    outer.style.transform = `translate(calc(-50% + ${flameX}px),calc(-50% + ${flameY}px))`;
+    mid.style.transform   = `translate(calc(-50% + ${flameX*0.7}px),calc(-50% + ${flameY*0.7}px))`;
+    glow.style.transform  = `translate(calc(-50% + ${flameX*0.45}px),calc(-50% + ${flameY*0.45}px))`;
+
+    requestAnimationFrame(animLoop);
+  }
+  animLoop();
+
+  // ── mousedown: start drag ──
+  core.addEventListener('mousedown', e=>{
+    dragging = true;
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
+    // Prevent text selection during drag
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+    core.animate([
+      {transform:'translate(-50%,-50%) scale(1,1)'},
+      {transform:'translate(-50%,-50%) scale(1.1,.85)'},
+      {transform:'translate(-50%,-50%) scale(.95,1.05)'},
+      {transform:'translate(-50%,-50%) scale(1,.9)'}
+    ],{duration:400, easing:'ease-out'});
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  // ── mousemove ──
+  document.addEventListener('mousemove', e=>{
+    if(idleTimeout) clearTimeout(idleTimeout);
+    idleTimeout = setTimeout(()=>{ if(eyes) eyes.style.transform='translate(0px,6px)'; }, 10000);
+
+    if(dragging){
+      // Velocity for flame trail (based on how fast cursor moves)
+      velocityX = (e.clientX - prevMouseX) * 1.4;
+      velocityY = (e.clientY - prevMouseY) * 1.4;
+      prevMouseX = e.clientX;
+      prevMouseY = e.clientY;
+      // Target = cursor center (sol center should reach cursor center)
+      targetX = Math.max(70, Math.min(window.innerWidth  - 70, e.clientX));
+      targetY = Math.max(70, Math.min(window.innerHeight - 70, e.clientY));
+    } else {
+      // Eye tracking toward cursor
+      const rect = wrap.getBoundingClientRect();
+      const cx = rect.left + rect.width/2;
+      const cy = rect.top  + rect.height/2;
+      let dx = (e.clientX - cx) * 0.04;
+      let dy = (e.clientY - cy) * 0.04;
+      dx = Math.max(-8, Math.min(8, dx));
+      dy = Math.max(-8, Math.min(8, dy));
+      if(eyes) eyes.style.transform = `translate(${dx}px,${6+dy}px)`;
+    }
+  });
+
+  // ── mouseup: stop drag ──
+  document.addEventListener('mouseup', ()=>{
+    if(!dragging) return;
+    dragging = false;
+    document.body.style.userSelect = '';
+    document.body.style.webkitUserSelect = '';
+  });
+
+  // ── touch drag ──
+  core.addEventListener('touchstart', e=>{
+    dragging = true;
+    const t = e.touches[0];
+    prevMouseX = t.clientX; prevMouseY = t.clientY;
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  }, {passive:false});
+
+  document.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    const t = e.touches[0];
+    velocityX = (t.clientX - prevMouseX)*1.4;
+    velocityY = (t.clientY - prevMouseY)*1.4;
+    prevMouseX = t.clientX; prevMouseY = t.clientY;
+    targetX = Math.max(70, Math.min(window.innerWidth  - 70, t.clientX));
+    targetY = Math.max(70, Math.min(window.innerHeight - 70, t.clientY));
+    e.preventDefault();
+  }, {passive:false});
+
+  document.addEventListener('touchend', ()=>{
+    dragging = false;
+    document.body.style.userSelect = '';
+  });
+
+  // ── blink ──
+  function blink(){
+    if(eyes){ eyes.style.display='none'; setTimeout(()=>eyes.style.display='flex', 120); }
+    setTimeout(blink, 9000 + Math.random()*14000);
+  }
+  setTimeout(blink, 9000 + Math.random()*14000);
+
+  // ── particles ──
+  function createParticle(){
+    const p = document.createElement('div');
+    p.className = 'sol-particle';
+    const sz = 2 + Math.random()*4;
+    p.style.width  = sz+'px';
+    p.style.height = sz+'px';
+    p.style.opacity = (0.3 + Math.random()*0.6).toString();
+    p.style.background = particleColor;
+    document.body.appendChild(p);
+
+    const r = wrap.getBoundingClientRect();
+    const startX = r.left + r.width/2  + (Math.random()*40 - 20);
+    const startY = r.top  + r.height/2 + (Math.random()*40 - 20);
+    p.style.left = startX+'px';
+    p.style.top  = startY+'px';
+
+    const angle = Math.random() * 2 * Math.PI;
+    const speed = 0.1 + Math.random()*0.2;
+    let lifetime = 150 + Math.random()*50;
+
+    function animP(){
+      lifetime--;
+      if(lifetime <= 0){ p.remove(); return; }
+      p.style.left = (parseFloat(p.style.left) + Math.cos(angle)*speed) +'px';
+      p.style.top  = (parseFloat(p.style.top)  + Math.sin(angle)*speed - 0.05) +'px';
+      p.style.opacity = Math.min(lifetime/200, parseFloat(p.style.opacity)).toString();
+      requestAnimationFrame(animP);
+    }
+    animP();
+  }
+  setInterval(createParticle, 180);
+})();
+
+// ── NEED HELP NUDGE — delay changed to 10 seconds ──
+(function(){
+  setTimeout(()=>{
+    const nh = document.getElementById('needHelp');
+    if(nh) nh.classList.add('peeking');
+  }, 10000); // 10 seconds
+})();
+
+function dismissNH(){
+  document.getElementById('needHelp').classList.add('dismissed');
+  document.getElementById('nhPopup').classList.remove('open');
+}
+function openNH(){
+  document.getElementById('nhPopup').classList.add('open');
+  document.getElementById('needHelp').classList.add('hidden-nh');
+  document.getElementById('nhBtns').style.display='flex';
+  document.getElementById('nhThanks').classList.remove('show');
+  const arr=document.getElementById('nhArrow');
+  if(arr) arr.classList.remove('show');
+}
+function closeNH(){
+  document.getElementById('nhPopup').classList.remove('open');
+  document.getElementById('needHelp').classList.remove('hidden-nh');
+}
+function nhChoice(type){
+  if(type==='shop'){closeNH();document.getElementById('shop').scrollIntoView({behavior:'smooth'});}
+  else if(type==='contact'){closeNH();document.getElementById('contact').scrollIntoView({behavior:'smooth'});}
+  else if(type==='looking'){
+    document.getElementById('nhBtns').style.display='none';
+    document.getElementById('nhThanks').classList.add('show');
+  }
+}
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000);}
+function tM(){document.getElementById('mob').classList.toggle('open');}
+function sf(c,b){document.querySelectorAll('.fb').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.pr').forEach(p=>p.style.display=c==='all'||p.dataset.c===c?'':'none');}
+
+// ── MUSIC ──
+let ct=-1,ti={},tp=[0,0,0,0,0];const ds=[222,258,175,186,162];
+function pT(i){const tks=document.querySelectorAll('.tk');if(ct===i){clearInterval(ti[i]);tks[i].classList.remove('pl');tks[i].querySelector('.tpb').textContent='▶';ct=-1;return;}if(ct>=0){clearInterval(ti[ct]);tks[ct].classList.remove('pl');tks[ct].querySelector('.tpb').textContent='▶';}ct=i;tks[i].classList.add('pl');tks[i].querySelector('.tpb').textContent='⏸';ti[i]=setInterval(()=>{tp[i]++;if(tp[i]>=ds[i]){clearInterval(ti[i]);tks[i].classList.remove('pl');tks[i].querySelector('.tpb').textContent='▶';ct=-1;tp[i]=0;return;}tks[i].querySelector('.tb').style.width=(tp[i]/ds[i]*100)+'%';const m=Math.floor(tp[i]/60),s=tp[i]%60;tks[i].querySelector('.tt').textContent=m+':'+(s<10?'0':'')+s;},1000);}
+
+// ── BLOG ──
+function lk(b){b.classList.toggle('lk');const s=b.querySelector('span');s.textContent=parseInt(s.textContent)+(b.classList.contains('lk')?1:-1);}
+function sh(){navigator.share?navigator.share({title:'Oasense',url:location.href}):toast('LINK COPIED!');}
+
+// ── BOOKING ──
+function pS(el,n){document.querySelectorAll('.sv').forEach(s=>s.classList.remove('on'));el.classList.add('on');document.getElementById('svSel').value=n;}
+function toggleCsel(){const w=document.getElementById('cselWrap');w.classList.toggle('open');}
+function pickSel(label,val){document.getElementById('cselText').textContent=label;document.getElementById('svSel').value=val;document.getElementById('cselWrap').classList.remove('open');}
+document.addEventListener('click',e=>{const w=document.getElementById('cselWrap');if(w&&!w.contains(e.target))w.classList.remove('open');});
+
+// ── DONATION ──
+let sa=10;
+function pA(a,b){document.querySelectorAll('.ab').forEach(x=>x.classList.remove('on'));b.classList.add('on');sa=a;document.getElementById('cw').style.display=a==='other'?'block':'none';}
+function pF(b){document.querySelectorAll('.frb').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+function don(){const a=sa==='other'?(parseInt(document.getElementById('ca').value)||0):sa;if(!a){toast('PLEASE ENTER AN AMOUNT');return;}toast('THANK YOU FOR YOUR $'+a+' DONATION! ☀️');const el=document.getElementById('rn');el.textContent=(parseInt(el.textContent.replace(',',''))+a).toLocaleString();}
+
+// ── NEWSLETTER ──
+function jNL(){const v=document.getElementById('nle').value;if(!v||!v.includes('@')){toast('PLEASE ENTER A VALID EMAIL');return;}toast('YOU\'RE IN! WELCOME TO THE LIGHT ☀️');document.getElementById('nle').value='';}
+
+// ── FAQ ──
+function fq(b){b.parentElement.classList.toggle('open');}
+
+// ── SOL AI CHAT ──
+const skb={price:['price','cost','how much'],booking:['book','session','shoot'],shipping:['ship','delivery','track'],return:['return','refund'],points:['point','reward','sol'],social:['instagram','youtube','tiktok','discord'],music:['music','song','soundcloud','demo'],contact:['contact','email'],collab:['collab','collaboration']};
+const sr={price:'Pricing is custom per project. Shop items start at $9.99 (digital) to $64.99 (apparel). For photoshoots — use the Booking section!',booking:'Request a session in the Booking section. Full refund if you cancel 48+ hours in advance!',shipping:'Standard: 5–7 business days. Express: 2–3 days. Tracking number sent by email once shipped!',return:'Returns accepted within 30 days. Items must be unworn. Contact us to start a return.',points:'Earn Sol Points shopping (10pts/$1), reviewing (50pts), subscribing (100pts), sharing #Oasense (200pts) and more!',social:'Find Angel on Instagram @oasense.shop, TikTok @solxstate, YouTube, Discord & SoundCloud!',music:"Angel makes music as SOLXSTATE. Stream demos right here or find the full catalog on soundcloud.com/solxstate",contact:'Use the Contact form or email oasense.shop@gmail.com. We respond within 1–2 business days!',collab:"We're open for collaborations! Hit \"Start Collab Conversation\" in the Contact section."};
+function tSol(){document.getElementById('solp').classList.toggle('open');}
+function sSol(){const i=document.getElementById('solinp'),m=i.value.trim();if(!m)return;const ms=document.getElementById('solm');ms.innerHTML+=`<div class="solmsg u">${m}</div>`;i.value='';const l=m.toLowerCase();let r='Great question! Check the relevant section or email oasense.shop@gmail.com. Here to help! ☀️';for(const[k,ks]of Object.entries(skb)){if(ks.some(kw=>l.includes(kw))){r=sr[k];break;}}setTimeout(()=>{ms.innerHTML+=`<div class="solmsg">${r}</div>`;ms.scrollTop=ms.scrollHeight;},500);ms.scrollTop=ms.scrollHeight;}
+
+// ── AUTH ──
+function oA(t){document.getElementById('ov').classList.add('open');swA(t);}
+function cA(){document.getElementById('ov').classList.remove('open');}
+function cAOut(e){if(e.target===document.getElementById('ov'))cA();}
+function swA(t){document.getElementById('lv').style.display=t==='login'?'block':'none';document.getElementById('sv').style.display=t==='signup'?'block':'none';}
+function soc(p){toast('CONNECTING TO '+p.toUpperCase()+'...');setTimeout(()=>{cA();toast('WELCOME TO OASENSE! ☀️');},1200);}
+function dL(){toast('WELCOME BACK! ☀️');cA();}
+function dS(){const p=document.getElementById('pwin').value;if(!p||p.length<8||!/[A-Z]/.test(p)||!/[0-9]/.test(p)){toast('PASSWORD: 8+ CHARS, 1 UPPERCASE, 1 NUMBER');return;}toast('ACCOUNT CREATED! WELCOME ☀️');cA();}
+function pws(){const v=document.getElementById('pwin').value;let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;const c=['#FF00C8','#ff9500','#39e75f'];const b=document.getElementById('pwb');b.style.width=(s*33.3)+'%';b.style.background=c[s-1]||'';}
+
+// ── SCROLL REVEAL ──
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}}),{threshold:.07});
+document.querySelectorAll('.pr,.po,.pi2,.ri,.tk,.sv').forEach(el=>{
+  el.style.opacity='0';el.style.transform='translateY(18px)';
+  el.style.transition='opacity .5s ease,transform .5s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>nav{
   position:fixed;top:0;left:0;right:0;z-index:5000;
   display:flex;justify-content:space-between;align-items:center;
   padding:0 32px;height:60px;
