@@ -159,10 +159,15 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 }
 .tb-sort:hover{border-color:var(--hot);color:var(--hot);}
 .sort-dd{
-  position:absolute;top:calc(100% + 2px);right:0;
-  background:#080008;border:1px solid var(--hot);
+  position:absolute;
+  top:calc(100% + 2px);
+  right:0;
+  background:#080008;
+  border:1px solid var(--hot);
   box-shadow:0 8px 30px rgba(255,180,0,0.18);
-  display:none;z-index:200;min-width:200px;
+  display:none;
+  min-width:200px;
+  z-index:9999;
 }
 .sort-wrap.open .sort-dd{display:block;}
 .sort-opt{
@@ -660,13 +665,13 @@ footer{background:#000;border-top:1px solid rgba(255,180,0,.2);padding:60px 40px
         <span id="sortLabel">Sort: Newest</span>
         <span>▾</span>
       </button>
-      <div class="sort-dd">
-        <div class="sort-opt on" onclick="setSort('newest',this)">Newest First</div>
-        <div class="sort-opt" onclick="setSort('promo',this)">Promotions First</div>
-        <div class="sort-opt" onclick="setSort('bestselling',this)">Bestselling</div>
-        <div class="sort-opt" onclick="setSort('limited',this)">Limited Time</div>
-        <div class="sort-opt" onclick="setSort('name',this)">Name A–Z</div>
-      </div>
+  <div class="sort-dd">
+  <div class="sort-opt on" onclick="setSort('newest',this)">Newest</div>
+  <div class="sort-opt" onclick="setSort('bestselling',this)">Bestselling</div>
+  <div class="sort-opt" onclick="setSort('promo',this)">Promo</div>
+  <div class="sort-opt" onclick="setSort('priceLow',this)">Price ↑</div>
+  <div class="sort-opt" onclick="setSort('priceHigh',this)">Price ↓</div>
+</div>
     </div>
     <div class="grid-toggle">
       <button class="gtb on" id="gtb3" onclick="setGrid(3)" title="3 columns">⊞</button>
@@ -870,6 +875,8 @@ function renderGrid(){
   if(sortMode === 'newest'){
     items.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
   } else if(sortMode === 'promo'){
+
+    
     // Items with discount bubble to top
     items.sort((a,b)=>{
       const ad = a.discount&&parseInt(a.discount)>0 ? 1 : 0;
@@ -1006,7 +1013,7 @@ function setSort(mode,btn){
   sortMode = mode;
   document.querySelectorAll('.sort-opt').forEach(o=>o.classList.remove('on'));
   btn.classList.add('on');
-  document.getElementById('sortLabel').textContent = 'Sort: ' + btn.textContent;
+  document.getElementById('sortLabel').textContent = btn.textContent;
   document.getElementById('sortWrap').classList.remove('open');
   renderGrid();
 }
