@@ -1371,6 +1371,7 @@ function updateSubcatOptions(){
 
 function saveShopItems(){
   localStorage.setItem('oas_shop',JSON.stringify(shopItems));
+  localStorage.setItem('oas_shop_updated', Date.now().toString());
   updateShopCounts();
 }
 
