@@ -481,7 +481,12 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .modal-add::before{content:'';position:absolute;inset:0;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1;}
 .modal-add:hover{color:#000;box-shadow:0 0 24px var(--hot);}
 .modal-add:hover::before{transform:scaleX(1);}
-
+.card-img-inner.no-flip{
+  transform:none !important;
+}
+.card:hover .card-img-inner.no-flip{
+  transform:none !important;
+}
 /* ── BOOKING MODAL ── */
 .book-ov{
   position:fixed;inset:0;background:rgba(0,0,5,0.93);
@@ -939,7 +944,7 @@ function buildCard(item){
 
   return `<div class="card${isPhoto?' photography':''}" onclick="openModal(getItem(${item.id}))">
     <div class="card-img">
-      <div class="card-img-inner">
+      <div class="card-img-inner${item.img2 ? '' : ' no-flip'}">
         <div class="card-face front">${front}</div>
         <div class="card-face back">${back}</div>
       </div>
