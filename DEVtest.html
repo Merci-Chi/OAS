@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OASENSE — DEV PANEL</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --hot:#FFCC00;--mag:#FF8800;--hot2:#FFDD44;
+  --void:#000005;--txt:#FFD6F5;--mute:#AA66CC;
+  --red:#FF3B3B;--yellow:#FFD600;--green:#00FF88;
+  --blue:#4A90FF;--pink:#FF69B4;
+  --border:rgba(255,204,0,0.22);
+  --nv-tax:0.08375;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;min-height:100vh;}
+::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:rgba(255,204,0,0.04);}::-webkit-scrollbar-thumb{background:var(--hot);border-radius:3px;}
+#scanlines{position:fixed;inset:0;pointer-events:none;z-index:9998;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,204,0,0.012) 2px,rgba(255,204,0,0.012) 4px);}
+
+/* LOGIN */
+#loginOverlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,5,0.97);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(20px);}
+.login-box{background:rgba(0,0,8,0.98);border:1px solid var(--hot);padding:48px 40px;width:100%;max-width:400px;box-shadow:0 0 60px rgba(255,204,0,0.15);animation:loginIn .4s ease;}
+@keyframes loginIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.login-logo{font-family:'Black Ops One',sans-serif;font-size:28px;letter-spacing:6px;color:var(--hot);text-align:center;text-shadow:0 0 20px rgba(255,204,0,0.5);margin-bottom:6px;}
+.login-sub{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--mute);text-align:center;margin-bottom:32px;text-transform:uppercase;}
+.login-attempts{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--red);text-align:center;margin-bottom:12px;display:none;}
+.login-err{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);margin-top:8px;display:none;letter-spacing:1px;}
+#appWrap{filter:blur(12px);pointer-events:none;transition:filter .5s;}
+#appWrap.unlocked{filter:none;pointer-events:all;}
+
+/* TIMEOUT */
+#timeoutOverlay{position:fixed;inset:0;background:rgba(0,0,5,0.97);z-index:9997;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;backdrop-filter:blur(20px);}
+#timeoutOverlay.show{display:flex;}
+.timeout-msg{font-family:'Black Ops One',sans-serif;font-size:28px;letter-spacing:4px;color:var(--hot);text-align:center;}
+.timeout-sub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--mute);text-align:center;text-transform:uppercase;}
+
+/* TOAST */
+.welcome-toast{position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-80px);background:#000;border:1px solid var(--hot);padding:18px 32px;font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:#fff;z-index:9999;box-shadow:0 0 40px rgba(255,204,0,0.3);transition:transform .5s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;}
+.welcome-toast.show{transform:translateX(-50%) translateY(0);}
+.welcome-toast.kiara{border-color:var(--pink);box-shadow:0 0 40px rgba(255,105,180,0.3);color:var(--pink);}
+.welcome-toast.sol{border-color:var(--blue);box-shadow:0 0 40px rgba(74,144,255,0.3);color:var(--blue);}
+
+/* SIDEBAR */
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:rgba(0,0,8,0.98);border-right:1px solid var(--border);z-index:500;display:flex;flex-direction:column;padding:0 0 20px 0;backdrop-filter:blur(20px);overflow-y:auto;}
+.sb-logo-wrap{display:flex;align-items:center;gap:10px;padding:18px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;flex-shrink:0;}
+.sb-logo-wrap:hover{background:rgba(255,204,0,0.04);}
+.sb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--hot);background:rgba(255,204,0,0.1);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.sb-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.sb-logo-text{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:4px;color:var(--hot);text-shadow:0 0 12px rgba(255,204,0,0.5);line-height:1.1;}
+.sb-logo-text span{display:block;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--mute);margin-top:2px;font-weight:normal;}
+.sb-section{padding:14px 20px 6px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,204,0,0.4);text-transform:uppercase;flex-shrink:0;}
+.sb-link{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--mute);transition:all .2s;border-left:2px solid transparent;text-decoration:none;}
+.sb-link:hover,.sb-link.active{color:var(--hot);border-left-color:var(--hot);background:rgba(255,204,0,0.05);}
+.sb-icon{font-size:14px;flex-shrink:0;}
+.sb-badge{margin-left:auto;background:var(--hot);color:#000;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;font-family:'Share Tech Mono',monospace;}
+
+/* MAIN */
+#main{margin-left:220px;padding:30px;min-height:100vh;}
+.dev-section{display:none;animation:fadeIn .3s ease;}
+.dev-section.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.panel-title{font-family:'Black Ops One',sans-serif;font-size:clamp(28px,4vw,48px);text-transform:uppercase;color:#fff;letter-spacing:3px;margin-bottom:4px;}
+.panel-title .hot{color:var(--hot);}
+.panel-sub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--mute);margin-bottom:28px;text-transform:uppercase;}
+.vhs-line{height:1px;background:linear-gradient(to right,transparent,rgba(255,204,0,0.45),transparent);margin-bottom:28px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.topbar-actions{display:flex;gap:8px;}
+.card{background:rgba(255,204,0,0.03);border:1px solid var(--border);padding:22px;margin-bottom:16px;}
+.empty-state{text-align:center;padding:48px 20px;font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;color:rgba(255,204,0,0.25);text-transform:uppercase;border:1px dashed rgba(255,204,0,0.12);}
+
+/* FORMS */
+.fi,.fta,.fse{background:rgba(255,204,0,0.04);border:1px solid rgba(255,204,0,0.2);color:var(--txt);padding:11px 14px;font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none;transition:border-color .2s;width:100%;letter-spacing:.5px;}
+.fi:focus,.fta:focus,.fse:focus{border-color:var(--hot);box-shadow:0 0 10px rgba(255,204,0,0.15);}
+.fta{resize:vertical;min-height:80px;}
+.fse option{background:#000;}
+.fl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:6px;display:block;}
+.fg{margin-bottom:14px;}
+.row{display:grid;gap:14px;}
+.row-2{grid-template-columns:1fr 1fr;}
+.row-3{grid-template-columns:1fr 1fr 1fr;}
+.form-sec{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,204,0,0.5);text-transform:uppercase;padding:5px 0;margin:12px 0 10px;border-bottom:1px solid rgba(255,204,0,0.12);}
+
+/* BUTTONS */
+.btn{padding:11px 28px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
+.btn:hover{background:var(--hot);color:#000;box-shadow:0 0 16px rgba(255,204,0,0.4);}
+.btn-sm{padding:7px 16px;font-size:10px;}
+.btn-fill{background:var(--hot);color:#000;font-weight:700;}
+.btn-fill:hover{background:var(--hot2);}
+.btn-ghost{border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.65);}
+.btn-ghost:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,0.07);}
+.btn-red{border-color:var(--red);color:var(--red);}
+.btn-red:hover{background:var(--red);color:#fff;}
+.btn-edit-white{padding:5px 14px;background:transparent;border:1px solid rgba(255,255,255,0.4);color:rgba(255,255,255,0.7);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;border-radius:4px;}
+.btn-edit-white:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,0.07);}
+.btn-ai{padding:7px 14px;background:rgba(170,102,204,0.12);border:1px solid rgba(170,102,204,0.5);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;border-radius:4px;white-space:nowrap;}
+.btn-ai:hover{background:rgba(170,102,204,0.25);border-color:var(--mute);color:#fff;}
+.btn-ai.loading{opacity:.6;cursor:not-allowed;}
+.btn-live{padding:5px 12px;background:transparent;border:1px solid rgba(0,255,136,0.4);color:rgba(0,255,136,0.7);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;border-radius:3px;}
+.btn-live:hover{background:rgba(0,255,136,0.1);border-color:var(--green);color:var(--green);}
+.price-input-wrap{position:relative;}
+.price-input-wrap::before{content:'$';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:14px;pointer-events:none;}
+.price-input-wrap .fi{padding-left:28px;}
+
+/* DROPDOWNS */
+.crm-picker-wrap{position:relative;}
+.crm-picker-dd{position:absolute;top:100%;left:0;right:0;z-index:300;background:rgba(0,0,8,0.98);border:1px solid var(--hot);border-top:none;max-height:220px;overflow-y:auto;display:none;}
+.crm-picker-dd.open{display:block;}
+.crm-picker-opt{padding:10px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--txt);border-bottom:1px solid rgba(255,204,0,0.08);transition:background .15s;display:flex;flex-direction:column;gap:2px;}
+.crm-picker-opt:hover{background:rgba(255,204,0,0.08);}
+.crm-picker-opt .cpd{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mute);letter-spacing:1px;text-transform:uppercase;}
+.addr-wrap{position:relative;}
+.addr-dd{position:absolute;top:100%;left:0;right:0;z-index:302;background:rgba(0,0,8,0.98);border:1px solid var(--blue);border-top:none;max-height:200px;overflow-y:auto;display:none;}
+.addr-dd.open{display:block;}
+.addr-opt{padding:10px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--txt);border-bottom:1px solid rgba(74,144,255,0.1);transition:background .15s;}
+.addr-opt:hover{background:rgba(74,144,255,0.08);}
+.addr-opt .addr-main{font-weight:700;}
+.addr-opt .addr-sub{font-size:12px;color:var(--mute);}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,5,0.9);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);padding:20px;}
+.modal-overlay.open{display:flex;}
+.modal{background:#000;border:1px solid var(--hot);width:100%;max-width:480px;padding:32px;position:relative;box-shadow:0 0 40px rgba(255,204,0,0.2);animation:modalIn .25s ease;max-height:90vh;overflow-y:auto;}
+@keyframes modalIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:20px;line-height:1;z-index:2;}
+.modal-close:hover{color:var(--hot);}
+.modal-title{font-family:'Black Ops One',sans-serif;font-size:22px;color:#fff;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;}
+.pi-row{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,204,0,0.08);}
+.pi-row:last-child{border-bottom:none;}
+.pi-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--hot);text-transform:uppercase;min-width:70px;padding-top:2px;flex-shrink:0;}
+.pi-val{font-family:'Barlow Condensed',sans-serif;font-size:17px;color:#fff;letter-spacing:.5px;line-height:1.4;}
+
+/* TABS */
+.tab-row{display:flex;gap:2px;margin-bottom:20px;flex-wrap:wrap;}
+.tab-btn{padding:9px 22px;background:transparent;border:1px solid rgba(255,204,0,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.tab-btn.active,.tab-btn:hover{border-color:var(--hot);color:var(--hot);background:rgba(255,204,0,0.06);}
+
+/* BOOKINGS */
+.booking-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.booking-card{background:rgba(255,204,0,0.03);border:1px solid var(--border);padding:20px;transition:border-color .2s;}
+.booking-card:hover{border-color:rgba(255,204,0,0.45);}
+.bc-type{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:4px;}
+.bc-name{font-family:'Black Ops One',sans-serif;font-size:20px;color:#fff;letter-spacing:2px;margin-bottom:2px;}
+.bc-date{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);}
+.bc-status{display:inline-block;padding:4px 12px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;font-weight:700;text-transform:uppercase;cursor:pointer;margin-top:10px;}
+.bc-status.confirmed{background:rgba(0,255,136,0.1);border:1px solid var(--green);color:var(--green);}
+.bc-status.pending{background:rgba(255,204,0,0.1);border:1px solid var(--hot);color:var(--hot);}
+.bc-status.cancelled{background:rgba(255,59,59,0.1);border:1px solid var(--red);color:var(--red);}
+.bc-status.rescheduled{background:rgba(74,144,255,0.1);border:1px solid var(--blue);color:var(--blue);}
+.bc-bottom{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;align-items:center;}
+.bc-person-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;background:rgba(255,204,0,0.07);border:1px solid rgba(255,204,0,0.35);color:rgba(255,204,0,0.85);font-family:'Black Ops One',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;}
+.bc-person-btn:hover{background:rgba(255,204,0,0.15);}
+.bc-dot{width:7px;height:7px;border-radius:50%;background:var(--hot);box-shadow:0 0 5px var(--hot);flex-shrink:0;}
+
+/* CRM */
+.crm-entry{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:18px 20px;transition:border-color .2s;position:relative;margin-bottom:3px;}
+.crm-entry:hover{border-color:rgba(255,204,0,0.4);}
+.crm-entry-grid{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;}
+.crm-name-row{display:flex;align-items:center;gap:10px;margin-bottom:2px;flex-wrap:wrap;}
+.crm-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:2px;text-transform:uppercase;color:#fff;}
+.crm-fields{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;margin-top:8px;}
+.crm-field{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(255,255,255,0.5);letter-spacing:1px;}
+.crm-field strong{color:rgba(255,204,0,0.7);}
+.crm-edit-form{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.crm-edit-form.open{display:block;}
+.add-person-form{border:1px dashed rgba(255,204,0,0.25);padding:20px;margin-bottom:20px;background:rgba(255,204,0,0.02);}
+.rating-dot{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,204,0,0.5);cursor:pointer;flex-shrink:0;position:relative;background:transparent;transition:all .2s;display:inline-block;}
+.rating-dot.red{background:var(--red);border-color:var(--red);}
+.rating-dot.yellow{background:var(--yellow);border-color:var(--yellow);}
+.rating-dot.green{background:var(--green);border-color:var(--green);}
+.dot-menu{position:absolute;top:24px;left:50%;transform:translateX(-50%);background:rgba(0,0,8,0.97);border:1px solid var(--hot);z-index:100;display:none;flex-direction:row;gap:8px;padding:8px;box-shadow:0 0 20px rgba(255,204,0,0.2);}
+.dot-menu.open{display:flex;}
+.dot-opt{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid rgba(255,255,255,0.15);transition:transform .15s;}
+.dot-opt:hover{transform:scale(1.3);}
+.dot-opt.r{background:var(--red);}.dot-opt.y{background:var(--yellow);}.dot-opt.g{background:var(--green);}.dot-opt.c{background:transparent;border-color:rgba(255,204,0,0.5);}
+.crm-filter-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.rf-dropdown{position:relative;display:inline-block;}
+.rf-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:rgba(255,204,0,0.04);border:1px solid rgba(255,204,0,0.3);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;}
+.rf-dd{position:absolute;top:100%;left:0;background:rgba(0,0,8,0.98);border:1px solid var(--hot);border-top:none;z-index:100;display:none;min-width:160px;}
+.rf-dd.open{display:block;}
+.rf-opt{padding:10px 16px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,204,0,0.08);transition:background .15s;}
+.rf-opt:hover{background:rgba(255,204,0,0.06);color:var(--hot);}
+.rf-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+
+/* SHOP */
+.shop-layout{display:grid;grid-template-columns:400px 1fr;gap:24px;align-items:start;}
+.item-form{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:22px;}
+.image-upload-area{border:1px dashed rgba(255,204,0,0.3);padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;background:rgba(255,204,0,0.02);}
+.image-upload-area:hover{border-color:var(--hot);}
+.image-upload-area input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.upload-preview{width:100%;max-height:120px;object-fit:cover;display:none;border:1px solid var(--border);}
+.upload-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--mute);text-transform:uppercase;}
+.shop-items-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:4px;}
+
+/* ITEM CARD */
+.item-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);position:relative;overflow:hidden;transition:all .3s;}
+.item-card:hover{border-color:rgba(255,204,0,0.5);box-shadow:0 0 16px rgba(255,204,0,0.1);}
+.item-card-img{width:100%;aspect-ratio:1;background:rgba(255,204,0,0.04);display:flex;align-items:center;justify-content:center;font-size:42px;position:relative;overflow:hidden;}
+.item-card-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:opacity .3s;}
+.item-card-img img.flip-img{opacity:0;}
+.item-card-img.flipped img.main-img{opacity:0;}
+.item-card-img.flipped img.flip-img{opacity:1;}
+.badge-circle{position:absolute;top:10px;left:10px;z-index:6;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:700;color:#fff;cursor:pointer;text-shadow:0 1px 2px rgba(0,0,0,0.5);filter:drop-shadow(0 2px 6px rgba(0,0,0,0.7));transition:transform .15s;}
+.badge-circle:hover{transform:scale(1.12);}
+.badge-circle.badge-new{background:radial-gradient(circle,#00e5ff,#0050ff);}
+.badge-circle.badge-hot{background:radial-gradient(circle,#ff6600,#cc0000);}
+.badge-circle.badge-pct{background:radial-gradient(circle,#00ff88,#007744);}
+.badge-circle.badge-empty{background:rgba(255,255,255,0.07);border:2px dashed rgba(255,255,255,0.2);font-size:14px;}
+.badge-dd{position:absolute;top:54px;left:10px;z-index:50;background:rgba(0,0,8,0.98);border:1px solid rgba(255,0,200,0.5);box-shadow:0 0 20px rgba(255,0,200,0.2);display:none;min-width:110px;}
+.badge-dd.open{display:block;}
+.badge-dd-opt{padding:9px 14px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);border-bottom:1px solid rgba(255,0,200,0.1);transition:background .2s;display:flex;align-items:center;gap:8px;}
+.badge-dd-opt:last-child{border-bottom:none;}
+.badge-dd-opt:hover{background:rgba(255,0,200,0.08);color:#fff;}
+.item-card-edit{position:absolute;top:10px;right:10px;z-index:5;padding:4px 10px;background:transparent;border:1px solid rgba(255,255,255,0.6);color:rgba(255,255,255,0.9);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;display:none;}
+.item-card:hover .item-card-edit{display:block;}
+.item-card-edit:hover{background:rgba(255,255,255,0.12);}
+.item-card-body{padding:12px 14px 14px;}
+.item-card-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;color:#fff;}
+.item-card-desc{font-size:13px;color:var(--mute);line-height:1.5;margin-bottom:10px;}
+.item-card-footer{display:flex;align-items:center;justify-content:space-between;}
+.item-card-price{font-family:'Black Ops One',sans-serif;font-size:18px;color:var(--hot);}
+.item-card-discount{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green);letter-spacing:1px;}
+.item-card-meta{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:rgba(255,204,0,0.35);margin-top:4px;padding-top:4px;border-top:1px solid rgba(255,204,0,0.08);}
+.item-card-actions{display:flex;gap:4px;margin-top:8px;}
+.item-status-badge{display:inline-block;padding:2px 8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;}
+.status-live{border:1px solid var(--green);color:var(--green);}
+.status-draft{border:1px solid rgba(255,204,0,0.4);color:rgba(255,204,0,0.6);}
+
+/* ORDER HISTORY */
+.order-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:22px;margin-bottom:4px;transition:border-color .2s;}
+.order-card:hover{border-color:rgba(255,204,0,0.4);}
+.order-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;}
+.order-client-row{display:flex;align-items:center;gap:10px;}
+.order-client-name{font-family:'Black Ops One',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;}
+.order-who-btn{width:26px;height:26px;border-radius:50%;background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.45);color:var(--hot);font-family:'Black Ops One',sans-serif;font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;flex-shrink:0;}
+.order-who-btn:hover{background:rgba(255,204,0,0.22);}
+.order-linked{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(0,255,136,0.4);color:rgba(0,255,136,0.7);text-transform:uppercase;}
+.order-unlinked{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.25);color:rgba(255,204,0,0.45);text-transform:uppercase;}
+.order-items-tbl{width:100%;border-collapse:collapse;margin-bottom:14px;}
+.order-items-tbl th{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;padding:6px 0;border-bottom:1px solid rgba(255,204,0,0.12);text-align:left;}
+.order-items-tbl th:last-child{text-align:right;}
+.order-items-tbl td{padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-family:'Barlow Condensed',sans-serif;font-size:16px;color:var(--txt);}
+.order-items-tbl td:last-child{text-align:right;font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--hot);}
+.order-totals{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-top:10px;border-top:1px solid rgba(255,204,0,0.15);}
+.ot-row{display:flex;gap:24px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;}
+.ot-row .lbl{color:var(--mute);}
+.ot-row .val{color:var(--txt);min-width:80px;text-align:right;}
+.ot-row.grand .lbl{color:var(--hot);font-size:14px;}
+.ot-row.grand .val{color:var(--hot);font-size:18px;font-family:'Black Ops One',sans-serif;}
+.ord-item-row{display:grid;grid-template-columns:1fr 80px 60px 28px;gap:8px;margin-bottom:8px;align-items:center;}
+.ord-item-row .fi{padding:9px 12px;font-size:14px;}
+.order-source{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;text-transform:uppercase;border-radius:2px;}
+.src-web{border:1px solid rgba(74,144,255,0.5);color:var(--blue);}
+.src-app{border:1px solid rgba(170,102,204,0.5);color:var(--mute);}
+.src-user{border:1px solid rgba(255,105,180,0.5);color:var(--pink);}
+
+/* INVOICES */
+.inv-form{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:24px;margin-bottom:22px;}
+.inv-product-row{position:relative;}
+.inv-product-dd{position:absolute;top:100%;left:0;right:0;z-index:301;background:rgba(0,0,8,0.98);border:1px solid var(--hot);border-top:none;max-height:200px;overflow-y:auto;display:none;}
+.inv-product-dd.open{display:block;}
+.inv-product-opt{padding:10px 14px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--txt);border-bottom:1px solid rgba(255,204,0,0.08);transition:background .15s;display:flex;justify-content:space-between;align-items:center;}
+.inv-product-opt:hover{background:rgba(255,204,0,0.08);}
+.inv-product-opt .iprice{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--hot);}
+.inv-price-box{background:rgba(255,204,0,0.04);border:1px solid var(--border);padding:16px;margin:14px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.inv-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:22px;margin-bottom:4px;}
+.inv-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.inv-status{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;padding:3px 10px;text-transform:uppercase;cursor:pointer;}
+.inv-status.unpaid{border:1px solid var(--hot);color:var(--hot);}
+.inv-status.paid{border:1px solid var(--green);color:var(--green);}
+.inv-status.cancelled{border:1px solid var(--red);color:var(--red);}
+
+/* TESTIMONIALS */
+.test-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:22px;margin-bottom:8px;position:relative;transition:border-color .2s;}
+.test-card:hover{border-color:rgba(255,204,0,0.4);}
+.test-author{font-family:'Black Ops One',sans-serif;font-size:17px;color:#fff;letter-spacing:2px;}
+.test-date{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);margin-top:2px;}
+.test-body{font-family:'Barlow Condensed',sans-serif;font-size:17px;color:rgba(255,255,255,0.8);line-height:1.6;margin:12px 0;}
+.test-live-badge{display:inline-block;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;border:1px solid var(--green);color:var(--green);text-transform:uppercase;}
+.star{font-size:18px;cursor:pointer;transition:transform .15s;user-select:none;}
+.star:hover{transform:scale(1.2);}
+.star-btn{font-size:24px;cursor:pointer;background:none;border:none;transition:transform .15s;filter:grayscale(1);opacity:.4;}
+.star-btn.active{filter:grayscale(0);opacity:1;}
+.test-add-form{border:1px dashed rgba(255,204,0,0.25);padding:22px;margin-bottom:22px;background:rgba(255,204,0,0.02);display:none;}
+
+/* BLOG */
+.blog-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);overflow:hidden;transition:border-color .3s;margin-bottom:16px;}
+.blog-card:hover{border-color:rgba(255,204,0,0.45);box-shadow:0 4px 24px rgba(0,0,0,0.4);}
+.blog-card-cover{width:100%;height:220px;object-fit:cover;background:rgba(255,204,0,0.05);display:block;}
+.blog-card-cover-empty{width:100%;height:220px;background:linear-gradient(135deg,rgba(255,204,0,0.06),rgba(170,102,204,0.08));display:flex;align-items:center;justify-content:center;font-size:48px;}
+.blog-card-body{padding:20px 22px;}
+.blog-card-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.author-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:999px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+.author-pill.sol{background:rgba(74,144,255,0.1);border:1px solid rgba(74,144,255,0.4);color:var(--blue);}
+.author-pill.kiara{background:rgba(255,105,180,0.1);border:1px solid rgba(255,105,180,0.4);color:var(--pink);}
+.author-pill .author-avatar{width:22px;height:22px;border-radius:50%;overflow:hidden;background:rgba(255,255,255,0.1);flex-shrink:0;}
+.author-pill .author-avatar img{width:100%;height:100%;object-fit:cover;}
+.blog-card-title{font-family:'Black Ops One',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;margin-bottom:10px;}
+.blog-card-excerpt{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:rgba(255,255,255,0.6);line-height:1.6;margin-bottom:16px;}
+.blog-card-actions{display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid rgba(255,204,0,0.1);flex-wrap:wrap;}
+.blog-action-btn{display:inline-flex;align-items:center;gap:6px;background:none;border:none;color:rgba(255,255,255,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;padding:6px 10px;border-radius:4px;transition:all .2s;}
+.blog-action-btn:hover{color:#fff;background:rgba(255,255,255,0.05);}
+.blog-live-badge{display:inline-block;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;border:1px solid var(--green);color:var(--green);text-transform:uppercase;}
+.blog-form-area{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:24px;margin-bottom:22px;display:none;}
+.author-pick-row{display:flex;gap:10px;margin-bottom:16px;}
+.author-pick-btn{padding:10px 22px;background:transparent;border:2px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;border-radius:4px;}
+.author-pick-btn.sol.active,.author-pick-btn.sol:hover{border-color:var(--blue);color:var(--blue);background:rgba(74,144,255,0.08);}
+.author-pick-btn.kiara.active,.author-pick-btn.kiara:hover{border-color:var(--pink);color:var(--pink);background:rgba(255,105,180,0.08);}
+
+/* AI WRITING MODAL */
+#aiWritingModal .modal{max-width:640px;}
+.ai-suggestion-box{background:rgba(170,102,204,0.06);border:1px solid rgba(170,102,204,0.3);padding:16px;margin-top:14px;}
+.ai-quick-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.ai-quick-btn{padding:7px 14px;border-radius:999px;background:rgba(255,204,0,0.06);border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.8);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .2s;}
+.ai-quick-btn:hover{background:rgba(255,204,0,0.14);border-color:var(--hot);color:var(--hot);}
+.ai-quick-btn.active{background:rgba(255,204,0,0.18);border-color:var(--hot);color:#000;background:var(--hot);}
+
+/* AI PROMPTS */
+.ai-prompt-section{background:rgba(170,102,204,0.04);border:1px solid rgba(170,102,204,0.2);padding:22px;margin-bottom:20px;}
+.ai-section-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:3px;color:var(--mute);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.user-prompts-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.user-prompt-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:rgba(255,204,0,0.07);border:1px solid rgba(255,204,0,0.35);color:rgba(255,204,0,0.85);font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:1px;}
+.prompt-x{background:none;border:none;color:rgba(255,59,59,0.7);cursor:pointer;font-size:16px;padding:0;line-height:1;flex-shrink:0;transition:color .15s;}
+.prompt-x:hover{color:var(--red);}
+
+/* USERS */
+.user-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:16px 20px;margin-bottom:3px;transition:border-color .2s;cursor:pointer;}
+.user-card:hover{border-color:rgba(255,204,0,0.4);}
+.user-card-grid{display:grid;grid-template-columns:46px 1fr auto;gap:14px;align-items:center;}
+.user-avatar{width:46px;height:46px;border-radius:50%;overflow:hidden;background:rgba(255,204,0,0.08);border:2px solid rgba(255,204,0,0.3);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.user-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-tag{display:inline-block;padding:2px 8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:2px;}
+.tag-user{border:1px solid rgba(255,204,0,0.4);color:rgba(255,204,0,0.7);}
+.tag-dev{border:1px solid rgba(0,255,136,0.5);color:var(--green);}
+.tag-system{border:1px solid rgba(74,144,255,0.4);color:var(--blue);}
+.provider-badge{display:inline-block;padding:2px 8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:2px;margin-left:4px;}
+.prov-google{background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.4);color:#4285F4;}
+.prov-ios{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:#fff;}
+.prov-facebook{background:rgba(66,103,178,0.15);border:1px solid rgba(66,103,178,0.4);color:#4267B2;}
+.prov-email{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);}
+.prov-system{background:rgba(170,102,204,0.1);border:1px solid rgba(170,102,204,0.3);color:var(--mute);}
+.user-detail{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.user-detail.open{display:block;}
+.db-user-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:18px 20px;margin-bottom:4px;transition:border-color .2s;}
+.db-user-card:hover{border-color:rgba(255,204,0,0.4);}
+.db-user-header{display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap;}
+.db-crm-link{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(0,255,136,0.4);color:rgba(0,255,136,0.7);text-transform:uppercase;}
+.db-undefined{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.5);text-transform:uppercase;}
+
+/* ACCOUNT MODAL */
+.acct-avatar-big{width:80px;height:80px;border-radius:50%;overflow:hidden;background:rgba(255,204,0,0.1);border:3px solid var(--hot);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 16px;cursor:pointer;position:relative;}
+.acct-avatar-big img{width:100%;height:100%;object-fit:cover;}
+.acct-avatar-big input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+/* CONFIRM MODAL */
+.confirm-msg{font-family:'Barlow Condensed',sans-serif;font-size:18px;color:#fff;margin-bottom:20px;line-height:1.4;}
+
+/* SHARE DD */
+.share-dd{position:absolute;bottom:36px;left:0;background:rgba(0,0,8,0.98);border:1px solid rgba(255,204,0,0.4);z-index:50;display:none;min-width:180px;}
+.share-dd.open{display:block;}
+.share-opt{padding:10px 16px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);border-bottom:1px solid rgba(255,204,0,0.08);transition:background .15s;display:flex;align-items:center;gap:8px;}
+.share-opt:hover{background:rgba(255,204,0,0.06);color:var(--hot);}
+
+/* DOT LEGEND */
+.dot-legend{display:flex;align-items:center;gap:16px;margin-bottom:12px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:1px;flex-wrap:wrap;}
+.dl-dot{width:12px;height:12px;border-radius:50%;}
+.dl-empty{border:2px solid rgba(255,204,0,0.5);background:transparent;}
+
+/* PORTFOLIO */
+.portfolio-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.port-section{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:20px;position:relative;}
+.port-section-title{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;}
+.port-slider{position:relative;overflow:hidden;aspect-ratio:4/3;background:rgba(255,204,0,0.03);border:1px solid rgba(255,204,0,0.1);}
+.port-slider-track{display:flex;transition:transform .4s ease;height:100%;}
+.port-slide{min-width:100%;height:100%;object-fit:cover;flex-shrink:0;}
+.port-slide-placeholder{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;background:rgba(255,204,0,0.02);flex-shrink:0;position:relative;}
+.port-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.7);border:1px solid rgba(255,204,0,0.4);color:var(--hot);font-size:18px;cursor:pointer;width:34px;height:34px;display:flex;align-items:center;justify-content:center;z-index:5;transition:all .2s;}
+.port-arrow:hover{background:rgba(255,204,0,0.15);}
+.port-arrow.left{left:6px;}
+.port-arrow.right{right:6px;}
+.port-dots{display:flex;gap:6px;justify-content:center;padding:8px 0;}
+.port-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,204,0,0.2);cursor:pointer;transition:background .2s;}
+.port-dot.active{background:var(--hot);}
+.port-upload-btn{display:flex;align-items:center;gap:8px;margin-top:10px;}
+.port-img-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.port-video-preview{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.port-video-section{position:relative;overflow:hidden;aspect-ratio:4/3;background:rgba(255,204,0,0.03);border:1px solid rgba(255,204,0,0.1);cursor:pointer;}
+.port-video-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;transition:opacity .3s;pointer-events:none;}
+.port-video-section:hover .port-video-overlay{opacity:0;}
+.port-video-section video{width:100%;height:100%;object-fit:cover;}
+
+/* PORTFOLIO FULL WIDTH SECTIONS */
+.port-full{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:20px;margin-bottom:16px;}
+
+/* NEWSLETTER */
+.newsletter-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:18px 20px;margin-bottom:4px;transition:border-color .2s;}
+.newsletter-card:hover{border-color:rgba(255,204,0,0.4);}
+.nl-email{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:2px;color:#fff;}
+.nl-date{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);}
+.nl-crm-btn{padding:4px 12px;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.4);color:rgba(0,255,136,0.8);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
+.nl-crm-btn:hover{background:rgba(0,255,136,0.18);}
+
+/* DONATIONS */
+.donation-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:20px;margin-bottom:4px;transition:border-color .2s;}
+.donation-card:hover{border-color:rgba(255,204,0,0.4);}
+.donation-amount{font-family:'Black Ops One',sans-serif;font-size:28px;color:var(--hot);}
+.donation-pts{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--green);letter-spacing:2px;}
+
+@media(max-width:900px){
+  #sidebar{width:60px;}
+  #sidebar .sb-logo-text,.sb-link span,.sb-section,.sb-badge{display:none;}
+  .sb-logo-wrap{padding:12px;justify-content:center;}
+  .sb-link{padding:12px 18px;justify-content:center;}
+  #main{margin-left:60px;padding:20px;}
+  .shop-layout{grid-template-columns:1fr;}
+  .booking-grid{grid-template-columns:1fr;}
+  .portfolio-layout{grid-template-columns:1fr;}
+}
+@media(max-width:600px){.row-2,.row-3{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="scanlines" aria-hidden="true"></div>
+
+<!-- LOGIN -->
+<div id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">OASENSE</div>
+    <div class="login-sub">// DEV PANEL — SECURE ACCESS</div>
+    <div class="login-attempts" id="loginAttempts"></div>
+    <div class="fg"><label class="fl">User</label><input class="fi" id="loginUser" placeholder="USERNAME" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="fg"><label class="fl">Code</label><input class="fi" type="password" id="loginCode" placeholder="ACCESS CODE" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <div class="login-err" id="loginErr">❌ Invalid credentials</div>
+    <button class="btn btn-fill" style="width:100%;margin-top:12px;" onclick="doLogin()">ENTER</button>
+  </div>
+</div>
+
+<!-- TIMEOUT -->
+<div id="timeoutOverlay">
+  <div class="timeout-msg">⏱ SESSION EXPIRED</div>
+  <div class="timeout-sub">Logged out due to inactivity</div>
+  <button class="btn btn-fill" style="margin-top:12px;" onclick="location.reload()">Log Back In</button>
+</div>
+
+<div class="welcome-toast" id="welcomeToast">Welcome</div>
+
+<!-- APP -->
+<div id="appWrap">
+<nav id="sidebar">
+  <div class="sb-logo-wrap" onclick="openAccountModal()">
+    <div class="sb-avatar" id="sbAvatar"><span id="sbAvatarEmoji">👤</span></div>
+    <div class="sb-logo-text">OASENSE<span id="sbUserLabel">// DEV PANEL</span></div>
+  </div>
+  <div class="sb-section">Manage</div>
+  <a class="sb-link active" onclick="showSection('bookings',this)"><span class="sb-icon">📅</span><span>Bookings</span></a>
+  <a class="sb-link" onclick="showSection('crm',this)"><span class="sb-icon">👥</span><span>CRM</span><span class="sb-badge" id="crmBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('shop',this)"><span class="sb-icon">🛍️</span><span>Shop</span></a>
+  <a class="sb-link" onclick="showSection('orders',this)"><span class="sb-icon">🧾</span><span>Orders</span><span class="sb-badge" id="orderBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('invoices',this)"><span class="sb-icon">💳</span><span>Invoices</span><span class="sb-badge" id="invBadge">0</span></a>
+  <div class="sb-section">Content</div>
+  <a class="sb-link" onclick="showSection('portfolio',this)"><span class="sb-icon">📷</span><span>Portfolio</span></a>
+  <a class="sb-link" onclick="showSection('testimonials',this)"><span class="sb-icon">⭐</span><span>Testimonials</span><span class="sb-badge" id="testBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('blog',this)"><span class="sb-icon">✍️</span><span>Blog</span><span class="sb-badge" id="blogBadge">0</span></a>
+  <div class="sb-section">Audience</div>
+  <a class="sb-link" onclick="showSection('newsletter',this)"><span class="sb-icon">📧</span><span>Newsletter</span><span class="sb-badge" id="nlBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('donations',this)"><span class="sb-icon">💝</span><span>Donations</span><span class="sb-badge" id="donBadge">0</span></a>
+  <div class="sb-section">System</div>
+  <a class="sb-link" onclick="showSection('aiprompts',this)"><span class="sb-icon">🤖</span><span>AI Prompts</span></a>
+  <a class="sb-link" onclick="showSection('users',this)"><span class="sb-icon">👁️</span><span>Users</span><span class="sb-badge" id="usersBadge">0</span></a>
+  <div class="sb-section" style="margin-top:auto;">Links</div>
+  <a class="sb-link" href="https://merci-chi.github.io/OAS/" target="_blank"><span class="sb-icon">🌐</span><span>Live Site</span></a>
+</nav>
+
+<div id="main">
+
+<!-- ══ BOOKINGS ══ -->
+<div class="dev-section active" id="sec-bookings">
+  <div class="topbar"><div><div class="panel-title">Book<span class="hot">ings</span></div><div class="panel-sub">// Sessions · Schedule · iOS Calendar</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="toggleNewBooking()">+ New Booking</button></div></div>
+  <div class="vhs-line"></div>
+  <div id="bookingForm" class="card" style="margin-bottom:22px;display:none;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;" id="bookingFormTitle">NEW BOOKING</div>
+    <input type="hidden" id="nb-edit-id"/>
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Client Name <span style="color:var(--red)">*</span></label><div class="crm-picker-wrap"><input class="fi" id="nb-name" placeholder="Type or pick from CRM…" autocomplete="off" oninput="crmPickFilter()" onfocus="crmPickFilter()"/><div class="crm-picker-dd" id="crmPickDD"></div></div></div>
+      <div class="fg"><label class="fl">Session Type</label><select class="fi fse" id="nb-type"><option>📸 Cinematic Portraits</option><option>👔 Brand / Business</option><option>🎉 Events</option><option>🎬 Video / Content</option><option>✨ Other</option></select></div>
+    </div>
+    <div class="form-sec">Booking Details</div>
+    <div class="row row-3">
+      <div class="fg"><label class="fl">Date <span style="color:var(--red)">*</span></label><input type="date" class="fi" id="nb-date"/></div>
+      <div class="fg"><label class="fl">Time <span style="color:var(--red)">*</span></label><div style="position:relative;"><input class="fi" id="nb-time" placeholder="12:30 PM" autocomplete="off" onclick="showTimePicker(this)"/><div id="timePickerDrop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:310;background:rgba(0,0,8,0.98);border:1px solid var(--hot);border-top:none;max-height:220px;overflow-y:auto;"></div></div></div>
+      <div class="fg"><label class="fl">Duration</label><select class="fi fse" id="nb-dur" onchange="durChanged()"><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="120">2 hours</option><option value="manual">Manual</option></select><div id="durManualWrap" style="display:none;margin-top:8px;"><input class="fi" id="nb-dur-manual" placeholder="e.g. 1.30 = 1hr30min"/></div></div>
+    </div>
+    <div class="fg"><label class="fl">Notes</label><textarea class="fta" id="nb-notes" placeholder="Mood board, vibe…"></textarea></div>
+    <div class="form-sec">Demographics</div>
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Phone</label><input class="fi" id="nb-phone" placeholder="+1 (000) 000-0000" oninput="fmtPhone(this)"/></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="nb-email" placeholder="example@gmail.com"/></div>
+    </div>
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Instagram</label><input class="fi" id="nb-ig" placeholder="@handle" oninput="fmtIG(this)"/></div>
+      <div class="fg"><label class="fl">Address</label><div class="addr-wrap"><input class="fi" id="nb-loc" placeholder="Start typing…" autocomplete="off" oninput="addrSearch(this,'nb-loc-dd')" onfocus="addrSearch(this,'nb-loc-dd')"/><div class="addr-dd" id="nb-loc-dd"></div></div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill btn-sm" onclick="saveBooking()">Save Booking</button><button class="btn btn-ghost btn-sm" onclick="closeBookingForm()">Cancel</button></div>
+  </div>
+  <div class="booking-grid" id="bookingGrid"></div>
+  <div class="empty-state" id="bookingEmpty">No bookings yet ☀️</div>
+</div>
+
+<!-- ══ CRM ══ -->
+<div class="dev-section" id="sec-crm">
+  <div class="topbar"><div><div class="panel-title">CRM <span class="hot">People</span></div><div class="panel-sub">// Prospects · Clients · Subscribers · Users</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openAddPerson()">+ Add Person</button></div></div>
+  <div class="vhs-line"></div>
+  <div class="dot-legend">
+    <div style="font-size:10px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;font-family:'Share Tech Mono',monospace;">Rating:</div>
+    <div style="display:flex;align-items:center;gap:6px;"><div class="dl-dot" style="background:var(--green);"></div><span>High</span></div>
+    <div style="display:flex;align-items:center;gap:6px;"><div class="dl-dot" style="background:var(--yellow);"></div><span>Medium</span></div>
+    <div style="display:flex;align-items:center;gap:6px;"><div class="dl-dot" style="background:var(--red);"></div><span>Low</span></div>
+    <div style="display:flex;align-items:center;gap:6px;"><div class="dl-dot dl-empty"></div><span>Unrated</span></div>
+  </div>
+  <div class="add-person-form" id="addPersonForm" style="display:none;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:3px;color:var(--hot);margin-bottom:14px;">ADD PERSON</div>
+    <div class="row row-3"><div class="fg"><label class="fl">Category</label><select class="fi fse" id="ap-cat"><option value="prospect">Prospect</option><option value="client">Client</option><option value="subscriber">Subscriber</option><option value="user">User</option></select></div><div class="fg"><label class="fl">Name</label><input class="fi" id="ap-name" placeholder="Name"/></div><div class="fg"><label class="fl">Age</label><input type="number" class="fi" id="ap-age" placeholder="Age"/></div></div>
+    <div class="row row-2"><div class="fg"><label class="fl">Phone</label><input class="fi" id="ap-phone" placeholder="+1 (000) 000-0000" oninput="fmtPhone(this)"/></div><div class="fg"><label class="fl">Email</label><input class="fi" id="ap-email" placeholder="example@gmail.com"/></div></div>
+    <div class="row row-2"><div class="fg"><label class="fl">Instagram</label><input class="fi" id="ap-ig" placeholder="@handle" oninput="fmtIG(this)"/></div><div class="fg"><label class="fl">Address</label><div class="addr-wrap"><input class="fi" id="ap-addr" placeholder="Start typing…" autocomplete="off" oninput="addrSearch(this,'ap-addr-dd')" onfocus="addrSearch(this,'ap-addr-dd')"/><div class="addr-dd" id="ap-addr-dd"></div></div></div></div>
+    <div class="fg"><label class="fl">Notes</label><textarea class="fta" id="ap-notes" style="min-height:60px;"></textarea></div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="savePerson()">Add Person</button><button class="btn btn-ghost btn-sm" onclick="closeAddPerson()">Cancel</button></div>
+  </div>
+  <div class="crm-filter-row">
+    <div class="tab-row" style="margin-bottom:0;">
+      <button class="tab-btn active" onclick="switchCRM('all',this)">All</button>
+      <button class="tab-btn" onclick="switchCRM('prospect',this)">Prospects</button>
+      <button class="tab-btn" onclick="switchCRM('client',this)">Clients</button>
+      <button class="tab-btn" onclick="switchCRM('subscriber',this)">Subscribers</button>
+      <button class="tab-btn" onclick="switchCRM('user',this)">Users</button>
+    </div>
+    <div class="rf-dropdown" style="margin-left:auto;">
+      <button class="rf-btn" onclick="this.nextElementSibling.classList.toggle('open')"><span id="ratingFilterLabel">● All Ratings</span> ▾</button>
+      <div class="rf-dd" id="ratingFilterDD">
+        <div class="rf-opt" onclick="setRatingFilter('all')"><div class="rf-dot dl-empty"></div>All</div>
+        <div class="rf-opt" onclick="setRatingFilter('green')"><div class="rf-dot" style="background:var(--green);"></div>High</div>
+        <div class="rf-opt" onclick="setRatingFilter('yellow')"><div class="rf-dot" style="background:var(--yellow);"></div>Medium</div>
+        <div class="rf-opt" onclick="setRatingFilter('red')"><div class="rf-dot" style="background:var(--red);"></div>Low</div>
+        <div class="rf-opt" onclick="setRatingFilter('none')"><div class="rf-dot dl-empty"></div>Unrated</div>
+      </div>
+    </div>
+  </div>
+  <div id="crmList"></div>
+  <div class="empty-state" id="crmEmpty">No people yet ☀️</div>
+</div>
+
+<!-- ══ SHOP ══ -->
+<div class="dev-section" id="sec-shop">
+  <div class="topbar"><div><div class="panel-title">Shop <span class="hot">Items</span></div><div class="panel-sub">// All · Live · Draft · Promo</div></div></div>
+  <div class="vhs-line"></div>
+  <div class="shop-layout">
+    <div class="item-form" id="itemForm">
+      <div style="font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:18px;" id="itemFormTitle">Add New Item</div>
+      <div class="fg"><label class="fl">Item Title</label><input class="fi" id="it-title" placeholder="Product name"/></div>
+      <div class="fg">
+        <label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Description</span><button class="btn-ai" id="aiDescBtn" onclick="enhanceDescAI()">✦ AI Enhance</button></label>
+        <textarea class="fta" id="it-desc" style="min-height:70px;" placeholder="Describe the item…"></textarea>
+      </div>
+      <div class="row row-2">
+        <div class="fg"><label class="fl">Price</label><div class="price-input-wrap"><input class="fi" id="it-price" type="number" min="0" step="0.01" placeholder="0.00"/></div></div>
+        <div class="fg"><label class="fl">Discount</label><select class="fi fse" id="it-discount"><option value="-">No Discount</option><option value="10">10% Off</option><option value="15">15% Off</option><option value="20">20% Off</option><option value="50">50% Off</option><option value="100">100% Free</option><option value="custom">Custom %</option></select></div>
+      </div>
+      <div class="fg" id="customDiscountWrap" style="display:none;"><label class="fl">Custom %</label><input class="fi" id="it-custom-discount" type="number" min="1" max="99"/></div>
+      <div class="fg"><label class="fl">Status</label><select class="fi fse" id="it-status"><option value="draft">Draft</option><option value="live">Live</option></select></div>
+      <div class="fg"><label class="fl">Primary Image</label><div class="image-upload-area"><input type="file" accept="image/*" id="it-image" onchange="previewImage(event,'imagePreview','uploadPlaceholder')"/><img class="upload-preview" id="imagePreview"/><div id="uploadPlaceholder"><span style="font-size:24px;display:block;margin-bottom:6px;">📷</span><div class="upload-label">Click to upload</div></div></div></div>
+      <div class="fg"><label class="fl">Flip Image <span style="color:var(--mute);font-size:9px;">(Optional)</span></label><div class="image-upload-area"><input type="file" accept="image/*" id="it-image2" onchange="previewImage(event,'imagePreview2','uploadPlaceholder2')"/><img class="upload-preview" id="imagePreview2"/><div id="uploadPlaceholder2"><span style="font-size:24px;display:block;margin-bottom:6px;">🔄</span><div class="upload-label">Flip side</div></div></div></div>
+      <input type="hidden" id="it-badge" value="-"/>
+      <input type="hidden" id="editingItemId" value=""/>
+      <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill" onclick="saveItem()" style="flex:1;">Save Item</button><button class="btn btn-ghost btn-sm" onclick="resetItemForm()" id="cancelEditBtn" style="display:none;">Cancel</button></div>
+    </div>
+    <div>
+      <div class="tab-row">
+        <button class="tab-btn active" onclick="switchShopTab('all',this)">All <span id="shopCountAll">0</span></button>
+        <button class="tab-btn" onclick="switchShopTab('live',this)">🌐 Live</button>
+        <button class="tab-btn" onclick="switchShopTab('draft',this)">📝 Draft</button>
+        <button class="tab-btn" onclick="switchShopTab('promo',this)">🔥 Promo</button>
+      </div>
+      <div class="shop-items-grid" id="shopItemsGrid"></div>
+      <div class="empty-state" id="shopEmpty">No items yet ☀️</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ORDERS ══ -->
+<div class="dev-section" id="sec-orders">
+  <div class="topbar"><div><div class="panel-title">Order <span class="hot">History</span></div><div class="panel-sub">// Purchases · Source · Nevada Tax</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openNewOrderForm()">+ Add Order</button></div></div>
+  <div class="vhs-line"></div>
+  <div id="newOrderForm" class="card" style="margin-bottom:22px;display:none;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">NEW ORDER</div>
+    <div class="row row-3">
+      <div class="fg"><label class="fl">Client Name</label><div class="crm-picker-wrap"><input class="fi" id="ord-name" placeholder="Type or pick from CRM…" autocomplete="off" oninput="ordPickFilter()" onfocus="ordPickFilter()"/><div class="crm-picker-dd" id="ordPickDD"></div></div></div>
+      <div class="fg"><label class="fl">Phone</label><input class="fi" id="ord-phone" placeholder="+1 (000) 000-0000" oninput="fmtPhone(this)"/></div>
+      <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="ord-date"/></div>
+    </div>
+    <div class="fg">
+      <label class="fl">Order Source</label>
+      <select class="fi fse" id="ord-source" onchange="ordSourceChanged()" style="max-width:200px;">
+        <option value="WEB">WEB</option>
+        <option value="APP">APP</option>
+        <option value="USER">USER</option>
+      </select>
+    </div>
+    <div id="ord-user-pick-wrap" style="display:none;margin-top:-6px;margin-bottom:14px;">
+      <label class="fl">Select User</label>
+      <select class="fi fse" id="ord-user-pick" style="max-width:200px;">
+        <option value="">— Select —</option>
+        <option value="Kiara">💕 Kiara</option>
+        <option value="Sol">✨ Sol</option>
+      </select>
+    </div>
+    <div class="form-sec">Items Purchased</div>
+    <div style="display:grid;grid-template-columns:1fr 80px 60px 28px;gap:8px;margin-bottom:6px;"><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.45);text-transform:uppercase;letter-spacing:2px;">Item</div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.45);text-transform:uppercase;letter-spacing:2px;">Price</div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.45);text-transform:uppercase;letter-spacing:2px;">Disc%</div><div></div></div>
+    <div id="ordItemsWrap"></div>
+    <button class="btn btn-ghost btn-sm" onclick="addOrdItem()" style="margin-bottom:16px;">+ Add Item</button>
+    <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="saveOrder()">Save Order</button><button class="btn btn-ghost btn-sm" onclick="closeNewOrderForm()">Cancel</button></div>
+  </div>
+  <div id="orderList"></div>
+  <div class="empty-state" id="orderEmpty">No orders yet ☀️</div>
+</div>
+
+<!-- ══ INVOICES ══ -->
+<div class="dev-section" id="sec-invoices">
+  <div class="topbar"><div><div class="panel-title">Invo<span class="hot">ices</span></div><div class="panel-sub">// Charge · Receipt · Send</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openNewInvoice()">+ New Invoice</button></div></div>
+  <div class="vhs-line"></div>
+  <div id="newInvoiceForm" class="inv-form" style="display:none;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">NEW INVOICE</div>
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Client</label><div class="crm-picker-wrap"><input class="fi" id="inv-client" placeholder="Type or pick from CRM…" autocomplete="off" oninput="invCrmPickFilter()" onfocus="invCrmPickFilter()"/><div class="crm-picker-dd" id="invCrmPickDD"></div></div></div>
+      <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="inv-date"/></div>
+    </div>
+    <div class="fg"><label class="fl">Product</label><div class="inv-product-row"><input class="fi" id="inv-product" placeholder="Select or type…" autocomplete="off" oninput="invProductFilter()" onfocus="invProductFilter()"/><div class="inv-product-dd" id="invProductDD"></div></div></div>
+    <div class="inv-price-box" id="invPriceBox">
+      <div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);margin-bottom:4px;">PRICE</div><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--hot);" id="invPriceDisplay">—</div></div>
+      <div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);margin-bottom:4px;">DISCOUNT</div><div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--mute);" id="invDiscDisplay">—</div></div>
+      <button class="btn-edit-white" onclick="openOverrideModal()">Manual Override</button>
+    </div>
+    <div class="form-sec">Receipt</div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <select class="fi fse" id="inv-receipt-type" onchange="receiptTypeChanged()" style="max-width:200px;"><option value="none">NO RECEIPT</option><option value="text">TEXT</option><option value="email">EMAIL</option></select>
+      <div id="inv-receipt-input-wrap" style="flex:1;display:none;"><input class="fi" id="inv-receipt-val" placeholder="+1 (000) 000-0000" oninput="fmtReceiptInput()"/></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:18px;"><button class="btn btn-fill btn-sm" onclick="saveInvoice()">Create Invoice</button><button class="btn btn-ghost btn-sm" onclick="closeNewInvoice()">Cancel</button></div>
+  </div>
+  <div id="invoiceList"></div>
+  <div class="empty-state" id="invoiceEmpty">No invoices yet ☀️</div>
+</div>
+
+<!-- ══ PORTFOLIO ══ -->
+<div class="dev-section" id="sec-portfolio">
+  <div class="topbar"><div><div class="panel-title">Port<span class="hot">folio</span></div><div class="panel-sub">// Portraits · Art · Video · Branding · Editorial</div></div><div class="topbar-actions"><button class="btn btn-fill btn-sm" onclick="savePortfolioConfig()">💾 Save All</button></div></div>
+  <div class="vhs-line"></div>
+
+  <!-- PORTRAITS CINEMATIC -->
+  <div class="port-full">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div class="port-section-title">📸 Portraits Cinematic</div>
+      <label class="btn btn-sm btn-ghost" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;gap:6px;">
+        + Add Photo
+        <input type="file" accept="image/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="addPortSlides('portraits',event)"/>
+      </label>
+    </div>
+    <div style="max-width:600px;">
+      <div class="port-slider" id="port-slider-portraits">
+        <div class="port-slider-track" id="port-track-portraits"></div>
+        <button class="port-arrow left" onclick="portSlide('portraits',-1)">‹</button>
+        <button class="port-arrow right" onclick="portSlide('portraits',1)">›</button>
+      </div>
+      <div class="port-dots" id="port-dots-portraits"></div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;" id="port-thumbs-portraits"></div>
+  </div>
+
+  <!-- DIGITAL ART ORIGINALS -->
+  <div class="port-full">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div class="port-section-title">🎨 Digital Art Originals</div>
+      <label class="btn btn-sm btn-ghost" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;gap:6px;">
+        + Add Photo
+        <input type="file" accept="image/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="addPortSlides('digital',event)"/>
+      </label>
+    </div>
+    <div style="max-width:600px;">
+      <div class="port-slider" id="port-slider-digital">
+        <div class="port-slider-track" id="port-track-digital"></div>
+        <button class="port-arrow left" onclick="portSlide('digital',-1)">‹</button>
+        <button class="port-arrow right" onclick="portSlide('digital',1)">›</button>
+      </div>
+      <div class="port-dots" id="port-dots-digital"></div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;" id="port-thumbs-digital"></div>
+  </div>
+
+  <!-- VIDEO CONTENT -->
+  <div class="port-full">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div class="port-section-title">🎬 Video Content <span style="font-size:9px;color:var(--mute);letter-spacing:2px;">(Hover to preview)</span></div>
+      <label class="btn btn-sm btn-ghost" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;gap:6px;">
+        + Add Video
+        <input type="file" accept="video/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="addPortVideos(event)"/>
+      </label>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;" id="port-videos-grid">
+      <div class="empty-state" id="port-videos-empty" style="grid-column:1/-1;">No videos yet — add above</div>
+    </div>
+  </div>
+
+  <!-- BRANDING IDENTITY -->
+  <div class="port-full">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div class="port-section-title">🏷️ Branding Identity</div>
+      <label class="btn btn-sm btn-ghost" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;gap:6px;">
+        + Add Photo
+        <input type="file" accept="image/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="addPortSlides('branding',event)"/>
+      </label>
+    </div>
+    <div style="max-width:600px;">
+      <div class="port-slider" id="port-slider-branding">
+        <div class="port-slider-track" id="port-track-branding"></div>
+        <button class="port-arrow left" onclick="portSlide('branding',-1)">‹</button>
+        <button class="port-arrow right" onclick="portSlide('branding',1)">›</button>
+      </div>
+      <div class="port-dots" id="port-dots-branding"></div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;" id="port-thumbs-branding"></div>
+  </div>
+
+  <!-- LIFESTYLE EDITORIAL -->
+  <div class="port-full">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+      <div class="port-section-title">🌅 Lifestyle Editorial</div>
+      <label class="btn btn-sm btn-ghost" style="cursor:pointer;position:relative;display:inline-flex;align-items:center;gap:6px;">
+        + Add Photo/Video
+        <input type="file" accept="image/*,video/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="addPortMixed('editorial',event)"/>
+      </label>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;" id="port-editorial-grid">
+      <div class="empty-state" id="port-editorial-empty" style="grid-column:1/-1;">No content yet — add above</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TESTIMONIALS ══ -->
+<div class="dev-section" id="sec-testimonials">
+  <div class="topbar"><div><div class="panel-title">Testi<span class="hot">monials</span></div><div class="panel-sub">// Reviews · Ratings · Live Publishing</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openAddTestimonial()">+ Add</button></div></div>
+  <div class="vhs-line"></div>
+  <div class="test-add-form" id="testAddForm">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">ADD TESTIMONIAL</div>
+    <div class="row row-2"><div class="fg"><label class="fl">Author</label><input class="fi" id="ta-author" placeholder="Name"/></div><div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="ta-date"/></div></div>
+    <div class="fg"><label class="fl">Rating</label><div style="display:flex;gap:6px;margin-bottom:6px;" id="starInputRow"><button class="star-btn" onclick="setTestStar(1)">⭐</button><button class="star-btn" onclick="setTestStar(2)">⭐</button><button class="star-btn" onclick="setTestStar(3)">⭐</button><button class="star-btn" onclick="setTestStar(4)">⭐</button><button class="star-btn" onclick="setTestStar(5)">⭐</button></div><input type="hidden" id="ta-stars" value="5"/></div>
+    <div class="fg"><label class="fl">Review</label><textarea class="fta" id="ta-body" placeholder="What did they say?"></textarea></div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="saveTestimonial()">Save</button><button class="btn btn-ghost btn-sm" onclick="closeAddTestimonial()">Cancel</button></div>
+  </div>
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTestFilter('all',this)">All</button>
+    <button class="tab-btn" onclick="switchTestFilter('live',this)">🌐 Live</button>
+    <button class="tab-btn" style="color:var(--green);" onclick="switchTestFilter('good',this)">👍 Good (4–5★)</button>
+    <button class="tab-btn" style="color:var(--yellow);" onclick="switchTestFilter('neutral',this)">😐 Neutral (3★)</button>
+    <button class="tab-btn" style="color:var(--red);" onclick="switchTestFilter('bad',this)">😬 What Did We Do?!!</button>
+  </div>
+  <div id="testimonialList"></div>
+  <div class="empty-state" id="testEmpty">No testimonials yet ☀️</div>
+</div>
+
+<!-- ══ BLOG ══ -->
+<div class="dev-section" id="sec-blog">
+  <div class="topbar"><div><div class="panel-title">Blog <span class="hot">Posts</span></div><div class="panel-sub">// ✨ Sol · 💕 Kiara · Live Publishing</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openNewBlogPost()">+ New Post</button></div></div>
+  <div class="vhs-line"></div>
+  <div id="blogForm" class="blog-form-area">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;" id="blogFormTitle">NEW POST</div>
+    <div class="fg"><label class="fl">Author</label><div class="author-pick-row"><button class="author-pick-btn sol active" id="blogAuthorSol" onclick="selectBlogAuthor('sol')">✨ Sol</button><button class="author-pick-btn kiara" id="blogAuthorKiara" onclick="selectBlogAuthor('kiara')">💕 Kiara</button></div><input type="hidden" id="blog-author" value="sol"/></div>
+    <div class="fg"><label class="fl">Title</label><input class="fi" id="blog-title" placeholder="Post title…"/></div>
+    <div class="fg">
+      <label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Content</span><button class="btn-ai" onclick="openAIWritingModal()">✨ Write with AI</button></label>
+      <textarea class="fta" id="blog-content" style="min-height:150px;" placeholder="Write your post…"></textarea>
+    </div>
+    <div class="fg"><label class="fl">Cover Image</label><div class="image-upload-area"><input type="file" accept="image/*" id="blog-image" onchange="blogImageUpload(event)"/><img class="upload-preview" id="blogImgPreview" style="max-height:200px;"/><div id="blogImgPlaceholder"><span style="font-size:24px;display:block;margin-bottom:6px;">🖼️</span><div class="upload-label">Click to upload cover</div></div></div></div>
+    <input type="hidden" id="blog-edit-id" value=""/>
+    <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill btn-sm" onclick="saveBlogPost()">Save Post</button><button class="btn btn-ghost btn-sm" onclick="closeBlogForm()">Cancel</button></div>
+  </div>
+  <div id="blogList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:20px;"></div>
+  <div class="empty-state" id="blogEmpty">No posts yet ✍️</div>
+</div>
+
+<!-- ══ NEWSLETTER ══ -->
+<div class="dev-section" id="sec-newsletter">
+  <div class="topbar"><div><div class="panel-title">News<span class="hot">letter</span></div><div class="panel-sub">// Subscribers · Email Drafts · CRM Link</div></div></div>
+  <div class="vhs-line"></div>
+
+  <!-- Draft Email -->
+  <div class="card" style="margin-bottom:22px;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">📨 DRAFT EMAIL BLAST</div>
+    <div class="fg"><label class="fl">Subject</label><input class="fi" id="nl-subject" placeholder="Email subject…"/></div>
+    <div class="fg">
+      <label class="fl" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Content</span>
+        <button class="btn-ai" id="nlAiBtn" onclick="enhanceNLContentAI()">✦ AI Enhance</button>
+      </label>
+      <textarea class="fta" id="nl-content" style="min-height:140px;" placeholder="Write your newsletter…"></textarea>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-fill btn-sm" onclick="sendNLDraft()">📤 Send to All Subscribers</button>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);" id="nlSendStatus"></span>
+    </div>
+  </div>
+
+  <!-- Subscriber List -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:rgba(255,204,0,0.5);text-transform:uppercase;">Subscribers (<span id="nlCount">0</span>)</div>
+    <button class="btn btn-sm btn-ghost" onclick="openAddSubscriber()">+ Add Manually</button>
+  </div>
+  <div id="addSubscriberForm" style="display:none;border:1px dashed rgba(255,204,0,0.25);padding:16px;margin-bottom:16px;background:rgba(255,204,0,0.02);">
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="nl-add-email" placeholder="email@example.com"/></div>
+      <div class="fg"><label class="fl">Name (optional)</label><input class="fi" id="nl-add-name" placeholder="Name"/></div>
+    </div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="addSubscriber()">Add</button><button class="btn btn-ghost btn-sm" onclick="closeAddSubscriber()">Cancel</button></div>
+  </div>
+  <div id="nlList"></div>
+  <div class="empty-state" id="nlEmpty">No subscribers yet 📧</div>
+</div>
+
+<!-- ══ DONATIONS ══ -->
+<div class="dev-section" id="sec-donations">
+  <div class="topbar"><div><div class="panel-title">Dona<span class="hot">tions</span></div><div class="panel-sub">// Points · CRM Link · Anonymous</div></div></div>
+  <div class="vhs-line"></div>
+
+  <!-- Stats -->
+  <div class="row row-3" style="margin-bottom:22px;">
+    <div class="card" style="text-align:center;padding:24px;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:8px;">Total Raised</div>
+      <div style="font-family:'Black Ops One',sans-serif;font-size:32px;color:var(--hot);" id="donTotalDisplay">$0.00</div>
+    </div>
+    <div class="card" style="text-align:center;padding:24px;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:8px;">Total Donors</div>
+      <div style="font-family:'Black Ops One',sans-serif;font-size:32px;color:var(--hot);" id="donCountDisplay">0</div>
+    </div>
+    <div class="card" style="text-align:center;padding:24px;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:8px;">Total Points Given</div>
+      <div style="font-family:'Black Ops One',sans-serif;font-size:32px;color:var(--green);" id="donPtsDisplay">0</div>
+    </div>
+  </div>
+
+  <!-- Add Manual Donation -->
+  <div class="card" style="margin-bottom:22px;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">+ LOG DONATION</div>
+    <div class="row row-3">
+      <div class="fg"><label class="fl">Donor</label><div class="crm-picker-wrap"><input class="fi" id="don-name" placeholder="Name or Anonymous" autocomplete="off" oninput="donPickFilter()" onfocus="donPickFilter()"/><div class="crm-picker-dd" id="donPickDD"></div></div></div>
+      <div class="fg"><label class="fl">Amount ($)</label><div class="price-input-wrap"><input class="fi" id="don-amount" type="number" min="10" step="1" placeholder="10.00"/></div></div>
+      <div class="fg"><label class="fl">Date</label><input type="date" class="fi" id="don-date"/></div>
+    </div>
+    <div class="fg"><label class="fl">Comment</label><input class="fi" id="don-comment" placeholder="Optional message from donor…"/></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);">
+        <input type="checkbox" id="don-anon" style="accent-color:var(--hot);"/> Anonymous
+      </label>
+      <button class="btn btn-fill btn-sm" onclick="logDonation()">Log Donation</button>
+    </div>
+  </div>
+
+  <div id="donList"></div>
+  <div class="empty-state" id="donEmpty">No donations yet 💝</div>
+</div>
+
+<!-- ══ AI PROMPTS ══ -->
+<div class="dev-section" id="sec-aiprompts">
+  <div class="topbar"><div><div class="panel-title">AI <span class="hot">Prompts</span></div><div class="panel-sub">// Sol Config · Commands · User Prompts</div></div><div class="topbar-actions"><button class="btn btn-fill btn-sm" onclick="saveAIConfig()">💾 Save All</button></div></div>
+  <div class="vhs-line"></div>
+  <div class="ai-prompt-section">
+    <div class="ai-section-title">✨ <span>Sol — Identity & Welcome</span></div>
+    <div class="fg"><label class="fl">Welcome Message</label><input class="fi" id="sol-welcome" value="Hey! I'm Sol, your OASENSE guide 🌟 — Ask me anything, make a booking, or explore the site!"/></div>
+    <div class="fg"><label class="fl">Rules / Personality</label><textarea class="fta" id="sol-rules" style="min-height:120px;"></textarea></div>
+  </div>
+  <div class="ai-prompt-section">
+    <div class="ai-section-title">⚡ <span>Commands Databank</span></div>
+    <div id="solCommandsList"></div>
+    <button class="btn btn-ghost btn-sm" onclick="addSolCommand()" style="margin-top:8px;">+ Add Command</button>
+  </div>
+  <div class="ai-prompt-section">
+    <div class="ai-section-title">💬 <span>User Prompt Suggestions</span></div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.4);margin-bottom:14px;letter-spacing:2px;">Oval pill buttons shown to users on the live site</div>
+    <div class="user-prompts-list" id="userPromptsList"></div>
+    <div style="display:flex;gap:8px;margin-top:8px;align-items:center;"><input class="fi" id="newPromptInput" placeholder="New prompt e.g. MAKE A BOOKING" style="flex:1;max-width:320px;"/><button class="btn btn-fill btn-sm" onclick="addUserPrompt()">+ Add</button></div>
+  </div>
+</div>
+
+<!-- ══ USERS ══ -->
+<div class="dev-section" id="sec-users">
+  <div class="topbar"><div><div class="panel-title">User <span class="hot">Log</span></div><div class="panel-sub">// All Users · Database · Session Tracking</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openAddUser()">+ Add User</button></div></div>
+  <div class="vhs-line"></div>
+  <div id="addUserFormWrap" class="card" style="display:none;margin-bottom:22px;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">ADD USER</div>
+    <div class="row row-3"><div class="fg"><label class="fl">Name</label><input class="fi" id="au-name" placeholder="Full name"/></div><div class="fg"><label class="fl">Provider</label><select class="fi fse" id="au-provider"><option value="EMAIL">EMAIL</option><option value="GOOGLE">GOOGLE</option><option value="IOS">IOS</option><option value="FACEBOOK">FACEBOOK</option></select></div><div class="fg"><label class="fl">Email</label><input class="fi" id="au-email" placeholder="email@example.com"/></div></div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="saveUser()">Add</button><button class="btn btn-ghost btn-sm" onclick="closeAddUser()">Cancel</button></div>
+  </div>
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchUsersTab('all',this)">All Users</button>
+    <button class="tab-btn" onclick="switchUsersTab('database',this)">Database</button>
+  </div>
+  <div id="usersAllList"></div>
+  <div id="usersDatabaseList" style="display:none;"></div>
+  <div class="empty-state" id="usersEmpty">No users yet ☀️</div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /appWrap -->
+
+<!-- ══ PERSON MODAL ══ -->
+<div class="modal-overlay" id="personModal"><div class="modal" style="max-width:400px;"><button class="modal-close" onclick="closePersonModal()">×</button><div class="modal-title" id="personModalName">Info</div><div id="personModalContent"></div></div></div>
+
+<!-- ══ OVERRIDE MODAL ══ -->
+<div class="modal-overlay" id="overrideModal">
+  <div class="modal" style="max-width:380px;">
+    <button class="modal-close" onclick="document.getElementById('overrideModal').classList.remove('open')">×</button>
+    <div class="modal-title">🔐 Manual Override</div>
+    <div id="overrideAuthWrap">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.5);letter-spacing:2px;margin-bottom:14px;">Login with any developer account to override</div>
+      <div class="fg"><label class="fl">User</label><input class="fi" id="ov-user" autocomplete="off"/></div>
+      <div class="fg"><label class="fl">Code</label><input class="fi" type="password" id="ov-pass"/></div>
+      <div id="ov-err" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);margin-bottom:12px;display:none;">❌ Invalid credentials</div>
+      <button class="btn btn-fill btn-sm" onclick="checkOverrideAuth()" style="width:100%;">Unlock</button>
+    </div>
+    <div id="overrideEditWrap" style="display:none;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green);letter-spacing:2px;margin-bottom:16px;" id="overrideWhoLabel">✓ Unlocked</div>
+      <div class="fg"><label class="fl">Override Price ($)</label><div class="price-input-wrap"><input class="fi" id="ov-price" type="number" min="0" step="0.01"/></div></div>
+      <div class="fg"><label class="fl">Override Discount (%)</label><input class="fi" id="ov-disc" placeholder="Leave blank for none"/></div>
+      <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill btn-sm" onclick="applyOverride()" style="flex:1;">Apply Override</button><button class="btn btn-ghost btn-sm" onclick="resetOverride()">Reset Lock</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACCOUNT MODAL ══ -->
+<div class="modal-overlay" id="accountModal">
+  <div class="modal" style="max-width:340px;">
+    <button class="modal-close" onclick="closeAccountModal()">×</button>
+    <div class="modal-title">Account</div>
+    <div class="acct-avatar-big" id="acctAvatarBig"><span id="acctAvatarEmoji">👤</span><img id="acctAvatarImg" style="display:none;"/><input type="file" accept="image/*" onchange="uploadAccountPhoto(event)"/></div>
+    <div style="font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:3px;color:#fff;text-align:center;margin-bottom:4px;" id="acctUserName">—</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--mute);text-align:center;margin-bottom:20px;text-transform:uppercase;" id="acctUserRole">—</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.35);text-align:center;margin-bottom:16px;letter-spacing:1px;">Tap photo to change</div>
+    <button class="btn btn-red btn-sm" style="width:100%;" onclick="doLogout()">Logout</button>
+  </div>
+</div>
+
+<!-- ══ CONFIRM MODAL ══ -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:340px;">
+    <button class="modal-close" onclick="closeConfirmModal()">×</button>
+    <div class="modal-title">⚠️ Confirm</div>
+    <div class="confirm-msg" id="confirmMsg">Are you sure?</div>
+    <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" id="confirmYesBtn" style="flex:1;">Yes, Do It</button><button class="btn btn-ghost btn-sm" onclick="closeConfirmModal()">Cancel</button></div>
+  </div>
+</div>
+
+<!-- ══ AI WRITING MODAL ══ -->
+<div class="modal-overlay" id="aiWritingModal">
+  <div class="modal" style="max-width:640px;">
+    <button class="modal-close" onclick="closeAIWritingModal()">×</button>
+    <div class="modal-title">✨ Write with AI</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.5);letter-spacing:2px;margin-bottom:16px;">Quick options or write your own prompt</div>
+    <div class="ai-quick-btns" id="aiQuickBtns">
+      <button class="ai-quick-btn" onclick="selectAIQuick('Make it longer')">Make it Longer</button>
+      <button class="ai-quick-btn" onclick="selectAIQuick('Make it more impactful and emotional')">More Impactful</button>
+      <button class="ai-quick-btn" onclick="selectAIQuick('Make it shorter and punchier')">Shorter & Punchier</button>
+      <button class="ai-quick-btn" onclick="selectAIQuick('Make it more personal and warm')">More Personal</button>
+      <button class="ai-quick-btn" onclick="selectAIQuick('Rewrite in a more artistic, poetic style')">More Artistic</button>
+    </div>
+    <div class="fg"><label class="fl">Your Prompt</label><textarea class="fta" id="aiWritePrompt" style="min-height:80px;" placeholder="Or type any custom instruction…"></textarea></div>
+    <button class="btn btn-fill btn-sm" onclick="runAIWrite()" id="aiWriteRunBtn" style="margin-bottom:16px;">✨ Generate</button>
+    <div id="aiWritingSuggestionWrap" style="display:none;">
+      <div class="ai-suggestion-box">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mute);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;">AI Suggestion — Edit below</div>
+        <textarea class="fta" id="aiWriteSuggestion" style="min-height:120px;background:rgba(170,102,204,0.04);border-color:rgba(170,102,204,0.3);"></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-fill btn-sm" onclick="applyAIWrite()">Apply to Post</button>
+          <button class="btn-ai" onclick="copyAISuggestion()">Copy</button>
+          <button class="btn btn-ghost btn-sm" onclick="runAIWrite()">Regenerate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NL CRM MODAL ══ -->
+<div class="modal-overlay" id="nlCrmModal">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" onclick="document.getElementById('nlCrmModal').classList.remove('open')">×</button>
+    <div class="modal-title" id="nlCrmModalName">Profile</div>
+    <div id="nlCrmModalContent"></div>
+  </div>
+</div>
+
+<!-- ══ DON CRM MODAL ══ -->
+<div class="modal-overlay" id="donCrmModal">
+  <div class="modal" style="max-width:420px;">
+    <button class="modal-close" onclick="document.getElementById('donCrmModal').classList.remove('open')">×</button>
+    <div class="modal-title" id="donCrmModalName">Donor Profile</div>
+    <div id="donCrmModalContent"></div>
+  </div>
+</div>
+
+</body>
+</html>
