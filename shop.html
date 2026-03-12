@@ -1,1 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shop — OASENSE.SHOP</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --hot:#FFCC00;--mag:#FF8800;--deep:#CC5500;
+  --hot2:#FFDD44;--smoke:rgba(255,180,0,0.15);
+  --void:#000005;--txt:#FFD6F5;--mute:#AA66CC;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--void);color:var(--txt);
+  font-family:'Barlow Condensed',sans-serif;
+  overflow-x:hidden;
+}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:rgba(255,180,0,0.04);}
+::-webkit-scrollbar-thumb{background:var(--hot);border-radius:4px;}
 
+/* scan lines overlay */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:8999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,0,200,0.015) 2px,rgba(255,0,200,0.015) 4px);
+  animation:scanlines 8s linear infinite;
+}
+@keyframes scanlines{0%{background-position:0 0;}100%{background-position:0 100px;}}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:5000;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:0 32px;height:60px;
+  background:rgba(0,0,5,0.9);
+  border-bottom:1px solid rgba(255,180,0,0.3);
+  backdrop-filter:blur(10px);
+  transition:border-color .3s;
+}
+nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
+.logo{
+  font-family:'Black Ops One',sans-serif;
+  font-size:26px;letter-spacing:5px;color:var(--hot);
+  text-decoration:none;text-shadow:0 0 8px rgba(255,180,0,0.4);
+  animation:logoPulse 4s ease-in-out infinite;
+}
+@keyframes logoPulse{0%,100%{text-shadow:0 0 8px rgba(255,180,0,0.5);}50%{text-shadow:0 0 16px rgba(255,180,0,0.7),0 0 30px rgba(255,180,0,0.2);}}
+.nav-links{display:flex;gap:20px;list-style:none;}
+.nav-links a{
+  color:var(--mute);text-decoration:none;
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;letter-spacing:3px;text-transform:uppercase;
+  transition:all .2s;
+}
+.nav-links a:hover,.nav-links a.active{color:var(--hot);}
+.nav-btns{display:flex;gap:8px;}
+.nbl{padding:8px 22px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
+.nbl:hover{background:var(--hot);color:#000;box-shadow:0 0 20px var(--hot);}
+.nbr{padding:8px 22px;background:var(--hot);border:1px solid var(--hot);color:#000;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;font-weight:700;transition:all .2s;}
+.nbr:hover{background:transparent;color:var(--hot);}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.hbg span{width:22px;height:1.5px;background:var(--hot);box-shadow:0 0 6px var(--hot);}
+.mob{display:none;position:fixed;inset:0;z-index:4900;background:rgba(0,0,5,0.97);flex-direction:column;align-items:center;justify-content:center;gap:24px;}
+.mob.open{display:flex;}
+.mob a{font-family:'Black Ops One',sans-serif;font-size:32px;letter-spacing:4px;color:var(--txt);text-decoration:none;text-transform:uppercase;transition:all .2s;}
+.mob a:hover{color:var(--hot);text-shadow:0 0 20px var(--hot);}
+.mob-close{position:absolute;top:20px;right:24px;background:none;border:none;color:var(--mute);font-size:28px;cursor:pointer;}
+.mob-close:hover{color:var(--hot);}
+
+/* ── SHOP HERO ── */
+.shop-hero{
+  min-height:340px;display:flex;flex-direction:column;
+  justify-content:flex-end;padding:100px 40px 52px;
+  position:relative;overflow:hidden;
+  border-bottom:1px solid rgba(255,180,0,0.2);
+}
+.sh-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 40%, rgba(255,120,0,0.1) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 20% 70%, rgba(255,180,0,0.07) 0%, transparent 60%),
+    var(--void);
+}
+.sh-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,180,0,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,180,0,0.06) 1px, transparent 1px);
+  background-size:60px 60px;
+  mask-image:linear-gradient(to bottom, transparent, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.4) 70%, transparent);
+}
+.sh-content{position:relative;z-index:2;max-width:1120px;margin:0 auto;width:100%;}
+.sh-tag{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:5px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;opacity:0;animation:fadeUp .7s ease .1s forwards;}
+.sh-title{
+  font-family:'Black Ops One',sans-serif;
+  font-size:clamp(64px,10vw,140px);
+  text-transform:uppercase;line-height:.88;
+  color:#fff;margin-bottom:20px;
+  opacity:0;animation:fadeUp .7s ease .2s forwards;
+}
+.sh-title .hot{color:var(--hot);text-shadow:0 0 20px rgba(255,180,0,0.4);}
+.sh-desc{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);letter-spacing:2px;max-width:420px;line-height:1.9;opacity:0;animation:fadeUp .7s ease .3s forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── TOOLBAR ── */
+.toolbar{
+  position:sticky;top:60px;z-index:400;
+  background:rgba(0,0,5,0.95);border-bottom:1px solid rgba(255,180,0,0.18);
+  backdrop-filter:blur(12px);padding:0 40px;
+}
+.tb-inner{
+  max-width:1120px;margin:0 auto;
+  display:flex;align-items:center;gap:16px;
+  height:58px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.tb-inner::-webkit-scrollbar{display:none;}
+
+/* filter tabs */
+.tab-row{display:flex;gap:3px;flex-shrink:0;}
+.tab{
+  padding:8px 20px;background:transparent;
+  border:1px solid rgba(255,180,0,0.18);
+  color:var(--mute);font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .18s;white-space:nowrap;
+}
+.tab.on,.tab:hover{border-color:var(--hot);color:var(--hot);}
+.tab.on{background:rgba(255,180,0,0.08);}
+
+.tb-sep{width:1px;height:30px;background:rgba(255,180,0,0.18);flex-shrink:0;margin:0 6px;}
+
+/* search */
+.tb-search{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,180,0,0.04);
+  border:1px solid rgba(255,180,0,0.18);
+  padding:8px 14px;flex:1;max-width:240px;flex-shrink:0;
+}
+.tb-search input{
+  background:none;border:none;outline:none;
+  color:var(--txt);font-family:'Share Tech Mono',monospace;
+  font-size:12px;letter-spacing:1px;width:100%;
+}
+.tb-search input::placeholder{color:var(--mute);}
+.tb-search svg{flex-shrink:0;opacity:.5;}
+
+/* sort */
+.tb-sort{
+  padding:8px 14px;background:rgba(255,180,0,0.04);
+  border:1px solid rgba(255,180,0,0.18);
+  color:var(--mute);font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:2px;cursor:pointer;
+  text-transform:uppercase;flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+}
+.tb-sort:hover{border-color:var(--hot);color:var(--hot);}
+.sort-dd{
+  position:absolute;top:calc(100% + 2px);right:0;
+  background:#080008;border:1px solid var(--hot);
+  box-shadow:0 8px 30px rgba(255,180,0,0.18);
+  display:none;z-index:200;min-width:180px;
+}
+.sort-wrap{position:relative;}
+.sort-wrap.open .sort-dd{display:block;}
+.sort-opt{
+  padding:12px 16px;font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;color:var(--mute);transition:all .15s;
+  border-bottom:1px solid rgba(255,180,0,0.1);
+}
+.sort-opt:last-child{border-bottom:none;}
+.sort-opt:hover,.sort-opt.on{color:var(--hot);background:rgba(255,180,0,0.06);}
+
+/* grid toggle */
+.grid-toggle{display:flex;gap:3px;flex-shrink:0;}
+.gtb{
+  width:34px;height:34px;background:transparent;
+  border:1px solid rgba(255,180,0,0.18);
+  color:var(--mute);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;transition:all .18s;
+}
+.gtb.on,.gtb:hover{border-color:var(--hot);color:var(--hot);}
+
+/* result count */
+.tb-count{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:2px;flex-shrink:0;white-space:nowrap;margin-left:auto;}
+.tb-count span{color:var(--hot);}
+
+/* ── MAIN ── */
+.shop-body{max-width:1120px;margin:0 auto;padding:40px 40px 100px;display:flex;gap:32px;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:220px;flex-shrink:0;}
+.sb-section{margin-bottom:32px;}
+.sb-title{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(255,180,0,0.15);}
+.sb-check{display:flex;flex-direction:column;gap:7px;}
+.sb-item{display:flex;align-items:center;gap:10px;cursor:pointer;padding:5px 0;}
+.sb-item input[type=checkbox]{display:none;}
+.cb-box{
+  width:16px;height:16px;border:1px solid rgba(255,180,0,0.35);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .15s;
+}
+.sb-item input:checked + .cb-box{
+  background:var(--hot);border-color:var(--hot);
+}
+.cb-check{display:none;font-size:10px;color:#000;font-weight:900;}
+.sb-item input:checked + .cb-box .cb-check{display:block;}
+.sb-label{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;color:var(--mute);text-transform:uppercase;transition:color .15s;}
+.sb-item:hover .sb-label{color:var(--hot);}
+.sb-count{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,180,0,0.35);}
+
+/* price range */
+.price-range{padding:6px 0;}
+.pr-labels{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);margin-bottom:10px;}
+.pr-labels span{color:var(--hot);}
+.range-track{position:relative;height:2px;background:rgba(255,180,0,0.2);margin:16px 0 8px;}
+.range-fill{position:absolute;height:100%;background:var(--hot);left:0;right:0;}
+input[type=range]{
+  -webkit-appearance:none;width:100%;background:transparent;
+  position:absolute;top:-6px;left:0;
+  pointer-events:auto;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;
+  border-radius:50%;background:var(--hot);
+  cursor:pointer;border:2px solid #000;
+  box-shadow:0 0 8px rgba(255,180,0,0.5);
+}
+#rangeMin{z-index:2;}#rangeMax{z-index:1;}
+
+/* tag cloud */
+.tag-cloud{display:flex;flex-wrap:wrap;gap:6px;}
+.tag-btn{
+  padding:5px 12px;background:transparent;
+  border:1px solid rgba(255,180,0,0.2);
+  color:var(--mute);font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;transition:all .15s;
+}
+.tag-btn.on,.tag-btn:hover{border-color:var(--hot);color:var(--hot);}
+
+.sb-clear{
+  width:100%;padding:10px;background:transparent;
+  border:1px solid rgba(255,180,0,0.2);
+  color:var(--mute);font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;margin-top:4px;
+}
+.sb-clear:hover{border-color:var(--hot);color:var(--hot);}
+
+/* ── GRID ── */
+.grid-area{flex:1;min-width:0;}
+.items-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;transition:all .3s;}
+.items-grid.cols-2{grid-template-columns:repeat(2,1fr);}
+.items-grid.cols-1{grid-template-columns:1fr;}
+
+/* ── PRODUCT CARD ── */
+.card{
+  background:rgba(255,180,0,0.025);
+  border:1px solid rgba(255,180,0,0.14);
+  transition:all .3s;cursor:pointer;
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,180,0,0.04),transparent);
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.card:hover{border-color:var(--hot);box-shadow:0 0 24px rgba(255,180,0,0.12),inset 0 0 20px rgba(255,180,0,0.02);}
+.card:hover::before{opacity:1;}
+
+/* image */
+.card-img{
+  aspect-ratio:1;position:relative;overflow:hidden;
+  background:rgba(255,180,0,0.03);
+  display:flex;align-items:center;justify-content:center;
+  font-size:64px;
+}
+.card-img img{
+  width:100%;height:100%;object-fit:cover;
+  position:absolute;inset:0;
+  transition:transform .5s ease;
+}
+.card:hover .card-img img{transform:scale(1.04);}
+.card-img img.img2{opacity:0;transition:opacity .3s ease;}
+.card:hover .card-img img.img2{opacity:1;}
+.card:hover .card-img img.img1{opacity:0;}
+
+/* badges */
+.badge-circle{
+  position:absolute;top:10px;left:10px;
+  width:44px;height:44px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Share Tech Mono',monospace;
+  font-size:8px;font-weight:700;color:#fff;
+  text-align:center;line-height:1.1;z-index:2;
+  text-shadow:0 1px 2px rgba(0,0,0,.7);
+}
+.badge-new{background:radial-gradient(circle,#00e5ff,#0050ff);box-shadow:0 0 12px rgba(0,229,255,.5);}
+.badge-hot{background:radial-gradient(circle,#ff6600,#cc0000);box-shadow:0 0 12px rgba(255,102,0,.5);}
+.badge-pct{background:radial-gradient(circle,#00ff88,#007744);box-shadow:0 0 12px rgba(0,255,136,.5);}
+
+/* quick actions overlay */
+.card-actions{
+  position:absolute;bottom:0;left:0;right:0;
+  background:linear-gradient(to top, rgba(0,0,5,0.9) 0%, transparent 100%);
+  padding:40px 14px 14px;
+  opacity:0;transform:translateY(8px);
+  transition:all .25s ease;
+  display:flex;gap:8px;
+}
+.card:hover .card-actions{opacity:1;transform:translateY(0);}
+.qa-btn{
+  flex:1;padding:9px;background:rgba(255,180,0,0.9);
+  border:none;color:#000;font-family:'Black Ops One',sans-serif;
+  font-size:12px;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.qa-btn:hover{background:#fff;}
+.qa-wish{
+  width:36px;height:36px;background:rgba(0,0,5,0.7);
+  border:1px solid rgba(255,180,0,0.4);
+  color:rgba(255,180,0,0.6);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all .2s;flex-shrink:0;
+}
+.qa-wish:hover,.qa-wish.wishlisted{border-color:var(--hot);color:var(--hot);}
+
+/* card body */
+.card-body{padding:18px 18px 22px;flex:1;display:flex;flex-direction:column;}
+.card-tag{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(255,180,0,0.5);text-transform:uppercase;margin-bottom:6px;}
+.card-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;line-height:1.2;flex:1;}
+.card-desc{font-size:13px;color:var(--mute);line-height:1.6;margin-bottom:14px;}
+.card-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;}
+.card-price{font-family:'Black Ops One',sans-serif;font-size:24px;color:var(--hot);line-height:1;}
+.card-price s{font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(255,255,255,.3);display:block;margin-bottom:2px;}
+.card-disc{font-family:'Share Tech Mono',monospace;font-size:10px;color:#00ff88;letter-spacing:1px;margin-top:3px;}
+.add-btn{
+  padding:9px 16px;background:transparent;
+  border:1px solid var(--hot);color:var(--hot);
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.add-btn:hover{background:var(--hot);color:#000;box-shadow:0 0 15px var(--hot);}
+
+/* LIST VIEW CARD */
+.items-grid.cols-1 .card{flex-direction:row;height:auto;}
+.items-grid.cols-1 .card-img{width:180px;aspect-ratio:unset;height:180px;flex-shrink:0;}
+.items-grid.cols-1 .card-actions{display:none;}
+.items-grid.cols-1 .card-body{padding:20px 24px;}
+.items-grid.cols-1 .card-name{font-size:22px;}
+.items-grid.cols-1 .card-desc{display:block;}
+
+/* empty state */
+.empty-state{
+  grid-column:1/-1;padding:80px 20px;
+  text-align:center;
+  border:1px dashed rgba(255,180,0,0.2);
+}
+.empty-icon{font-size:60px;margin-bottom:20px;}
+.empty-title{font-family:'Black Ops One',sans-serif;font-size:28px;letter-spacing:3px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:10px;}
+.empty-sub{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);letter-spacing:2px;}
+
+/* ── CART DRAWER ── */
+.cart-overlay{
+  position:fixed;inset:0;background:rgba(0,0,5,0.7);
+  z-index:7000;display:none;backdrop-filter:blur(4px);
+}
+.cart-overlay.open{display:block;}
+.cart-drawer{
+  position:fixed;right:0;top:0;bottom:0;width:400px;
+  background:#000;border-left:1px solid rgba(255,180,0,0.3);
+  z-index:7001;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);
+  box-shadow:-20px 0 60px rgba(0,0,0,0.8);
+}
+.cart-drawer.open{transform:translateX(0);}
+.cart-head{
+  padding:20px 24px;border-bottom:1px solid rgba(255,180,0,0.15);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.cart-title{font-family:'Black Ops One',sans-serif;font-size:22px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;}
+.cart-close{background:none;border:none;color:var(--mute);cursor:pointer;font-size:22px;transition:color .2s;}
+.cart-close:hover{color:var(--hot);}
+.cart-items{flex:1;overflow-y:auto;padding:16px;}
+.cart-item{
+  display:flex;gap:14px;padding:14px 0;
+  border-bottom:1px solid rgba(255,180,0,0.1);
+}
+.ci-img{
+  width:70px;height:70px;background:rgba(255,180,0,0.05);
+  border:1px solid rgba(255,180,0,0.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;flex-shrink:0;overflow:hidden;
+}
+.ci-img img{width:100%;height:100%;object-fit:cover;}
+.ci-info{flex:1;}
+.ci-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.ci-price{font-family:'Black Ops One',sans-serif;font-size:18px;color:var(--hot);}
+.ci-qty{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.qty-btn{
+  width:26px;height:26px;background:rgba(255,180,0,0.08);
+  border:1px solid rgba(255,180,0,0.25);color:var(--hot);
+  font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.qty-btn:hover{background:var(--hot);color:#000;}
+.qty-num{font-family:'Share Tech Mono',monospace;font-size:14px;min-width:20px;text-align:center;}
+.ci-remove{background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;font-size:18px;align-self:flex-start;transition:color .15s;padding:4px;}
+.ci-remove:hover{color:#ff3333;}
+.cart-empty{text-align:center;padding:60px 20px;font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--mute);letter-spacing:2px;line-height:2;}
+.cart-foot{
+  padding:20px 24px;border-top:1px solid rgba(255,180,0,0.2);
+  background:rgba(255,180,0,0.03);
+}
+.cart-subtotal{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.cart-stl{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--mute);text-transform:uppercase;}
+.cart-amt{font-family:'Black Ops One',sans-serif;font-size:28px;color:var(--hot);}
+.checkout-btn{
+  width:100%;padding:16px;background:var(--hot);
+  border:none;color:#000;font-family:'Black Ops One',sans-serif;
+  font-size:18px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .25s;
+}
+.checkout-btn:hover{background:var(--mag);box-shadow:0 0 30px rgba(255,180,0,0.4);}
+.cart-note{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;margin-top:10px;text-align:center;line-height:1.8;}
+
+/* cart badge on nav */
+.cart-fab{
+  position:fixed;bottom:100px;right:24px;z-index:6000;
+  width:52px;height:52px;border-radius:50%;
+  background:rgba(0,0,5,0.8);border:1px solid var(--hot);
+  color:var(--hot);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  box-shadow:0 0 20px rgba(255,180,0,0.25);
+  transition:all .2s;backdrop-filter:blur(10px);
+}
+.cart-fab:hover{background:rgba(255,180,0,0.15);box-shadow:0 0 30px rgba(255,180,0,0.4);transform:scale(1.05);}
+.cart-badge{
+  position:absolute;top:-4px;right:-4px;
+  width:20px;height:20px;border-radius:50%;
+  background:var(--hot);color:#000;
+  font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  display:none;
+}
+.cart-badge.show{display:flex;}
+
+/* ── PRODUCT MODAL ── */
+.modal-ov{
+  position:fixed;inset:0;background:rgba(0,0,5,0.9);
+  z-index:8000;display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);padding:20px;
+}
+.modal-ov.open{display:flex;}
+.modal-box{
+  background:#000;border:1px solid rgba(255,180,0,0.35);
+  max-width:860px;width:100%;
+  max-height:90vh;overflow-y:auto;
+  box-shadow:0 0 60px rgba(255,180,0,0.15);
+  animation:mFadeIn .3s ease;
+  position:relative;
+}
+@keyframes mFadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  background:rgba(255,180,0,0.08);border:1px solid rgba(255,180,0,0.25);
+  color:var(--mute);cursor:pointer;font-size:20px;
+  width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+  z-index:10;transition:all .2s;
+}
+.modal-close:hover{border-color:var(--hot);color:var(--hot);}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.modal-img{
+  aspect-ratio:1;background:rgba(255,180,0,0.03);
+  display:flex;align-items:center;justify-content:center;
+  font-size:100px;position:relative;overflow:hidden;
+  border-right:1px solid rgba(255,180,0,0.15);
+}
+.modal-img img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.modal-body{padding:36px 32px;}
+.modal-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:rgba(255,180,0,0.5);text-transform:uppercase;margin-bottom:10px;}
+.modal-name{font-family:'Black Ops One',sans-serif;font-size:clamp(24px,3vw,42px);text-transform:uppercase;color:#fff;line-height:1;margin-bottom:16px;}
+.modal-price-row{display:flex;align-items:flex-end;gap:14px;margin-bottom:24px;}
+.modal-price{font-family:'Black Ops One',sans-serif;font-size:40px;color:var(--hot);line-height:1;}
+.modal-orig{font-family:'Share Tech Mono',monospace;font-size:16px;color:rgba(255,255,255,.3);text-decoration:line-through;}
+.modal-disc{font-family:'Share Tech Mono',monospace;font-size:11px;color:#00ff88;letter-spacing:1px;padding:3px 10px;border:1px solid rgba(0,255,136,0.3);}
+.modal-desc{font-size:16px;color:var(--mute);line-height:1.8;margin-bottom:28px;}
+.modal-divider{height:1px;background:rgba(255,180,0,0.12);margin-bottom:24px;}
+.modal-label{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:10px;}
+.size-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:20px;}
+.sz-btn{
+  padding:9px 16px;background:transparent;
+  border:1px solid rgba(255,180,0,0.25);
+  color:var(--mute);font-family:'Share Tech Mono',monospace;
+  font-size:12px;letter-spacing:1px;cursor:pointer;transition:all .15s;
+}
+.sz-btn:hover,.sz-btn.on{border-color:var(--hot);color:var(--hot);}
+.modal-add{
+  width:100%;padding:16px;background:transparent;
+  border:1px solid var(--hot);color:var(--hot);
+  font-family:'Black Ops One',sans-serif;font-size:19px;
+  letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .25s;margin-top:6px;
+  position:relative;overflow:hidden;
+}
+.modal-add::before{content:'';position:absolute;inset:0;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1;}
+.modal-add:hover{color:#000;box-shadow:0 0 24px var(--hot);}
+.modal-add:hover::before{transform:scaleX(1);}
+
+/* ── FEATURED BANNER ── */
+.featured-banner{
+  background:linear-gradient(135deg,rgba(255,120,0,0.08),rgba(255,180,0,0.04),rgba(255,120,0,0.08));
+  border:1px solid rgba(255,180,0,0.2);
+  padding:40px;margin-bottom:32px;
+  position:relative;overflow:hidden;display:flex;align-items:center;gap:32px;
+}
+.featured-banner::before{content:'FEATURED';position:absolute;right:-10px;top:50%;transform:translateY(-50%) rotate(90deg);font-family:'Black Ops One',sans-serif;font-size:80px;color:rgba(255,180,0,0.05);white-space:nowrap;pointer-events:none;letter-spacing:6px;}
+.fb-emoji{font-size:60px;flex-shrink:0;}
+.fb-content{flex:1;}
+.fb-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;color:rgba(255,180,0,0.6);text-transform:uppercase;margin-bottom:8px;}
+.fb-title{font-family:'Black Ops One',sans-serif;font-size:clamp(24px,3vw,40px);color:#fff;text-transform:uppercase;line-height:1;margin-bottom:8px;}
+.fb-sub{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);letter-spacing:1px;line-height:1.8;}
+.fb-price-col{text-align:right;flex-shrink:0;}
+.fb-price{font-family:'Black Ops One',sans-serif;font-size:44px;color:var(--hot);line-height:1;}
+.fb-btn{
+  display:block;margin-top:12px;padding:11px 24px;background:var(--hot);
+  border:none;color:#000;font-family:'Share Tech Mono',monospace;
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+}
+.fb-btn:hover{background:var(--mag);}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:180px;left:50%;transform:translateX(-50%);
+  background:var(--hot);color:#000;
+  padding:13px 30px;font-family:'Share Tech Mono',monospace;
+  font-size:13px;font-weight:700;letter-spacing:3px;
+  z-index:9000;display:none;white-space:nowrap;
+  box-shadow:0 0 30px var(--hot);
+}
+
+/* ── FOOTER ── */
+footer{
+  background:#000;border-top:1px solid rgba(255,180,0,.2);
+  padding:60px 40px 36px;position:relative;z-index:10;
+}
+.ftg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;max-width:1120px;margin:0 auto 48px;}
+.ftl{font-family:'Black Ops One',sans-serif;font-size:24px;letter-spacing:5px;color:var(--hot);text-decoration:none;display:block;margin-bottom:14px;text-transform:uppercase;text-shadow:0 0 15px var(--hot);}
+.ftbr p{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);line-height:1.9;max-width:260px;letter-spacing:1px;}
+.ftcol h4{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:18px;text-shadow:0 0 6px var(--hot);}
+.ftcol ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.ftcol ul a{color:var(--mute);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;transition:color .2s;}
+.ftcol ul a:hover{color:var(--hot);}
+.ftbot{max-width:1120px;margin:0 auto;padding-top:28px;border-top:1px solid rgba(255,180,0,.15);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.ftcopy{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(255,180,0,.3);letter-spacing:2px;}
+.ftlinks{display:flex;gap:16px;flex-wrap:wrap;}
+.ftlinks a{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(255,180,0,.3);text-decoration:none;transition:color .2s;letter-spacing:1px;}
+.ftlinks a:hover{color:var(--hot);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  nav{padding:0 18px;}.nav-links{display:none;}.hbg{display:flex;}
+  .shop-body{padding:24px 20px 80px;gap:0;}
+  .sidebar{display:none;}
+  .toolbar{padding:0 20px;}
+  .shop-hero{padding:90px 20px 40px;}
+  footer{padding:50px 20px 28px;}
+  .ftg{grid-template-columns:1fr 1fr;}
+  .modal-grid{grid-template-columns:1fr;}
+  .modal-img{border-right:none;border-bottom:1px solid rgba(255,180,0,.15);}
+  .items-grid{grid-template-columns:repeat(2,1fr);}
+  .items-grid.cols-1{grid-template-columns:1fr;}
+  .cart-drawer{width:100%;max-width:380px;}
+}
+@media(max-width:600px){
+  .items-grid,.items-grid.cols-2{grid-template-columns:1fr;}
+  .ftg{grid-template-columns:1fr;}
+  .featured-banner{flex-direction:column;text-align:center;}
+  .fb-price-col{text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="../" class="logo">OASENSE</a>
+  <ul class="nav-links">
+    <li><a href="#" class="active">Shop</a></li>
+    <li><a href="../#music">Music</a></li>
+    <li><a href="blog">Blog</a></li>
+    <li><a href="portfolio">Portfolio</a></li>
+    <li><a href="book">Book</a></li>
+    <li><a href="../#booking">Photoshoot</a></li>
+    <li><a href="../#donation">Donate</a></li>
+    <li><a href="../#contact">Contact</a></li>
+  </ul>
+  <div class="nav-btns">
+    <button class="nbl" onclick="openAuth('login')">Log In</button>
+    <button class="nbr" onclick="openAuth('signup')">Sign Up</button>
+    <div class="hbg" onclick="toggleMob()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob" id="mob">
+  <button class="mob-close" onclick="toggleMob()">×</button>
+  <a href="../" onclick="toggleMob()">Home</a>
+  <a href="#" onclick="toggleMob()">Shop</a>
+  <a href="../#music" onclick="toggleMob()">Music</a>
+  <a href="blog" onclick="toggleMob()">Blog</a>
+  <a href="../#booking" onclick="toggleMob()">Book</a>
+  <a href="../#donation" onclick="toggleMob()">Donate</a>
+  <a href="../#contact" onclick="toggleMob()">Contact</a>
+</div>
+
+<!-- SHOP HERO -->
+<div class="shop-hero">
+  <div class="sh-bg"></div>
+  <div class="sh-grid"></div>
+  <div class="sh-content">
+    <p class="sh-tag">// Oasense — The Store</p>
+    <h1 class="sh-title">SHOP <span class="hot">OASENSE</span></h1>
+    <p class="sh-desc">Photography presets · Apparel · Digital art · Healing resources. All designed to help you wake up to your potential.</p>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="tb-inner">
+    <!-- Category tabs -->
+    <div class="tab-row" id="tabRow">
+      <button class="tab on" data-cat="all" onclick="setTab(this)">All</button>
+      <button class="tab" data-cat="apparel" onclick="setTab(this)">Apparel</button>
+      <button class="tab" data-cat="digital" onclick="setTab(this)">Digital</button>
+      <button class="tab" data-cat="presets" onclick="setTab(this)">Presets</button>
+      <button class="tab" data-cat="art" onclick="setTab(this)">Art</button>
+      <button class="tab" data-cat="promo" onclick="setTab(this)">🔥 On Sale</button>
+    </div>
+    <div class="tb-sep"></div>
+    <!-- Search -->
+    <div class="tb-search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="searchInput" placeholder="Search..." oninput="renderGrid()"/>
+    </div>
+    <!-- Sort -->
+    <div class="sort-wrap" id="sortWrap">
+      <button class="tb-sort" onclick="toggleSort()">
+        <span id="sortLabel">Sort: Newest</span>
+        <span>▾</span>
+      </button>
+      <div class="sort-dd">
+        <div class="sort-opt on" onclick="setSort('newest',this)">Newest First</div>
+        <div class="sort-opt" onclick="setSort('oldest',this)">Oldest First</div>
+        <div class="sort-opt" onclick="setSort('price-asc',this)">Price: Low → High</div>
+        <div class="sort-opt" onclick="setSort('price-desc',this)">Price: High → Low</div>
+        <div class="sort-opt" onclick="setSort('name',this)">Name A–Z</div>
+      </div>
+    </div>
+    <!-- Grid toggle -->
+    <div class="grid-toggle">
+      <button class="gtb" id="gtb3" onclick="setGrid(3)" title="3 columns">⊞</button>
+      <button class="gtb on" id="gtb2" onclick="setGrid(2)" title="2 columns" style="display:none"></button>
+      <button class="gtb" id="gtb1" onclick="setGrid(1)" title="List view">☰</button>
+    </div>
+    <!-- Count -->
+    <div class="tb-count" id="tbCount"><span id="visCount">0</span> items</div>
+  </div>
+</div>
+
+<!-- MAIN BODY -->
+<div class="shop-body" id="shopBody">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-section">
+      <div class="sb-title">Category</div>
+      <div class="sb-check" id="catChecks">
+        <label class="sb-item"><input type="checkbox" checked onchange="renderGrid()"> <span class="cb-box"><span class="cb-check">✓</span></span><span class="sb-label">Apparel</span><span class="sb-count" id="cnt-apparel">0</span></label>
+        <label class="sb-item"><input type="checkbox" checked onchange="renderGrid()"> <span class="cb-box"><span class="cb-check">✓</span></span><span class="sb-label">Digital</span><span class="sb-count" id="cnt-digital">0</span></label>
+        <label class="sb-item"><input type="checkbox" checked onchange="renderGrid()"> <span class="cb-box"><span class="cb-check">✓</span></span><span class="sb-label">Presets</span><span class="sb-count" id="cnt-presets">0</span></label>
+        <label class="sb-item"><input type="checkbox" checked onchange="renderGrid()"> <span class="cb-box"><span class="cb-check">✓</span></span><span class="sb-label">Art</span><span class="sb-count" id="cnt-art">0</span></label>
+        <label class="sb-item"><input type="checkbox" checked onchange="renderGrid()"> <span class="cb-box"><span class="cb-check">✓</span></span><span class="sb-label">Other</span><span class="sb-count" id="cnt-other">0</span></label>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">Price Range</div>
+      <div class="price-range">
+        <div class="pr-labels">$<span id="prMin">0</span> — $<span id="prMax">200</span></div>
+        <div class="range-track" id="rangeTrack">
+          <div class="range-fill" id="rangeFill"></div>
+          <input type="range" id="rangeMin" min="0" max="200" value="0" oninput="updateRange()"/>
+          <input type="range" id="rangeMax" min="0" max="200" value="200" oninput="updateRange()"/>
+        </div>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-title">Tags</div>
+      <div class="tag-cloud">
+        <button class="tag-btn on" data-tag="all" onclick="setTag(this)">All</button>
+        <button class="tag-btn" data-tag="new" onclick="setTag(this)">New</button>
+        <button class="tag-btn" data-tag="hot" onclick="setTag(this)">Hot</button>
+        <button class="tag-btn" data-tag="sale" onclick="setTag(this)">Sale</button>
+        <button class="tag-btn" data-tag="limited" onclick="setTag(this)">Limited</button>
+        <button class="tag-btn" data-tag="mindset" onclick="setTag(this)">Mindset</button>
+        <button class="tag-btn" data-tag="healing" onclick="setTag(this)">Healing</button>
+      </div>
+    </div>
+
+    <button class="sb-clear" onclick="clearFilters()">Clear All Filters</button>
+  </aside>
+
+  <!-- GRID AREA -->
+  <main class="grid-area">
+    <!-- Featured item banner — shown for first featured item -->
+    <div class="featured-banner" id="featuredBanner" style="display:none;">
+      <div class="fb-emoji" id="fbEmoji">✨</div>
+      <div class="fb-content">
+        <div class="fb-tag">✦ Featured Drop</div>
+        <div class="fb-title" id="fbTitle">—</div>
+        <div class="fb-sub" id="fbSub">—</div>
+      </div>
+      <div class="fb-price-col">
+        <div class="fb-price" id="fbPrice">—</div>
+        <button class="fb-btn" id="fbBtn" onclick="">Shop Now</button>
+      </div>
+    </div>
+
+    <div class="items-grid cols-2" id="itemsGrid">
+      <!-- rendered by JS -->
+    </div>
+  </main>
+</div>
+
+<!-- CART FAB -->
+<button class="cart-fab" onclick="openCart()" title="View Cart">
+  🛒
+  <div class="cart-badge" id="cartBadge">0</div>
+</button>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <div class="cart-title">Your Cart</div>
+    <button class="cart-close" onclick="closeCart()">×</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">YOUR CART IS EMPTY<br/><br/>ADD SOMETHING THAT SPEAKS TO YOUR SOUL ☀️</div>
+  </div>
+  <div class="cart-foot" id="cartFoot" style="display:none;">
+    <div class="cart-subtotal">
+      <span class="cart-stl">Subtotal</span>
+      <span class="cart-amt">$<span id="cartTotal">0.00</span></span>
+    </div>
+    <button class="checkout-btn" onclick="toast('CHECKOUT COMING SOON — WE\'RE BUILDING IT! ☀️')">Proceed to Checkout</button>
+    <div class="cart-note">Secure checkout · Free shipping over $50 · 30-day returns</div>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-ov" id="modalOv" onclick="closeModalOut(event)">
+  <div class="modal-box" id="modalBox">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div class="modal-grid">
+      <div class="modal-img" id="modalImg">🎁</div>
+      <div class="modal-body">
+        <div class="modal-tag" id="modalTag"></div>
+        <div class="modal-name" id="modalName"></div>
+        <div class="modal-price-row">
+          <div class="modal-price" id="modalPrice"></div>
+          <div class="modal-orig" id="modalOrig" style="display:none;"></div>
+          <div class="modal-disc" id="modalDisc" style="display:none;"></div>
+        </div>
+        <div class="modal-desc" id="modalDesc"></div>
+        <div class="modal-divider"></div>
+        <div id="sizeSection" style="display:none;">
+          <div class="modal-label">Select Size</div>
+          <div class="size-row" id="sizeRow"></div>
+        </div>
+        <button class="modal-add" onclick="addFromModal()">Add to Cart ☀️</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ftg">
+    <div class="ftbr">
+      <a href="../" class="ftl">OASENSE</a>
+      <p>A creative studio for photography, digital art, video &amp; mindful merchandise. You are the light — embrace it.</p>
+    </div>
+    <div class="ftcol"><h4>Navigate</h4><ul><li><a href="#">Shop</a></li><li><a href="../#music">Music</a></li><li><a href="blog">Blog</a></li><li><a href="portfolio">Portfolio</a></li><li><a href="book">Book</a></li><li><a href="../#booking">Photoshoot</a></li><li><a href="../#donation">Donate</a></li></ul></div>
+    <div class="ftcol"><h4>Support</h4><ul><li><a href="#">FAQ</a></li><li><a href="../#contact">Contact</a></li><li><a href="#">Shipping Policy</a></li><li><a href="#">Refund Policy</a></li></ul></div>
+    <div class="ftcol"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms &amp; Conditions</a></li><li><a href="#">Accessibility</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+  </div>
+  <div class="ftbot">
+    <p class="ftcopy">© 2025 OASENSE.SHOP — ALL RIGHTS RESERVED</p>
+    <div class="ftlinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Accessibility</a><a href="#">Shipping</a><a href="#">Refunds</a></div>
+  </div>
+</footer>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+//  DATA — reads from oas_shop (DEV panel) + fallback demo items
+// ════════════════════════════════════════════════════════════════
+const OAS = {
+  get:(k,d=[])=>{try{return JSON.parse(localStorage.getItem(k))??d;}catch{return d;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+};
+const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// Fallback demo items (shown when DEV panel has no live items)
+const DEMO_ITEMS = [
+  {id:1,title:'YOU ARE THE LIGHT — TEE',desc:'Premium heavyweight tee. Barlow Condensed graphic print front + back. Oversized fit.',price:'44.99',discount:'',badge:'New!',category:'apparel',img:'',tags:['new','mindset'],status:'live',createdAt:'2025-03-01'},
+  {id:2,title:'SOLXSTATE STARTER PRESET PACK',desc:'12 Lightroom presets for cinematic portraits. Dark, moody, editorial. PC & mobile.',price:'19.99',discount:'',badge:'Hot!',category:'presets',img:'',tags:['hot'],status:'live',createdAt:'2025-02-20'},
+  {id:3,title:'INNER LIGHT — DIGITAL PRINT',desc:'Hi-res 4K digital art piece. Printable. Certificate of authenticity included.',price:'12.99',discount:'',badge:'',category:'digital',img:'',tags:[],status:'live',createdAt:'2025-02-15'},
+  {id:4,title:'OASENSE HOODIE — BLACK',desc:'French terry heavyweight hoodie. Embroidered OASENSE logo. Unisex.',price:'74.99',discount:'15',badge:'%',category:'apparel',img:'',tags:['sale'],status:'live',createdAt:'2025-02-10'},
+  {id:5,title:'AWAKENING — GUIDED JOURNAL',desc:'Printable 40-page guided journal. Daily prompts for self-mastery & clarity.',price:'9.99',discount:'',badge:'',category:'digital',img:'',tags:['healing','mindset'],status:'live',createdAt:'2025-01-30'},
+  {id:6,title:'CINEMATIC PORTRAIT PRESET BUNDLE',desc:'30 advanced presets. Skin-tone aware, one-click cinematic look.',price:'34.99',discount:'20',badge:'%',category:'presets',img:'',tags:['sale','hot'],status:'live',createdAt:'2025-01-20'},
+  {id:7,title:'WAKE UP — POSTER PRINT',desc:'High-resolution motivational poster. Ships worldwide. 18×24".',price:'29.99',discount:'',badge:'',category:'art',img:'',tags:['mindset'],status:'live',createdAt:'2025-01-10'},
+  {id:8,title:'SOL TOTE BAG',desc:'100% organic cotton tote. Heavy-duty canvas. Sol sigil screenprint.',price:'22.99',discount:'',badge:'New!',category:'apparel',img:'',tags:['new'],status:'live',createdAt:'2025-01-01'},
+];
+
+const EMOJIS = {apparel:'👕',digital:'💾',presets:'🎨',art:'🖼️',other:'✨'};
+
+// ── STATE ──
+let allItems = [];
+let activeTab = 'all';
+let activeTag = 'all';
+let sortMode = 'newest';
+let gridCols = 2;
+let priceMin = 0, priceMax = 200;
+let modalItem = null;
+let cart = OAS.get('oas_cart_live', []);
+
+// ── LOAD DATA ──
+function loadItems(){
+  const devItems = OAS.get('oas_shop', []).filter(x => x.status === 'live');
+  allItems = devItems.length ? devItems : DEMO_ITEMS;
+
+  // Update max price range
+  const max = Math.ceil(Math.max(...allItems.map(x => parseFloat(x.price)||0), 100));
+  document.getElementById('rangeMax').max = max;
+  document.getElementById('rangeMax').value = max;
+  priceMax = max;
+  document.getElementById('prMax').textContent = max;
+
+  // Count per category
+  ['apparel','digital','presets','art','other'].forEach(cat=>{
+    const el=document.getElementById('cnt-'+cat);
+    if(el) el.textContent = allItems.filter(x=>(x.category||'other')===cat).length;
+  });
+
+  renderFeatured();
+  renderGrid();
+}
+
+// ── FEATURED ──
+function renderFeatured(){
+  const featured = allItems.find(x => x.badge === 'Hot!' || (x.discount && parseInt(x.discount) > 10));
+  const banner = document.getElementById('featuredBanner');
+  if(!featured){ banner.style.display='none'; return; }
+  banner.style.display='flex';
+  document.getElementById('fbEmoji').textContent = EMOJIS[featured.category||'other']||'✨';
+  document.getElementById('fbTitle').textContent = featured.title;
+  document.getElementById('fbSub').textContent = featured.desc||'';
+  const dp = featured.discount ? (parseFloat(featured.price)*(1-parseInt(featured.discount)/100)).toFixed(2) : featured.price;
+  document.getElementById('fbPrice').textContent = '$'+dp;
+  document.getElementById('fbBtn').onclick = () => openModal(featured);
+}
+
+// ── RENDER GRID ──
+function renderGrid(){
+  const grid = document.getElementById('itemsGrid');
+  const search = document.getElementById('searchInput').value.toLowerCase().trim();
+  const checks = document.querySelectorAll('#catChecks input[type=checkbox]');
+  const cats = ['apparel','digital','presets','art','other'];
+  const enabledCats = new Set(cats.filter((_,i)=>checks[i]?.checked));
+
+  let items = allItems.filter(item=>{
+    const cat = item.category||'other';
+    if(!enabledCats.has(cat)) return false;
+    if(activeTab!=='all' && activeTab!=='promo' && cat!==activeTab) return false;
+    if(activeTab==='promo' && (!item.discount || parseInt(item.discount)<=0)) return false;
+    if(activeTag!=='all'){
+      const tags = item.tags || [];
+      if(activeTag==='new' && item.badge!=='New!') return false;
+      if(activeTag==='hot' && item.badge!=='Hot!') return false;
+      if(activeTag==='sale' && (!item.discount||parseInt(item.discount)<=0)) return false;
+      if(!['new','hot','sale'].includes(activeTag) && !tags.includes(activeTag)) return false;
+    }
+    const price = parseFloat(item.price)||0;
+    if(price < priceMin || price > priceMax) return false;
+    if(search){
+      const s = (item.title+' '+(item.desc||'')+' '+(item.category||'')).toLowerCase();
+      if(!s.includes(search)) return false;
+    }
+    return true;
+  });
+
+  // Sort
+  if(sortMode==='newest') items.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
+  else if(sortMode==='oldest') items.sort((a,b)=>new Date(a.createdAt||0)-new Date(b.createdAt||0));
+  else if(sortMode==='price-asc') items.sort((a,b)=>parseFloat(a.price)-parseFloat(b.price));
+  else if(sortMode==='price-desc') items.sort((a,b)=>parseFloat(b.price)-parseFloat(a.price));
+  else if(sortMode==='name') items.sort((a,b)=>a.title.localeCompare(b.title));
+
+  document.getElementById('visCount').textContent = items.length;
+
+  if(!items.length){
+    grid.innerHTML=`<div class="empty-state">
+      <div class="empty-icon">🌌</div>
+      <div class="empty-title">No Items Found</div>
+      <div class="empty-sub">Try adjusting your filters or search</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = items.map(item=>{
+    const hasDisc = item.discount && parseInt(item.discount)>0;
+    const dp = hasDisc ? (parseFloat(item.price)*(1-parseInt(item.discount)/100)).toFixed(2) : null;
+    const emoji = EMOJIS[item.category||'other']||'✨';
+    let badge = '';
+    if(item.badge==='New!')  badge=`<div class="badge-circle badge-new">NEW</div>`;
+    else if(item.badge==='Hot!') badge=`<div class="badge-circle badge-hot">HOT</div>`;
+    else if(item.badge==='%')    badge=`<div class="badge-circle badge-pct">${item.discount||''}%<br/>OFF</div>`;
+    return `<div class="card" data-id="${item.id}" onclick="openModal(getItem(${item.id}))">
+      <div class="card-img">
+        ${item.img ? `<img class="img1" src="${_esc(item.img)}" alt="${_esc(item.title)}"/>` : emoji}
+        ${item.img2 ? `<img class="img2" src="${_esc(item.img2)}" alt="${_esc(item.title)} (back)"/>` : ''}
+        ${badge}
+        <div class="card-actions" onclick="event.stopPropagation()">
+          <button class="qa-btn" onclick="quickAdd(${item.id})">Add to Cart</button>
+          <button class="qa-wish" onclick="toggleWish(this,${item.id})" title="Wishlist">♥</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">${_esc(item.category||'other')}</div>
+        <div class="card-name">${_esc(item.title)}</div>
+        <div class="card-desc">${_esc((item.desc||'').substring(0,80)+(item.desc&&item.desc.length>80?'...':''))}</div>
+        <div class="card-foot">
+          <div>
+            ${hasDisc?`<s class="card-price" style="font-size:14px;color:rgba(255,255,255,.3);font-family:'Share Tech Mono',monospace;">$${item.price}</s>`:''}
+            <div class="card-price">$${dp||item.price}</div>
+            ${hasDisc?`<div class="card-disc">${item.discount}% OFF</div>`:''}
+          </div>
+          <button class="add-btn" onclick="event.stopPropagation();quickAdd(${item.id})">+ Add</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getItem(id){ return allItems.find(x=>String(x.id)===String(id)); }
+
+// ── FILTERS ──
+function setTab(btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  activeTab = btn.dataset.cat;
+  renderGrid();
+}
+function setTag(btn){
+  document.querySelectorAll('.tag-btn').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  activeTag = btn.dataset.tag;
+  renderGrid();
+}
+function clearFilters(){
+  activeTab='all'; activeTag='all'; sortMode='newest';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelector('[data-cat="all"]').classList.add('on');
+  document.querySelectorAll('.tag-btn').forEach(t=>t.classList.remove('on'));
+  document.querySelector('[data-tag="all"]').classList.add('on');
+  document.querySelectorAll('#catChecks input').forEach(c=>c.checked=true);
+  document.getElementById('searchInput').value='';
+  const max=parseInt(document.getElementById('rangeMax').max);
+  document.getElementById('rangeMin').value=0;
+  document.getElementById('rangeMax').value=max;
+  priceMin=0;priceMax=max;
+  updateRange();
+  renderGrid();
+}
+
+// ── SORT ──
+function toggleSort(){ document.getElementById('sortWrap').classList.toggle('open'); }
+function setSort(mode,btn){
+  sortMode=mode;
+  document.querySelectorAll('.sort-opt').forEach(o=>o.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('sortLabel').textContent='Sort: '+btn.textContent;
+  document.getElementById('sortWrap').classList.remove('open');
+  renderGrid();
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#sortWrap'))document.getElementById('sortWrap').classList.remove('open');});
+
+// ── GRID COLS ──
+function setGrid(n){
+  gridCols=n;
+  const g=document.getElementById('itemsGrid');
+  g.className='items-grid cols-'+n;
+  document.querySelectorAll('.gtb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('gtb'+n)?.classList.add('on');
+}
+
+// ── PRICE RANGE ──
+function updateRange(){
+  const mn=parseInt(document.getElementById('rangeMin').value);
+  const mx=parseInt(document.getElementById('rangeMax').value);
+  if(mn>mx){ document.getElementById('rangeMin').value=mx; return; }
+  priceMin=mn; priceMax=mx;
+  document.getElementById('prMin').textContent=mn;
+  document.getElementById('prMax').textContent=mx;
+  const total=parseInt(document.getElementById('rangeMax').max);
+  document.getElementById('rangeFill').style.left=(mn/total*100)+'%';
+  document.getElementById('rangeFill').style.right=((1-mx/total)*100)+'%';
+  renderGrid();
+}
+
+// ── CART ──
+function openCart(){ document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartDrawer').classList.add('open'); renderCart(); }
+function closeCart(){ document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartDrawer').classList.remove('open'); }
+function quickAdd(id){ addToCart(getItem(id)); }
+function addToCart(item, size=''){
+  const existing = cart.find(c=>c.id===item.id&&c.size===size);
+  if(existing){ existing.qty++; }
+  else{ cart.push({id:item.id,title:item.title,price:item.price,discount:item.discount,img:item.img,emoji:EMOJIS[item.category||'other'],qty:1,size}); }
+  OAS.set('oas_cart_live',cart);
+  updateCartBadge();
+  toast('ADDED TO CART ✓');
+}
+function removeFromCart(id){
+  cart=cart.filter(c=>c.id!==id);
+  OAS.set('oas_cart_live',cart);
+  updateCartBadge();
+  renderCart();
+}
+function changeQty(id,delta){
+  const item=cart.find(c=>c.id===id);
+  if(!item) return;
+  item.qty+=delta;
+  if(item.qty<=0){ removeFromCart(id); return; }
+  OAS.set('oas_cart_live',cart);
+  renderCart();
+  updateCartBadge();
+}
+function updateCartBadge(){
+  const total=cart.reduce((s,c)=>s+c.qty,0);
+  const badge=document.getElementById('cartBadge');
+  badge.textContent=total;
+  badge.className='cart-badge'+(total>0?' show':'');
+}
+function renderCart(){
+  const el=document.getElementById('cartItems');
+  const foot=document.getElementById('cartFoot');
+  if(!cart.length){
+    el.innerHTML='<div class="cart-empty">YOUR CART IS EMPTY<br/><br/>ADD SOMETHING THAT SPEAKS TO YOUR SOUL ☀️</div>';
+    foot.style.display='none'; return;
+  }
+  foot.style.display='block';
+  el.innerHTML=cart.map(c=>{
+    const dp=c.discount&&parseInt(c.discount)>0?(parseFloat(c.price)*(1-parseInt(c.discount)/100)).toFixed(2):c.price;
+    return `<div class="cart-item">
+      <div class="ci-img">${c.img?`<img src="${_esc(c.img)}" alt=""/>`:(c.emoji||'🎁')}</div>
+      <div class="ci-info">
+        <div class="ci-name">${_esc(c.title)}</div>
+        ${c.size?`<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);">Size: ${c.size}</div>`:''}
+        <div class="ci-price">$${(parseFloat(dp)*c.qty).toFixed(2)}</div>
+        <div class="ci-qty">
+          <button class="qty-btn" onclick="changeQty(${c.id},-1)">−</button>
+          <span class="qty-num">${c.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${c.id},1)">+</button>
+        </div>
+      </div>
+      <button class="ci-remove" onclick="removeFromCart(${c.id})">×</button>
+    </div>`;
+  }).join('');
+  const total=cart.reduce((s,c)=>{
+    const dp=c.discount&&parseInt(c.discount)>0?(parseFloat(c.price)*(1-parseInt(c.discount)/100)):parseFloat(c.price);
+    return s+dp*c.qty;
+  },0);
+  document.getElementById('cartTotal').textContent=total.toFixed(2);
+}
+
+// ── MODAL ──
+function openModal(item){
+  if(!item) return;
+  modalItem=item;
+  const hasDisc=item.discount&&parseInt(item.discount)>0;
+  const dp=hasDisc?(parseFloat(item.price)*(1-parseInt(item.discount)/100)).toFixed(2):null;
+  const imgEl=document.getElementById('modalImg');
+  imgEl.innerHTML=item.img?`<img src="${_esc(item.img)}" alt="${_esc(item.title)}"/>`:(EMOJIS[item.category||'other']||'🎁');
+  document.getElementById('modalTag').textContent=(item.category||'').toUpperCase();
+  document.getElementById('modalName').textContent=item.title;
+  document.getElementById('modalPrice').textContent='$'+(dp||item.price);
+  const orig=document.getElementById('modalOrig');
+  const disc=document.getElementById('modalDisc');
+  if(hasDisc){orig.style.display='block';orig.textContent='$'+item.price;disc.style.display='block';disc.textContent=item.discount+'% OFF';}
+  else{orig.style.display='none';disc.style.display='none';}
+  document.getElementById('modalDesc').textContent=item.desc||'A beautiful piece from Oasense.';
+  // Sizes for apparel
+  const sizeSection=document.getElementById('sizeSection');
+  const sizeRow=document.getElementById('sizeRow');
+  if(item.category==='apparel'){
+    sizeSection.style.display='block';
+    sizeRow.innerHTML=['XS','S','M','L','XL','XXL'].map(sz=>`<button class="sz-btn" onclick="selectSize(this,'${sz}')">${sz}</button>`).join('');
+  } else { sizeSection.style.display='none'; }
+  document.getElementById('modalOv').classList.add('open');
+}
+function selectSize(btn,sz){
+  document.querySelectorAll('.sz-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function closeModal(){ document.getElementById('modalOv').classList.remove('open'); }
+function closeModalOut(e){ if(e.target===document.getElementById('modalOv')) closeModal(); }
+function addFromModal(){
+  if(!modalItem) return;
+  const sz = document.querySelector('.sz-btn.on')?.textContent||'';
+  addToCart(modalItem, sz);
+  closeModal();
+}
+function toggleWish(btn,id){ btn.classList.toggle('wishlisted'); toast(btn.classList.contains('wishlisted')?'ADDED TO WISHLIST ♥':'REMOVED FROM WISHLIST'); }
+
+// ── TOAST ──
+let toastT;
+function toast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.style.display='block';
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>t.style.display='none',3000);
+}
+
+// ── NAV ──
+function toggleMob(){ document.getElementById('mob').classList.toggle('open'); }
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainNav').classList.toggle('shrunk',window.scrollY>60);
+},{passive:true});
+
+// ── AUTH stubs ──
+function openAuth(t){ toast(t==='login'?'LOGIN COMING SOON ☀️':'SIGNUP COMING SOON ☀️'); }
+
+// ── SCROLL REVEAL ──
+const ro=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}},{threshold:.05}));
+
+// ── INIT ──
+loadItems();
+updateCartBadge();
+updateRange();
+</script>
+</body>
+</html>
