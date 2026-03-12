@@ -1,1 +1,14 @@
-[]
+{
+  "shop": [],
+  "bookings": [],
+  "crm": [],
+  "orders": [],
+  "invoices": [],
+  "testimonials": [],
+  "blog": [],
+  "portfolio": {},
+  "about": {},
+  "donations": [],
+  "newsletter": [],
+  "users": []
+}
