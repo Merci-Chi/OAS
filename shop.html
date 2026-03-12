@@ -1915,6 +1915,23 @@ document.querySelectorAll('.pr,.po,.pi2,.ri,.tk,.sv').forEach(el=>{
   el.style.transition='opacity .5s ease,transform .5s ease';
   obs.observe(el);
 });
+  // ── SHOP IMAGE FLIP FIX ──
+// If a shop item has only one image, disable flip
+document.addEventListener('DOMContentLoaded', () => {
+  const items = document.querySelectorAll('.pr'); // product cards
+
+  items.forEach(item => {
+    const imgs = item.querySelectorAll('img');
+
+    if (imgs.length < 2 || !imgs[1].getAttribute('src')) {
+      item.classList.add('no-flip');
+
+      item.addEventListener('mouseenter', e => e.stopPropagation());
+      item.addEventListener('mouseleave', e => e.stopPropagation());
+      item.addEventListener('click', e => e.stopPropagation());
+    }
+  });
+});
 </script>
 </body>
 </html>
