@@ -89,51 +89,16 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .btn-ai.loading{opacity:.6;cursor:not-allowed;}
 
 /* ═══ LIVE TOGGLE STYLES ═══ */
-.item-status-bar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:8px 12px;margin-bottom:0;
-  border-top:1px solid rgba(255,204,0,0.1);
-  background:rgba(0,0,0,0.3);
-}
-.item-live-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 10px;font-family:'Share Tech Mono',monospace;
-  font-size:9px;letter-spacing:2px;text-transform:uppercase;
-  border:1px solid var(--green);color:var(--green);
-  background:rgba(0,255,136,0.08);
-}
+.item-status-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;margin-bottom:0;border-top:1px solid rgba(255,204,0,0.1);background:rgba(0,0,0,0.3);}
+.item-live-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border:1px solid var(--green);color:var(--green);background:rgba(0,255,136,0.08);}
 .item-live-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:livePulse 2s ease-in-out infinite;}
 @keyframes livePulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.item-draft-badge{
-  display:inline-flex;align-items:center;gap:5px;
-  padding:3px 10px;font-family:'Share Tech Mono',monospace;
-  font-size:9px;letter-spacing:2px;text-transform:uppercase;
-  border:1px solid rgba(255,204,0,0.25);color:rgba(255,204,0,0.4);
-}
-.btn-go-live{
-  padding:4px 12px;background:transparent;
-  border:1px solid rgba(0,255,136,0.5);color:rgba(0,255,136,0.7);
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  letter-spacing:2px;cursor:pointer;text-transform:uppercase;
-  transition:all .2s;
-}
+.item-draft-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border:1px solid rgba(255,204,0,0.25);color:rgba(255,204,0,0.4);}
+.btn-go-live{padding:4px 12px;background:transparent;border:1px solid rgba(0,255,136,0.5);color:rgba(0,255,136,0.7);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
 .btn-go-live:hover{background:rgba(0,255,136,0.1);border-color:var(--green);color:var(--green);}
-.btn-pull-back{
-  padding:4px 12px;background:transparent;
-  border:1px solid rgba(255,59,59,0.4);color:rgba(255,59,59,0.7);
-  font-family:'Share Tech Mono',monospace;font-size:9px;
-  letter-spacing:2px;cursor:pointer;text-transform:uppercase;
-  transition:all .2s;
-}
+.btn-pull-back{padding:4px 12px;background:transparent;border:1px solid rgba(255,59,59,0.4);color:rgba(255,59,59,0.7);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
 .btn-pull-back:hover{background:rgba(255,59,59,0.1);border-color:var(--red);color:var(--red);}
-.live-count-bar{
-  display:flex;align-items:center;gap:16px;
-  padding:12px 16px;margin-bottom:16px;
-  background:rgba(0,255,136,0.04);
-  border:1px solid rgba(0,255,136,0.15);
-  font-family:'Share Tech Mono',monospace;font-size:11px;
-  letter-spacing:2px;color:var(--mute);
-}
+.live-count-bar{display:flex;align-items:center;gap:16px;padding:12px 16px;margin-bottom:16px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--mute);}
 .live-count-num{font-family:'Black Ops One',sans-serif;font-size:20px;color:var(--green);text-shadow:0 0 8px rgba(0,255,136,0.4);}
 .live-count-label{display:flex;flex-direction:column;gap:2px;}
 .draft-count-num{font-family:'Black Ops One',sans-serif;font-size:20px;color:rgba(255,204,0,0.4);}
@@ -208,6 +173,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .crm-entry-grid{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;}
 .crm-name-row{display:flex;align-items:center;gap:10px;margin-bottom:2px;flex-wrap:wrap;}
 .crm-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:2px;text-transform:uppercase;color:#fff;}
+.crm-id-tag{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--hot);letter-spacing:2px;background:rgba(255,204,0,0.08);border:1px solid rgba(255,204,0,0.3);padding:2px 8px;}
 .crm-age{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:1px;}
 .crm-fields{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;margin-top:8px;}
 .crm-field{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(255,255,255,0.5);letter-spacing:1px;}
@@ -375,23 +341,6 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .author-btn.kiara.active,.author-btn.kiara:hover{border-color:var(--pink);color:var(--pink);background:rgba(255,105,180,0.08);}
 .author-btn.active{font-weight:700;}
 
-/* USERS */
-.user-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:18px 20px;margin-bottom:4px;transition:border-color .2s;cursor:pointer;}
-.user-card:hover{border-color:rgba(255,204,0,0.4);}
-.user-card-grid{display:grid;grid-template-columns:44px 1fr auto;gap:14px;align-items:center;}
-.user-avatar{width:44px;height:44px;border-radius:50%;overflow:hidden;background:rgba(255,204,0,0.08);border:2px solid rgba(255,204,0,0.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.user-avatar img{width:100%;height:100%;object-fit:cover;}
-.user-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:2px;text-transform:uppercase;color:#fff;}
-.user-seen{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:1px;}
-.user-provider-badge{display:inline-block;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:3px;margin-left:8px;}
-.provider-google{background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.4);color:#4285F4;}
-.provider-ios{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:#fff;}
-.provider-facebook{background:rgba(66,103,178,0.15);border:1px solid rgba(66,103,178,0.4);color:#4267B2;}
-.provider-email{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);}
-.user-session{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.6);letter-spacing:1px;text-align:right;}
-.user-detail{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
-.user-detail.open{display:block;}
-
 /* AI PROMPTS */
 .ai-prompt-section{background:rgba(170,102,204,0.04);border:1px solid rgba(170,102,204,0.2);padding:22px;margin-bottom:20px;}
 .ai-section-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:3px;color:var(--mute);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
@@ -421,23 +370,65 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .timeout-sub{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--mute);text-align:center;text-transform:uppercase;}
 .timeout-btn{margin-top:12px;}
 
-/* RECENTS CARDS */
-.recent-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:14px 16px;transition:border-color .2s;position:relative;}
-.recent-card:hover{border-color:rgba(255,204,0,0.4);}
-.recent-card-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.recent-avatar{width:36px;height:36px;border-radius:50%;background:rgba(255,204,0,0.08);border:2px solid rgba(255,204,0,0.25);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-.recent-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:2px;text-transform:uppercase;color:#fff;line-height:1.1;}
-.recent-role-tag{display:inline-block;padding:2px 8px;font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;border-radius:2px;margin-top:2px;}
-.role-dev{background:rgba(255,204,0,0.12);border:1px solid rgba(255,204,0,0.4);color:var(--hot);}
-.role-owner{background:rgba(255,105,180,0.12);border:1px solid rgba(255,105,180,0.4);color:var(--pink);}
-.role-audit{background:rgba(74,144,255,0.12);border:1px solid rgba(74,144,255,0.4);color:var(--blue);}
-.role-user{background:rgba(170,102,204,0.12);border:1px solid rgba(170,102,204,0.35);color:var(--mute);}
-.recent-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;}
-.recent-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+/* ══════════════════════════════════
+   DATABASE / AUDIT LOG STYLES
+══════════════════════════════════ */
+.db-header-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:24px;}
+.db-stat-card{background:rgba(255,204,0,0.03);border:1px solid var(--border);padding:16px 20px;}
+.db-stat-num{font-family:'Black Ops One',sans-serif;font-size:28px;color:var(--hot);text-shadow:0 0 10px rgba(255,204,0,0.3);}
+.db-stat-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.45);text-transform:uppercase;margin-top:2px;}
+
+.audit-tabs{display:flex;gap:2px;margin-bottom:20px;flex-wrap:wrap;}
+.audit-tab{padding:10px 22px;background:transparent;border:1px solid rgba(255,204,0,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;position:relative;}
+.audit-tab.active,.audit-tab:hover{border-color:var(--hot);color:var(--hot);background:rgba(255,204,0,0.06);}
+.audit-tab.admin-tab.active,.audit-tab.admin-tab:hover{border-color:var(--red);color:var(--red);background:rgba(255,59,59,0.05);}
+.audit-tab.user-tab.active,.audit-tab.user-tab:hover{border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.04);}
+
+/* ACTION FILTER */
+.action-filter-wrap{position:relative;display:inline-block;margin-bottom:20px;}
+.action-filter-btn{display:flex;align-items:center;gap:8px;padding:9px 18px;background:rgba(255,204,0,0.04);border:1px solid rgba(255,204,0,0.3);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.action-filter-btn:hover{border-color:var(--hot);background:rgba(255,204,0,0.08);}
+.action-filter-dd{position:absolute;top:100%;left:0;background:rgba(0,0,8,0.98);border:1px solid var(--hot);border-top:none;z-index:200;display:none;min-width:240px;max-height:320px;overflow-y:auto;}
+.action-filter-dd.open{display:block;}
+.action-filter-opt{padding:10px 16px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--mute);border-bottom:1px solid rgba(255,204,0,0.08);transition:background .15s;}
+.action-filter-opt:hover,.action-filter-opt.selected{background:rgba(255,204,0,0.06);color:var(--hot);}
+
+/* AUDIT LOG ENTRIES */
+.audit-log{display:flex;flex-direction:column;gap:2px;}
+.audit-entry{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:14px 18px;transition:all .2s;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;}
+.audit-entry:hover{border-color:rgba(255,204,0,0.35);background:rgba(255,204,0,0.03);}
+.audit-entry.admin-action{border-left:2px solid rgba(255,59,59,0.4);}
+.audit-entry.user-action{border-left:2px solid rgba(0,255,136,0.3);}
+
+/* USER BADGE CHIPS */
+.badge-chip{display:inline-flex;align-items:center;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:2px;white-space:nowrap;}
+.badge-hacker{background:rgba(255,59,59,0.12);border:1px solid rgba(255,59,59,0.5);color:var(--red);text-shadow:0 0 6px rgba(255,59,59,0.4);}
+.badge-dev{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.45);color:var(--hot);}
+.badge-owner{background:rgba(255,105,180,0.1);border:1px solid rgba(255,105,180,0.45);color:var(--pink);}
+.badge-user{background:rgba(170,102,204,0.1);border:1px solid rgba(170,102,204,0.35);color:var(--mute);}
+
+.audit-left{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:70px;}
+.audit-actor{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#fff;text-align:center;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.audit-crm-id{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.5);letter-spacing:1px;}
+.audit-middle{}
+.audit-action-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:1px;color:#fff;margin-bottom:3px;}
+.audit-ref{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;}
+.audit-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.4);letter-spacing:1px;text-align:right;white-space:nowrap;}
+
+/* DB USER LIST */
+.db-user-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:16px 20px;margin-bottom:3px;transition:border-color .2s;cursor:pointer;}
+.db-user-card:hover{border-color:rgba(255,204,0,0.4);}
+.db-user-grid{display:grid;grid-template-columns:50px 1fr auto;gap:14px;align-items:center;}
+.db-avatar{width:44px;height:44px;border-radius:50%;background:rgba(255,204,0,0.08);border:2px solid rgba(255,204,0,0.25);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.db-user-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:2px;text-transform:uppercase;color:#fff;}
+.db-user-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:3px;}
+.db-last-seen{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;}
+.db-user-detail{display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+.db-user-detail.open{display:block;}
+.db-live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:livePulse 2s ease-in-out infinite;flex-shrink:0;}
 .crm-bubble{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;border:1px solid rgba(0,255,136,0.4);color:rgba(0,255,136,0.8);background:rgba(0,255,136,0.06);}
 .crm-bubble:hover{background:rgba(0,255,136,0.14);border-color:var(--green);color:var(--green);box-shadow:0 0 10px rgba(0,255,136,0.2);}
 .crm-bubble .crm-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green);}
-.recent-live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:livePulse 2s ease-in-out infinite;flex-shrink:0;}
 
 /* RESPONSIVE */
 @media(max-width:900px){
@@ -451,7 +442,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   .shop-layout{grid-template-columns:1fr;}
   .booking-grid{grid-template-columns:1fr;}
 }
-@media(max-width:600px){.row-2,.row-3{grid-template-columns:1fr;}}
+@media(max-width:600px){.row-2,.row-3{grid-template-columns:1fr;}.audit-entry{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -500,7 +491,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <a class="sb-link" onclick="showSection('blog',this)"><span class="sb-icon">✍️</span><span>Blog</span><span class="sb-badge" id="blogBadge">0</span></a>
   <div class="sb-section">System</div>
   <a class="sb-link" onclick="showSection('aiprompts',this)"><span class="sb-icon">🤖</span><span>AI Prompts</span></a>
-  <a class="sb-link" onclick="showSection('users',this)"><span class="sb-icon">👁️</span><span>Users</span><span class="sb-badge" id="usersBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('database',this)"><span class="sb-icon">🗄️</span><span>Database</span><span class="sb-badge" id="usersBadge">0</span></a>
   <div class="sb-section" style="margin-top:auto;">Links</div>
   <a class="sb-link" href="https://merci-chi.github.io/OAS/" target="_blank"><span class="sb-icon">🌐</span><span>Live Site</span></a>
   <a class="sb-link" href="https://merci-chi.github.io/OAS/shop" target="_blank"><span class="sb-icon">🛒</span><span>Live Shop</span></a>
@@ -612,7 +603,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
     <div class="dot-legend-item"><div class="dl-dot dl-empty"></div><span>Unrated</span></div>
   </div>
   <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,204,0,0.4);margin-bottom:14px;">
-    Sorted: HIGH → LOW potential &nbsp;|&nbsp; PROSPECTS → rated on conversion potential &nbsp;|&nbsp; CLIENTS → repeat client potential &nbsp;|&nbsp; SUBSCRIBERS → to-client potential
+    Sorted: HIGH → LOW potential &nbsp;|&nbsp; IDs auto-assigned in order of addition — Kiara #001 · Sol #002 · Swift Agent #003
   </div>
 
   <div class="add-person-form" id="addPersonForm" style="display:none;">
@@ -670,7 +661,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="empty-state" id="crmEmpty">No people yet — add someone above ☀️</div>
 </div>
 
-<!-- ══════════ SHOP ══════════ -->
+<!-- SHOP -->
 <div class="dev-section" id="sec-shop">
   <div class="topbar">
     <div>
@@ -680,12 +671,9 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   </div>
   <div class="vhs-line"></div>
   <div class="shop-layout">
-    <!-- FORM -->
     <div class="item-form" id="itemForm">
       <div class="item-form-title" id="itemFormTitle">Add New Item</div>
-
       <div class="fg"><label class="fl">Item Title</label><input class="fi" id="it-title" placeholder="Product name"/></div>
-
       <div class="fg">
         <label class="fl" style="display:flex;align-items:center;justify-content:space-between;">
           <span>Description</span>
@@ -693,8 +681,6 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
         </label>
         <textarea class="fta" id="it-desc" style="min-height:70px;" placeholder="Describe the item…"></textarea>
       </div>
-
-      <!-- ── NEW: Category + Subcategory ── -->
       <div class="form-sec">Category</div>
       <div class="row row-2">
         <div class="fg">
@@ -708,12 +694,9 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
         </div>
         <div class="fg">
           <label class="fl">Subcategory</label>
-          <select class="fi fse" id="it-subcategory">
-            <option value="All">All</option>
-          </select>
+          <select class="fi fse" id="it-subcategory"><option value="All">All</option></select>
         </div>
       </div>
-
       <div class="form-sec">Pricing</div>
       <div class="row row-2">
         <div class="fg"><label class="fl">Price</label>
@@ -735,7 +718,6 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
         <label class="fl">Custom Discount %</label>
         <input class="fi" id="it-custom-discount" type="number" min="1" max="99" placeholder="Enter %"/>
       </div>
-
       <div class="form-sec">Images</div>
       <div class="fg"><label class="fl">Product Image (Primary — front)</label>
         <div class="image-upload-area">
@@ -744,45 +726,28 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
           <div id="uploadPlaceholder"><span class="upload-icon">📷</span><div class="upload-label">Click to upload</div></div>
         </div>
       </div>
-      <div class="fg"><label class="fl">Product Image 2 <span style="color:var(--mute);font-size:9px;">(Flip side — hover on live site)</span></label>
+      <div class="fg"><label class="fl">Product Image 2 <span style="color:var(--mute);font-size:9px;">(Flip side)</span></label>
         <div class="image-upload-area">
           <input type="file" accept="image/*" id="it-image2" onchange="previewImage(event,'imagePreview2','uploadPlaceholder2')"/>
           <img class="upload-preview" id="imagePreview2"/>
           <div id="uploadPlaceholder2"><span class="upload-icon">🔄</span><div class="upload-label">Click to upload flip side</div></div>
         </div>
       </div>
-
       <input type="hidden" id="it-badge" value="-"/>
       <input type="hidden" id="editingItemId" value=""/>
       <div style="display:flex;gap:8px;margin-top:4px;">
         <button class="btn btn-fill" onclick="saveItem()" style="flex:1;">Save as Draft</button>
         <button class="btn btn-ghost btn-sm" onclick="resetItemForm()" id="cancelEditBtn" style="display:none;">Cancel</button>
       </div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.35);margin-top:8px;text-align:center;">Saved as draft — use GO LIVE on the card to publish to the shop</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.35);margin-top:8px;text-align:center;">Saved as draft — use GO LIVE on the card to publish</div>
     </div>
-
-    <!-- GRID -->
     <div>
-      <!-- Live count bar -->
       <div class="live-count-bar" id="liveCountBar">
-        <div>
-          <div class="live-count-num" id="liveCountNum">0</div>
-          <div class="live-count-label">
-            <span style="color:var(--green);font-size:9px;letter-spacing:3px;text-transform:uppercase;">Live on Shop</span>
-          </div>
-        </div>
+        <div><div class="live-count-num" id="liveCountNum">0</div><div class="live-count-label"><span style="color:var(--green);font-size:9px;letter-spacing:3px;text-transform:uppercase;">Live on Shop</span></div></div>
         <div style="width:1px;height:36px;background:rgba(255,204,0,0.15);"></div>
-        <div>
-          <div class="draft-count-num" id="draftCountNum">0</div>
-          <div class="live-count-label">
-            <span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,204,0,0.4);">Drafts</span>
-          </div>
-        </div>
-        <div style="margin-left:auto;">
-          <a href="https://merci-chi.github.io/OAS/shop" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--green);text-decoration:none;text-transform:uppercase;border:1px solid rgba(0,255,136,0.3);padding:6px 14px;transition:all .2s;" onmouseover="this.style.background='rgba(0,255,136,0.08)'" onmouseout="this.style.background='transparent'">View Live Shop ↗</a>
-        </div>
+        <div><div class="draft-count-num" id="draftCountNum">0</div><div class="live-count-label"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,204,0,0.4);">Drafts</span></div></div>
+        <div style="margin-left:auto;"><a href="https://merci-chi.github.io/OAS/shop" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--green);text-decoration:none;text-transform:uppercase;border:1px solid rgba(0,255,136,0.3);padding:6px 14px;transition:all .2s;" onmouseover="this.style.background='rgba(0,255,136,0.08)'" onmouseout="this.style.background='transparent'">View Live Shop ↗</a></div>
       </div>
-
       <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--mute);text-transform:uppercase;margin-bottom:14px;">All Items — <span id="itemCount">0</span> total</div>
       <div class="shop-items-grid" id="shopItemsGrid"></div>
       <div class="empty-state" id="shopEmpty">No items yet — add one to the left ☀️</div>
@@ -865,14 +830,8 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       </div>
     </div>
     <div class="inv-price-box" id="invPriceBox">
-      <div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);margin-bottom:4px;">PRICE</div>
-        <div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--hot);" id="invPriceDisplay">—</div>
-      </div>
-      <div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);margin-bottom:4px;">DISCOUNT</div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--mute);" id="invDiscDisplay">—</div>
-      </div>
+      <div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);margin-bottom:4px;">PRICE</div><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--hot);" id="invPriceDisplay">—</div></div>
+      <div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);margin-bottom:4px;">DISCOUNT</div><div style="font-family:'Share Tech Mono',monospace;font-size:16px;color:var(--mute);" id="invDiscDisplay">—</div></div>
       <button class="btn-edit-white" onclick="openOverrideModal()">Manual Override</button>
     </div>
     <div class="form-sec">Receipt</div>
@@ -1002,7 +961,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="vhs-line"></div>
   <div class="ai-prompt-section">
     <div class="ai-section-title">🤖 <span>Sol — Identity & Welcome</span></div>
-    <div class="fg"><label class="fl">Welcome Message (shown when Sol loads)</label>
+    <div class="fg"><label class="fl">Welcome Message</label>
       <input class="fi" id="sol-welcome" value="Hey! I'm Sol, your OASENSE guide 🌟 — Ask me anything, make a booking, or explore the site!"/>
     </div>
     <div class="fg"><label class="fl">Rules / Personality Instructions</label>
@@ -1017,28 +976,29 @@ Rules:
   </div>
   <div class="ai-prompt-section">
     <div class="ai-section-title">⚡ <span>Sol — Commands Databank</span></div>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.45);margin-bottom:14px;letter-spacing:2px;">These are links + scroll targets Sol can access when triggered</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.45);margin-bottom:14px;letter-spacing:2px;">Links + scroll targets Sol can access when triggered</div>
     <div id="solCommandsList"></div>
     <button class="btn btn-ghost btn-sm" onclick="addSolCommand()" style="margin-top:8px;">+ Add Command</button>
   </div>
   <div class="ai-prompt-section">
     <div class="ai-section-title">💬 <span>User Prompt Suggestions</span></div>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.45);margin-bottom:14px;letter-spacing:2px;">These appear as clickable oval pills on the live site for quick user selection</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.45);margin-bottom:14px;letter-spacing:2px;">Clickable oval pills on the live site</div>
     <div class="user-prompts-list" id="userPromptsList"></div>
     <div class="add-prompt-row">
       <input class="fi" id="newPromptInput" placeholder="New prompt label e.g. MAKE A BOOKING" style="flex:1;max-width:320px;"/>
       <button class="btn btn-fill btn-sm" onclick="addUserPrompt()">+ Add</button>
     </div>
   </div>
-  <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,204,0,0.3);margin-top:12px;">Changes saved to local storage and pushed to Sol's active config.</div>
 </div>
 
-<!-- USERS -->
-<div class="dev-section" id="sec-users">
+<!-- ══════════════════════════════════
+     DATABASE — AUDIT LOG
+══════════════════════════════════ -->
+<div class="dev-section" id="sec-database">
   <div class="topbar">
     <div>
-      <div class="panel-title">User <span class="hot">Log</span></div>
-      <div class="panel-sub">// Session Tracking · Auth Provider · Demographics</div>
+      <div class="panel-title">Data<span class="hot">base</span></div>
+      <div class="panel-sub">// Audit Log · User Registry · Session Tracking</div>
     </div>
     <div class="topbar-actions">
       <button class="btn btn-sm" onclick="openAddUser()">+ Add User</button>
@@ -1046,6 +1006,7 @@ Rules:
   </div>
   <div class="vhs-line"></div>
 
+  <!-- ADD USER FORM -->
   <div id="addUserFormWrap" class="card" style="display:none;margin-bottom:22px;">
     <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">ADD USER</div>
     <div class="row row-3">
@@ -1066,22 +1027,47 @@ Rules:
     </div>
   </div>
 
-  <!-- RECENTS -->
-  <div style="font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
-    <span>Recents</span>
-    <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.4);font-weight:normal;">// Latest logins</span>
-  </div>
-  <div id="recentsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:32px;"></div>
-  <div class="empty-state" id="recentsEmpty" style="display:none;margin-bottom:24px;">No recent logins yet ☀️</div>
+  <!-- STATS BAR -->
+  <div class="db-header-stats" id="dbStatsBar"></div>
 
-  <!-- DATABASE -->
-  <div style="font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;">
-    <span>Database</span>
-    <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.4);font-weight:normal;">// All tracked users</span>
-    <span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.5);" id="dbCount">0 users</span>
+  <!-- AUDIT LOG TABS -->
+  <div class="audit-tabs">
+    <button class="audit-tab active" onclick="switchAuditTab('all',this)">📋 All</button>
+    <button class="audit-tab admin-tab" onclick="switchAuditTab('admin',this)">🔐 ADMIN</button>
+    <button class="audit-tab user-tab" onclick="switchAuditTab('users',this)">👤 USERS</button>
   </div>
-  <div id="usersList"></div>
-  <div class="empty-state" id="usersEmpty">No users logged yet ☀️</div>
+
+  <!-- ACTION FILTER -->
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+    <div class="action-filter-wrap">
+      <button class="action-filter-btn" onclick="toggleActionFilterDD()">
+        <span id="actionFilterLabel">⊞ Sort by Action</span> ▾
+      </button>
+      <div class="action-filter-dd" id="actionFilterDD"></div>
+    </div>
+    <div id="activeFilterChip" style="display:none;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--hot);padding:6px 14px;border:1px solid rgba(255,204,0,0.4);background:rgba(255,204,0,0.05);">
+      <span id="activeFilterText">—</span>
+      <button onclick="clearActionFilter()" style="background:none;border:none;color:var(--red);cursor:pointer;margin-left:8px;font-size:14px;line-height:1;">×</button>
+    </div>
+    <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.4);letter-spacing:2px;">
+      <span id="auditCountLabel">0 entries</span>
+    </div>
+  </div>
+
+  <!-- AUDIT LOG -->
+  <div class="audit-log" id="auditLog"></div>
+  <div class="empty-state" id="auditEmpty" style="display:none;">No log entries yet ☀️</div>
+
+  <!-- USER REGISTRY -->
+  <div style="margin-top:40px;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+      <span>User Registry</span>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.4);font-weight:normal;">// All registered accounts</span>
+      <span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.5);" id="dbCount">0 users</span>
+    </div>
+    <div id="usersList"></div>
+    <div class="empty-state" id="usersEmpty">No users registered yet ☀️</div>
+  </div>
 </div>
 
 </div><!-- /main -->
@@ -1152,10 +1138,226 @@ Rules:
 </div>
 
 <script>
-// ══ STATE & CONSTANTS ══
+// ══ CONSTANTS ══
 const NV_TAX=0.08375;
 let currentUser=null;
 let loginAttempts=0;
+
+// ══════════════════════════
+// CRM ID SYSTEM
+// Reserved IDs for known users:
+// Kiara = #001, Sol = #002, Swift Agent = #003
+// Others get sequential from #004
+// ══════════════════════════
+const RESERVED_CRM_IDS={
+  'kiara':'001',
+  'sol':'002',
+  'swift agent':'003'
+};
+
+function getCRMId(person){
+  // Check if person has a reserved name
+  const lower=(person.name||'').toLowerCase().trim();
+  for(const key in RESERVED_CRM_IDS){
+    if(lower===key||lower.includes(key))return RESERVED_CRM_IDS[key];
+  }
+  // Otherwise use stored crmId or generate one
+  if(person.crmId)return person.crmId;
+  return null;
+}
+
+function formatCRMId(id){
+  if(!id)return'—';
+  return '#'+String(id).padStart(3,'0');
+}
+
+// Assign IDs to all people on load/save
+function ensureCRMIds(){
+  // Find max existing numeric id
+  let maxId=3; // reserved 001-003
+  people.forEach(p=>{
+    const rid=getCRMId(p);
+    if(!rid&&p.crmId){const n=parseInt(p.crmId);if(n>maxId)maxId=n;}
+  });
+  // Assign IDs to those who don't have one and aren't reserved
+  people.forEach(p=>{
+    const reserved=getCRMId(p);
+    if(!reserved&&!p.crmId){maxId++;p.crmId=String(maxId).padStart(3,'0');}
+    else if(reserved){p.crmId=reserved;}
+  });
+}
+
+function getPersonCRMIdDisplay(person){
+  const id=getCRMId(person)||person.crmId;
+  return formatCRMId(id);
+}
+
+// ══════════════════════════
+// BADGE SYSTEM
+// Swift Agent = HACKER (just for fun)
+// Kiara = DEV
+// Sol = OWNER
+// Others = USER
+// ══════════════════════════
+const USER_BADGES={
+  'Swift Agent':'HACKER',
+  'Kiara':'DEV',
+  'Sol':'OWNER'
+};
+function getUserBadge(name){return USER_BADGES[name]||'USER';}
+function getBadgeClass(badge){
+  return{HACKER:'badge-hacker',DEV:'badge-dev',OWNER:'badge-owner',USER:'badge-user'}[badge]||'badge-user';
+}
+function renderBadgeChip(name){
+  const badge=getUserBadge(name);
+  const cls=getBadgeClass(badge);
+  return`<span class="badge-chip ${cls}">${badge}</span>`;
+}
+
+// ══════════════════════════
+// AUDIT LOG
+// ══════════════════════════
+let auditLog=JSON.parse(localStorage.getItem('oas_audit')||'[]');
+let auditTabFilter='all';
+let auditActionFilter=null;
+
+const ADMIN_ACTIONS=[
+  'Added Booking','Added New Item to Store','Updated Item Price',
+  'Updated Item Description','Removed Item from Store','Approved Refund',
+  'Applied Discount to Item','Deactivated User Account','Reactivated User Account',
+  'Reset User Password','Updated Store Settings','Added Admin / Staff Account',
+  'Removed Admin / Staff Account','Modified Inventory Quantity','Archived Item'
+];
+const USER_ACTIONS=[
+  'Login','Logout','Updated Account Details','Changed Password',
+  'Added Item to Cart','Removed Item from Cart','Applied Promo Code',
+  'Made Purchase','Scheduled Photoshoot','Added Payment Method',
+  'Removed Payment Method','Requested Refund','Subscribed to Newsletter',
+  'Unsubscribed from Newsletter','Updated Shipping / Billing Info','Updated Wishlist'
+];
+
+function isAdminAction(action){return ADMIN_ACTIONS.includes(action);}
+function isUserAction(action){return USER_ACTIONS.includes(action);}
+
+function saveAuditLog(){localStorage.setItem('oas_audit',JSON.stringify(auditLog));}
+
+function addAuditEntry(actorName,action,ref){
+  const badge=getUserBadge(actorName);
+  // Find CRM id
+  const person=people.find(p=>p.name.toLowerCase()===actorName.toLowerCase());
+  const crmId=person?(getCRMId(person)||person.crmId):null;
+  const entry={
+    id:Date.now()+Math.random(),
+    actor:actorName,
+    badge,
+    crmId,
+    action,
+    ref:ref||null,
+    ts:Date.now(),
+    type:isAdminAction(action)?'admin':'user'
+  };
+  auditLog.unshift(entry);
+  if(auditLog.length>500)auditLog=auditLog.slice(0,500);
+  saveAuditLog();
+  renderAuditLog();
+}
+
+function timeSince(ts){
+  if(!ts)return'—';
+  const diff=Date.now()-ts;
+  const s=Math.floor(diff/1000),m=Math.floor(s/60),h=Math.floor(m/60),d=Math.floor(h/24);
+  if(d>0)return`${d}d ago`;if(h>0)return`${h}h ago`;if(m>0)return`${m}m ago`;return'Just now';
+}
+function fmtTs(ts){
+  if(!ts)return'—';
+  return new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+}
+
+function switchAuditTab(tab,btn){
+  auditTabFilter=tab;
+  auditActionFilter=null;
+  document.getElementById('activeFilterChip').style.display='none';
+  document.querySelectorAll('.audit-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderAuditLog();
+}
+
+function toggleActionFilterDD(){
+  const dd=document.getElementById('actionFilterDD');
+  dd.classList.toggle('open');
+  if(dd.classList.contains('open'))populateActionFilterDD();
+}
+function populateActionFilterDD(){
+  const dd=document.getElementById('actionFilterDD');
+  const allActions=[...ADMIN_ACTIONS,...USER_ACTIONS];
+  dd.innerHTML=`<div class="action-filter-opt" onclick="setActionFilter(null)">— All Actions</div>`+
+    allActions.map(a=>`<div class="action-filter-opt${auditActionFilter===a?' selected':''}" onclick="setActionFilter('${a.replace(/'/g,"&#39;")}')">${a}</div>`).join('');
+}
+function setActionFilter(action){
+  auditActionFilter=action;
+  document.getElementById('actionFilterDD').classList.remove('open');
+  if(action){
+    document.getElementById('activeFilterChip').style.display='flex';
+    document.getElementById('activeFilterText').textContent=action;
+    document.getElementById('actionFilterLabel').textContent='⊞ '+action;
+  }else{
+    document.getElementById('activeFilterChip').style.display='none';
+    document.getElementById('actionFilterLabel').textContent='⊞ Sort by Action';
+  }
+  renderAuditLog();
+}
+function clearActionFilter(){setActionFilter(null);}
+
+function renderAuditLog(){
+  const container=document.getElementById('auditLog');
+  const empty=document.getElementById('auditEmpty');
+  let entries=[...auditLog];
+
+  // Tab filter
+  if(auditTabFilter==='admin')entries=entries.filter(e=>e.type==='admin'||isAdminAction(e.action));
+  else if(auditTabFilter==='users')entries=entries.filter(e=>e.type==='user'||isUserAction(e.action));
+
+  // Action filter
+  if(auditActionFilter)entries=entries.filter(e=>e.action===auditActionFilter);
+
+  document.getElementById('auditCountLabel').textContent=entries.length+' entr'+(entries.length===1?'y':'ies');
+  updateDbStats();
+
+  if(!entries.length){container.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+
+  container.innerHTML=entries.map(e=>{
+    const badgeCls=getBadgeClass(e.badge||'USER');
+    const isAdmin=e.type==='admin'||isAdminAction(e.action);
+    const refHTML=e.ref?`<div class="audit-ref">${e.ref}</div>`:'';
+    return`<div class="audit-entry ${isAdmin?'admin-action':'user-action'}">
+      <div class="audit-left">
+        <span class="badge-chip ${badgeCls}">${e.badge||'USER'}</span>
+        <div class="audit-actor">${e.actor}</div>
+        ${e.crmId?`<div class="audit-crm-id">#${e.crmId}</div>`:''}
+      </div>
+      <div class="audit-middle">
+        <div class="audit-action-name">${e.action}</div>
+        ${refHTML}
+      </div>
+      <div class="audit-time">${fmtTs(e.ts)}<br/><span style="font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function updateDbStats(){
+  const bar=document.getElementById('dbStatsBar');
+  const totalUsers=appUsers.length;
+  const totalAudit=auditLog.length;
+  const adminEntries=auditLog.filter(e=>e.type==='admin'||isAdminAction(e.action)).length;
+  const userEntries=auditLog.filter(e=>e.type==='user'||isUserAction(e.action)).length;
+  bar.innerHTML=`
+    <div class="db-stat-card"><div class="db-stat-num">${totalUsers}</div><div class="db-stat-label">Registered Users</div></div>
+    <div class="db-stat-card"><div class="db-stat-num" style="color:var(--green);">${totalAudit}</div><div class="db-stat-label">Total Log Entries</div></div>
+    <div class="db-stat-card"><div class="db-stat-num" style="color:var(--red);">${adminEntries}</div><div class="db-stat-label">Admin Actions</div></div>
+    <div class="db-stat-card"><div class="db-stat-num" style="color:var(--blue);">${userEntries}</div><div class="db-stat-label">User Actions</div></div>
+  `;
+}
 
 // ══ LOGIN ══
 const USERS={
@@ -1168,9 +1370,8 @@ function doLogin(){
   const u=document.getElementById('loginUser').value.trim().toUpperCase();
   const c=document.getElementById('loginCode').value.trim();
   let match=null;
-  // Check all users — username case-insensitive, code exact or lowercase match
   for(const k in USERS){
-    if(USERS[k].user===u && (USERS[k].code===c || USERS[k].code===c.toLowerCase())){
+    if(USERS[k].user===u&&(USERS[k].code===c||USERS[k].code===c.toLowerCase())){
       match={...USERS[k],_key:k};break;
     }
   }
@@ -1186,27 +1387,22 @@ function doLogin(){
     const toast=document.getElementById('welcomeToast');
     toast.textContent=match.welcome;toast.className='welcome-toast '+(match.toastClass||'');toast.classList.add('show');
     setTimeout(()=>toast.classList.remove('show'),3500);
-    logUserSession(match);startSessionTimeout();
+    logUserSession(match);
+    startSessionTimeout();
+    // Log the login action
+    addAuditEntry(match.name,'Login',null);
   } else {
     loginAttempts++;
     const errEl=document.getElementById('loginErr');
     const attEl=document.getElementById('loginAttempts');
     errEl.style.display='block';
-    if(loginAttempts===1){
-      errEl.textContent='❌ Access declined.';
-      attEl.style.display='none';
-    } else {
-      errEl.textContent='❌ Access declined ('+loginAttempts+'×)';
-      attEl.style.display='block';
-      attEl.textContent='⚠️ '+(loginAttempts>=5?'Multiple failed attempts — are you sure you have the right credentials?':'Wrong username or code.');
-    }
-    // Shake the box
+    if(loginAttempts===1){errEl.textContent='❌ Access declined.';attEl.style.display='none';}
+    else{errEl.textContent='❌ Access declined ('+loginAttempts+'×)';attEl.style.display='block';attEl.textContent='⚠️ '+(loginAttempts>=5?'Multiple failed attempts.':'Wrong username or code.');}
     const box=document.querySelector('.login-box');
     box.style.animation='none';
     setTimeout(()=>{box.style.animation='shake .4s ease';},10);
   }
 }
-
 
 // ══ SESSION TIMEOUT ══
 let _sessionTimer=null;
@@ -1215,13 +1411,13 @@ function startSessionTimeout(){
   resetSessionTimer();
   ['click','keydown','mousemove','touchstart'].forEach(e=>document.addEventListener(e,resetSessionTimer,{passive:true}));
 }
-function resetSessionTimer(){clearTimeout(_sessionTimer);_sessionTimer=setTimeout(()=>document.getElementById('timeoutOverlay').classList.add('show'),SESSION_TIMEOUT);}
+function resetSessionTimer(){clearTimeout(_sessionTimer);_sessionTimer=setTimeout(()=>{if(currentUser)addAuditEntry(currentUser.name,'Logout',null);document.getElementById('timeoutOverlay').classList.add('show');},SESSION_TIMEOUT);}
 
 // ══ ACCOUNT MODAL ══
 function openAccountModal(){
   if(!currentUser)return;
   document.getElementById('acctUserName').textContent=currentUser.name;
-  document.getElementById('acctUserRole').textContent=currentUser.role;
+  document.getElementById('acctUserRole').textContent=getUserBadge(currentUser.name)+' / '+currentUser.role;
   document.getElementById('acctAvatarEmoji').textContent=currentUser.emoji;
   const saved=localStorage.getItem('oas_photo_'+currentUser._key);
   const imgEl=document.getElementById('acctAvatarImg'),emoji=document.getElementById('acctAvatarEmoji');
@@ -1241,7 +1437,7 @@ function uploadAccountPhoto(e){
     document.getElementById('acctAvatarEmoji').style.display='none';
   };reader.readAsDataURL(file);
 }
-function doLogout(){closeAccountModal();location.reload();}
+function doLogout(){if(currentUser)addAuditEntry(currentUser.name,'Logout',null);closeAccountModal();location.reload();}
 
 // ══ CONFIRM ══
 let _confirmCb=null;
@@ -1272,21 +1468,17 @@ function selectAddr(inpId,ddId,val){const inp=document.getElementById(inpId);if(
 
 // TIME PICKER
 function buildTimePicker(inp){
-  const dd=document.getElementById('timePickerDrop');
-  dd.innerHTML='';
-  for(let h=0;h<24;h++){
-    for(let m=0;m<60;m+=15){
-      const label=fmtTimeVal(h,m);
-      const hh=h,mm=m;
-      const opt=document.createElement('div');
-      opt.style.cssText='padding:10px 14px;cursor:pointer;font-family:Barlow Condensed,sans-serif;font-size:15px;color:var(--txt);border-bottom:1px solid rgba(255,204,0,0.06);transition:background .1s;';
-      opt.textContent=label;
-      opt.onmouseenter=function(){this.style.background='rgba(255,204,0,0.08);';};
-      opt.onmouseleave=function(){this.style.background='';};
-      opt.onclick=function(){inp.value=label;dd.style.display='none';inp._val24=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');};
-      dd.appendChild(opt);
-    }
-  }
+  const dd=document.getElementById('timePickerDrop');dd.innerHTML='';
+  for(let h=0;h<24;h++){for(let m=0;m<60;m+=15){
+    const label=fmtTimeVal(h,m);
+    const opt=document.createElement('div');
+    opt.style.cssText='padding:10px 14px;cursor:pointer;font-family:Barlow Condensed,sans-serif;font-size:15px;color:var(--txt);border-bottom:1px solid rgba(255,204,0,0.06);transition:background .1s;';
+    opt.textContent=label;
+    opt.onmouseenter=function(){this.style.background='rgba(255,204,0,0.08)';};
+    opt.onmouseleave=function(){this.style.background='';};
+    opt.onclick=function(){inp.value=label;dd.style.display='none';inp._val24=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');};
+    dd.appendChild(opt);
+  }}
 }
 function fmtTimeVal(h,m){const ampm=h>=12?'PM':'AM';const hh=h===0?12:h>12?h-12:h;return hh+':'+(m===0?'00':m)+' '+ampm;}
 function showTimePicker(inp){buildTimePicker(inp);const dd=document.getElementById('timePickerDrop');dd.style.display='block';const items=dd.children;for(let i=0;i<items.length;i++){if(items[i].textContent.includes('12:30 PM')){items[i].scrollIntoView({block:'nearest'});break;}}}
@@ -1311,9 +1503,14 @@ function saveBooking(){
   if(!name){alert('Client name is required.');return;}if(!date){alert('Date is required.');return;}if(!timeDisplay){alert('Time is required.');return;}
   const data={name,type:document.getElementById('nb-type').value,date,time:time24,timeDisplay,durMin:getDurMinutes(),durLabel:getDurLabel(),phone:document.getElementById('nb-phone').value.trim(),email:document.getElementById('nb-email').value.trim(),ig:document.getElementById('nb-ig').value.trim(),loc:document.getElementById('nb-loc').value.trim(),notes:document.getElementById('nb-notes').value.trim()};
   const editId=document.getElementById('nb-edit-id').value;
+  const newId=Date.now();
   if(editId){const b=bookings.find(x=>x.id===parseInt(editId));if(b)Object.assign(b,data);}
-  else bookings.unshift({id:Date.now(),status:'pending',...data});
+  else bookings.unshift({id:newId,status:'pending',...data});
   saveBookings();renderBookings();closeBookingForm();
+  if(currentUser){
+    const refId=editId||newId;
+    addAuditEntry(currentUser.name,'Added Booking','REF #'+refId);
+  }
 }
 function openEditBooking(id){const b=bookings.find(x=>x.id===id);if(!b)return;document.getElementById('nb-edit-id').value=id;document.getElementById('bookingFormTitle').textContent='EDIT BOOKING';document.getElementById('nb-name').value=b.name||'';document.getElementById('nb-type').value=b.type||'';document.getElementById('nb-date').value=b.date||'';const ti=document.getElementById('nb-time');ti.value=b.timeDisplay||formatTime(b.time)||'';ti._val24=b.time||'';document.getElementById('nb-phone').value=b.phone||'';document.getElementById('nb-email').value=b.email||'';document.getElementById('nb-ig').value=b.ig||'';document.getElementById('nb-loc').value=b.loc||'';document.getElementById('nb-notes').value=b.notes||'';const presets=['30','60','120'];if(presets.includes(String(b.durMin))){document.getElementById('nb-dur').value=String(b.durMin);document.getElementById('durManualWrap').style.display='none';}else{document.getElementById('nb-dur').value='manual';const h=Math.floor((b.durMin||60)/60);const m=(b.durMin||60)%60;document.getElementById('nb-dur-manual').value=h+'.'+String(m).padStart(2,'0');document.getElementById('durManualWrap').style.display='block';}const f=document.getElementById('bookingForm');f.style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
 function cycleStatus(id){const b=bookings.find(x=>x.id===id);if(!b)return;const s=['pending','confirmed','rescheduled','cancelled'];b.status=s[(s.indexOf(b.status||'pending')+1)%s.length];saveBookings();renderBookings();}
@@ -1334,32 +1531,97 @@ function savePeople(){localStorage.setItem('oas_crm',JSON.stringify(people));upd
 function updateCRMBadge(){document.getElementById('crmBadge').textContent=people.length;}
 function openAddPerson(){const f=document.getElementById('addPersonForm');f.style.display='block';f.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeAddPerson(){document.getElementById('addPersonForm').style.display='none';}
-function savePerson(){const name=document.getElementById('ap-name').value.trim();if(!name){alert('Name is required.');return;}people.unshift({id:Date.now(),cat:document.getElementById('ap-cat').value,name,age:document.getElementById('ap-age').value||'',phone:document.getElementById('ap-phone').value.trim(),email:document.getElementById('ap-email').value.trim(),ig:document.getElementById('ap-ig').value.trim(),addr:document.getElementById('ap-addr').value.trim(),notes:document.getElementById('ap-notes').value.trim(),rating:''});savePeople();renderCRM();closeAddPerson();['ap-name','ap-age','ap-phone','ap-email','ap-ig','ap-addr','ap-notes'].forEach(id=>document.getElementById(id).value='');}
+function savePerson(){
+  const name=document.getElementById('ap-name').value.trim();if(!name){alert('Name is required.');return;}
+  const newPerson={id:Date.now(),cat:document.getElementById('ap-cat').value,name,age:document.getElementById('ap-age').value||'',phone:document.getElementById('ap-phone').value.trim(),email:document.getElementById('ap-email').value.trim(),ig:document.getElementById('ap-ig').value.trim(),addr:document.getElementById('ap-addr').value.trim(),notes:document.getElementById('ap-notes').value.trim(),rating:''};
+  people.unshift(newPerson);
+  ensureCRMIds();
+  savePeople();renderCRM();closeAddPerson();
+  ['ap-name','ap-age','ap-phone','ap-email','ap-ig','ap-addr','ap-notes'].forEach(id=>document.getElementById(id).value='');
+}
 function switchCRM(filter,btn){crmFilter=filter;document.querySelectorAll('.crm-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderCRM();}
 function toggleRatingFilterDD(){document.getElementById('ratingFilterDD').classList.toggle('open');}
 function setRatingFilter(val){crmRatingFilter=val;document.getElementById('ratingFilterDD').classList.remove('open');const labels={all:'● All Ratings',green:'🟢 High',yellow:'🟡 Medium',red:'🔴 Low',none:'⚪ Unrated'};document.getElementById('ratingFilterLabel').textContent=labels[val]||'All Ratings';renderCRM();}
 function sortByRating(arr){const order={green:0,yellow:1,red:2,'':3};return[...arr].sort((a,b)=>(order[a.rating||'']??3)-(order[b.rating||'']??3));}
-function renderCRM(){const list=document.getElementById('crmList'),empty=document.getElementById('crmEmpty');let filtered=crmFilter==='all'?people:people.filter(p=>p.cat===crmFilter);if(crmRatingFilter!=='all'){if(crmRatingFilter==='none')filtered=filtered.filter(p=>!p.rating);else filtered=filtered.filter(p=>p.rating===crmRatingFilter);}filtered=sortByRating(filtered);if(!filtered.length){list.innerHTML='';empty.style.display='block';return;}empty.style.display='none';const catL={prospect:'Prospect',client:'Client',subscriber:'Subscriber',user:'User'};list.innerHTML=filtered.map(p=>`<div class="crm-entry" id="entry-${p.id}"><div class="crm-entry-grid"><div style="position:relative;padding-top:4px;"><div class="rating-dot ${p.rating}" id="dot-${p.id}" onclick="toggleDotMenu(${p.id})" title="Rate"></div><div class="dot-menu" id="dotmenu-${p.id}"><div class="dot-opt r" onclick="setRating(${p.id},'red')"></div><div class="dot-opt y" onclick="setRating(${p.id},'yellow')"></div><div class="dot-opt g" onclick="setRating(${p.id},'green')"></div><div class="dot-opt c" onclick="setRating(${p.id},'')"></div></div></div><div><div class="crm-name-row"><span class="crm-name">${p.name}</span><span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.6);text-transform:uppercase;">${catL[p.cat]||p.cat}</span>${p.age?`<span class="crm-age">Age: ${p.age}</span>`:''}</div><div class="crm-fields"><div class="crm-field"><strong>Phone:</strong> ${p.phone||'—'}</div><div class="crm-field"><strong>Email:</strong> ${p.email||'—'}</div><div class="crm-field"><strong>IG:</strong> ${p.ig||'—'}</div><div class="crm-field"><strong>Address:</strong> ${p.addr||'—'}</div></div>${p.notes?`<div style="margin-top:8px;padding:8px 12px;background:rgba(255,204,0,0.03);border-left:2px solid rgba(255,204,0,0.25);font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;line-height:1.7;">📝 ${p.notes}</div>`:''}<div class="crm-edit-form" id="editform-${p.id}"><div class="row row-3" style="margin-bottom:10px;"><div class="fg"><label class="fl">Name</label><input class="fi" id="ef-name-${p.id}" value="${esc(p.name)}"/></div><div class="fg"><label class="fl">Age</label><input type="number" class="fi" id="ef-age-${p.id}" value="${p.age}" placeholder="Age"/></div><div class="fg"><label class="fl">Category</label><select class="fi fse" id="ef-cat-${p.id}"><option value="prospect" ${p.cat==='prospect'?'selected':''}>Prospect</option><option value="client" ${p.cat==='client'?'selected':''}>Client</option><option value="subscriber" ${p.cat==='subscriber'?'selected':''}>Subscriber</option><option value="user" ${p.cat==='user'?'selected':''}>User</option></select></div></div><div class="row row-2" style="margin-bottom:10px;"><div class="fg"><label class="fl">Phone</label><input class="fi" id="ef-phone-${p.id}" value="${esc(p.phone)}" placeholder="+1 (000) 000-0000" oninput="fmtPhone(this)"/></div><div class="fg"><label class="fl">Email</label><input class="fi" id="ef-email-${p.id}" value="${esc(p.email)}" placeholder="example@gmail.com"/></div></div><div class="row row-2" style="margin-bottom:10px;"><div class="fg"><label class="fl">Instagram</label><input class="fi" id="ef-ig-${p.id}" value="${esc(p.ig)}" placeholder="@handle" oninput="fmtIG(this)"/></div><div class="fg"><label class="fl">Address</label><div class="addr-wrap"><input class="fi" id="ef-addr-${p.id}" value="${esc(p.addr)}" placeholder="Start typing…" oninput="addrSearch(this,'ef-addr-dd-${p.id}')" onfocus="addrSearch(this,'ef-addr-dd-${p.id}')"/><div class="addr-dd" id="ef-addr-dd-${p.id}"></div></div></div></div><div class="fg" style="margin-bottom:10px;"><label class="fl">Notes</label><textarea class="fta" id="ef-notes-${p.id}" style="min-height:60px;">${esc(p.notes||'')}</textarea></div><div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="updatePerson(${p.id})">Save</button><button class="btn btn-ghost btn-sm" onclick="toggleEditForm(${p.id})">Cancel</button><button class="btn btn-red btn-sm" style="margin-left:auto;" onclick="deletePerson(${p.id})">Delete</button></div></div></div><div><button class="btn-edit-white" onclick="toggleEditForm(${p.id})">Edit</button></div></div></div>`).join('');}
+function renderCRM(){
+  const list=document.getElementById('crmList'),empty=document.getElementById('crmEmpty');
+  let filtered=crmFilter==='all'?people:people.filter(p=>p.cat===crmFilter);
+  if(crmRatingFilter!=='all'){if(crmRatingFilter==='none')filtered=filtered.filter(p=>!p.rating);else filtered=filtered.filter(p=>p.rating===crmRatingFilter);}
+  filtered=sortByRating(filtered);
+  if(!filtered.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const catL={prospect:'Prospect',client:'Client',subscriber:'Subscriber',user:'User'};
+  list.innerHTML=filtered.map(p=>{
+    const crmIdDisplay=getPersonCRMIdDisplay(p);
+    return`<div class="crm-entry" id="entry-${p.id}">
+      <div class="crm-entry-grid">
+        <div style="position:relative;padding-top:4px;">
+          <div class="rating-dot ${p.rating}" id="dot-${p.id}" onclick="toggleDotMenu(${p.id})" title="Rate"></div>
+          <div class="dot-menu" id="dotmenu-${p.id}">
+            <div class="dot-opt r" onclick="setRating(${p.id},'red')"></div>
+            <div class="dot-opt y" onclick="setRating(${p.id},'yellow')"></div>
+            <div class="dot-opt g" onclick="setRating(${p.id},'green')"></div>
+            <div class="dot-opt c" onclick="setRating(${p.id},'')"></div>
+          </div>
+        </div>
+        <div>
+          <div class="crm-name-row">
+            <span class="crm-name">${p.name}</span>
+            <span class="crm-id-tag">${crmIdDisplay}</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.6);text-transform:uppercase;">${catL[p.cat]||p.cat}</span>
+            ${p.age?`<span class="crm-age">Age: ${p.age}</span>`:''}
+          </div>
+          <div class="crm-fields">
+            <div class="crm-field"><strong>Phone:</strong> ${p.phone||'—'}</div>
+            <div class="crm-field"><strong>Email:</strong> ${p.email||'—'}</div>
+            <div class="crm-field"><strong>IG:</strong> ${p.ig||'—'}</div>
+            <div class="crm-field"><strong>Address:</strong> ${p.addr||'—'}</div>
+          </div>
+          ${p.notes?`<div style="margin-top:8px;padding:8px 12px;background:rgba(255,204,0,0.03);border-left:2px solid rgba(255,204,0,0.25);font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;line-height:1.7;">📝 ${p.notes}</div>`:''}
+          <div class="crm-edit-form" id="editform-${p.id}">
+            <div class="row row-3" style="margin-bottom:10px;">
+              <div class="fg"><label class="fl">Name</label><input class="fi" id="ef-name-${p.id}" value="${esc(p.name)}"/></div>
+              <div class="fg"><label class="fl">Age</label><input type="number" class="fi" id="ef-age-${p.id}" value="${p.age}" placeholder="Age"/></div>
+              <div class="fg"><label class="fl">Category</label><select class="fi fse" id="ef-cat-${p.id}"><option value="prospect" ${p.cat==='prospect'?'selected':''}>Prospect</option><option value="client" ${p.cat==='client'?'selected':''}>Client</option><option value="subscriber" ${p.cat==='subscriber'?'selected':''}>Subscriber</option><option value="user" ${p.cat==='user'?'selected':''}>User</option></select></div>
+            </div>
+            <div class="row row-2" style="margin-bottom:10px;">
+              <div class="fg"><label class="fl">Phone</label><input class="fi" id="ef-phone-${p.id}" value="${esc(p.phone)}" oninput="fmtPhone(this)"/></div>
+              <div class="fg"><label class="fl">Email</label><input class="fi" id="ef-email-${p.id}" value="${esc(p.email)}"/></div>
+            </div>
+            <div class="row row-2" style="margin-bottom:10px;">
+              <div class="fg"><label class="fl">Instagram</label><input class="fi" id="ef-ig-${p.id}" value="${esc(p.ig)}" oninput="fmtIG(this)"/></div>
+              <div class="fg"><label class="fl">Address</label><div class="addr-wrap"><input class="fi" id="ef-addr-${p.id}" value="${esc(p.addr)}" oninput="addrSearch(this,'ef-addr-dd-${p.id}')" onfocus="addrSearch(this,'ef-addr-dd-${p.id}')"/><div class="addr-dd" id="ef-addr-dd-${p.id}"></div></div></div>
+            </div>
+            <div class="fg" style="margin-bottom:10px;"><label class="fl">Notes</label><textarea class="fta" id="ef-notes-${p.id}" style="min-height:60px;">${esc(p.notes||'')}</textarea></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-fill btn-sm" onclick="updatePerson(${p.id})">Save</button>
+              <button class="btn btn-ghost btn-sm" onclick="toggleEditForm(${p.id})">Cancel</button>
+              <button class="btn btn-red btn-sm" style="margin-left:auto;" onclick="deletePerson(${p.id})">Delete</button>
+            </div>
+          </div>
+        </div>
+        <div><button class="btn-edit-white" onclick="toggleEditForm(${p.id})">Edit</button></div>
+      </div>
+    </div>`;
+  }).join('');
+}
 function toggleDotMenu(id){document.querySelectorAll('.dot-menu.open').forEach(m=>{if(m.id!=='dotmenu-'+id)m.classList.remove('open');});document.getElementById('dotmenu-'+id).classList.toggle('open');}
 function setRating(id,color){const p=people.find(x=>x.id===id);if(p){p.rating=color;savePeople();renderCRM();}}
 function toggleEditForm(id){document.getElementById('editform-'+id).classList.toggle('open');}
 function updatePerson(id){const p=people.find(x=>x.id===id);if(!p)return;p.name=document.getElementById(`ef-name-${id}`).value.trim()||p.name;p.age=document.getElementById(`ef-age-${id}`).value;p.cat=document.getElementById(`ef-cat-${id}`).value;p.phone=document.getElementById(`ef-phone-${id}`).value.trim();p.email=document.getElementById(`ef-email-${id}`).value.trim();p.ig=document.getElementById(`ef-ig-${id}`).value.trim();p.addr=document.getElementById(`ef-addr-${id}`).value.trim();p.notes=document.getElementById(`ef-notes-${id}`).value.trim();savePeople();renderCRM();}
 function deletePerson(id){if(!confirm('Delete this person?'))return;people=people.filter(x=>x.id!==id);savePeople();renderCRM();}
 
-// ══════════════════════════════════════
-//  SHOP — WITH LIVE TOGGLE
-// ══════════════════════════════════════
+// ══ SHOP ══
 let shopItems=JSON.parse(localStorage.getItem('oas_shop')||'[]');
 let editingItemId=null;
 let currentImageDataURL=null;
 let currentImage2DataURL=null;
 
-// Subcategory config — matches the live shop
 const SUBCATS_MAP={
-  apparel:   ['Women','Men','Kids','Accessories','Other'],
-  digital:   ['Book','Podcast','Printables','Other'],
+  apparel:['Women','Men','Kids','Accessories','Other'],
+  digital:['Book','Podcast','Printables','Other'],
   photography:['Cinematic Portraits','Brand / Business','Events','Video / Content','Other'],
-  other:     ['Other']
+  other:['Other']
 };
 
 function updateSubcatOptions(){
@@ -1368,206 +1630,55 @@ function updateSubcatOptions(){
   const opts=SUBCATS_MAP[cat]||['Other'];
   sel.innerHTML=opts.map(o=>`<option value="${o}">${o}</option>`).join('');
 }
-
-function saveShopItems(){
-  localStorage.setItem('oas_shop',JSON.stringify(shopItems));
-  // Trigger shop sync — write timestamp so the live shop detects the change
-  localStorage.setItem('oas_shop_updated', Date.now().toString());
-  updateShopCounts();
-}
-
-function updateShopCounts(){
-  const live=shopItems.filter(x=>x.status==='live').length;
-  const draft=shopItems.filter(x=>x.status!=='live').length;
-  document.getElementById('itemCount').textContent=shopItems.length;
-  document.getElementById('liveCountNum').textContent=live;
-  document.getElementById('draftCountNum').textContent=draft;
-}
-
-document.getElementById('it-discount').addEventListener('change',function(){
-  document.getElementById('customDiscountWrap').style.display=this.value==='custom'?'block':'none';
-});
-
-function previewImage(e,previewId,placeholderId){
-  const file=e.target.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(ev){
-    const prev=document.getElementById(previewId);prev.src=ev.target.result;prev.style.display='block';
-    document.getElementById(placeholderId).style.display='none';
-    if(previewId==='imagePreview')currentImageDataURL=ev.target.result;
-    else if(previewId==='imagePreview2')currentImage2DataURL=ev.target.result;
-  };reader.readAsDataURL(file);
-}
-
+function saveShopItems(){localStorage.setItem('oas_shop',JSON.stringify(shopItems));localStorage.setItem('oas_shop_updated',Date.now().toString());updateShopCounts();}
+function updateShopCounts(){const live=shopItems.filter(x=>x.status==='live').length;const draft=shopItems.filter(x=>x.status!=='live').length;document.getElementById('itemCount').textContent=shopItems.length;document.getElementById('liveCountNum').textContent=live;document.getElementById('draftCountNum').textContent=draft;}
+document.getElementById('it-discount').addEventListener('change',function(){document.getElementById('customDiscountWrap').style.display=this.value==='custom'?'block':'none';});
+function previewImage(e,previewId,placeholderId){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const prev=document.getElementById(previewId);prev.src=ev.target.result;prev.style.display='block';document.getElementById(placeholderId).style.display='none';if(previewId==='imagePreview')currentImageDataURL=ev.target.result;else if(previewId==='imagePreview2')currentImage2DataURL=ev.target.result;};reader.readAsDataURL(file);}
 async function enhanceDescAI(){
   const title=document.getElementById('it-title').value.trim();const existing=document.getElementById('it-desc').value.trim();
   if(!title){alert('Add an item title first.');return;}
   const btn=document.getElementById('aiDescBtn');btn.textContent='✦ Thinking…';btn.classList.add('loading');btn.disabled=true;
-  try{
-    const prompt=existing
-      ?`Rewrite and enhance this product description for "${title}" sold by OASENSE, an artistic creative studio by photographer/musician Angel Alvarez. Keep it under 2 sentences, evocative, and brand-consistent:\n"${existing}"`
-      :`Write a short 1-2 sentence product description for "${title}" sold by OASENSE, an artistic creative studio by photographer/musician Angel Alvarez. Make it evocative and brand-consistent.`;
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});
-    const data=await res.json();const text=data.content?.map(c=>c.text||'').join('').trim();if(text)document.getElementById('it-desc').value=text;
-  }catch(err){alert('AI enhancement failed.');}
+  try{const prompt=existing?`Rewrite and enhance this product description for "${title}" sold by OASENSE. Keep it under 2 sentences, evocative:\n"${existing}"`:`Write a short 1-2 sentence product description for "${title}" sold by OASENSE, an artistic creative studio. Make it evocative.`;
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});
+  const data=await res.json();const text=data.content?.map(c=>c.text||'').join('').trim();if(text)document.getElementById('it-desc').value=text;}
+  catch(err){alert('AI enhancement failed.');}
   btn.textContent='✦ Enhance with AI';btn.classList.remove('loading');btn.disabled=false;
 }
-
 function saveItem(){
-  const title=document.getElementById('it-title').value.trim();
-  const desc=document.getElementById('it-desc').value.trim();
-  const priceRaw=parseFloat(document.getElementById('it-price').value);
-  const discSel=document.getElementById('it-discount').value;
+  const title=document.getElementById('it-title').value.trim();const desc=document.getElementById('it-desc').value.trim();const priceRaw=parseFloat(document.getElementById('it-price').value);const discSel=document.getElementById('it-discount').value;
   let discount=discSel==='custom'?(parseInt(document.getElementById('it-custom-discount').value)||0):(discSel==='-'?'-':parseInt(discSel));
-  const badge=document.getElementById('it-badge').value;
-  const img=currentImageDataURL||'';
-  const img2=currentImage2DataURL||'';
-  const category=document.getElementById('it-category').value;
-  const subcategory=document.getElementById('it-subcategory').value;
-
+  const badge=document.getElementById('it-badge').value;const img=currentImageDataURL||'';const img2=currentImage2DataURL||'';const category=document.getElementById('it-category').value;const subcategory=document.getElementById('it-subcategory').value;
   if(!title){alert('Item title is required.');return;}
-  if(isNaN(priceRaw)&&category!=='photography'){alert('Please enter a valid price.');return;}
   const price=isNaN(priceRaw)?'0.00':priceRaw.toFixed(2);
-
+  const newId=Date.now();
   if(editingItemId){
     const item=shopItems.find(x=>x.id===editingItemId);
-    if(item){
-      // preserve status when editing
-      const prevStatus=item.status||'draft';
-      Object.assign(item,{title,desc,price,discount,badge,img,img2,category,subcategory,status:prevStatus});
-    }
+    if(item){const prevStatus=item.status||'draft';Object.assign(item,{title,desc,price,discount,badge,img,img2,category,subcategory,status:prevStatus});}
     editingItemId=null;
-  } else {
-    shopItems.unshift({
-      id:Date.now(),
-      title,desc,price,discount,badge,img,img2,
-      category,subcategory,
-      status:'draft',
-      createdAt:new Date().toISOString()
-    });
+    if(currentUser)addAuditEntry(currentUser.name,'Updated Item Description','REF #'+editingItemId);
+  }else{
+    shopItems.unshift({id:newId,title,desc,price,discount,badge,img,img2,category,subcategory,status:'draft',createdAt:new Date().toISOString()});
+    if(currentUser)addAuditEntry(currentUser.name,'Added New Item to Store','REF #'+newId);
   }
   saveShopItems();renderShop();resetItemForm();
 }
-
 function toggleItemLive(id){
   const item=shopItems.find(x=>x.id===id);if(!item)return;
-  if(item.status==='live'){
-    item.status='draft';
-    saveShopItems();renderShop();
-  } else {
-    showConfirm(`Publish "${item.title}" to the live shop?`,()=>{
-      item.status='live';
-      saveShopItems();renderShop();
-    });
-  }
+  if(item.status==='live'){item.status='draft';saveShopItems();renderShop();if(currentUser)addAuditEntry(currentUser.name,'Archived Item','REF #'+id);}
+  else{showConfirm(`Publish "${item.title}" to the live shop?`,()=>{item.status='live';saveShopItems();renderShop();if(currentUser)addAuditEntry(currentUser.name,'Added New Item to Store','REF #'+id);});}
 }
-
-function resetItemForm(){
-  document.getElementById('it-title').value='';document.getElementById('it-desc').value='';
-  document.getElementById('it-price').value='';document.getElementById('it-discount').value='-';
-  document.getElementById('it-custom-discount').value='';document.getElementById('it-badge').value='-';
-  document.getElementById('customDiscountWrap').style.display='none';
-  ['imagePreview','imagePreview2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});
-  ['uploadPlaceholder','uploadPlaceholder2'].forEach(id=>document.getElementById(id).style.display='block');
-  document.getElementById('itemFormTitle').textContent='Add New Item';
-  document.getElementById('cancelEditBtn').style.display='none';
-  document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Save as Draft';
-  currentImageDataURL=null;currentImage2DataURL=null;editingItemId=null;
-  // Reset category/subcat
-  document.getElementById('it-category').value='apparel';
-  updateSubcatOptions();
-}
-
-function editItem(id){
-  const item=shopItems.find(x=>x.id===id);if(!item)return;
-  editingItemId=id;
-  document.getElementById('it-title').value=item.title;
-  document.getElementById('it-desc').value=item.desc;
-  document.getElementById('it-price').value=item.price;
-  const d=item.discount,sel=document.getElementById('it-discount');
-  if(['-','10','15','20','50','100'].includes(String(d))){sel.value=String(d);document.getElementById('customDiscountWrap').style.display='none';}
-  else{sel.value='custom';document.getElementById('it-custom-discount').value=d;document.getElementById('customDiscountWrap').style.display='block';}
-  document.getElementById('it-badge').value=item.badge||'-';
-  // Category + subcat
-  document.getElementById('it-category').value=item.category||'apparel';
-  updateSubcatOptions();
-  // set subcategory after options are updated
-  setTimeout(()=>{
-    const subSel=document.getElementById('it-subcategory');
-    if(item.subcategory){
-      for(let i=0;i<subSel.options.length;i++){if(subSel.options[i].value===item.subcategory){subSel.selectedIndex=i;break;}}
-    }
-  },10);
-  if(item.img){currentImageDataURL=item.img;const p=document.getElementById('imagePreview');p.src=item.img;p.style.display='block';document.getElementById('uploadPlaceholder').style.display='none';}
-  if(item.img2){currentImage2DataURL=item.img2;const p=document.getElementById('imagePreview2');p.src=item.img2;p.style.display='block';document.getElementById('uploadPlaceholder2').style.display='none';}
-  document.getElementById('itemFormTitle').textContent='Editing: '+item.title;
-  document.getElementById('cancelEditBtn').style.display='inline-block';
-  document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Update Item';
-  document.getElementById('itemForm').scrollIntoView({behavior:'smooth',block:'start'});
-}
-
+function resetItemForm(){document.getElementById('it-title').value='';document.getElementById('it-desc').value='';document.getElementById('it-price').value='';document.getElementById('it-discount').value='-';document.getElementById('it-custom-discount').value='';document.getElementById('it-badge').value='-';document.getElementById('customDiscountWrap').style.display='none';['imagePreview','imagePreview2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});['uploadPlaceholder','uploadPlaceholder2'].forEach(id=>document.getElementById(id).style.display='block');document.getElementById('itemFormTitle').textContent='Add New Item';document.getElementById('cancelEditBtn').style.display='none';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Save as Draft';currentImageDataURL=null;currentImage2DataURL=null;editingItemId=null;document.getElementById('it-category').value='apparel';updateSubcatOptions();}
+function editItem(id){const item=shopItems.find(x=>x.id===id);if(!item)return;editingItemId=id;document.getElementById('it-title').value=item.title;document.getElementById('it-desc').value=item.desc;document.getElementById('it-price').value=item.price;const d=item.discount,sel=document.getElementById('it-discount');if(['-','10','15','20','50','100'].includes(String(d))){sel.value=String(d);document.getElementById('customDiscountWrap').style.display='none';}else{sel.value='custom';document.getElementById('it-custom-discount').value=d;document.getElementById('customDiscountWrap').style.display='block';}document.getElementById('it-badge').value=item.badge||'-';document.getElementById('it-category').value=item.category||'apparel';updateSubcatOptions();setTimeout(()=>{const subSel=document.getElementById('it-subcategory');if(item.subcategory){for(let i=0;i<subSel.options.length;i++){if(subSel.options[i].value===item.subcategory){subSel.selectedIndex=i;break;}}}},10);if(item.img){currentImageDataURL=item.img;const p=document.getElementById('imagePreview');p.src=item.img;p.style.display='block';document.getElementById('uploadPlaceholder').style.display='none';}if(item.img2){currentImage2DataURL=item.img2;const p=document.getElementById('imagePreview2');p.src=item.img2;p.style.display='block';document.getElementById('uploadPlaceholder2').style.display='none';}document.getElementById('itemFormTitle').textContent='Editing: '+item.title;document.getElementById('cancelEditBtn').style.display='inline-block';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Update Item';document.getElementById('itemForm').scrollIntoView({behavior:'smooth',block:'start'});}
 function deleteItem(id){
   if(!confirm('Delete this item?'))return;
   shopItems=shopItems.filter(x=>x.id!==id);
   saveShopItems();renderShop();
+  if(currentUser)addAuditEntry(currentUser.name,'Removed Item from Store','REF #'+id);
 }
-
-function openBadgePicker(id,el){
-  document.querySelectorAll('.badge-opts.open').forEach(x=>{if(!x.closest(`[data-item-id="${id}"]`))x.classList.remove('open');});
-  el.closest('.badge-dropdown').querySelector('.badge-opts').classList.toggle('open');
-}
+function openBadgePicker(id,el){document.querySelectorAll('.badge-opts.open').forEach(x=>{if(!x.closest(`[data-item-id="${id}"]`))x.classList.remove('open');});el.closest('.badge-dropdown').querySelector('.badge-opts').classList.toggle('open');}
 function setBadgeOnCard(id,val,el){const item=shopItems.find(x=>x.id===id);if(item){item.badge=val;saveShopItems();renderShop();}el.closest('.badge-opts').classList.remove('open');}
 function badgeHTML(badge,discount){if(!badge||badge==='-')return'';if(badge==='New!')return`<div class="item-badge badge-new">NEW!</div>`;if(badge==='Hot!')return`<div class="item-badge badge-hot">HOT!</div>`;if(badge==='%'&&discount!=='-')return`<div class="item-badge badge-pct">${discount}%<br/>OFF</div>`;return'';}
-
-function renderShop(){
-  const grid=document.getElementById('shopItemsGrid'),empty=document.getElementById('shopEmpty');
-  updateShopCounts();
-  if(!shopItems.length){grid.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  grid.innerHTML=shopItems.map(item=>{
-    const isLive=item.status==='live';
-    const dp=item.discount!=='-'?(parseFloat(item.price)*(1-parseInt(item.discount)/100)).toFixed(2):null;
-    const catLabel=(item.category||'').toUpperCase();
-    const subLabel=item.subcategory?` · ${item.subcategory}`:'';
-    return`<div class="item-card${isLive?' is-live':''}">
-      <div class="item-card-img">
-        ${item.img?`<img src="${item.img}" alt="${item.title}"/>`:'🎁'}
-        ${badgeHTML(item.badge,item.discount)}
-        ${isLive?`<div style="position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,rgba(0,255,136,0.18),transparent);height:40px;pointer-events:none;"></div>`:''}
-        <div class="item-card-badge-btn">
-          <div class="badge-dropdown" data-item-id="${item.id}">
-            <div class="badge-trigger" onclick="openBadgePicker(${item.id},this)"></div>
-            <div class="badge-opts">
-              <div class="badge-opt" onclick="setBadgeOnCard(${item.id},'New!',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#00e5ff,#0050ff);"></span>New!</div>
-              <div class="badge-opt" onclick="setBadgeOnCard(${item.id},'Hot!',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#ff6600,#cc0000);"></span>Hot!</div>
-              <div class="badge-opt" onclick="setBadgeOnCard(${item.id},'%',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#00ff88,#007744);"></span>%</div>
-              <div class="badge-opt" onclick="setBadgeOnCard(${item.id},'-',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px dashed rgba(255,255,255,0.3);"></span>—</div>
-            </div>
-          </div>
-        </div>
-        <button class="item-card-edit" onclick="editItem(${item.id})">Edit</button>
-      </div>
-      <div class="item-card-body">
-        <div class="item-card-cat">${catLabel}${subLabel}</div>
-        <div class="item-card-name">${item.title}</div>
-        <div class="item-card-desc">${item.desc||'—'}</div>
-        <div class="item-card-footer">
-          <div>
-            <div class="item-card-price">${item.category==='photography'?'Contact Us':(dp?`<span style="font-size:13px;color:var(--mute);text-decoration:line-through;margin-right:6px;">$${item.price}</span>$${dp}`:`$${item.price}`)}</div>
-            ${item.discount!=='-'?`<div class="item-card-discount">${item.discount}% OFF</div>`:''}
-          </div>
-          <button class="btn btn-red btn-sm" onclick="deleteItem(${item.id})">✕</button>
-        </div>
-      </div>
-      <div class="item-status-bar">
-        ${isLive
-          ?`<span class="item-live-badge">Live</span><button class="btn-pull-back" onclick="toggleItemLive(${item.id})">Pull Back</button>`
-          :`<span class="item-draft-badge">Draft</span><button class="btn-go-live" onclick="toggleItemLive(${item.id})">Go Live ↗</button>`
-        }
-      </div>
-    </div>`;
-  }).join('');
-}
+function renderShop(){const grid=document.getElementById('shopItemsGrid'),empty=document.getElementById('shopEmpty');updateShopCounts();if(!shopItems.length){grid.innerHTML='';empty.style.display='block';return;}empty.style.display='none';grid.innerHTML=shopItems.map(item=>{const isLive=item.status==='live';const dp=item.discount!=='-'?(parseFloat(item.price)*(1-parseInt(item.discount)/100)).toFixed(2):null;const catLabel=(item.category||'').toUpperCase();const subLabel=item.subcategory?` · ${item.subcategory}`:'';return`<div class="item-card${isLive?' is-live':''}"><div class="item-card-img">${item.img?`<img src="${item.img}" alt="${item.title}"/>`:'🎁'}${badgeHTML(item.badge,item.discount)}${isLive?`<div style="position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,rgba(0,255,136,0.18),transparent);height:40px;pointer-events:none;"></div>`:''}<div class="item-card-badge-btn"><div class="badge-dropdown" data-item-id="${item.id}"><div class="badge-trigger" onclick="openBadgePicker(${item.id},this)"></div><div class="badge-opts"><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'New!',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#00e5ff,#0050ff);"></span>New!</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'Hot!',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#ff6600,#cc0000);"></span>Hot!</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'%',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#00ff88,#007744);"></span>%</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'-',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px dashed rgba(255,255,255,0.3);"></span>—</div></div></div></div><button class="item-card-edit" onclick="editItem(${item.id})">Edit</button></div><div class="item-card-body"><div class="item-card-cat">${catLabel}${subLabel}</div><div class="item-card-name">${item.title}</div><div class="item-card-desc">${item.desc||'—'}</div><div class="item-card-footer"><div><div class="item-card-price">${item.category==='photography'?'Contact Us':(dp?`<span style="font-size:13px;color:var(--mute);text-decoration:line-through;margin-right:6px;">$${item.price}</span>$${dp}`:`$${item.price}`)}</div>${item.discount!=='-'?`<div class="item-card-discount">${item.discount}% OFF</div>`:''}</div><button class="btn btn-red btn-sm" onclick="deleteItem(${item.id})">✕</button></div></div><div class="item-status-bar">${isLive?`<span class="item-live-badge">Live</span><button class="btn-pull-back" onclick="toggleItemLive(${item.id})">Pull Back</button>`:`<span class="item-draft-badge">Draft</span><button class="btn-go-live" onclick="toggleItemLive(${item.id})">Go Live ↗</button>`}</div></div>`;}).join('');}
 
 // ══ ORDER HISTORY ══
 let orders=JSON.parse(localStorage.getItem('oas_orders')||'[]');
@@ -1579,7 +1690,7 @@ function addOrdItem(){const id='oi'+Date.now();const shopOpts=shopItems.map(s=>`
 function autoFillOrdPrice(id){const name=document.getElementById('oname-'+id).value.trim().toLowerCase();const item=shopItems.find(s=>s.title.toLowerCase()===name);if(item){document.getElementById('oprice-'+id).value=item.price;if(item.discount&&item.discount!=='-')document.getElementById('odisc-'+id).value=item.discount;}}
 function ordPickFilter(){const q=document.getElementById('ord-name').value.toLowerCase().trim();const dd=document.getElementById('ordPickDD');const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);if(!hits.length){dd.classList.remove('open');return;}dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickOrdPerson(${p.id})"><div>${p.name}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}${p.email?' · '+p.email:''}</div></div>`).join('');dd.classList.add('open');}
 function pickOrdPerson(id){const p=people.find(x=>x.id===id);if(!p)return;document.getElementById('ord-name').value=p.name;document.getElementById('ord-phone').value=p.phone||'';document.getElementById('ordPickDD').classList.remove('open');}
-function saveOrder(){const name=document.getElementById('ord-name').value.trim();const phone=document.getElementById('ord-phone').value.trim();const date=document.getElementById('ord-date').value;if(!name){alert('Client name is required.');return;}const rows=document.querySelectorAll('#ordItemsWrap .ord-item-row');const items=[];rows.forEach(row=>{const rid=row.id.replace('ordrow-','');const iname=document.getElementById('oname-'+rid)?.value.trim();const price=parseFloat(document.getElementById('oprice-'+rid)?.value)||0;const disc=parseFloat(document.getElementById('odisc-'+rid)?.value)||0;if(iname)items.push({name:iname,price,disc});});if(!items.length){alert('Add at least one item.');return;}let linkedPersonId=null;const match=people.find(p=>p.name.toLowerCase()===name.toLowerCase()&&phone&&p.phone&&p.phone.replace(/\D/g,'')===phone.replace(/\D/g,''));if(match)linkedPersonId=match.id;orders.unshift({id:Date.now(),name,phone,date,items,linkedPersonId});saveOrders();renderOrders();closeNewOrderForm();}
+function saveOrder(){const name=document.getElementById('ord-name').value.trim();const phone=document.getElementById('ord-phone').value.trim();const date=document.getElementById('ord-date').value;if(!name){alert('Client name is required.');return;}const rows=document.querySelectorAll('#ordItemsWrap .ord-item-row');const items=[];rows.forEach(row=>{const rid=row.id.replace('ordrow-','');const iname=document.getElementById('oname-'+rid)?.value.trim();const price=parseFloat(document.getElementById('oprice-'+rid)?.value)||0;const disc=parseFloat(document.getElementById('odisc-'+rid)?.value)||0;if(iname)items.push({name:iname,price,disc});});if(!items.length){alert('Add at least one item.');return;}let linkedPersonId=null;const match=people.find(p=>p.name.toLowerCase()===name.toLowerCase()&&phone&&p.phone&&p.phone.replace(/\D/g,'')===phone.replace(/\D/g,''));if(match)linkedPersonId=match.id;const newId=Date.now();orders.unshift({id:newId,name,phone,date,items,linkedPersonId});saveOrders();renderOrders();closeNewOrderForm();if(currentUser)addAuditEntry(currentUser.name,'Made Purchase','REF #'+newId);}
 function deleteOrder(id){if(!confirm('Delete this order?'))return;orders=orders.filter(x=>x.id!==id);saveOrders();renderOrders();}
 function renderOrders(){const list=document.getElementById('orderList'),empty=document.getElementById('orderEmpty');updateOrderBadge();if(!orders.length){list.innerHTML='';empty.style.display='block';return;}empty.style.display='none';list.innerHTML=orders.map(o=>{let subTotal=0,totalDisc=0;o.items.forEach(it=>{subTotal+=it.price;totalDisc+=it.price*(it.disc/100);});const afterDisc=subTotal-totalDisc;const taxAmt=afterDisc*NV_TAX;const total=afterDisc+taxAmt;const linked=o.linkedPersonId?people.find(p=>p.id===o.linkedPersonId):null;const linkBadge=linked?`<span class="order-linked">✓ CRM Linked</span>`:`<span class="order-unlinked">No CRM Link</span>`;const itemRows=o.items.map(it=>{const discAmt=it.price*(it.disc/100);const net=it.price-discAmt;return`<tr><td>${it.name}</td><td style="text-align:right;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);">${it.disc?it.disc+'% off':''}</td><td>$${net.toFixed(2)}${it.disc?`<br/><span style="font-size:11px;color:var(--mute);text-decoration:line-through;">$${it.price.toFixed(2)}</span>`:''}</td></tr>`;}).join('');return`<div class="order-card"><div class="order-header"><div class="order-client-row"><div class="order-client-name">${o.name}</div><button class="order-who-btn" onclick="openOrdPersonModal(${o.id})">?</button>${linkBadge}</div><div style="display:flex;align-items:center;gap:10px;"><div class="order-date">${o.date?formatDate(o.date):''}</div><button class="btn btn-red btn-sm" onclick="deleteOrder(${o.id})">✕</button></div></div><table class="order-items"><thead><tr><th>Item</th><th>Discount</th><th style="text-align:right;">Price</th></tr></thead><tbody>${itemRows}</tbody></table><div class="order-totals"><div class="order-total-row"><span class="ot-lbl">Subtotal</span><span class="ot-val">$${subTotal.toFixed(2)}</span></div>${totalDisc>0?`<div class="order-total-row"><span class="ot-lbl">Discounts</span><span class="ot-val" style="color:var(--green);">−$${totalDisc.toFixed(2)}</span></div>`:''}<div class="order-total-row"><span class="ot-lbl">Sales Tax (NV 8.375%)</span><span class="ot-val">$${taxAmt.toFixed(2)}</span></div><div class="order-total-row grand"><span class="ot-lbl">Total</span><span class="ot-val">$${total.toFixed(2)}</span></div></div></div>`;}).join('');}
 function openOrdPersonModal(ordId){const o=orders.find(x=>x.id===ordId);if(!o)return;const p=o.linkedPersonId?people.find(x=>x.id===o.linkedPersonId):null;document.getElementById('personModalName').textContent=o.name;const r=(icon,lbl,val)=>val?`<div class="pi-row"><span class="pi-lbl">${icon} ${lbl}</span><span class="pi-val">${val}</span></div>`:'';document.getElementById('personModalContent').innerHTML=p?`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(0,255,136,0.6);margin-bottom:12px;text-transform:uppercase;">✓ Linked CRM Profile</div>`+r('👤','Category',{prospect:'Prospect',client:'Client',subscriber:'Subscriber',user:'User'}[p.cat]||p.cat)+r('📞','Phone',p.phone)+r('📧','Email',p.email)+r('📷','IG',p.ig)+r('📍','Address',p.addr)+(p.notes?r('📝','Notes',p.notes):''):`<div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,204,0,0.5);margin-bottom:12px;">No matching CRM profile found.</div>`+r('📞','Phone',o.phone);document.getElementById('personModal').classList.add('open');}
@@ -1597,7 +1708,7 @@ let _invProductOpts=[];
 function invProductFilter(){const q=document.getElementById('inv-product').value.toLowerCase().trim();const dd=document.getElementById('invProductDD');const allOpts=[{title:'📸 Photoshoot',price:'',discount:'-'},...shopItems];_invProductOpts=allOpts.filter(s=>s.title.toLowerCase().includes(q)||q==='').slice(0,12);if(!_invProductOpts.length){dd.classList.remove('open');return;}dd.innerHTML=_invProductOpts.map((s,i)=>{const dp=s.discount&&s.discount!=='-'?(parseFloat(s.price||0)*(1-parseInt(s.discount)/100)).toFixed(2):null;const priceLabel=s.price?`<span class="iprice">${dp?`$${dp}`:`$${s.price}`}</span>`:'';return`<div class="inv-product-opt" onclick="selectInvProduct(${i})"><span>${s.title}</span>${priceLabel}</div>`;}).join('');dd.classList.add('open');}
 function selectInvProduct(idx){const s=_invProductOpts[idx];if(!s)return;document.getElementById('inv-product').value=s.title;document.getElementById('invProductDD').classList.remove('open');_invPrice=parseFloat(s.price)||0;_invDisc=s.discount||'-';const dp=s.discount&&s.discount!=='-'?(_invPrice*(1-parseInt(s.discount)/100)).toFixed(2):null;document.getElementById('invPriceDisplay').textContent=s.price?(dp?`$${dp}`:`$${s.price}`):'—';document.getElementById('invDiscDisplay').textContent=s.discount&&s.discount!=='-'?s.discount+'%':'—';}
 function receiptTypeChanged(){const t=document.getElementById('inv-receipt-type').value;const wrap=document.getElementById('inv-receipt-input-wrap');const inp=document.getElementById('inv-receipt-val');if(t==='none'){wrap.style.display='none';inp.value='';return;}wrap.style.display='block';inp.value='';inp.placeholder=t==='text'?'+1 (000) 000-0000':'example@gmail.com';}
-function saveInvoice(){const client=document.getElementById('inv-client').value.trim();const product=document.getElementById('inv-product').value.trim();const date=document.getElementById('inv-date').value;if(!client||!product){alert('Client and product are required.');return;}const receiptType=document.getElementById('inv-receipt-type').value;const receiptVal=document.getElementById('inv-receipt-val').value.trim();const disc=_invDisc;const discAmt=disc!=='-'?_invPrice*(parseInt(disc)/100):0;const afterDisc=_invPrice-discAmt;const tax=afterDisc*NV_TAX;const total=afterDisc+tax;invoices.unshift({id:Date.now(),client,product,price:_invPrice,disc,date,receiptType,receiptVal,status:'unpaid',total});saveInvoices();renderInvoices();closeNewInvoice();}
+function saveInvoice(){const client=document.getElementById('inv-client').value.trim();const product=document.getElementById('inv-product').value.trim();const date=document.getElementById('inv-date').value;if(!client||!product){alert('Client and product are required.');return;}const receiptType=document.getElementById('inv-receipt-type').value;const receiptVal=document.getElementById('inv-receipt-val').value.trim();const disc=_invDisc;const discAmt=disc!=='-'?_invPrice*(parseInt(disc)/100):0;const afterDisc=_invPrice-discAmt;const tax=afterDisc*NV_TAX;const total=afterDisc+tax;const newId=Date.now();invoices.unshift({id:newId,client,product,price:_invPrice,disc,date,receiptType,receiptVal,status:'unpaid',total});saveInvoices();renderInvoices();closeNewInvoice();}
 function openOverrideModal(){document.getElementById('ov-user').value='';document.getElementById('ov-pass').value='';document.getElementById('ov-err').style.display='none';document.getElementById('overrideAuthWrap').style.display='block';document.getElementById('overrideEditWrap').style.display='none';document.getElementById('overrideModal').classList.add('open');}
 function closeOverrideModal(){document.getElementById('overrideModal').classList.remove('open');}
 function checkOverrideAuth(){const u=document.getElementById('ov-user').value.trim();const p=document.getElementById('ov-pass').value;if(u==='DEV'&&p==='mems01'){document.getElementById('overrideAuthWrap').style.display='none';document.getElementById('overrideEditWrap').style.display='block';document.getElementById('ov-price').value=_invPrice||'';document.getElementById('ov-disc').value=_invDisc==='-'?'':_invDisc;}else{document.getElementById('ov-err').style.display='block';}}
@@ -1634,7 +1745,7 @@ async function enhanceBlogAI(){
   const title=document.getElementById('blog-title').value.trim();const existing=document.getElementById('blog-content').value.trim();
   if(!title){alert('Add a blog title first.');return;}
   const btn=document.getElementById('aiBlogBtn');btn.textContent='✦ Writing…';btn.classList.add('loading');btn.disabled=true;
-  try{const authorVoice=_blogAuthor==='kiara'?'Kiara, the creative co-owner, writes with a warm, personal, feminine touch':'Sol, the AI creative persona for OASENSE, writes with a cool, futuristic, artistic voice';const prompt=existing?`Rewrite this blog post for OASENSE by ${authorVoice}. Keep it around 150-250 words:\n"${existing}"`:`Write a blog post for OASENSE about "${title}" by ${authorVoice}. Keep it around 150-200 words. No markdown headers.`;const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});const data=await res.json();const text=data.content?.map(c=>c.text||'').join('').trim();if(text)document.getElementById('blog-content').value=text;}
+  try{const authorVoice=_blogAuthor==='kiara'?'Kiara, the creative co-owner, writes with a warm, personal, feminine touch':'Sol, the AI creative persona for OASENSE, writes with a cool, futuristic, artistic voice';const prompt=existing?`Rewrite this blog post for OASENSE by ${authorVoice}. Keep it around 150-250 words:\n"${existing}"`:`Write a blog post for OASENSE about "${title}" by ${authorVoice}. Around 150-200 words. No markdown headers.`;const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});const data=await res.json();const text=data.content?.map(c=>c.text||'').join('').trim();if(text)document.getElementById('blog-content').value=text;}
   catch(err){alert('AI writing failed.');}
   btn.textContent='✦ Write with AI';btn.classList.remove('loading');btn.disabled=false;
 }
@@ -1651,23 +1762,14 @@ function saveSolConfig(){localStorage.setItem('oas_sol_config',JSON.stringify(so
 function saveAIConfig(){solConfig.welcome=document.getElementById('sol-welcome').value;solConfig.rules=document.getElementById('sol-rules').value;const cmdRows=document.querySelectorAll('.sol-cmd-row');solConfig.commands=[];cmdRows.forEach(row=>{const label=row.querySelector('.cmd-label').value.trim();const type=row.querySelector('.cmd-type').value;const value=row.querySelector('.cmd-value').value.trim();if(label)solConfig.commands.push({id:Date.now()+Math.random(),label,type,value});});saveSolConfig();const btn=event.target;btn.textContent='✅ Saved!';setTimeout(()=>btn.textContent='💾 Save All',2000);}
 function addSolCommand(){solConfig.commands.push({id:Date.now(),label:'',type:'link',value:''});renderSolCommands();}
 function removeSolCommand(id){solConfig.commands=solConfig.commands.filter(c=>c.id!==id);renderSolCommands();}
-function renderSolCommands(){const list=document.getElementById('solCommandsList');if(!solConfig.commands.length){list.innerHTML='<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:rgba(255,204,0,0.3);padding:10px 0;">No commands yet — add one below</div>';return;}list.innerHTML=solConfig.commands.map(cmd=>`<div class="sol-cmd-row row row-3" style="margin-bottom:8px;align-items:center;gap:8px;"><input class="fi cmd-label" value="${esc(cmd.label)}" placeholder="Command label"/><select class="fi fse cmd-type"><option value="link" ${cmd.type==='link'?'selected':''}>🔗 Link</option><option value="scroll" ${cmd.type==='scroll'?'selected':''}>📜 Scroll</option><option value="section" ${cmd.type==='section'?'selected':''}>📂 Section</option></select><div style="display:flex;gap:6px;"><input class="fi cmd-value" value="${esc(cmd.value)}" placeholder="URL or #section" style="flex:1;"/><button onclick="removeSolCommand(${cmd.id})" style="background:none;border:1px solid rgba(255,59,59,0.4);color:var(--red);cursor:pointer;padding:0 10px;font-size:16px;line-height:1;flex-shrink:0;">×</button></div></div>`).join('');}
+function renderSolCommands(){const list=document.getElementById('solCommandsList');if(!solConfig.commands.length){list.innerHTML='<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:rgba(255,204,0,0.3);padding:10px 0;">No commands yet</div>';return;}list.innerHTML=solConfig.commands.map(cmd=>`<div class="sol-cmd-row row row-3" style="margin-bottom:8px;align-items:center;gap:8px;"><input class="fi cmd-label" value="${esc(cmd.label)}" placeholder="Command label"/><select class="fi fse cmd-type"><option value="link" ${cmd.type==='link'?'selected':''}>🔗 Link</option><option value="scroll" ${cmd.type==='scroll'?'selected':''}>📜 Scroll</option><option value="section" ${cmd.type==='section'?'selected':''}>📂 Section</option></select><div style="display:flex;gap:6px;"><input class="fi cmd-value" value="${esc(cmd.value)}" placeholder="URL or #section" style="flex:1;"/><button onclick="removeSolCommand(${cmd.id})" style="background:none;border:1px solid rgba(255,59,59,0.4);color:var(--red);cursor:pointer;padding:0 10px;font-size:16px;line-height:1;flex-shrink:0;">×</button></div></div>`).join('');}
 function addUserPrompt(){const val=document.getElementById('newPromptInput').value.trim().toUpperCase();if(!val)return;solConfig.userPrompts.push(val);document.getElementById('newPromptInput').value='';saveSolConfig();renderUserPrompts();}
 function removeUserPrompt(idx){solConfig.userPrompts.splice(idx,1);saveSolConfig();renderUserPrompts();}
 function renderUserPrompts(){const list=document.getElementById('userPromptsList');list.innerHTML=solConfig.userPrompts.map((p,i)=>`<div class="user-prompt-pill">${p}<button class="prompt-x" onclick="removeUserPrompt(${i})">×</button></div>`).join('');}
 function initAIPrompts(){document.getElementById('sol-welcome').value=solConfig.welcome;document.getElementById('sol-rules').value=solConfig.rules;renderSolCommands();renderUserPrompts();}
 
-// ══ USERS ══
+// ══ USERS / DATABASE ══
 let appUsers=JSON.parse(localStorage.getItem('oas_users')||'[]');
-
-// Role assignment: DEV user = DEV, KIARA = OWNER, SOL = AUDIT, everyone else = USER
-const ROLE_MAP={
-  'Swift Agent':'DEV',
-  'Kiara':'OWNER',
-  'Sol':'AUDIT'
-};
-function getUserRole(name){return ROLE_MAP[name]||'USER';}
-function getRoleClass(role){return{DEV:'role-dev',OWNER:'role-owner',AUDIT:'role-audit',USER:'role-user'}[role]||'role-user';}
 
 function saveAppUsers(){localStorage.setItem('oas_users',JSON.stringify(appUsers));updateUsersBadge();}
 function updateUsersBadge(){document.getElementById('usersBadge').textContent=appUsers.length;}
@@ -1678,43 +1780,36 @@ function saveUser(){
   const name=document.getElementById('au-name').value.trim();if(!name){alert('Name is required.');return;}
   const provider=document.getElementById('au-provider').value;
   const email=document.getElementById('au-email').value.trim();
-  const role=getUserRole(name);
-  const u={id:Date.now(),name,provider,email,role,seenAt:Date.now(),sessionStart:Date.now(),sessionDuration:0,notes:'',phone:'',ig:'',addr:''};
+  const badge=getUserBadge(name);
+  const u={id:Date.now(),name,provider,email,badge,seenAt:Date.now(),sessionStart:Date.now(),sessionDuration:0,notes:''};
   appUsers.unshift(u);saveAppUsers();
-  if(email&&!people.find(p=>p.email===email)){people.unshift({id:Date.now()+1,cat:'user',name,age:'',phone:'',email,ig:'',addr:'',notes:'Auto-added from Users log.',rating:''});}
-  savePeople();renderCRM();renderUsers();closeAddUser();
+  if(email&&!people.find(p=>p.email===email)){
+    people.unshift({id:Date.now()+1,cat:'user',name,age:'',phone:'',email,ig:'',addr:'',notes:'Auto-added from Users log.',rating:''});
+    ensureCRMIds();savePeople();renderCRM();
+  }
+  renderUsers();closeAddUser();
+  addAuditEntry(name,'Login',null);
   document.getElementById('au-name').value='';document.getElementById('au-email').value='';
 }
 
 function logUserSession(match){
-  // For internal DEV users, don't duplicate if logged in within last hour
   const existing=appUsers.find(u=>u.name===match.name&&(Date.now()-u.seenAt)<3600000);
   if(!existing){
-    const role=getUserRole(match.name);
-    const u={id:Date.now(),name:match.name,provider:'SYSTEM',email:'',role,seenAt:Date.now(),sessionStart:Date.now(),sessionDuration:0,notes:'',phone:'',ig:'',addr:''};
+    const badge=getUserBadge(match.name);
+    const u={id:Date.now(),name:match.name,provider:'SYSTEM',email:'',badge,seenAt:Date.now(),sessionStart:Date.now(),sessionDuration:0,notes:''};
     appUsers.unshift(u);
-  } else {
-    existing.seenAt=Date.now();existing.sessionStart=Date.now();
-  }
+  }else{existing.seenAt=Date.now();existing.sessionStart=Date.now();}
   saveAppUsers();renderUsers();
 }
 
-function timeSince(ts){
-  if(!ts)return'—';const diff=Date.now()-ts;
-  const s=Math.floor(diff/1000);const m=Math.floor(s/60);const h=Math.floor(m/60);const d=Math.floor(h/24);
-  if(d>0)return`${d}d ago`;if(h>0)return`${h}h ago`;if(m>0)return`${m}m ago`;return'Just now';
-}
-function fmtDuration(ms){if(!ms)return'—';const m=Math.floor(ms/60000);const h=Math.floor(m/60);if(h>0)return`${h}h ${m%60}m`;return`${m}m`;}
-
 function openCRMFromUser(name,email){
-  // Find in CRM by name or email
   const p=people.find(x=>(email&&x.email===email)||(x.name.toLowerCase()===name.toLowerCase()));
   if(!p){alert('Not found in CRM database.');return;}
   const ratingColors={green:'#00FF88',yellow:'#FFD600',red:'#FF3B3B','':'rgba(255,204,0,0.4)'};
   const ratingLabels={green:'High Potential',yellow:'Medium Potential',red:'Low Potential','':'Unrated'};
   const catL={prospect:'Prospect',client:'Client',subscriber:'Subscriber',user:'User'};
   const r=(icon,lbl,val)=>val?`<div class="pi-row"><span class="pi-lbl">${icon} ${lbl}</span><span class="pi-val">${val}</span></div>`:'';
-  document.getElementById('personModalName').textContent=p.name;
+  document.getElementById('personModalName').textContent=p.name+' '+getPersonCRMIdDisplay(p);
   document.getElementById('personModalContent').innerHTML=
     `<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
       <div style="width:12px;height:12px;border-radius:50%;background:${ratingColors[p.rating||'']};box-shadow:0 0 8px ${ratingColors[p.rating||'']};flex-shrink:0;"></div>
@@ -1725,82 +1820,53 @@ function openCRMFromUser(name,email){
   document.getElementById('personModal').classList.add('open');
 }
 
-function toggleUserDetail(id){document.getElementById('udetail-'+id)?.classList.toggle('open');}
+function toggleDbDetail(id){document.getElementById('dbdetail-'+id)?.classList.toggle('open');}
 function updateUserNotes(id){const u=appUsers.find(x=>x.id===id);if(!u)return;u.notes=document.getElementById(`unotes-${id}`).value;saveAppUsers();}
 function deleteUser(id){if(!confirm('Delete this user?'))return;appUsers=appUsers.filter(x=>x.id!==id);saveAppUsers();renderUsers();}
 
+function fmtDuration(ms){if(!ms)return'—';const m=Math.floor(ms/60000);const h=Math.floor(m/60);if(h>0)return`${h}h ${m%60}m`;return`${m}m`;}
+
 function renderUsers(){
   const list=document.getElementById('usersList'),empty=document.getElementById('usersEmpty');
-  const recentsGrid=document.getElementById('recentsGrid'),recentsEmpty=document.getElementById('recentsEmpty');
   updateUsersBadge();
-
-  // RECENTS — last 8, sorted by seenAt
-  const sorted=[...appUsers].sort((a,b)=>(b.seenAt||0)-(a.seenAt||0));
-  const recents=sorted.slice(0,8);
-
-  if(!recents.length){
-    recentsGrid.innerHTML='';recentsEmpty.style.display='block';
-  } else {
-    recentsEmpty.style.display='none';
-    recentsGrid.innerHTML=recents.map(u=>{
-      const role=u.role||getUserRole(u.name);
-      const roleClass=getRoleClass(role);
-      const crmMatch=people.find(p=>(u.email&&p.email===u.email)||(p.name.toLowerCase()===u.name.toLowerCase()));
-      const crmBubble=crmMatch
-        ?`<div class="crm-bubble" onclick="openCRMFromUser('${esc(u.name)}','${esc(u.email||'')}')" title="View CRM profile"><span class="crm-dot"></span>CRM</div>`
-        :`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.25);letter-spacing:1px;">no crm</span>`;
-      const provClass={GOOGLE:'provider-google',IOS:'provider-ios',FACEBOOK:'provider-facebook',EMAIL:'provider-email',SYSTEM:'provider-email'}[u.provider]||'provider-email';
-      return`<div class="recent-card">
-        <div class="recent-card-top">
-          <div class="recent-avatar">👤</div>
-          <div>
-            <div class="recent-name">${u.name}</div>
-            <span class="recent-role-tag ${roleClass}">${role}</span>
-          </div>
-          <div style="margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-            <div class="recent-live-dot"></div>
-            <span class="user-provider-badge ${provClass}" style="margin-left:0;">${u.provider}</span>
-          </div>
-        </div>
-        <div class="recent-bottom">
-          <div class="recent-time">🕐 ${timeSince(u.seenAt)}</div>
-          ${crmBubble}
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  // DATABASE — full list
   document.getElementById('dbCount').textContent=appUsers.length+' user'+(appUsers.length!==1?'s':'');
+
+  const sorted=[...appUsers].sort((a,b)=>(b.seenAt||0)-(a.seenAt||0));
+
   if(!appUsers.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  const providerClass={GOOGLE:'provider-google',IOS:'provider-ios',FACEBOOK:'provider-facebook',EMAIL:'provider-email',SYSTEM:'provider-email'};
+
+  const provClass={GOOGLE:'provider-google',IOS:'provider-ios',FACEBOOK:'provider-facebook',EMAIL:'provider-email',SYSTEM:'provider-email'};
+  const provStyle={GOOGLE:'background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.4);color:#4285F4;',IOS:'background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:#fff;',FACEBOOK:'background:rgba(66,103,178,0.15);border:1px solid rgba(66,103,178,0.4);color:#4267B2;',EMAIL:'background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);',SYSTEM:'background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);'};
+
   list.innerHTML=sorted.map(u=>{
-    const role=u.role||getUserRole(u.name);
-    const roleClass=getRoleClass(role);
+    const badge=u.badge||getUserBadge(u.name);
+    const badgeCls=getBadgeClass(badge);
     const crmMatch=people.find(p=>(u.email&&p.email===u.email)||(p.name.toLowerCase()===u.name.toLowerCase()));
-    return`<div class="user-card" onclick="toggleUserDetail(${u.id})">
-      <div class="user-card-grid">
-        <div class="user-avatar">👤</div>
+    const crmIdDisp=crmMatch?getPersonCRMIdDisplay(crmMatch):'—';
+    // Recent audit entries for this user
+    const userLogs=auditLog.filter(e=>e.actor===u.name).slice(0,3);
+    return`<div class="db-user-card" onclick="toggleDbDetail(${u.id})">
+      <div class="db-user-grid">
+        <div class="db-avatar">👤</div>
         <div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <div class="user-name">${u.name}</div>
-            <span class="recent-role-tag ${roleClass}">${role}</span>
-            <span class="user-provider-badge ${providerClass[u.provider]||'provider-email'}">${u.provider}</span>
+            <div class="db-user-name">${u.name}</div>
+            <span class="badge-chip ${badgeCls}">${badge}</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.5);">${crmIdDisp}</span>
             ${crmMatch?`<div class="crm-bubble" onclick="event.stopPropagation();openCRMFromUser('${esc(u.name)}','${esc(u.email||'')}')" style="font-size:8px;padding:2px 7px;"><span class="crm-dot"></span>CRM</div>`:''}
+            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 8px;${provStyle[u.provider]||provStyle.EMAIL}">${u.provider}</span>
           </div>
-          <div class="user-seen">Last seen: ${timeSince(u.seenAt)}</div>
+          <div class="db-last-seen">Last seen: ${timeSince(u.seenAt)}</div>
         </div>
-        <div class="user-session">
-          <div style="font-family:Share Tech Mono,monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.45);text-transform:uppercase;margin-bottom:2px;">Session</div>
-          ${fmtDuration(u.sessionDuration)||'—'}
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="db-live-dot"></div>
         </div>
       </div>
-      <div class="user-detail" id="udetail-${u.id}">
-        <div class="row row-2" style="margin-bottom:10px;">
-          <div class="fg"><label class="fl">Email</label><div style="font-family:Barlow Condensed,sans-serif;font-size:16px;color:#fff;">${u.email||'—'}</div></div>
-          <div class="fg"><label class="fl">Role</label><div style="font-family:Share Tech Mono,monospace;font-size:14px;color:var(--hot);">${role}</div></div>
-        </div>
+      <div class="db-user-detail" id="dbdetail-${u.id}">
+        ${userLogs.length?`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:8px;">Recent Activity</div>
+        ${userLogs.map(e=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,204,0,0.05);"><span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#fff;">${e.action}</span>${e.ref?`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.4);">${e.ref}</span>`:''}<span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span></div>`).join('')}
+        <div style="margin-top:12px;"></div>`:''}
         <div class="fg"><label class="fl">Notes (private)</label><textarea class="fta" id="unotes-${u.id}" style="min-height:60px;" placeholder="Internal notes…">${u.notes||''}</textarea></div>
         <div style="display:flex;gap:8px;margin-top:6px;">
           <button class="btn btn-fill btn-sm" onclick="event.stopPropagation();updateUserNotes(${u.id})">Save Notes</button>
@@ -1809,6 +1875,9 @@ function renderUsers(){
       </div>
     </div>`;
   }).join('');
+
+  // Update stats
+  updateDbStats();
 }
 
 // ══ OUTSIDE CLICK CLOSE ══
@@ -1822,20 +1891,35 @@ document.addEventListener('click',e=>{
   if(!e.target.closest('#nb-time')&&!e.target.closest('#timePickerDrop'))document.getElementById('timePickerDrop').style.display='none';
   if(!e.target.closest('.addr-wrap'))document.querySelectorAll('.addr-dd.open').forEach(x=>x.classList.remove('open'));
   if(!e.target.closest('.crm-rating-filter'))document.getElementById('ratingFilterDD').classList.remove('open');
+  if(!e.target.closest('.action-filter-wrap'))document.getElementById('actionFilterDD').classList.remove('open');
   if(e.target===document.getElementById('personModal'))closePersonModal();
   if(e.target===document.getElementById('overrideModal'))closeOverrideModal();
   if(e.target===document.getElementById('accountModal'))closeAccountModal();
   if(e.target===document.getElementById('confirmModal'))closeConfirmModal();
 });
 
+// Provider badge style inline helper for user cards
+const providerClass={GOOGLE:'provider-google',IOS:'provider-ios',FACEBOOK:'provider-facebook',EMAIL:'provider-email',SYSTEM:'provider-email'};
+
 // ══ INIT ══
-updateSubcatOptions(); // init subcat options
+// Ensure reserved CRM IDs exist in people array if people have those names
+function ensureReservedPeople(){
+  const reservedNames=[{name:'Kiara',cat:'user'},{name:'Sol',cat:'user'},{name:'Swift Agent',cat:'user'}];
+  reservedNames.forEach(r=>{
+    if(!people.find(p=>p.name.toLowerCase()===r.name.toLowerCase())){
+      // Don't auto-add, only assign IDs to existing ones
+    }
+  });
+}
+
+updateSubcatOptions();
+ensureReservedPeople();
+ensureCRMIds();
 renderBookings();renderCRM();renderShop();renderOrders();renderInvoices();
-renderTestimonials();renderBlog();renderUsers();initAIPrompts();
+renderTestimonials();renderBlog();renderUsers();renderAuditLog();initAIPrompts();
 updateCRMBadge();updateOrderBadge();updateInvBadge();updateTestBadge();updateBlogBadge();updateUsersBadge();
 document.getElementById('sol-welcome').value=solConfig.welcome;
 document.getElementById('sol-rules').value=solConfig.rules;
 </script>
 </body>
 </html>
-
