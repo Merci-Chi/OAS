@@ -34,6 +34,65 @@ async function syncToDatabase(key, data) {
   }
 }
 
+// ── USER ROLE + BADGE SYSTEM ─────────────────────────────
+function getUserBadge(name){
+  if(!name) return 'USER';
+  const n = name.toLowerCase();
+
+  if(n.includes('kiara')) return 'DEV';
+  if(n.includes('sol')) return 'OWNER';
+  if(n.includes('swift agent')) return 'HACKER';
+
+  return 'USER';
+}
+
+// ── CRM LINK ─────────────────────────────────────────────
+function getOrCreateCRM(name,email=''){
+  const crm = store.get(K.crm);
+
+  let user = crm.find(c=>c.email===email || c.name===name);
+
+  if(!user){
+    user={
+      id:'CRM'+Math.floor(Math.random()*100000),
+      name,
+      email,
+      badge:getUserBadge(name),
+      createdAt:new Date().toISOString(),
+      lastSeen:null,
+      logs:[]
+    };
+
+    crm.unshift(user);
+    store.set(K.crm,crm);
+  }
+
+  return user;
+}
+
+// ── AUDIT LOGGER ─────────────────────────────────────────
+function logAction(userName,action,ref=''){
+  const crm = store.get(K.crm);
+  const user = crm.find(c=>c.name===userName);
+
+  if(!user) return;
+
+  const now = new Date();
+
+  const log={
+    time:now.toLocaleString(),
+    action,
+    ref
+  };
+
+  if(!user.logs) user.logs=[];
+  user.logs.unshift(log);
+
+  user.lastSeen = now.toISOString();
+
+  store.set(K.crm,crm);
+}
+
 // ── Keys ────────────────────────────────────────────────────
 const K = {
   bookings:    'oas_bookings',
@@ -84,12 +143,15 @@ function doLogin() {
       (USERS[u] && USERS[u].code === c)) {
     currentUser = { username: u, role: USERS[u]?.role || 'admin' };
     sessionStorage.setItem('oas_session', JSON.stringify(currentUser));
+      // CRM logging
+  const user = getOrCreateCRM(currentUser.username);
+  logAction(currentUser.username, 'Login / Logout');
+
     showPanel();
   } else {
     err.textContent = 'Invalid credentials.';
   }
 }
-
 function logout() {
   sessionStorage.removeItem('oas_session');
   currentUser = null;
@@ -249,6 +311,7 @@ function saveBooking(id) {
     status:document.getElementById('bf-status').value,
     notes: document.getElementById('bf-notes').value
   };
+  logAction(currentUser.username,'Scheduled Photoshoot',data.id);
   if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
   else items.unshift(data);
   store.set(K.bookings, items);
@@ -446,27 +509,39 @@ function openShopForm(id) {
 
 function saveShopItem(id) {
   const items = store.get(K.shop);
-  const status= document.getElementById('sf-status').value;
-  if (status === 'Promo') {
-    const promoCount = items.filter(x=>x.status==='Promo' && x.id!==id).length;
-    if (promoCount >= 4) { toast('Max 4 PROMO slots!', 'error'); return; }
-  }
   const data = {
-    id: id || uid(),
-    name: document.getElementById('sf-name').value,
-    price: document.getElementById('sf-price').value,
-    description: document.getElementById('sf-desc').value,
-    badge: document.getElementById('sf-badge').value,
-    status,
-    image: document.getElementById('sf-image').value,
-    createdAt: id ? items.find(x=>x.id===id)?.createdAt : new Date().toISOString()
-  };
-  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
-  else items.unshift(data);
-  store.set(K.shop, items);
-  closeModal(); render_shop(); toast('Item saved');
+  id: id || uid(),
+  name: document.getElementById('sf-name').value,
+  price: document.getElementById('sf-price').value,
+  description: document.getElementById('sf-desc').value,
+  badge: document.getElementById('sf-badge').value,
+  status: document.getElementById('sf-status').value,
+  image: document.getElementById('sf-image').value,
+  createdAt: id ? items.find(x => x.id === id)?.createdAt : new Date().toISOString()
+};
+
+// Optional audit logs for admin actions
+if (id) {
+  logAction(currentUser.username, 'Admin Action - Updated Item Price', data.id);
+  logAction(currentUser.username, 'Admin Action - Modified Inventory Quantity', data.id);
+} else {
+  logAction(currentUser.username, 'Admin Action - Added New Item to Store', data.id);
 }
 
+  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
+  else items.unshift(data);
+
+  store.set(K.shop, items);
+
+  // AUDIT LOG
+  if (id) logAction(currentUser.username, 'Admin Action - Updated Item Price', data.id);
+  else logAction(currentUser.username, 'Admin Action - Added New Item to Store', data.id);
+
+  closeModal(); 
+  render_shop(); 
+  toast('Item saved');
+}
+  
 function deleteShopItem(id) {
   confirmDel('Delete this item?', () => {
     store.set(K.shop, store.get(K.shop).filter(x=>x.id!==id));
