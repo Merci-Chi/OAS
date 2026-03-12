@@ -2850,42 +2850,42 @@ function doLogin(){
   const u=document.getElementById('loginUser').value.trim().toUpperCase();
   const c=document.getElementById('loginCode').value.trim();
   let match=null;
-  for(const k in USERS){if(USERS[k].user===u&&USERS[k].code===c){match=USERS[k];match._key=k;break;}}
-  // Also allow lowercase code comparison
-  if(!match){for(const k in USERS){if(USERS[k].user===u&&USERS[k].code===c.toLowerCase()){match=USERS[k];match._key=k;break;}}}
+  for(const k in USERS){
+    if(USERS[k].user===u&&(USERS[k].code===c||USERS[k].code===c.toLowerCase())){
+      match={...USERS[k],_key:k};break;
+    }
+  }
   if(match){
+    loginAttempts=0;
     currentUser=match;
     document.getElementById('loginOverlay').style.display='none';
     document.getElementById('appWrap').classList.add('unlocked');
-    // Update sidebar
     document.getElementById('sbUserLabel').textContent='// '+match.role.toUpperCase();
     document.getElementById('sbAvatarEmoji').textContent=match.emoji;
-    // Load saved photo
     const savedPhoto=localStorage.getItem('oas_photo_'+match._key);
-    if(savedPhoto){
-      const img=document.getElementById('sbAvatar').querySelector('img')||document.createElement('img');
-      img.src=savedPhoto;img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%;';
-      document.getElementById('sbAvatar').innerHTML='';document.getElementById('sbAvatar').appendChild(img);
-    }
-    // Welcome toast
+    if(savedPhoto){const img=document.createElement('img');img.src=savedPhoto;img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%;';document.getElementById('sbAvatar').innerHTML='';document.getElementById('sbAvatar').appendChild(img);}
     const toast=document.getElementById('welcomeToast');
-    toast.textContent=match.welcome;
-    toast.className='welcome-toast '+(match.toastClass||'');
-    toast.classList.add('show');
+    toast.textContent=match.welcome;toast.className='welcome-toast '+(match.toastClass||'');toast.classList.add('show');
     setTimeout(()=>toast.classList.remove('show'),3500);
-    // Log this user session
-    logUserSession(match);
-    // Start timeout
-    startSessionTimeout();
+    logUserSession(match);startSessionTimeout();
   } else {
     loginAttempts++;
-    const remaining=3-loginAttempts;
     const errEl=document.getElementById('loginErr');
     const attEl=document.getElementById('loginAttempts');
     errEl.style.display='block';
-    if(remaining<=0){document.getElementById('loginOverlay').innerHTML='<div style="font-family:Black Ops One,sans-serif;font-size:32px;letter-spacing:4px;color:#FF3B3B;text-align:center;padding:40px;">ACCESS DENIED</div>';setTimeout(()=>window.close(),2000);}
-    else{attEl.style.display='block';attEl.textContent='⚠️ '+remaining+' attempt'+(remaining===1?'':'s')+' remaining';}
+    if(loginAttempts===1){
+      errEl.textContent='❌ Access declined.';
+      attEl.style.display='none';
+    } else {
+      errEl.textContent='❌ Access declined ('+loginAttempts+'×)';
+      attEl.style.display='block';
+      attEl.textContent='⚠️ '+(loginAttempts>=5?'Multiple failed attempts — are you sure you have the right credentials?':'Wrong username or code.');
+    }
+    const box=document.querySelector('.login-box');
+    box.style.animation='none';
+    setTimeout(()=>{box.style.animation='shake .4s ease';},10);
   }
+}
 }
 
 // ══════════════════════════════════════
