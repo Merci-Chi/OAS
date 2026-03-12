@@ -1191,6 +1191,41 @@ window.addEventListener('scroll',()=>{
 function openAuth(t){ toast(t==='login'?'LOGIN COMING SOON ☀️':'SIGNUP COMING SOON ☀️'); }
 
 // ════════════════════════════════════════════════════════════════
+//  LIVE SYNC — auto-update when DEV panel changes oas_shop
+// ════════════════════════════════════════════════════════════════
+let _lastSyncTs = localStorage.getItem('oas_shop_updated') || '0';
+
+function syncCheck(){
+  const ts = localStorage.getItem('oas_shop_updated') || '0';
+  if(ts !== _lastSyncTs){
+    _lastSyncTs = ts;
+    const prevCount = allItems.length;
+    loadItems();
+    const newCount = allItems.length;
+    const diff = newCount - prevCount;
+    if(diff > 0) toast(`✨ ${diff} new item${diff>1?'s':''} just dropped!`);
+    else if(diff < 0) toast(`🔄 Shop updated`);
+    else toast(`🔄 Shop updated`);
+  }
+}
+
+// Cross-tab: fires when a DIFFERENT tab/page writes to localStorage
+window.addEventListener('storage', e => {
+  if(e.key === 'oas_shop' || e.key === 'oas_shop_updated'){
+    _lastSyncTs = localStorage.getItem('oas_shop_updated') || '0';
+    const prevCount = allItems.length;
+    loadItems();
+    const newCount = allItems.length;
+    const diff = newCount - prevCount;
+    if(diff > 0) toast(`✨ ${diff} new item${diff>1?'s':''} just dropped!`);
+    else toast(`🔄 Shop updated`);
+  }
+});
+
+// Polling fallback (same-origin, handles same-tab DEV panel edge cases)
+setInterval(syncCheck, 2000);
+
+// ════════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════════
 loadItems();
