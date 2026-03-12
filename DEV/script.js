@@ -20,6 +20,20 @@ const store = {
   obj: (k, def = {}) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } }
 };
 
+// ── LIVE DATABASE SYNC ─────────────────────────────────────
+async function syncToDatabase(key, data) {
+  try {
+    await fetch('https://merci-chi.github.io/OAS/database.json', {
+      method: 'POST', // or 'PUT' depending on your backend
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [key]: data })
+    });
+    console.log(`Synced ${key} to database.json`);
+  } catch (e) {
+    console.error(`Failed to sync ${key}:`, e);
+  }
+}
+
 // ── Keys ────────────────────────────────────────────────────
 const K = {
   bookings:    'oas_bookings',
@@ -652,7 +666,7 @@ function openBlogForm(id) {
   <label>Title<input id="bg-title" value="${p.title||''}"></label>
   <label>Category</label>
   <div class="cat-chips" id="cat-chips">
-    ${allCats.map(c=>`<span class="cat-chip ${p.category===c?'selected':''}" onclick="selectBlogCat('${c}')">${c}</span>`).join('')}
+    ${allCats.map(c=>`<span class="cat-chip ${p.category===c?'selected':''}" onclick="selectBlogCat('${c}', event)">${c}</span>`).join('')}
   </div>
   <input id="bg-cat-input" placeholder="Custom category…" oninput="this.value=this.value.toUpperCase()">
   <button class="btn-sm" onclick="addCustomCat()">+ Add</button>
@@ -672,9 +686,10 @@ function openBlogForm(id) {
   </div>`);
 }
 
-function selectBlogCat(c) {
-  document.querySelectorAll('.cat-chip').forEach(el=>el.classList.remove('selected'));
-  event.target.classList.add('selected');
+function selectBlogCat(c, e) {
+  e.stopPropagation();
+  document.querySelectorAll('.cat-chip').forEach(el => el.classList.remove('selected'));
+  e.currentTarget.classList.add('selected');
   document.getElementById('bg-category').value = c;
 }
 
@@ -978,25 +993,26 @@ function saveDonation() {
     date:      new Date().toISOString()
   });
   store.set(K.donations, items);
-  // Auto-add to CRM if email provided
-  if (email) autoAddToCRM(email, document.getElementById('df-name').value);
-  closeModal(); render_donations(); toast('Donation saved');
-}
-
-function deleteDonation(id) {
-  confirmDel('Delete donation?', () => {
-    store.set(K.donations, store.get(K.donations).filter(x=>x.id!==id));
-    render_donations(); toast('Deleted','error');
-  });
-}
-
-function autoAddToCRM(email, name) {
+// Auto-add to CRM if email provided and not already in CRM
+if (email) {
   const crm = store.get(K.crm);
-  if (!crm.find(c=>c.email?.toLowerCase()===email)) {
-    crm.unshift({ id:uid(), name:name||email, email, phone:'', tags:['donor'], notes:'Auto-added from donation', createdAt:new Date().toISOString() });
+  const exists = crm.some(c => c.email?.toLowerCase() === email);
+  if (!exists) {
+    crm.unshift({
+      id: uid(),
+      name: document.getElementById('df-name').value || 'Donor',
+      email: email,
+      phone: '',
+      tags: ['DONOR'],
+      notes: document.getElementById('df-comment').value,
+      createdAt: new Date().toISOString()
+    });
     store.set(K.crm, crm);
   }
 }
+render_donations();
+closeModal();
+toast('Donation saved');
 
 // Public function called from live site donation form
 window.submitDonation = function(data) {
@@ -1124,5 +1140,113 @@ window.OAS_DEV = {
   subscribeEmail:   window.subscribeEmail
 };
 
+// ── LIVE DATABASE SYNC ─────────────────────────────────────
+async function syncToDatabase(key, data) {
+  try {
+    // Replace with your actual backend endpoint or path
+    // e.g., '/database.json' if using a server endpoint
+    await fetch('https://merci-chi.github.io/OAS/database.json', {
+      method: 'POST', // or 'PUT' depending on your server setup
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [key]: data })
+    });
+    console.log(`Synced ${key} to database.json`);
+  } catch (e) {
+    console.error(`Failed to sync ${key}:`, e);
+  }
+}
 
+function saveBooking(id) {
+  const items = store.get(K.bookings);
+  const data  = {
+    id:    id || uid(),
+    name:  document.getElementById('bf-name').value,
+    email: document.getElementById('bf-email').value,
+    phone: document.getElementById('bf-phone').value,
+    type:  document.getElementById('bf-type').value,
+    date:  document.getElementById('bf-date').value,
+    status:document.getElementById('bf-status').value,
+    notes: document.getElementById('bf-notes').value
+  };
+  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
+  else items.unshift(data);
+  store.set(K.bookings, items);
+  syncToDatabase(K.bookings, items); // <-- SYNC
+  closeModal(); render_bookings(); toast('Booking saved');
+}
 
+function saveShopItem(id) {
+  const items = store.get(K.shop);
+  const status= document.getElementById('sf-status').value;
+  if (status === 'Promo') {
+    const promoCount = items.filter(x=>x.status==='Promo' && x.id!==id).length;
+    if (promoCount >= 4) { toast('Max 4 PROMO slots!', 'error'); return; }
+  }
+  const data = {
+    id: id || uid(),
+    name: document.getElementById('sf-name').value,
+    price: document.getElementById('sf-price').value,
+    description: document.getElementById('sf-desc').value,
+    badge: document.getElementById('sf-badge').value,
+    status,
+    image: document.getElementById('sf-image').value,
+    createdAt: id ? items.find(x=>x.id===id)?.createdAt : new Date().toISOString()
+  };
+  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
+  else items.unshift(data);
+  store.set(K.shop, items);
+  syncToDatabase(K.shop, items); // <-- SYNC
+  closeModal(); render_shop(); toast('Item saved');
+}
+
+function saveCRM(id) {
+  const items = store.get(K.crm);
+  const data  = {
+    id:    id || uid(),
+    name:  document.getElementById('cf-name').value,
+    email: document.getElementById('cf-email').value.toLowerCase().trim(),
+    phone: document.getElementById('cf-phone').value,
+    tags:  document.getElementById('cf-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    notes: document.getElementById('cf-notes').value,
+    createdAt: id ? items.find(x=>x.id===id)?.createdAt : new Date().toISOString()
+  };
+  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
+  else items.unshift(data);
+  store.set(K.crm, items);
+  syncToDatabase(K.crm, items); // <-- SYNC
+  closeModal(); render_crm(); toast('Contact saved');
+}
+
+function saveDonation() {
+  const items = store.get(K.donations);
+  const donation = {
+    id: uid(),
+    amount: parseFloat(document.getElementById('df-amount').value) || 0,
+    name: document.getElementById('df-name').value,
+    email: document.getElementById('df-email').value,
+    anonymous: document.getElementById('df-anon').checked,
+    comment: document.getElementById('df-comment').value,
+    date: new Date().toISOString()
+  };
+  items.unshift(donation);
+  store.set(K.donations, items);
+  closeModal();
+  render_donations();
+  toast('Donation saved');
+}
+  items.unshift({
+    id:        uid(),
+    amount:    document.getElementById('df-amount').value,
+    name:      document.getElementById('df-name').value,
+    email,
+    anonymous: document.getElementById('df-anon').checked,
+    comment:   document.getElementById('df-comment').value,
+    date:      new Date().toISOString()
+  });
+  store.set(K.donations, items);
+  syncToDatabase(K.donations, items); // <-- SYNC
+  render_donations(); toast('Donation added');
+}
+
+store.set(KEY, DATA);
+syncToDatabase(KEY, DATA);
