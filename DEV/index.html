@@ -677,6 +677,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
     </div>
   </div>
   <div class="vhs-line"></div>
+  <button class="btn btn-sm" onclick="exportShopDatabase()" style="border-color:var(--green);color:var(--green);">↓ Export JSON</button>
   <div class="shop-layout">
     <div class="item-form" id="itemForm">
       <div class="item-form-title" id="itemFormTitle">Add New Item</div>
@@ -2041,6 +2042,71 @@ renderTestimonials();renderBlog();renderUsers();renderAuditLog();initAIPrompts()
 updateCRMBadge();updateOrderBadge();updateInvBadge();updateTestBadge();updateBlogBadge();updateUsersBadge();
 document.getElementById('sol-welcome').value=solConfig.welcome;
 document.getElementById('sol-rules').value=solConfig.rules;
+// ══ SHOP DATABASE EXPORT ══
+function exportShopDatabase() {
+  const discountLabel = (d) => {
+    if (!d || d === '-') return 'No Discount';
+    return d + '% Off';
+  };
+
+  const badgeLabel = (b) => {
+    if (!b || b === '-') return 'N/A';
+    if (b === 'New!') return 'NEW';
+    if (b === 'Hot!') return 'HOT';
+    if (b === '%') return '%';
+    return b.toUpperCase();
+  };
+
+  const database = {
+    exported_at: new Date().toISOString(),
+    exported_by: currentUser ? currentUser.name : 'Unknown',
+    total_items: shopItems.length,
+    live_items: shopItems.filter(x => x.status === 'live').length,
+    draft_items: shopItems.filter(x => x.status !== 'live').length,
+    shop_items: shopItems.map(item => {
+      const priceNum = parseFloat(item.price) || 0;
+      const discNum = (item.discount && item.discount !== '-') ? parseInt(item.discount) : 0;
+      const discountedPrice = discNum > 0 ? (priceNum * (1 - discNum / 100)).toFixed(2) : null;
+
+      return {
+        id: item.id,
+        title: item.title || '',
+        description: item.desc || '',
+        category: {
+          main: item.category || 'other',
+          subcategory: item.subcategory || 'Other'
+        },
+        pricing: {
+          base_price: '$' + priceNum.toFixed(2),
+          discount: discountLabel(item.discount),
+          discounted_price: discountedPrice ? '$' + discountedPrice : null,
+          is_free: discNum === 100
+        },
+        badge: badgeLabel(item.badge),
+        images: {
+          primary: item.img || null,
+          secondary: item.img2 || null
+        },
+        status: item.status === 'live' ? 'LIVE' : 'DRAFT',
+        created_at: item.createdAt || null
+      };
+    })
+  };
+
+  const json = JSON.stringify(database, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'database.json';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  if (currentUser) {
+    addAuditEntry(currentUser.name, 'Updated Store Settings',
+      'Exported database.json (' + shopItems.length + ' items)');
+  }
+}
 </script>
 </body>
 </html>
