@@ -6,10 +6,10 @@
 <title>OASENSE — DEV PANEL</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 
-<!-- Firebase v9 compat (CDN) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Firebase v8 compat (CDN) — stable global firebase object -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 // ══ FIREBASE INIT ══
@@ -26,74 +26,116 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // ══ FIRESTORE SYNC HELPERS ══
-// Each collection maps to a local array. We do real-time listeners after login.
-// Collection names: bookings, crm, shopItems, orders, invoices, testimonials, blogPosts, appUsers, auditLog, solConfig
-
 let _unsubscribers = [];
+function unsubscribeAll(){ _unsubscribers.forEach(fn=>{try{fn();}catch(e){}});_unsubscribers=[]; }
 
-function unsubscribeAll() {
-  _unsubscribers.forEach(fn => { try { fn(); } catch(e){} });
-  _unsubscribers = [];
+// Make a clean, Firestore-safe copy of an object (no undefined values, no floats as IDs)
+function fsSafe(item) {
+  const out = {};
+  for (const k in item) {
+    const v = item[k];
+    if (v === undefined) out[k] = null;
+    else if (Array.isArray(v)) out[k] = v.map(x => (x && typeof x === 'object') ? fsSafe(x) : (x === undefined ? null : x));
+    else if (v && typeof v === 'object') out[k] = fsSafe(v);
+    else out[k] = v;
+  }
+  return out;
 }
 
-// Generic save to Firestore (upsert by doc ID = item.id stringified)
-async function fsSet(collection, item) {
+// Generate a clean string ID
+function newId(){ return String(Date.now()) + String(Math.floor(Math.random()*10000)).padStart(4,'0'); }
+
+// Save to Firestore — also updates local array immediately (optimistic)
+async function fsSet(collection, item, localArr, renderFn) {
+  // Ensure id is a plain integer (not float)
+  if (typeof item.id === 'number') item.id = Math.floor(item.id);
+  const docId = String(item.id);
+  const safe = fsSafe(item);
+
+  // OPTIMISTIC: update local array right away so UI reflects immediately
+  if (localArr !== undefined && renderFn) {
+    const idx = localArr.findIndex(x => String(x.id) === docId);
+    if (idx >= 0) localArr[idx] = item;
+    else localArr.unshift(item);
+    renderFn();
+  }
+
+  showSync('syncing', 'Saving to Firebase…');
   try {
-    const docId = String(item.id);
-    await db.collection(collection).doc(docId).set(item);
-  } catch(e) { console.error('fsSet error', collection, e); }
+    await db.collection(collection).doc(docId).set(safe);
+    showSync('synced', 'Saved ✓');
+  } catch(e) {
+    console.error('❌ fsSet error', collection, docId, e);
+    showSync('error', 'Save failed: ' + e.code);
+  }
 }
 
-async function fsDelete(collection, id) {
+async function fsDelete(collection, id, localArr, renderFn) {
+  const docId = String(Math.floor(id));
+
+  // OPTIMISTIC: remove from local array immediately
+  if (localArr !== undefined && renderFn) {
+    const idx = localArr.findIndex(x => String(Math.floor(x.id)) === docId);
+    if (idx >= 0) localArr.splice(idx, 1);
+    renderFn();
+  }
+
+  showSync('syncing', 'Deleting…');
   try {
-    await db.collection(collection).doc(String(id)).delete();
-  } catch(e) { console.error('fsDelete error', collection, e); }
+    await db.collection(collection).doc(docId).delete();
+    showSync('synced', 'Deleted ✓');
+  } catch(e) {
+    console.error('❌ fsDelete error', collection, docId, e);
+    showSync('error', 'Delete failed: ' + e.code);
+  }
 }
 
-// Subscribe to a collection and keep local array in sync, then re-render
-function fsListen(collection, localArraySetter, onUpdate) {
+// Real-time listener — updates local array whenever Firestore changes
+function fsListen(collection, localArrRef, renderFn) {
   const unsub = db.collection(collection).onSnapshot(snap => {
     const items = [];
     snap.forEach(doc => items.push(doc.data()));
-    // Sort by id descending (newest first)
     items.sort((a,b) => (b.id||0) - (a.id||0));
-    localArraySetter(items);
-    onUpdate(items);
-  }, err => console.error('fsListen error', collection, err));
-  _unsubscribers.push(unsub);
-  return unsub;
-}
-
-// Special listener for solConfig (single doc)
-function fsSolConfigListen(onUpdate) {
-  const unsub = db.collection('solConfig').doc('main').onSnapshot(snap => {
-    if (snap.exists) onUpdate(snap.data());
+    // Replace contents of the array in-place so references stay valid
+    localArrRef.length = 0;
+    items.forEach(x => localArrRef.push(x));
+    renderFn();
+  }, err => {
+    console.error('❌ fsListen error', collection, err.code, err.message);
+    showSync('error', collection + ': ' + err.code);
   });
   _unsubscribers.push(unsub);
 }
 
-async function fsSolConfigSave(config) {
-  try {
-    await db.collection('solConfig').doc('main').set(config);
-  } catch(e) { console.error('fsSolConfigSave error', e); }
+function fsSolConfigListen(onUpdate) {
+  const unsub = db.collection('solConfig').doc('main').onSnapshot(snap => {
+    if (snap.exists) onUpdate(snap.data());
+  }, err => console.error('❌ solConfig listen error', err));
+  _unsubscribers.push(unsub);
 }
 
-// AuditLog: store as individual docs sorted by ts desc, limit 500
+async function fsSolConfigSave(config) {
+  showSync('syncing','Saving…');
+  try { await db.collection('solConfig').doc('main').set(fsSafe(config)); showSync('synced','Saved ✓'); }
+  catch(e) { console.error('❌ fsSolConfigSave', e); showSync('error','Save failed: '+e.code); }
+}
+
 async function fsAuditPush(entry) {
-  try {
-    await db.collection('auditLog').doc(String(entry.id)).set(entry);
-  } catch(e) { console.error('fsAuditPush error', e); }
+  const id = newId();
+  entry.id = id;
+  const safe = fsSafe(entry);
+  try { await db.collection('auditLog').doc(id).set(safe); }
+  catch(e) { console.error('❌ fsAuditPush', e); }
 }
 
 function fsAuditListen(onUpdate) {
   const unsub = db.collection('auditLog')
-    .orderBy('ts', 'desc')
-    .limit(500)
+    .orderBy('ts', 'desc').limit(500)
     .onSnapshot(snap => {
       const entries = [];
       snap.forEach(doc => entries.push(doc.data()));
       onUpdate(entries);
-    }, err => console.error('fsAuditListen error', err));
+    }, err => console.error('❌ fsAuditListen', err.code, err.message));
   _unsubscribers.push(unsub);
 }
 </script>
@@ -545,7 +587,8 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="login-box">
     <div class="login-logo">OASENSE</div>
     <div class="login-sub">// DEV PANEL — SECURE ACCESS</div>
-    <div class="login-firebase-badge">🔥 Firebase Realtime Sync Active</div>
+    <div class="login-firebase-badge">🔥 Firebase v8 · Realtime Sync Active</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;color:rgba(255,59,59,0.5);text-align:center;margin-bottom:16px;line-height:1.6;">If saves fail: set Firestore rules to<br/>allow read, write: if true;</div>
     <div class="login-attempts" id="loginAttempts"></div>
     <div class="fg"><label class="fl">User</label><input class="fi" id="loginUser" placeholder="USERNAME" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')doLogin()"/></div>
     <div class="fg"><label class="fl">Code</label><input class="fi" type="password" id="loginCode" placeholder="ACCESS CODE" onkeydown="if(event.key==='Enter')doLogin()"/></div>
@@ -966,38 +1009,22 @@ let solConfig = {
 function startFirebaseListeners() {
   showSync('syncing', 'Connecting to Firebase…');
 
-  // Bookings
-  fsListen('bookings', arr => { bookings = arr; }, () => renderBookings());
+  fsListen('bookings',    bookings,     renderBookings);
+  fsListen('crm',         people,       () => { ensureCRMIds(); renderCRM(); updateCRMBadge(); });
+  fsListen('shopItems',   shopItems,    () => { renderShop(); });
+  fsListen('orders',      orders,       () => { renderOrders(); updateOrderBadge(); });
+  fsListen('invoices',    invoices,     () => { renderInvoices(); updateInvBadge(); });
+  fsListen('testimonials',testimonials, () => { renderTestimonials(); updateTestBadge(); });
+  fsListen('blogPosts',   blogPosts,    () => { renderBlog(); updateBlogBadge(); });
+  fsListen('appUsers',    appUsers,     () => { renderUsers(); updateUsersBadge(); });
 
-  // CRM
-  fsListen('crm', arr => { people = arr; ensureCRMIds(); }, () => { renderCRM(); updateCRMBadge(); });
-
-  // Shop
-  fsListen('shopItems', arr => { shopItems = arr; }, () => { renderShop(); });
-
-  // Orders
-  fsListen('orders', arr => { orders = arr; }, () => { renderOrders(); updateOrderBadge(); });
-
-  // Invoices
-  fsListen('invoices', arr => { invoices = arr; }, () => { renderInvoices(); updateInvBadge(); });
-
-  // Testimonials
-  fsListen('testimonials', arr => { testimonials = arr; }, () => { renderTestimonials(); updateTestBadge(); });
-
-  // Blog
-  fsListen('blogPosts', arr => { blogPosts = arr; }, () => { renderBlog(); updateBlogBadge(); });
-
-  // App Users
-  fsListen('appUsers', arr => { appUsers = arr; }, () => { renderUsers(); updateUsersBadge(); });
-
-  // Audit Log (special — ordered by ts desc)
   fsAuditListen(entries => {
-    auditLogData = entries;
+    auditLogData.length = 0;
+    entries.forEach(x => auditLogData.push(x));
     renderAuditLog();
     updateDbStats();
   });
 
-  // Sol Config (single doc)
   fsSolConfigListen(config => {
     solConfig = config;
     initAIPrompts();
@@ -1006,23 +1033,23 @@ function startFirebaseListeners() {
   setTimeout(() => showSync('synced', 'Firebase Connected'), 2000);
 }
 
-// ══ SAVE WRAPPERS (write to Firestore, listeners handle local update) ══
-async function saveBookingFS(item) { showSync('syncing','Saving…'); await fsSet('bookings', item); showSync('synced','Saved'); }
-async function deleteBookingFS(id) { await fsDelete('bookings', id); }
-async function savePersonFS(item) { showSync('syncing','Saving…'); await fsSet('crm', item); showSync('synced','Saved'); }
-async function deletePersonFS(id) { await fsDelete('crm', id); }
-async function saveShopItemFS(item) { showSync('syncing','Saving…'); await fsSet('shopItems', item); showSync('synced','Saved'); }
-async function deleteShopItemFS(id) { await fsDelete('shopItems', id); }
-async function saveOrderFS(item) { showSync('syncing','Saving…'); await fsSet('orders', item); showSync('synced','Saved'); }
-async function deleteOrderFS(id) { await fsDelete('orders', id); }
-async function saveInvoiceFS(item) { showSync('syncing','Saving…'); await fsSet('invoices', item); showSync('synced','Saved'); }
-async function deleteInvoiceFS(id) { await fsDelete('invoices', id); }
-async function saveTestimonialFS(item) { showSync('syncing','Saving…'); await fsSet('testimonials', item); showSync('synced','Saved'); }
-async function deleteTestimonialFS(id) { await fsDelete('testimonials', id); }
-async function saveBlogPostFS(item) { showSync('syncing','Saving…'); await fsSet('blogPosts', item); showSync('synced','Saved'); }
-async function deleteBlogPostFS(id) { await fsDelete('blogPosts', id); }
-async function saveAppUserFS(item) { showSync('syncing','Saving…'); await fsSet('appUsers', item); showSync('synced','Saved'); }
-async function deleteAppUserFS(id) { await fsDelete('appUsers', id); }
+// ══ SAVE/DELETE WRAPPERS ══
+function saveBookingFS(item)     { return fsSet('bookings',    item, bookings,     renderBookings); }
+function deleteBookingFS(id)     { return fsDelete('bookings', id,   bookings,     renderBookings); }
+function savePersonFS(item)      { return fsSet('crm',         item, people,       ()=>{ensureCRMIds();renderCRM();updateCRMBadge();}); }
+function deletePersonFS(id)      { return fsDelete('crm',      id,   people,       ()=>{renderCRM();updateCRMBadge();}); }
+function saveShopItemFS(item)    { return fsSet('shopItems',   item, shopItems,    renderShop); }
+function deleteShopItemFS(id)    { return fsDelete('shopItems',id,   shopItems,    renderShop); }
+function saveOrderFS(item)       { return fsSet('orders',      item, orders,       ()=>{renderOrders();updateOrderBadge();}); }
+function deleteOrderFS(id)       { return fsDelete('orders',   id,   orders,       ()=>{renderOrders();updateOrderBadge();}); }
+function saveInvoiceFS(item)     { return fsSet('invoices',    item, invoices,     ()=>{renderInvoices();updateInvBadge();}); }
+function deleteInvoiceFS(id)     { return fsDelete('invoices', id,   invoices,     ()=>{renderInvoices();updateInvBadge();}); }
+function saveTestimonialFS(item) { return fsSet('testimonials',item, testimonials, ()=>{renderTestimonials();updateTestBadge();}); }
+function deleteTestimonialFS(id) { return fsDelete('testimonials',id,testimonials, ()=>{renderTestimonials();updateTestBadge();}); }
+function saveBlogPostFS(item)    { return fsSet('blogPosts',   item, blogPosts,    ()=>{renderBlog();updateBlogBadge();}); }
+function deleteBlogPostFS(id)    { return fsDelete('blogPosts',id,   blogPosts,    ()=>{renderBlog();updateBlogBadge();}); }
+function saveAppUserFS(item)     { return fsSet('appUsers',    item, appUsers,     ()=>{renderUsers();updateUsersBadge();}); }
+function deleteAppUserFS(id)     { return fsDelete('appUsers', id,   appUsers,     ()=>{renderUsers();updateUsersBadge();}); }
 
 // ══ CRM ID SYSTEM ══
 const RESERVED_CRM_IDS = { 'kiara':'001', 'sol':'002', 'swift agent':'003' };
@@ -1062,7 +1089,7 @@ async function addAuditEntry(actorName, action, ref) {
   const person = people.find(p=>p.name.toLowerCase()===actorName.toLowerCase());
   const crmId = person ? (getCRMId(person)||person.crmId) : null;
   const entry = {
-    id: Date.now() + Math.random(),
+    id: newId(),
     actor: actorName, badge, crmId, action,
     ref: ref||null, ts: Date.now(),
     type: (isPrivileged||isAdminAction(action)) ? 'admin' : 'user'
@@ -1191,28 +1218,28 @@ async function saveBooking(){
   if(!name){alert('Client name is required.');return;}if(!date){alert('Date is required.');return;}if(!timeDisplay){alert('Time is required.');return;}
   const data={name,type:document.getElementById('nb-type').value,date,time:time24,timeDisplay,durMin:getDurMinutes(),durLabel:getDurLabel(),phone:document.getElementById('nb-phone').value.trim(),email:document.getElementById('nb-email').value.trim(),ig:document.getElementById('nb-ig').value.trim(),loc:document.getElementById('nb-loc').value.trim(),notes:document.getElementById('nb-notes').value.trim()};
   const editId=document.getElementById('nb-edit-id').value;
-  const id=editId?parseInt(editId):Date.now();
-  const existing=editId?bookings.find(x=>x.id===parseInt(editId)):null;
+  const id=editId?parseInt(editId):Math.floor(Date.now());
+  const existing=editId?bookings.find(x=>String(x.id)===String(editId)):null;
   const fullItem={...(existing||{id,status:'pending'}),...data};
   await saveBookingFS(fullItem);
   closeBookingForm();
   if(currentUser) addAuditEntry(currentUser.name,'Added Booking','REF #'+id);
 }
 
-function openEditBooking(id){const b=bookings.find(x=>x.id===id);if(!b)return;document.getElementById('nb-edit-id').value=id;document.getElementById('bookingFormTitle').textContent='EDIT BOOKING';document.getElementById('nb-name').value=b.name||'';document.getElementById('nb-type').value=b.type||'';document.getElementById('nb-date').value=b.date||'';const ti=document.getElementById('nb-time');ti.value=b.timeDisplay||formatTime(b.time)||'';ti._val24=b.time||'';document.getElementById('nb-phone').value=b.phone||'';document.getElementById('nb-email').value=b.email||'';document.getElementById('nb-ig').value=b.ig||'';document.getElementById('nb-loc').value=b.loc||'';document.getElementById('nb-notes').value=b.notes||'';const presets=['30','60','120'];if(presets.includes(String(b.durMin))){document.getElementById('nb-dur').value=String(b.durMin);document.getElementById('durManualWrap').style.display='none';}else{document.getElementById('nb-dur').value='manual';const h=Math.floor((b.durMin||60)/60);const m=(b.durMin||60)%60;document.getElementById('nb-dur-manual').value=h+'.'+String(m).padStart(2,'0');document.getElementById('durManualWrap').style.display='block';}const f=document.getElementById('bookingForm');f.style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
+function openEditBooking(id){const b=bookings.find(x=>String(x.id)===String(id));if(!b)return;document.getElementById('nb-edit-id').value=id;document.getElementById('bookingFormTitle').textContent='EDIT BOOKING';document.getElementById('nb-name').value=b.name||'';document.getElementById('nb-type').value=b.type||'';document.getElementById('nb-date').value=b.date||'';const ti=document.getElementById('nb-time');ti.value=b.timeDisplay||formatTime(b.time)||'';ti._val24=b.time||'';document.getElementById('nb-phone').value=b.phone||'';document.getElementById('nb-email').value=b.email||'';document.getElementById('nb-ig').value=b.ig||'';document.getElementById('nb-loc').value=b.loc||'';document.getElementById('nb-notes').value=b.notes||'';const presets=['30','60','120'];if(presets.includes(String(b.durMin))){document.getElementById('nb-dur').value=String(b.durMin);document.getElementById('durManualWrap').style.display='none';}else{document.getElementById('nb-dur').value='manual';const h=Math.floor((b.durMin||60)/60);const m=(b.durMin||60)%60;document.getElementById('nb-dur-manual').value=h+'.'+String(m).padStart(2,'0');document.getElementById('durManualWrap').style.display='block';}const f=document.getElementById('bookingForm');f.style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
 
-async function cycleStatus(id){const b=bookings.find(x=>x.id===id);if(!b)return;const s=['pending','confirmed','rescheduled','cancelled'];b.status=s[(s.indexOf(b.status||'pending')+1)%s.length];await saveBookingFS({...b});}
+async function cycleStatus(id){const b=bookings.find(x=>String(x.id)===String(id));if(!b)return;const s=['pending','confirmed','rescheduled','cancelled'];b.status=s[(s.indexOf(b.status||'pending')+1)%s.length];await saveBookingFS({...b});}
 async function deleteBooking(id){if(!confirm('Delete this booking?'))return;await deleteBookingFS(id);}
 
 function renderBookings(){const grid=document.getElementById('bookingGrid'),empty=document.getElementById('bookingEmpty');if(!bookings.length){grid.innerHTML='';empty.style.display='block';return;}empty.style.display='none';grid.innerHTML=bookings.map(b=>`<div class="booking-card"><div class="bc-type">${b.type}</div><div class="bc-name">${b.name}</div><div class="bc-date">${b.date?formatDate(b.date):'Date TBD'}${(b.timeDisplay||formatTime(b.time))?' · '+(b.timeDisplay||formatTime(b.time)):''}${b.durLabel?' · '+b.durLabel:''}</div>${b.notes?`<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.3);margin-top:6px;letter-spacing:1px;line-height:1.7;">${b.notes.substring(0,80)}${b.notes.length>80?'...':''}</div>`:''}<div><span class="bc-status ${b.status||'pending'}" onclick="cycleStatus(${b.id})" title="Click to cycle">${b.status||'pending'}</span></div><div class="bc-bottom">${(b.phone||b.email||b.ig||b.loc||b.notes)?`<button class="bc-person-btn" onclick="openPersonModal(${b.id})"><span class="bc-dot"></span>?</button>`:''}<div style="margin-left:auto;display:flex;gap:6px;"><button class="btn-edit-white" onclick="openEditBooking(${b.id})">Edit</button><button class="btn btn-sm btn-red" style="border-radius:4px;padding:5px 12px;" onclick="deleteBooking(${b.id})">✕</button></div></div></div>`).join('');}
 
-function openPersonModal(id){const b=bookings.find(x=>x.id===id);if(!b)return;_personModalBookingId=id;document.getElementById('personModalName').textContent=b.name;const r=(icon,lbl,val)=>val?`<div class="pi-row"><span class="pi-lbl">${icon} ${lbl}</span><span class="pi-val">${val}</span></div>`:'';document.getElementById('personModalContent').innerHTML=r('📸','Session',b.type)+r('📅','Date',b.date?formatDate(b.date):'')+r('🕐','Time',b.timeDisplay||formatTime(b.time))+r('⏱','Duration',b.durLabel)+r('📞','Phone',b.phone)+r('📧','Email',b.email)+r('📷','IG',b.ig)+r('📍','Address',b.loc)+r('📝','Notes',b.notes)+`<button class="btn btn-fill" style="width:100%;margin-top:18px;" onclick="downloadICSfromModal()">📅 Add to Calendar</button>`;document.getElementById('personModal').classList.add('open');}
+function openPersonModal(id){const b=bookings.find(x=>String(x.id)===String(id));if(!b)return;_personModalBookingId=id;document.getElementById('personModalName').textContent=b.name;const r=(icon,lbl,val)=>val?`<div class="pi-row"><span class="pi-lbl">${icon} ${lbl}</span><span class="pi-val">${val}</span></div>`:'';document.getElementById('personModalContent').innerHTML=r('📸','Session',b.type)+r('📅','Date',b.date?formatDate(b.date):'')+r('🕐','Time',b.timeDisplay||formatTime(b.time))+r('⏱','Duration',b.durLabel)+r('📞','Phone',b.phone)+r('📧','Email',b.email)+r('📷','IG',b.ig)+r('📍','Address',b.loc)+r('📝','Notes',b.notes)+`<button class="btn btn-fill" style="width:100%;margin-top:18px;" onclick="downloadICSfromModal()">📅 Add to Calendar</button>`;document.getElementById('personModal').classList.add('open');}
 function closePersonModal(){document.getElementById('personModal').classList.remove('open');_personModalBookingId=null;}
 function downloadICSfromModal(){if(!_personModalBookingId)return;const b=bookings.find(x=>x.id===_personModalBookingId);if(b)_doDownloadICS(b);}
 function _doDownloadICS(b){const startDate=(b.date||new Date().toISOString().split('T')[0]).replace(/-/g,'');const t=b.time||'12:30';const p=t.split(':');const sh=parseInt(p[0])||12,sm=parseInt(p[1])||30;const startTime=String(sh).padStart(2,'0')+String(sm).padStart(2,'0')+'00';const tot=sh*60+sm+(b.durMin||60);const eh=Math.floor(tot/60)%24,em=tot%60;const endTime=String(eh).padStart(2,'0')+String(em).padStart(2,'0')+'00';const uid=Date.now()+'@oasense.shop';const now=new Date().toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';const desc=[b.notes||'Oasense session.',b.phone?'Phone: '+b.phone:'',b.email?'Email: '+b.email:'',b.ig?'IG: '+b.ig:''].filter(Boolean).join('\\n');const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Oasense//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH','BEGIN:VEVENT',`UID:${uid}`,`DTSTAMP:${now}`,`DTSTART:${startDate}T${startTime}`,`DTEND:${startDate}T${endTime}`,`SUMMARY:${b.type} — ${b.name}`,`DESCRIPTION:${desc}`,`LOCATION:${b.loc||'TBD'}`,`STATUS:${b.status==='confirmed'?'CONFIRMED':'TENTATIVE'}`,'END:VEVENT','END:VCALENDAR'].join('\r\n');const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`oasense-${b.name.replace(/\s+/g,'-').toLowerCase()}.ics`;a.click();URL.revokeObjectURL(url);}
 
 function crmPickFilter(){const q=document.getElementById('nb-name').value.toLowerCase().trim();const dd=document.getElementById('crmPickDD');const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);if(!hits.length){dd.classList.remove('open');return;}dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickCRMPerson(${p.id})"><div>${p.name}${p.age?' <span style="color:var(--mute);font-size:13px;">· Age '+p.age+'</span>':''}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}${p.email?' · '+p.email:''}</div></div>`).join('');dd.classList.add('open');}
-function pickCRMPerson(id){const p=people.find(x=>x.id===id);if(!p)return;document.getElementById('nb-name').value=p.name;document.getElementById('nb-phone').value=p.phone||'';document.getElementById('nb-email').value=p.email||'';document.getElementById('nb-ig').value=p.ig||'';document.getElementById('nb-loc').value=p.addr||'';document.getElementById('crmPickDD').classList.remove('open');}
+function pickCRMPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('nb-name').value=p.name;document.getElementById('nb-phone').value=p.phone||'';document.getElementById('nb-email').value=p.email||'';document.getElementById('nb-ig').value=p.ig||'';document.getElementById('nb-loc').value=p.addr||'';document.getElementById('crmPickDD').classList.remove('open');}
 
 // ══ CRM ══
 let crmFilter='all',crmRatingFilter='all';
@@ -1222,7 +1249,7 @@ function closeAddPerson(){document.getElementById('addPersonForm').style.display
 
 async function savePerson(){
   const name=document.getElementById('ap-name').value.trim();if(!name){alert('Name is required.');return;}
-  const newPerson={id:Date.now(),cat:document.getElementById('ap-cat').value,name,age:document.getElementById('ap-age').value||'',phone:document.getElementById('ap-phone').value.trim(),email:document.getElementById('ap-email').value.trim(),ig:document.getElementById('ap-ig').value.trim(),addr:document.getElementById('ap-addr').value.trim(),notes:document.getElementById('ap-notes').value.trim(),rating:''};
+  const newPerson={id:Math.floor(Date.now()),cat:document.getElementById('ap-cat').value,name,age:document.getElementById('ap-age').value||'',phone:document.getElementById('ap-phone').value.trim(),email:document.getElementById('ap-email').value.trim(),ig:document.getElementById('ap-ig').value.trim(),addr:document.getElementById('ap-addr').value.trim(),notes:document.getElementById('ap-notes').value.trim(),rating:''};
   await savePersonFS(newPerson);closeAddPerson();
   ['ap-name','ap-age','ap-phone','ap-email','ap-ig','ap-addr','ap-notes'].forEach(id=>document.getElementById(id).value='');
 }
@@ -1297,9 +1324,9 @@ function renderCRM(){
 }
 
 function toggleDotMenu(id){document.querySelectorAll('.dot-menu.open').forEach(m=>{if(m.id!=='dotmenu-'+id)m.classList.remove('open');});document.getElementById('dotmenu-'+id).classList.toggle('open');}
-async function setRating(id,color){const p=people.find(x=>x.id===id);if(p){p.rating=color;await savePersonFS({...p});}}
+async function setRating(id,color){const p=people.find(x=>String(x.id)===String(id));if(p){p.rating=color;await savePersonFS({...p});}}
 function toggleEditForm(id){document.getElementById('editform-'+id).classList.toggle('open');}
-async function updatePerson(id){const p=people.find(x=>x.id===id);if(!p)return;const updated={...p,name:document.getElementById(`ef-name-${id}`).value.trim()||p.name,age:document.getElementById(`ef-age-${id}`).value,cat:document.getElementById(`ef-cat-${id}`).value,phone:document.getElementById(`ef-phone-${id}`).value.trim(),email:document.getElementById(`ef-email-${id}`).value.trim(),ig:document.getElementById(`ef-ig-${id}`).value.trim(),addr:document.getElementById(`ef-addr-${id}`).value.trim(),notes:document.getElementById(`ef-notes-${id}`).value.trim()};await savePersonFS(updated);}
+async function updatePerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;const updated={...p,name:document.getElementById(`ef-name-${id}`).value.trim()||p.name,age:document.getElementById(`ef-age-${id}`).value,cat:document.getElementById(`ef-cat-${id}`).value,phone:document.getElementById(`ef-phone-${id}`).value.trim(),email:document.getElementById(`ef-email-${id}`).value.trim(),ig:document.getElementById(`ef-ig-${id}`).value.trim(),addr:document.getElementById(`ef-addr-${id}`).value.trim(),notes:document.getElementById(`ef-notes-${id}`).value.trim()};await savePersonFS(updated);}
 async function deletePerson(id){if(!confirm('Delete this person?'))return;await deletePersonFS(id);}
 
 // ══ SHOP ══
@@ -1326,30 +1353,31 @@ async function saveItem(){
   if(!title){alert('Item title is required.');return;}
   const price=isNaN(priceRaw)?'0.00':priceRaw.toFixed(2);
   if(editingItemId){
-    const item=shopItems.find(x=>x.id===editingItemId);if(!item)return;
+    const item=shopItems.find(x=>String(x.id)===String(editingItemId));if(!item)return;
     const updated={...item,title,desc,price,discount,badge,img,img2,category,subcategory};
     await saveShopItemFS(updated);if(currentUser)addAuditEntry(currentUser.name,'Updated Item Description','REF #'+editingItemId);
   }else{
-    const newId=Date.now();const newItem={id:newId,title,desc,price,discount,badge,img,img2,category,subcategory,status:'draft',createdAt:new Date().toISOString()};
+    const newId=Math.floor(Date.now());
+    const newItem={id:newId,title,desc,price,discount,badge,img,img2,category,subcategory,status:'draft',createdAt:new Date().toISOString()};
     await saveShopItemFS(newItem);if(currentUser)addAuditEntry(currentUser.name,'Added New Item to Store','REF #'+newId);
   }
   resetItemForm();
 }
 
 async function toggleItemLive(id){
-  const item=shopItems.find(x=>x.id===id);if(!item)return;
+  const item=shopItems.find(x=>String(x.id)===String(id));if(!item)return;
   if(item.status==='live'){await saveShopItemFS({...item,status:'draft'});if(currentUser)addAuditEntry(currentUser.name,'Archived Item','REF #'+id);}
   else{showConfirm(`Publish "${item.title}" to the live shop?`,async()=>{await saveShopItemFS({...item,status:'live'});if(currentUser)addAuditEntry(currentUser.name,'Added New Item to Store','REF #'+id);});}
 }
 
 function resetItemForm(){document.getElementById('it-title').value='';document.getElementById('it-desc').value='';document.getElementById('it-price').value='';document.getElementById('it-discount').value='-';document.getElementById('it-custom-discount').value='';document.getElementById('it-badge').value='-';document.getElementById('customDiscountWrap').style.display='none';['imagePreview','imagePreview2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});['uploadPlaceholder','uploadPlaceholder2'].forEach(id=>document.getElementById(id).style.display='block');document.getElementById('itemFormTitle').textContent='Add New Item';document.getElementById('cancelEditBtn').style.display='none';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Save as Draft';currentImageDataURL=null;currentImage2DataURL=null;editingItemId=null;document.getElementById('it-category').value='apparel';updateSubcatOptions();}
 
-function editItem(id){const item=shopItems.find(x=>x.id===id);if(!item)return;editingItemId=id;document.getElementById('it-title').value=item.title;document.getElementById('it-desc').value=item.desc;document.getElementById('it-price').value=item.price;const d=item.discount,sel=document.getElementById('it-discount');if(['-','10','15','20','50','100'].includes(String(d))){sel.value=String(d);document.getElementById('customDiscountWrap').style.display='none';}else{sel.value='custom';document.getElementById('it-custom-discount').value=d;document.getElementById('customDiscountWrap').style.display='block';}document.getElementById('it-badge').value=item.badge||'-';document.getElementById('it-category').value=item.category||'apparel';updateSubcatOptions();setTimeout(()=>{const subSel=document.getElementById('it-subcategory');if(item.subcategory){for(let i=0;i<subSel.options.length;i++){if(subSel.options[i].value===item.subcategory){subSel.selectedIndex=i;break;}}}},10);if(item.img){currentImageDataURL=item.img;const p=document.getElementById('imagePreview');p.src=item.img;p.style.display='block';document.getElementById('uploadPlaceholder').style.display='none';}if(item.img2){currentImage2DataURL=item.img2;const p=document.getElementById('imagePreview2');p.src=item.img2;p.style.display='block';document.getElementById('uploadPlaceholder2').style.display='none';}document.getElementById('itemFormTitle').textContent='Editing: '+item.title;document.getElementById('cancelEditBtn').style.display='inline-block';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Update Item';document.getElementById('itemForm').scrollIntoView({behavior:'smooth',block:'start'});}
+function editItem(id){const item=shopItems.find(x=>String(x.id)===String(id));if(!item)return;editingItemId=id;document.getElementById('it-title').value=item.title;document.getElementById('it-desc').value=item.desc;document.getElementById('it-price').value=item.price;const d=item.discount,sel=document.getElementById('it-discount');if(['-','10','15','20','50','100'].includes(String(d))){sel.value=String(d);document.getElementById('customDiscountWrap').style.display='none';}else{sel.value='custom';document.getElementById('it-custom-discount').value=d;document.getElementById('customDiscountWrap').style.display='block';}document.getElementById('it-badge').value=item.badge||'-';document.getElementById('it-category').value=item.category||'apparel';updateSubcatOptions();setTimeout(()=>{const subSel=document.getElementById('it-subcategory');if(item.subcategory){for(let i=0;i<subSel.options.length;i++){if(subSel.options[i].value===item.subcategory){subSel.selectedIndex=i;break;}}}},10);if(item.img){currentImageDataURL=item.img;const p=document.getElementById('imagePreview');p.src=item.img;p.style.display='block';document.getElementById('uploadPlaceholder').style.display='none';}if(item.img2){currentImage2DataURL=item.img2;const p=document.getElementById('imagePreview2');p.src=item.img2;p.style.display='block';document.getElementById('uploadPlaceholder2').style.display='none';}document.getElementById('itemFormTitle').textContent='Editing: '+item.title;document.getElementById('cancelEditBtn').style.display='inline-block';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Update Item';document.getElementById('itemForm').scrollIntoView({behavior:'smooth',block:'start'});}
 
 async function deleteItem(id){if(!confirm('Delete this item?'))return;await deleteShopItemFS(id);if(currentUser)addAuditEntry(currentUser.name,'Removed Item from Store','REF #'+id);}
 
 function openBadgePicker(id,el){document.querySelectorAll('.badge-opts.open').forEach(x=>{if(!x.closest(`[data-item-id="${id}"]`))x.classList.remove('open');});el.closest('.badge-dropdown').querySelector('.badge-opts').classList.toggle('open');}
-async function setBadgeOnCard(id,val,el){const item=shopItems.find(x=>x.id===id);if(item){await saveShopItemFS({...item,badge:val});}el.closest('.badge-opts').classList.remove('open');}
+async function setBadgeOnCard(id,val,el){const item=shopItems.find(x=>String(x.id)===String(id));if(item){await saveShopItemFS({...item,badge:val});}el.closest('.badge-opts').classList.remove('open');}
 function badgeHTML(badge,discount){if(!badge||badge==='-')return'';if(badge==='New!')return`<div class="item-badge badge-new">NEW!</div>`;if(badge==='Hot!')return`<div class="item-badge badge-hot">HOT!</div>`;if(badge==='%'&&discount!=='-')return`<div class="item-badge badge-pct">${discount}%<br/>OFF</div>`;return'';}
 function renderShop(){const grid=document.getElementById('shopItemsGrid'),empty=document.getElementById('shopEmpty');updateShopCounts();if(!shopItems.length){grid.innerHTML='';empty.style.display='block';return;}empty.style.display='none';grid.innerHTML=shopItems.map(item=>{const isLive=item.status==='live';const dp=item.discount!=='-'?(parseFloat(item.price)*(1-parseInt(item.discount)/100)).toFixed(2):null;const catLabel=(item.category||'').toUpperCase();const subLabel=item.subcategory?` · ${item.subcategory}`:'';return`<div class="item-card${isLive?' is-live':''}"><div class="item-card-img">${item.img?`<img src="${item.img}" alt="${item.title}"/>`:'🎁'}${badgeHTML(item.badge,item.discount)}${isLive?`<div style="position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,rgba(0,255,136,0.18),transparent);height:40px;pointer-events:none;"></div>`:''}<div class="item-card-badge-btn"><div class="badge-dropdown" data-item-id="${item.id}"><div class="badge-trigger" onclick="openBadgePicker(${item.id},this)"></div><div class="badge-opts"><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'New!',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#00e5ff,#0050ff);"></span>New!</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'Hot!',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#ff6600,#cc0000);"></span>Hot!</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'%',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#00ff88,#007744);"></span>%</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'-',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.1);border:1px dashed rgba(255,255,255,0.3);"></span>—</div></div></div></div><button class="item-card-edit" onclick="editItem(${item.id})">Edit</button></div><div class="item-card-body"><div class="item-card-cat">${catLabel}${subLabel}</div><div class="item-card-name">${item.title}</div><div class="item-card-desc">${item.desc||'—'}</div><div class="item-card-footer"><div><div class="item-card-price">${item.category==='photography'?'Contact Us':(dp?`<span style="font-size:13px;color:var(--mute);text-decoration:line-through;margin-right:6px;">$${item.price}</span>$${dp}`:`$${item.price}`)}</div>${item.discount!=='-'?`<div class="item-card-discount">${item.discount}% OFF</div>`:''}</div><button class="btn btn-red btn-sm" onclick="deleteItem(${item.id})">✕</button></div></div><div class="item-status-bar">${isLive?`<span class="item-live-badge">Live</span><button class="btn-pull-back" onclick="toggleItemLive(${item.id})">Pull Back</button>`:`<span class="item-draft-badge">Draft</span><button class="btn-go-live" onclick="toggleItemLive(${item.id})">Go Live ↗</button>`}</div></div>`;}).join('');}
 
@@ -1360,11 +1388,11 @@ function closeNewOrderForm(){document.getElementById('newOrderForm').style.displ
 function addOrdItem(){const id='oi'+Date.now();const shopOpts=shopItems.map(s=>`<option value="${esc(s.title)}" data-price="${s.price}" data-discount="${s.discount}"/>`).join('');const wrap=document.getElementById('ordItemsWrap');const div=document.createElement('div');div.className='ord-item-row';div.id='ordrow-'+id;div.innerHTML=`<div style="position:relative;"><input class="fi" list="shoplist-${id}" id="oname-${id}" placeholder="Item name" oninput="autoFillOrdPrice('${id}')"/><datalist id="shoplist-${id}">${shopOpts}</datalist></div><input class="fi" id="oprice-${id}" type="number" min="0" step="0.01" placeholder="Price"/><input class="fi" id="odisc-${id}" type="number" min="0" max="100" placeholder="Disc%"/><button onclick="document.getElementById('ordrow-${id}').remove()" style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:0;line-height:1;">×</button>`;wrap.appendChild(div);}
 function autoFillOrdPrice(id){const name=document.getElementById('oname-'+id).value.trim().toLowerCase();const item=shopItems.find(s=>s.title.toLowerCase()===name);if(item){document.getElementById('oprice-'+id).value=item.price;if(item.discount&&item.discount!=='-')document.getElementById('odisc-'+id).value=item.discount;}}
 function ordPickFilter(){const q=document.getElementById('ord-name').value.toLowerCase().trim();const dd=document.getElementById('ordPickDD');const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);if(!hits.length){dd.classList.remove('open');return;}dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickOrdPerson(${p.id})"><div>${p.name}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}${p.email?' · '+p.email:''}</div></div>`).join('');dd.classList.add('open');}
-function pickOrdPerson(id){const p=people.find(x=>x.id===id);if(!p)return;document.getElementById('ord-name').value=p.name;document.getElementById('ord-phone').value=p.phone||'';document.getElementById('ordPickDD').classList.remove('open');}
-async function saveOrder(){const name=document.getElementById('ord-name').value.trim(),phone=document.getElementById('ord-phone').value.trim(),date=document.getElementById('ord-date').value;if(!name){alert('Client name required.');return;}const rows=document.querySelectorAll('#ordItemsWrap .ord-item-row');const items=[];rows.forEach(row=>{const rid=row.id.replace('ordrow-','');const iname=document.getElementById('oname-'+rid)?.value.trim();const price=parseFloat(document.getElementById('oprice-'+rid)?.value)||0;const disc=parseFloat(document.getElementById('odisc-'+rid)?.value)||0;if(iname)items.push({name:iname,price,disc});});if(!items.length){alert('Add at least one item.');return;}const match=people.find(p=>p.name.toLowerCase()===name.toLowerCase()&&phone&&p.phone&&p.phone.replace(/\D/g,'')===phone.replace(/\D/g,''));const newId=Date.now();await saveOrderFS({id:newId,name,phone,date,items,linkedPersonId:match?match.id:null});closeNewOrderForm();if(currentUser)addAuditEntry(currentUser.name,'Made Purchase','REF #'+newId);}
+function pickOrdPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('ord-name').value=p.name;document.getElementById('ord-phone').value=p.phone||'';document.getElementById('ordPickDD').classList.remove('open');}
+async function saveOrder(){const name=document.getElementById('ord-name').value.trim(),phone=document.getElementById('ord-phone').value.trim(),date=document.getElementById('ord-date').value;if(!name){alert('Client name required.');return;}const rows=document.querySelectorAll('#ordItemsWrap .ord-item-row');const items=[];rows.forEach(row=>{const rid=row.id.replace('ordrow-','');const iname=document.getElementById('oname-'+rid)?.value.trim();const price=parseFloat(document.getElementById('oprice-'+rid)?.value)||0;const disc=parseFloat(document.getElementById('odisc-'+rid)?.value)||0;if(iname)items.push({name:iname,price,disc});});if(!items.length){alert('Add at least one item.');return;}const match=people.find(p=>p.name.toLowerCase()===name.toLowerCase()&&phone&&p.phone&&p.phone.replace(/\D/g,'')===phone.replace(/\D/g,''));const newId=Math.floor(Date.now());await saveOrderFS({id:newId,name,phone,date,items,linkedPersonId:match?match.id:null});closeNewOrderForm();if(currentUser)addAuditEntry(currentUser.name,'Made Purchase','REF #'+newId);}
 async function deleteOrder(id){if(!confirm('Delete this order?'))return;await deleteOrderFS(id);}
 function renderOrders(){const list=document.getElementById('orderList'),empty=document.getElementById('orderEmpty');updateOrderBadge();if(!orders.length){list.innerHTML='';empty.style.display='block';return;}empty.style.display='none';list.innerHTML=orders.map(o=>{let subTotal=0,totalDisc=0;o.items.forEach(it=>{subTotal+=it.price;totalDisc+=it.price*(it.disc/100);});const afterDisc=subTotal-totalDisc,taxAmt=afterDisc*NV_TAX,total=afterDisc+taxAmt;const linked=o.linkedPersonId?people.find(p=>p.id===o.linkedPersonId):null;const linkBadge=linked?`<span class="order-linked">✓ CRM Linked</span>`:`<span class="order-unlinked">No CRM Link</span>`;const itemRows=o.items.map(it=>{const discAmt=it.price*(it.disc/100),net=it.price-discAmt;return`<tr><td>${it.name}</td><td style="text-align:right;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);">${it.disc?it.disc+'% off':''}</td><td>$${net.toFixed(2)}${it.disc?`<br/><span style="font-size:11px;color:var(--mute);text-decoration:line-through;">$${it.price.toFixed(2)}</span>`:''}</td></tr>`;}).join('');return`<div class="order-card"><div class="order-header"><div class="order-client-row"><div class="order-client-name">${o.name}</div><button class="order-who-btn" onclick="openOrdPersonModal(${o.id})">?</button>${linkBadge}</div><div style="display:flex;align-items:center;gap:10px;"><div class="order-date">${o.date?formatDate(o.date):''}</div><button class="btn btn-red btn-sm" onclick="deleteOrder(${o.id})">✕</button></div></div><table class="order-items"><thead><tr><th>Item</th><th>Discount</th><th style="text-align:right;">Price</th></tr></thead><tbody>${itemRows}</tbody></table><div class="order-totals"><div class="order-total-row"><span class="ot-lbl">Subtotal</span><span class="ot-val">$${subTotal.toFixed(2)}</span></div>${totalDisc>0?`<div class="order-total-row"><span class="ot-lbl">Discounts</span><span class="ot-val" style="color:var(--green);">−$${totalDisc.toFixed(2)}</span></div>`:''}<div class="order-total-row"><span class="ot-lbl">Sales Tax (NV 8.375%)</span><span class="ot-val">$${taxAmt.toFixed(2)}</span></div><div class="order-total-row grand"><span class="ot-lbl">Total</span><span class="ot-val">$${total.toFixed(2)}</span></div></div></div>`;}).join('');}
-function openOrdPersonModal(ordId){const o=orders.find(x=>x.id===ordId);if(!o)return;const p=o.linkedPersonId?people.find(x=>x.id===o.linkedPersonId):null;document.getElementById('personModalName').textContent=o.name;const r=(icon,lbl,val)=>val?`<div class="pi-row"><span class="pi-lbl">${icon} ${lbl}</span><span class="pi-val">${val}</span></div>`:'';document.getElementById('personModalContent').innerHTML=p?`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(0,255,136,0.6);margin-bottom:12px;text-transform:uppercase;">✓ Linked CRM Profile</div>`+r('📞','Phone',p.phone)+r('📧','Email',p.email)+r('📷','IG',p.ig)+r('📍','Address',p.addr)+(p.notes?r('📝','Notes',p.notes):''):`<div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,204,0,0.5);margin-bottom:12px;">No matching CRM profile found.</div>`+r('📞','Phone',o.phone);document.getElementById('personModal').classList.add('open');}
+function openOrdPersonModal(ordId){const o=orders.find(x=>String(x.id)===String(ordId));if(!o)return;const p=o.linkedPersonId?people.find(x=>x.id===o.linkedPersonId):null;document.getElementById('personModalName').textContent=o.name;const r=(icon,lbl,val)=>val?`<div class="pi-row"><span class="pi-lbl">${icon} ${lbl}</span><span class="pi-val">${val}</span></div>`:'';document.getElementById('personModalContent').innerHTML=p?`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(0,255,136,0.6);margin-bottom:12px;text-transform:uppercase;">✓ Linked CRM Profile</div>`+r('📞','Phone',p.phone)+r('📧','Email',p.email)+r('📷','IG',p.ig)+r('📍','Address',p.addr)+(p.notes?r('📝','Notes',p.notes):''):`<div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,204,0,0.5);margin-bottom:12px;">No matching CRM profile found.</div>`+r('📞','Phone',o.phone);document.getElementById('personModal').classList.add('open');}
 
 // ══ INVOICES ══
 let _invPrice=0,_invDisc='-';
@@ -1372,17 +1400,17 @@ function updateInvBadge(){document.getElementById('invBadge').textContent=invoic
 function openNewInvoice(){document.getElementById('inv-client').value='';document.getElementById('inv-product').value='';document.getElementById('inv-date').value=new Date().toISOString().split('T')[0];document.getElementById('invPriceDisplay').textContent='—';document.getElementById('invDiscDisplay').textContent='—';document.getElementById('inv-receipt-type').value='none';document.getElementById('inv-receipt-input-wrap').style.display='none';document.getElementById('inv-receipt-val').value='';_invPrice=0;_invDisc='-';document.getElementById('newInvoiceForm').style.display='block';document.getElementById('newInvoiceForm').scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeNewInvoice(){document.getElementById('newInvoiceForm').style.display='none';}
 function invCrmPickFilter(){const q=document.getElementById('inv-client').value.toLowerCase().trim();const dd=document.getElementById('invCrmPickDD');const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);if(!hits.length){dd.classList.remove('open');return;}dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickInvPerson(${p.id})"><div>${p.name}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}</div></div>`).join('');dd.classList.add('open');}
-function pickInvPerson(id){const p=people.find(x=>x.id===id);if(!p)return;document.getElementById('inv-client').value=p.name;document.getElementById('invCrmPickDD').classList.remove('open');}
+function pickInvPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('inv-client').value=p.name;document.getElementById('invCrmPickDD').classList.remove('open');}
 let _invProductOpts=[];
 function invProductFilter(){const q=document.getElementById('inv-product').value.toLowerCase().trim();const dd=document.getElementById('invProductDD');const allOpts=[{title:'📸 Photoshoot',price:'',discount:'-'},...shopItems];_invProductOpts=allOpts.filter(s=>s.title.toLowerCase().includes(q)||q==='').slice(0,12);if(!_invProductOpts.length){dd.classList.remove('open');return;}dd.innerHTML=_invProductOpts.map((s,i)=>{const dp=s.discount&&s.discount!=='-'?(parseFloat(s.price||0)*(1-parseInt(s.discount)/100)).toFixed(2):null;const priceLabel=s.price?`<span class="iprice">${dp?`$${dp}`:`$${s.price}`}</span>`:'';return`<div class="inv-product-opt" onclick="selectInvProduct(${i})"><span>${s.title}</span>${priceLabel}</div>`;}).join('');dd.classList.add('open');}
 function selectInvProduct(idx){const s=_invProductOpts[idx];if(!s)return;document.getElementById('inv-product').value=s.title;document.getElementById('invProductDD').classList.remove('open');_invPrice=parseFloat(s.price)||0;_invDisc=s.discount||'-';const dp=s.discount&&s.discount!=='-'?(_invPrice*(1-parseInt(s.discount)/100)).toFixed(2):null;document.getElementById('invPriceDisplay').textContent=s.price?(dp?`$${dp}`:`$${s.price}`):'—';document.getElementById('invDiscDisplay').textContent=s.discount&&s.discount!=='-'?s.discount+'%':'—';}
 function receiptTypeChanged(){const t=document.getElementById('inv-receipt-type').value;const wrap=document.getElementById('inv-receipt-input-wrap');const inp=document.getElementById('inv-receipt-val');if(t==='none'){wrap.style.display='none';inp.value='';return;}wrap.style.display='block';inp.value='';inp.placeholder=t==='text'?'+1 (000) 000-0000':'example@gmail.com';}
-async function saveInvoice(){const client=document.getElementById('inv-client').value.trim(),product=document.getElementById('inv-product').value.trim(),date=document.getElementById('inv-date').value;if(!client||!product){alert('Client and product are required.');return;}const receiptType=document.getElementById('inv-receipt-type').value,receiptVal=document.getElementById('inv-receipt-val').value.trim();const disc=_invDisc,discAmt=disc!=='-'?_invPrice*(parseInt(disc)/100):0,afterDisc=_invPrice-discAmt,tax=afterDisc*NV_TAX,total=afterDisc+tax;const newId=Date.now();await saveInvoiceFS({id:newId,client,product,price:_invPrice,disc,date,receiptType,receiptVal,status:'unpaid',total});closeNewInvoice();}
+async function saveInvoice(){const client=document.getElementById('inv-client').value.trim(),product=document.getElementById('inv-product').value.trim(),date=document.getElementById('inv-date').value;if(!client||!product){alert('Client and product are required.');return;}const receiptType=document.getElementById('inv-receipt-type').value,receiptVal=document.getElementById('inv-receipt-val').value.trim();const disc=_invDisc,discAmt=disc!=='-'?_invPrice*(parseInt(disc)/100):0,afterDisc=_invPrice-discAmt,tax=afterDisc*NV_TAX,total=afterDisc+tax;const newId=Math.floor(Date.now());await saveInvoiceFS({id:newId,client,product,price:_invPrice,disc,date,receiptType,receiptVal,status:'unpaid',total});closeNewInvoice();}
 function openOverrideModal(){document.getElementById('ov-user').value='';document.getElementById('ov-pass').value='';document.getElementById('ov-err').style.display='none';document.getElementById('overrideAuthWrap').style.display='block';document.getElementById('overrideEditWrap').style.display='none';document.getElementById('overrideModal').classList.add('open');}
 function closeOverrideModal(){document.getElementById('overrideModal').classList.remove('open');}
 function checkOverrideAuth(){const u=document.getElementById('ov-user').value.trim(),p=document.getElementById('ov-pass').value;if(u==='DEV'&&p==='mems01'){document.getElementById('overrideAuthWrap').style.display='none';document.getElementById('overrideEditWrap').style.display='block';document.getElementById('ov-price').value=_invPrice||'';document.getElementById('ov-disc').value=_invDisc==='-'?'':_invDisc;}else{document.getElementById('ov-err').style.display='block';}}
 function applyOverride(){const p=parseFloat(document.getElementById('ov-price').value)||_invPrice,d=document.getElementById('ov-disc').value.trim()||'-';_invPrice=p;_invDisc=d;const dp=d!=='-'?(p*(1-parseInt(d)/100)).toFixed(2):null;document.getElementById('invPriceDisplay').textContent=`$${dp||p.toFixed(2)}`;document.getElementById('invDiscDisplay').textContent=d!=='-'?d+'%':'—';closeOverrideModal();}
-async function cycleInvStatus(id){const inv=invoices.find(x=>x.id===id);if(!inv)return;const s=['unpaid','paid','cancelled'];await saveInvoiceFS({...inv,status:s[(s.indexOf(inv.status||'unpaid')+1)%s.length]});}
+async function cycleInvStatus(id){const inv=invoices.find(x=>String(x.id)===String(id));if(!inv)return;const s=['unpaid','paid','cancelled'];await saveInvoiceFS({...inv,status:s[(s.indexOf(inv.status||'unpaid')+1)%s.length]});}
 async function deleteInvoice(id){if(!confirm('Delete this invoice?'))return;await deleteInvoiceFS(id);}
 function renderInvoices(){const list=document.getElementById('invoiceList'),empty=document.getElementById('invoiceEmpty');updateInvBadge();if(!invoices.length){list.innerHTML='';empty.style.display='block';return;}empty.style.display='none';list.innerHTML=invoices.map(inv=>{const discAmt=inv.disc!=='-'?inv.price*(parseInt(inv.disc)/100):0,afterDisc=inv.price-discAmt,taxAmt=afterDisc*NV_TAX,total=afterDisc+taxAmt;return`<div class="inv-card"><div class="inv-card-header"><div><div style="font-family:'Black Ops One',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;">${inv.client}</div><div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);margin-top:2px;">${inv.product} · ${inv.date?formatDate(inv.date):''}</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="inv-status ${inv.status||'unpaid'}" onclick="cycleInvStatus(${inv.id})" style="cursor:pointer;" title="Click to cycle">${inv.status||'unpaid'}</span><button class="btn btn-red btn-sm" onclick="deleteInvoice(${inv.id})">✕</button></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-top:10px;border-top:1px solid rgba(255,204,0,0.1);"><div class="order-total-row"><span class="ot-lbl">Price</span><span class="ot-val">$${inv.price.toFixed(2)}</span></div>${inv.disc!=='-'?`<div class="order-total-row"><span class="ot-lbl">Discount (${inv.disc}%)</span><span class="ot-val" style="color:var(--green);">−$${discAmt.toFixed(2)}</span></div>`:''}<div class="order-total-row"><span class="ot-lbl">Sales Tax (NV 8.375%)</span><span class="ot-val">$${taxAmt.toFixed(2)}</span></div><div class="order-total-row grand"><span class="ot-lbl">Total</span><span class="ot-val">$${total.toFixed(2)}</span></div></div>${inv.receiptType&&inv.receiptType!=='none'?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,204,0,0.08);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:1px;">${inv.receiptType==='text'?'📱 TEXT':'📧 EMAIL'} receipt → ${inv.receiptVal||'—'}</div>`:''}</div>`;}).join('');}
 
@@ -1392,11 +1420,11 @@ function updateTestBadge(){document.getElementById('testBadge').textContent=test
 function openAddTestimonial(){const f=document.getElementById('testAddForm');f.style.display='block';document.getElementById('ta-date').value=new Date().toISOString().split('T')[0];setTestStar(5);f.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeAddTestimonial(){document.getElementById('testAddForm').style.display='none';}
 function setTestStar(n){_newTestStars=n;document.getElementById('ta-stars').value=n;document.querySelectorAll('.star-btn').forEach((btn,i)=>{btn.classList.toggle('active',i<n);});}
-async function saveTestimonial(){const author=document.getElementById('ta-author').value.trim(),body=document.getElementById('ta-body').value.trim();if(!author||!body){alert('Author and review are required.');return;}const newId=Date.now();await saveTestimonialFS({id:newId,author,body,stars:parseInt(document.getElementById('ta-stars').value)||5,date:document.getElementById('ta-date').value,live:false});closeAddTestimonial();document.getElementById('ta-author').value='';document.getElementById('ta-body').value='';}
+async function saveTestimonial(){const author=document.getElementById('ta-author').value.trim(),body=document.getElementById('ta-body').value.trim();if(!author||!body){alert('Author and review are required.');return;}const newId=Math.floor(Date.now());await saveTestimonialFS({id:newId,author,body,stars:parseInt(document.getElementById('ta-stars').value)||5,date:document.getElementById('ta-date').value,live:false});closeAddTestimonial();document.getElementById('ta-author').value='';document.getElementById('ta-body').value='';}
 function switchTestFilter(f,btn){testFilter=f;document.querySelectorAll('.test-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderTestimonials();}
 function starsHTML(n,id){let out='';for(let i=1;i<=5;i++)out+=`<span class="star" onclick="setTestRating(${id},${i})" title="${i} star">${i<=n?'⭐':'☆'}</span>`;return out;}
-async function setTestRating(id,n){const t=testimonials.find(x=>x.id===id);if(t)await saveTestimonialFS({...t,stars:n});}
-async function toggleTestLive(id){const t=testimonials.find(x=>x.id===id);if(!t)return;if(t.live){await saveTestimonialFS({...t,live:false});}else{showConfirm('Add this testimonial to the live site?',async()=>{await saveTestimonialFS({...t,live:true});});}}
+async function setTestRating(id,n){const t=testimonials.find(x=>String(x.id)===String(id));if(t)await saveTestimonialFS({...t,stars:n});}
+async function toggleTestLive(id){const t=testimonials.find(x=>String(x.id)===String(id));if(!t)return;if(t.live){await saveTestimonialFS({...t,live:false});}else{showConfirm('Add this testimonial to the live site?',async()=>{await saveTestimonialFS({...t,live:true});});}}
 async function deleteTestimonial(id){if(!confirm('Delete?'))return;await deleteTestimonialFS(id);}
 function renderTestimonials(){const list=document.getElementById('testimonialList'),empty=document.getElementById('testEmpty');updateTestBadge();let filtered=testimonials;if(testFilter==='live')filtered=testimonials.filter(t=>t.live);else if(testFilter==='good')filtered=testimonials.filter(t=>t.stars>=4);else if(testFilter==='neutral')filtered=testimonials.filter(t=>t.stars===3);else if(testFilter==='bad')filtered=testimonials.filter(t=>t.stars<3);if(!filtered.length){list.innerHTML='';empty.style.display='block';return;}empty.style.display='none';list.innerHTML=filtered.map(t=>`<div class="test-card"><div class="test-card-header"><div><div class="test-author">${t.author}</div><div class="test-date">${t.date?formatDate(t.date):''}</div></div><div class="test-stars">${starsHTML(t.stars,t.id)}</div></div><div class="test-body">${t.body}</div><div class="test-card-actions">${t.live?`<span class="test-live-badge">🌐 Live</span>`:''}<button class="btn-live" onclick="toggleTestLive(${t.id})">${t.live?'Remove from Live':'+ Add to Live Site'}</button><button class="btn-edit-white" style="margin-left:auto;" onclick="deleteTestimonial(${t.id})">Delete</button></div></div>`).join('');}
 
@@ -1413,16 +1441,16 @@ async function enhanceBlogAI(){
   catch(err){alert('AI writing failed.');}
   btn.textContent='✦ Write with AI';btn.classList.remove('loading');btn.disabled=false;
 }
-async function saveBlogPost(){const title=document.getElementById('blog-title').value.trim(),content=document.getElementById('blog-content').value.trim();if(!title||!content){alert('Title and content are required.');return;}const editId=document.getElementById('blog-edit-id').value;const data={title,content,author:_blogAuthor,img:blogImageDataURL||'',date:new Date().toISOString().split('T')[0],live:false};if(editId){const p=blogPosts.find(x=>x.id===parseInt(editId));if(p)await saveBlogPostFS({...p,...data});}else await saveBlogPostFS({id:Date.now(),...data});closeBlogForm();}
-async function toggleBlogLive(id){const p=blogPosts.find(x=>x.id===id);if(!p)return;if(p.live){await saveBlogPostFS({...p,live:false});}else{showConfirm('Publish this post to the live site?',async()=>{await saveBlogPostFS({...p,live:true});});}}
-function editBlogPost(id){const p=blogPosts.find(x=>x.id===id);if(!p)return;document.getElementById('blog-title').value=p.title;document.getElementById('blog-content').value=p.content;document.getElementById('blog-edit-id').value=id;selectBlogAuthor(p.author||'sol');if(p.img){blogImageDataURL=p.img;const prev=document.getElementById('blogImgPreview');prev.src=p.img;prev.style.display='block';document.getElementById('blogImgPlaceholder').style.display='none';}document.getElementById('blogForm').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
+async function saveBlogPost(){const title=document.getElementById('blog-title').value.trim(),content=document.getElementById('blog-content').value.trim();if(!title||!content){alert('Title and content are required.');return;}const editId=document.getElementById('blog-edit-id').value;const data={title,content,author:_blogAuthor,img:blogImageDataURL||'',date:new Date().toISOString().split('T')[0],live:false};if(editId){const p=blogPosts.find(x=>String(x.id)===String(editId));if(p)await saveBlogPostFS({...p,...data});}else await saveBlogPostFS({id:Math.floor(Date.now()),...data});closeBlogForm();}
+async function toggleBlogLive(id){const p=blogPosts.find(x=>String(x.id)===String(id));if(!p)return;if(p.live){await saveBlogPostFS({...p,live:false});}else{showConfirm('Publish this post to the live site?',async()=>{await saveBlogPostFS({...p,live:true});});}}
+function editBlogPost(id){const p=blogPosts.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('blog-title').value=p.title;document.getElementById('blog-content').value=p.content;document.getElementById('blog-edit-id').value=id;selectBlogAuthor(p.author||'sol');if(p.img){blogImageDataURL=p.img;const prev=document.getElementById('blogImgPreview');prev.src=p.img;prev.style.display='block';document.getElementById('blogImgPlaceholder').style.display='none';}document.getElementById('blogForm').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
 async function deleteBlogPost(id){if(!confirm('Delete?'))return;await deleteBlogPostFS(id);}
 function renderBlog(){const list=document.getElementById('blogList'),empty=document.getElementById('blogEmpty');updateBlogBadge();if(!blogPosts.length){list.innerHTML='';empty.style.display='block';return;}empty.style.display='none';list.innerHTML=blogPosts.map(p=>`<div class="blog-post-card"><div class="blog-post-header"><div><div class="blog-title-big">${p.title}</div><div class="blog-meta" style="margin-top:6px;"><span class="blog-author-pill ${p.author}">${p.author==='sol'?'🤖 Sol':'💕 Kiara'}</span>${p.live?'<span class="blog-live-badge">🌐 Live</span>':''}<span style="font-family:Share Tech Mono,monospace;font-size:10px;color:var(--mute);">${p.date?formatDate(p.date):''}</span></div></div>${p.img?`<img src="${p.img}" style="width:80px;height:60px;object-fit:cover;border:1px solid var(--border);flex-shrink:0;"/>`:''}</div><div class="blog-excerpt">${(p.content||'').substring(0,200)}${(p.content||'').length>200?'…':''}</div><div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="btn-edit-white" onclick="editBlogPost(${p.id})">Edit</button><button class="btn-live" style="display:inline-block;" onclick="toggleBlogLive(${p.id})">${p.live?'Remove from Live':'🌐 Publish'}</button><button class="btn btn-red btn-sm" style="margin-left:auto;" onclick="deleteBlogPost(${p.id})">✕</button></div></div>`).join('');}
 document.getElementById('blog-image').addEventListener('change',function(e){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){blogImageDataURL=ev.target.result;const prev=document.getElementById('blogImgPreview');prev.src=ev.target.result;prev.style.display='block';document.getElementById('blogImgPlaceholder').style.display='none';};reader.readAsDataURL(file);});
 
 // ══ AI PROMPTS ══
-async function saveAIConfig(){solConfig.welcome=document.getElementById('sol-welcome').value;solConfig.rules=document.getElementById('sol-rules').value;const cmdRows=document.querySelectorAll('.sol-cmd-row');solConfig.commands=[];cmdRows.forEach(row=>{const label=row.querySelector('.cmd-label').value.trim(),type=row.querySelector('.cmd-type').value,value=row.querySelector('.cmd-value').value.trim();if(label)solConfig.commands.push({id:Date.now()+Math.random(),label,type,value});});await fsSolConfigSave(solConfig);const btn=event.target;btn.textContent='✅ Saved!';setTimeout(()=>btn.textContent='💾 Save All',2000);}
-function addSolCommand(){solConfig.commands.push({id:Date.now(),label:'',type:'link',value:''});renderSolCommands();}
+async function saveAIConfig(){solConfig.welcome=document.getElementById('sol-welcome').value;solConfig.rules=document.getElementById('sol-rules').value;const cmdRows=document.querySelectorAll('.sol-cmd-row');solConfig.commands=[];cmdRows.forEach(row=>{const label=row.querySelector('.cmd-label').value.trim(),type=row.querySelector('.cmd-type').value,value=row.querySelector('.cmd-value').value.trim();if(label)solConfig.commands.push({id:Math.floor(Date.now()),label,type,value});});await fsSolConfigSave(solConfig);const btn=event.target;btn.textContent='✅ Saved!';setTimeout(()=>btn.textContent='💾 Save All',2000);}
+function addSolCommand(){solConfig.commands.push({id:Math.floor(Date.now()),label:'',type:'link',value:''});renderSolCommands();}
 function removeSolCommand(id){solConfig.commands=solConfig.commands.filter(c=>c.id!==id);renderSolCommands();}
 function renderSolCommands(){const list=document.getElementById('solCommandsList');if(!solConfig.commands||!solConfig.commands.length){list.innerHTML='<div style="font-family:Share Tech Mono,monospace;font-size:11px;color:rgba(255,204,0,0.3);padding:10px 0;">No commands yet</div>';return;}list.innerHTML=solConfig.commands.map(cmd=>`<div class="sol-cmd-row row row-3" style="margin-bottom:8px;align-items:center;gap:8px;"><input class="fi cmd-label" value="${esc(cmd.label||'')}" placeholder="Command label"/><select class="fi fse cmd-type"><option value="link" ${cmd.type==='link'?'selected':''}>🔗 Link</option><option value="scroll" ${cmd.type==='scroll'?'selected':''}>📜 Scroll</option><option value="section" ${cmd.type==='section'?'selected':''}>📂 Section</option></select><div style="display:flex;gap:6px;"><input class="fi cmd-value" value="${esc(cmd.value||'')}" placeholder="URL or #section" style="flex:1;"/><button onclick="removeSolCommand(${cmd.id})" style="background:none;border:1px solid rgba(255,59,59,0.4);color:var(--red);cursor:pointer;padding:0 10px;font-size:16px;line-height:1;flex-shrink:0;">×</button></div></div>`).join('');}
 function addUserPrompt(){const val=document.getElementById('newPromptInput').value.trim().toUpperCase();if(!val)return;solConfig.userPrompts.push(val);document.getElementById('newPromptInput').value='';renderUserPrompts();}
@@ -1441,7 +1469,7 @@ async function saveUser(){
   const u={id:Date.now(),name,provider,email,badge,seenAt:Date.now(),sessionStart:Date.now(),sessionDuration:0,notes:''};
   await saveAppUserFS(u);
   if(email&&!people.find(p=>p.email===email)){
-    await savePersonFS({id:Date.now()+1,cat:'user',name,age:'',phone:'',email,ig:'',addr:'',notes:'Auto-added from Users log.',rating:''});
+    await savePersonFS({id:Math.floor(Date.now())+1,cat:'user',name,age:'',phone:'',email,ig:'',addr:'',notes:'Auto-added from Users log.',rating:''});
   }
   closeAddUser();addAuditEntry(name,'Login',null);
   document.getElementById('au-name').value='';document.getElementById('au-email').value='';
@@ -1455,13 +1483,13 @@ async function logUserSession(match){
     await saveAppUserFS(u);
   }else{await saveAppUserFS({...existing,seenAt:Date.now(),sessionStart:Date.now()});}
   if(!people.find(p=>p.name.toLowerCase()===match.name.toLowerCase())){
-    await savePersonFS({id:Date.now()+2,cat:'user',name:match.name,age:'',phone:'',email:'',ig:'',addr:'',notes:'Auto-added on login.',rating:''});
+    await savePersonFS({id:Math.floor(Date.now())+2,cat:'user',name:match.name,age:'',phone:'',email:'',ig:'',addr:'',notes:'Auto-added on login.',rating:''});
   }
 }
 
 function openCRMFromUser(name,email){const p=people.find(x=>(email&&x.email===email)||(x.name.toLowerCase()===name.toLowerCase()));if(!p){alert('Not found in CRM database.');return;}const ratingColors={green:'#00FF88',yellow:'#FFD600',red:'#FF3B3B','':'rgba(255,204,0,0.4)'};const ratingLabels={green:'High Potential',yellow:'Medium Potential',red:'Low Potential','':'Unrated'};const catL={prospect:'Prospect',client:'Client',subscriber:'Subscriber',user:'User'};const r=(icon,lbl,val)=>val?`<div class="pi-row"><span class="pi-lbl">${icon} ${lbl}</span><span class="pi-val">${val}</span></div>`:'';document.getElementById('personModalName').textContent=p.name+' '+getPersonCRMIdDisplay(p);document.getElementById('personModalContent').innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;"><div style="width:12px;height:12px;border-radius:50%;background:${ratingColors[p.rating||'']};box-shadow:0 0 8px ${ratingColors[p.rating||'']};flex-shrink:0;"></div><span style="font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:${ratingColors[p.rating||'']};text-transform:uppercase;">${ratingLabels[p.rating||'']}</span><span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.6);text-transform:uppercase;">${catL[p.cat]||p.cat}</span></div>`+r('📞','Phone',p.phone)+r('📧','Email',p.email)+r('📷','IG',p.ig)+r('📍','Address',p.addr)+(p.notes?r('📝','Notes',p.notes):'');document.getElementById('personModal').classList.add('open');}
 function toggleDbDetail(id){document.getElementById('dbdetail-'+id)?.classList.toggle('open');}
-async function updateUserNotes(id){const u=appUsers.find(x=>x.id===id);if(!u)return;await saveAppUserFS({...u,notes:document.getElementById(`unotes-${id}`).value});}
+async function updateUserNotes(id){const u=appUsers.find(x=>String(x.id)===String(id));if(!u)return;await saveAppUserFS({...u,notes:document.getElementById(`unotes-${id}`).value});}
 async function deleteUser(id){if(!confirm('Delete this user?'))return;await deleteAppUserFS(id);}
 
 function renderUsers(){
