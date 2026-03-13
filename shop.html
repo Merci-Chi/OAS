@@ -267,17 +267,20 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 
 .badge-circle{
   position:absolute;top:10px;left:10px;
-  width:44px;height:44px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Share Tech Mono',monospace;
-  font-size:8px;font-weight:700;color:#fff;
-  text-align:center;line-height:1.1;z-index:2;
-  text-shadow:0 1px 2px rgba(0,0,0,.7);
+  width:64px;height:64px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Black Ops One',sans-serif;
+  font-size:11px;font-weight:700;color:#fff;
+  text-align:center;line-height:1.15;z-index:2;
+  text-shadow:0 1px 3px rgba(0,0,0,.8);
+  letter-spacing:0.5px;
 }
-.badge-new{background:radial-gradient(circle,#00e5ff,#0050ff);box-shadow:0 0 12px rgba(0,229,255,.5);}
-.badge-hot{background:radial-gradient(circle,#ff6600,#cc0000);box-shadow:0 0 12px rgba(255,102,0,.5);}
-.badge-pct{background:radial-gradient(circle,#00ff88,#007744);box-shadow:0 0 12px rgba(0,255,136,.5);}
-.badge-ltd{background:radial-gradient(circle,#cc00ff,#6600cc);box-shadow:0 0 12px rgba(204,0,255,.5);}
+.badge-circle .badge-num{font-size:18px;line-height:1;}
+.badge-circle .badge-sub{font-size:9px;letter-spacing:1px;font-family:'Share Tech Mono',monospace;}
+.badge-new{background:radial-gradient(circle,#00e5ff,#0050ff);box-shadow:0 0 18px rgba(0,229,255,.6);}
+.badge-hot{background:radial-gradient(circle,#ff6600,#cc0000);box-shadow:0 0 18px rgba(255,102,0,.6);}
+.badge-pct{background:radial-gradient(circle,#00ff88,#007744);box-shadow:0 0 18px rgba(0,255,136,.6);}
+.badge-ltd{background:radial-gradient(circle,#cc00ff,#6600cc);box-shadow:0 0 18px rgba(204,0,255,.6);}
 
 .card-actions{
   position:absolute;bottom:0;left:0;right:0;
@@ -931,11 +934,15 @@ function buildCard(item) {
   const dp      = hasDisc ? (parseFloat(item.price || 0) * (1 - parseInt(item.discount) / 100)).toFixed(2) : null;
   const emoji   = EMOJIS[cat] || '✨';
 
+  // Always show a % badge when there's a discount, even if badge type isn't explicitly '%'
   let badge = '';
-  if (item.badge === 'New!')      badge = `<div class="badge-circle badge-new">NEW</div>`;
-  else if (item.badge === 'Hot!') badge = `<div class="badge-circle badge-hot">HOT</div>`;
-  else if (item.badge === '%')    badge = `<div class="badge-circle badge-pct">${item.discount || ''}%<br/>OFF</div>`;
-  else if (item.badge === 'Ltd')  badge = `<div class="badge-circle badge-ltd">LTD</div>`;
+  if (item.badge === 'New!')      badge = `<div class="badge-circle badge-new"><span class="badge-num">NEW</span></div>`;
+  else if (item.badge === 'Hot!') badge = `<div class="badge-circle badge-hot"><span class="badge-num">HOT</span></div>`;
+  else if (item.badge === 'Ltd')  badge = `<div class="badge-circle badge-ltd"><span class="badge-num">LTD</span></div>`;
+  // Show % badge if badge is '%' OR if there's a discount with no other badge set
+  if (item.badge === '%' || (hasDisc && !badge)) {
+    badge = `<div class="badge-circle badge-pct"><span class="badge-num">${item.discount || ''}%</span><span class="badge-sub">OFF</span></div>`;
+  }
 
   const front = item.img
     ? `<img src="${_esc(item.img)}" alt="${_esc(item.title)}"/>`
@@ -947,8 +954,8 @@ function buildCard(item) {
   const priceSection = isPhoto ? '' : `
     <div class="card-foot">
       <div>
-        ${hasDisc ? `<s style="font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(255,255,255,.3);">$${item.price}</s>` : ''}
-        <div class="card-price">$${dp || item.price}</div>
+        ${hasDisc ? `<div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(255,255,255,.35);text-decoration:line-through;margin-bottom:2px;">$${parseFloat(item.price).toFixed(2)}</div>` : ''}
+        <div class="card-price" style="${hasDisc ? 'color:#00ff88;' : ''}">$${dp || parseFloat(item.price).toFixed(2)}</div>
         ${hasDisc ? `<div class="card-disc">${item.discount}% OFF</div>` : ''}
       </div>
       <button class="add-btn" onclick="event.stopPropagation();quickAdd('${item.id}')">+ Add</button>
