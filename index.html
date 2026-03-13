@@ -1141,7 +1141,166 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
 </div>
 
 <div id="toast"></div>
+<script type="module">
+  // Firebase SDKs (v10+)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+  import {
+    getFirestore,
+    doc,
+    onSnapshot,
+    getDoc,
+    updateDoc,
+    increment
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDlHu_4elXWPeckr6C7JWbcJaLrpnDpGnc",
+    authDomain: "oasense-a4582.firebaseapp.com",
+    projectId: "oasense-a4582",
+    storageBucket: "oasense-a4582.firebasestorage.app",
+    messagingSenderId: "517676734280",
+    appId: "1:517676734280:web:63644bb6ffb0c43185c57d",
+    measurementId: "G-HQRCX63FYG"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+  // Helper
+  const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  // Firestore document with all site settings
+  const settingsRef = doc(db, "site_settings", "global");
+
+  // ===== ABOUT + DONATION: LOAD FROM FIREBASE =====
+  function applySiteSettings(S) {
+    // ABOUT PHOTO
+    if (S.about_photo_url) {
+      const av = document.getElementById('aboutPhoto');
+      if (av) {
+        const corners = Array.from(av.querySelectorAll('.av-corner')).map(el=>el.outerHTML).join('');
+        av.innerHTML = `<img src="${_esc(S.about_photo_url)}" alt="Oasense Photo"/>` + corners;
+      }
+    }
+    // ABOUT PULLQUOTE
+    if (S.about_pullquote) {
+      const el = document.getElementById('aboutPullquote');
+      if (el) el.textContent = S.about_pullquote;
+    }
+    // ABOUT BODY (paragraphs separated by \n\n)
+    if (S.about_body) {
+      const el = document.getElementById('aboutBody');
+      if (el) {
+        el.innerHTML = S.about_body
+          .split('\n\n')
+          .map(p => `<p>${p.replace(/\n/g,'<br/>')}</p>`)
+          .join('');
+      }
+    }
+    // ABOUT HEADING WORD
+    if (S.about_title) {
+      const hot = document.querySelector('#about .sec-title .hot');
+      if (hot) hot.textContent = S.about_title;
+    }
+
+    // DONATION TOTAL / DESC
+    const total = Number(S.donation_total || 0);
+    const rnEl = document.getElementById('rn');
+    if (rnEl && !Number.isNaN(total)) rnEl.textContent = total.toLocaleString();
+
+    if (S.donation_desc) {
+      const dd = document.getElementById('donDesc');
+      if (dd) dd.textContent = S.donation_desc;
+    }
+
+    // DONATION GOAL + PROGRESS BAR
+    const goal = Number(S.donation_goal || 0);
+    if (goal > 0 && !Number.isNaN(goal)) {
+      const bar = document.getElementById('donGoalBar');
+      const raisedLbl = document.getElementById('donGoalRaisedLbl');
+      const goalLbl = document.getElementById('donGoalLbl');
+      const fill = document.getElementById('donGoalFill');
+      if (bar && raisedLbl && goalLbl && fill) {
+        bar.style.display = 'block';
+        raisedLbl.textContent = `$${total.toLocaleString()} raised`;
+        goalLbl.textContent = `Goal: $${goal.toLocaleString()}`;
+        const pct = Math.min(100, Math.round((total / goal) * 100));
+        setTimeout(() => { fill.style.width = pct + '%'; }, 400);
+      }
+    }
+
+    // DONATION AMOUNTS BUTTONS
+    if (S.donation_amounts) {
+      const ag = document.getElementById('donAmounts');
+      if (ag) {
+        const amts = String(S.donation_amounts)
+          .split(',')
+          .map(a => a.trim())
+          .filter(Boolean);
+
+        ag.innerHTML = amts.map((a,i) => {
+          const isNum = !Number.isNaN(Number(a));
+          const val  = isNum ? Number(a) : 'other';
+          const label= isNum ? '$'+a : a;
+          const on   = i===2 ? ' on' : '';
+          return `<button class="ab${on}" onclick="pA(${isNum?val:`'other'`},this)">${label}</button>`;
+        }).join('') + `
+          <button class="ab" onclick="pA('other',this)">Other</button>`;
+      }
+    }
+  }
+
+  // Live updates from Firestore
+  onSnapshot(settingsRef, (snap) => {
+    if (snap.exists()) applySiteSettings(snap.data());
+  });
+
+  // Expose a Firebase-backed donate() globally (replace your old one)
+  window.don = async function don() {
+    // same UI logic you already use
+    const cw = document.getElementById('cw');
+    const other = cw && cw.style.display === 'block';
+    const amount =
+      other
+        ? Number(document.getElementById('ca').value || 0)
+        : (() => {
+            // find selected .ab
+            const btn = document.querySelector('.ab.on');
+            if (!btn) return 0;
+            const txt = btn.textContent.replace('$','').trim();
+            return Number(txt) || 0;
+          })();
+
+    if (!amount || Number.isNaN(amount) || amount <= 0) {
+      toast('PLEASE ENTER AN AMOUNT');
+      return;
+    }
+
+    toast(`THANK YOU FOR YOUR $${amount} DONATION! ☀️`);
+
+    try {
+      // atomically increment in Firestore
+      await updateDoc(settingsRef, {
+        donation_total: increment(amount)
+      });
+
+      // local UI will be updated automatically by onSnapshot
+    } catch (e) {
+      console.error(e);
+      // simple local fallback
+      const rnEl = document.getElementById('rn');
+      if (rnEl) {
+        const cur = Number(rnEl.textContent.replace(/,/g,'')) || 0;
+        rnEl.textContent = (cur + amount).toLocaleString();
+      }
+    }
+  };
+</script>
 <script>
 // ═══════════════════════════════════════════════
 //  SUPABASE INIT
@@ -1547,95 +1706,6 @@ function initPanelHovers() {
 }
 
 // ═══════════════════════════════════════════════
-//  ABOUT + SITE SETTINGS — Fully Supabase-driven
-// ═══════════════════════════════════════════════
-/*
-  Supabase table: site_settings  (key TEXT, value TEXT)
-  ─────────────────────────────────────────────────────
-  ABOUT SECTION — all editable from DEV, live instantly:
-    about_photo_url    — portrait image URL or filename (relative to DEV_BASE)
-    about_pullquote    — italic pull-quote (the big highlighted text)
-    about_body         — body paragraphs, separated by \n\n
-    about_title        — optional: overrides the colored word in heading
-                         (default: "Oasense")
-
-  To edit from DEV:  upsert rows in site_settings with the keys above.
-  Changes reflect on main site immediately (Supabase realtime channel below).
-
-  DONATION:
-    donation_total     — current total raised (number string)
-    donation_goal      — goal amount
-    donation_desc      — description paragraph
-    donation_amounts   — comma-separated amounts e.g. "10,25,50,100"
-*/
-async function loadSiteSettings() {
-  try {
-    const { data } = await db.from('site_settings').select('key,value');
-    if (!data) return;
-    const S = {};
-    data.forEach(r => { S[r.key] = r.value; });
-
-    // ── ABOUT PHOTO ──────────────────────────────
-    if (S.about_photo_url) {
-      const url = mediaUrl(S.about_photo_url);
-      const av = document.getElementById('aboutPhoto');
-      // preserve corner brackets
-      const corners = Array.from(av.querySelectorAll('.av-corner')).map(el=>el.outerHTML).join('');
-      av.innerHTML = `<img src="${_esc(url)}" alt="Oasense Photo"/>` + corners;
-    }
-
-    // ── ABOUT PULL QUOTE ─────────────────────────
-    if (S.about_pullquote) {
-      document.getElementById('aboutPullquote').textContent = S.about_pullquote;
-    }
-
-    // ── ABOUT BODY ───────────────────────────────
-    if (S.about_body) {
-      document.getElementById('aboutBody').innerHTML =
-        S.about_body.split('\n\n').map(p => `<p>${p.replace(/\n/g,'<br/>')}</p>`).join('');
-    }
-
-    // ── ABOUT HEADING OVERRIDE ───────────────────
-    if (S.about_title) {
-      const hot = document.querySelector('#about .sec-title .hot');
-      if (hot) hot.textContent = S.about_title;
-    }
-
-    // ── DONATION ─────────────────────────────────
-    const total = parseFloat(S.donation_total || '0') || 0;
-    const rnEl = document.getElementById('rn');
-    if (rnEl) rnEl.textContent = total.toLocaleString();
-    if (S.donation_desc) {
-      const dd = document.getElementById('donDesc');
-      if (dd) dd.textContent = S.donation_desc;
-    }
-    if (S.donation_goal) {
-      const goal = parseFloat(S.donation_goal) || 0;
-      if (goal > 0) {
-        const pct = Math.min(100, Math.round((total/goal)*100));
-        const bar = document.getElementById('donGoalBar');
-        if (bar) {
-          bar.style.display = 'block';
-          document.getElementById('donGoalRaisedLbl').textContent = `$${total.toLocaleString()} raised`;
-          document.getElementById('donGoalLbl').textContent = `Goal: $${goal.toLocaleString()}`;
-          setTimeout(() => { document.getElementById('donGoalFill').style.width = pct+'%'; }, 400);
-        }
-      }
-    }
-    if (S.donation_amounts) {
-      const amts = S.donation_amounts.split(',').map(a=>a.trim()).filter(Boolean);
-      if (amts.length) {
-        const ag = document.getElementById('donAmounts');
-        if (ag) ag.innerHTML = amts.map((a,i)=>`<button class="ab${i===2?' on':''}" onclick="pA(${isNaN(a)?`'other'`:a},this)">${isNaN(a)?a:'$'+a}</button>`).join('')
-          + `<button class="ab" onclick="pA('other',this)">Other</button>`;
-      }
-    }
-  } catch(e) { console.error('Settings error:',e); }
-}
-// Realtime: any change to site_settings refreshes About + donation live
-db.channel('settings-rt').on('postgres_changes',{event:'*',schema:'public',table:'site_settings'},loadSiteSettings).subscribe();
-
-// ═══════════════════════════════════════════════
 //  CANVAS BG
 // ═══════════════════════════════════════════════
 const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');
@@ -1848,19 +1918,6 @@ function pws(){const v=document.getElementById('pwin').value;let s=0;if(v.length
 // Scroll reveal
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}}));
 document.querySelectorAll('.po,.ri,.tk,.sv').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(18px)';el.style.transition='opacity .5s ease,transform .5s ease';obs.observe(el);});
-
-// ═══════════════════════════════════════════════
-//  INIT ALL
-// ═══════════════════════════════════════════════
-loadShop();
-loadBlog();
-loadPortfolio();
-loadSiteSettings();
-
-// Realtime
-db.channel('blog-rt').on('postgres_changes',{event:'*',schema:'public',table:'blog_posts'},loadBlog).subscribe();
-db.channel('portfolio-rt').on('postgres_changes',{event:'*',schema:'public',table:'portfolio_items'},()=>{loadPortfolio();}).subscribe();
-db.channel('settings-rt').on('postgres_changes',{event:'*',schema:'public',table:'site_settings'},loadSiteSettings).subscribe();
 </script>
 </body>
 </html>
