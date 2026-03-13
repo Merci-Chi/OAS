@@ -153,6 +153,2268 @@ section{padding:100px 40px;}
 
 /* ── MUSIC ── */
 #music{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
+.sc-link{display:inline-flex;align-items:center;gap:10px;padding:14px 30px;border:1px solid rgba(140,0,255,.5);color:#aa44ff;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-decoration:none;text-transform:uppercase;transition:all .2s;}
+.sc-link:hover{background:rgba(140,0,255,0.1);box-shadow:0 0 15px rgba(140,0,255,0.3);}
+
+/* ── TRACK LIST ── */
+.tl{display:flex;flex-direction:column;gap:3px;margin-bottom:32px;}
+
+.tk{
+  background:rgba(255,0,200,0.03);
+  border:1px solid rgba(255,0,200,0.15);
+  transition:border-color .2s,background .2s,box-shadow .2s;
+  overflow:hidden;
+}
+.tk:hover{border-color:rgba(255,0,200,0.35);background:rgba(255,0,200,0.05);}
+.tk.pl{border-color:var(--hot);background:rgba(255,0,200,0.07);box-shadow:0 0 20px rgba(255,0,200,0.1);}
+
+/* top row: play btn + title/meta + skip btns + time */
+.tk-top{display:grid;grid-template-columns:52px 1fr auto auto auto;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;}
+
+/* play/pause button */
+.tpb{
+  width:46px;height:46px;border-radius:50%;
+  border:1.5px solid var(--hot);background:transparent;
+  color:var(--hot);font-size:15px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+}
+.tpb:hover,.tk.pl .tpb{background:var(--hot);color:#000;box-shadow:0 0 16px var(--hot);}
+
+/* skip buttons */
+.tskip{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(255,0,200,0.08);
+  border:1px solid rgba(255,0,200,0.2);
+  color:rgba(255,214,245,0.7);
+  font-size:11px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;flex-shrink:0;
+  font-family:'Share Tech Mono',monospace;
+  letter-spacing:-1px;
+}
+.tskip:hover{background:rgba(255,0,200,0.18);border-color:var(--hot);color:#fff;}
+.tk.pl .tskip{border-color:rgba(255,0,200,0.4);color:rgba(255,214,245,0.9);}
+
+/* track title/meta */
+.tn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;line-height:1.2;}
+.tm{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:2px;margin-top:3px;}
+
+/* time display */
+.tt{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);min-width:72px;text-align:right;flex-shrink:0;}
+.tt .tc{color:var(--hot);}
+
+/* seekable progress bar */
+.tbw{
+  width:100%;height:3px;
+  background:rgba(255,0,200,0.15);
+  cursor:pointer;position:relative;
+  margin:0 20px 0;
+  transition:height .15s;
+}
+.tbw:hover{height:5px;}
+.tb{height:100%;width:0%;background:linear-gradient(to right,var(--hot),var(--mag));box-shadow:0 0 6px var(--hot);pointer-events:none;transition:width .1s linear;}
+/* scrubber thumb */
+.tbw::after{
+  content:'';position:absolute;top:50%;right:calc(100% - var(--pct,0%) - 1px);
+  transform:translate(50%,-50%);
+  width:10px;height:10px;border-radius:50%;
+  background:var(--hot);box-shadow:0 0 6px var(--hot);
+  opacity:0;transition:opacity .15s;
+  pointer-events:none;
+}
+.tbw:hover::after,.tk.pl .tbw::after{opacity:1;}
+
+/* no-audio warning */
+.tk-no-audio{display:none;font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,0,200,0.4);letter-spacing:2px;padding:4px 20px 10px;text-transform:uppercase;}
+.tk.no-src .tk-no-audio{display:block;}
+
+/* social row: like/comment/share */
+.tk-social{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 20px 14px;
+  border-top:1px solid rgba(255,0,200,0.08);
+  background:rgba(0,0,5,0.3);
+}
+.tsb{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;
+  background:transparent;
+  border:1px solid rgba(255,0,200,0.2);
+  color:rgba(255,214,245,0.65);
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;transition:all .2s;
+  border-radius:2px;
+}
+.tsb:hover{border-color:var(--hot);color:var(--hot);}
+.tsb.liked{border-color:var(--hot);color:var(--hot);background:rgba(255,0,200,0.1);box-shadow:0 0 10px rgba(255,0,200,0.15);}
+.tsb .ti{font-size:13px;}
+
+/* comment tray */
+.tk-comments{
+  display:none;
+  padding:12px 20px 16px;
+  border-top:1px solid rgba(255,0,200,0.08);
+  background:rgba(0,0,4,0.5);
+}
+.tk-comments.open{display:block;}
+.tk-comments-list{display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:180px;overflow-y:auto;}
+.tk-comment{
+  padding:8px 12px;
+  background:rgba(255,0,200,0.04);
+  border:1px solid rgba(255,0,200,0.1);
+}
+.tk-comment-author{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--hot);text-transform:uppercase;margin-bottom:4px;}
+.tk-comment-text{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:rgba(255,214,245,0.8);line-height:1.5;}
+.tk-comment-input-row{display:flex;gap:8px;}
+.tk-comment-input{
+  flex:1;background:rgba(255,0,200,0.04);
+  border:1px solid rgba(255,0,200,0.2);
+  color:var(--txt);
+  font-family:'Barlow Condensed',sans-serif;font-size:15px;
+  padding:9px 14px;outline:none;
+  transition:border-color .2s;
+}
+.tk-comment-input::placeholder{color:rgba(170,102,204,0.4);}
+.tk-comment-input:focus{border-color:rgba(255,0,200,0.5);}
+.tk-comment-send{
+  padding:9px 18px;background:transparent;
+  border:1px solid var(--hot);color:var(--hot);
+  font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;cursor:pointer;transition:all .2s;white-space:nowrap;
+}
+.tk-comment-send:hover{background:var(--hot);color:#000;box-shadow:0 0 12px var(--hot);}
+.tk-comments-empty{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(170,102,204,0.35);letter-spacing:2px;text-align:center;padding:16px 0;text-transform:uppercase;}
+
+/* ── BLOG ── */
+#blog{background:var(--void);}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:rgba(255,204,0,0.05);border:1px solid rgba(255,204,0,0.2);padding:4px;box-shadow:0 0 60px rgba(255,204,0,0.03);}
+
+/* each blog card */
+.bc{background:rgba(4,0,12,1);border:1px solid rgba(255,204,0,.15);overflow:hidden;cursor:pointer;transition:border-color .3s,box-shadow .35s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
+.bc:hover{border-color:rgba(255,204,0,.55);box-shadow:0 0 30px rgba(255,204,0,0.08),inset 0 0 30px rgba(255,204,0,0.02);}
+
+/* photo area */
+.bc-photo{width:100%;height:210px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+/* per-card gradient backgrounds */
+.bc:nth-child(1) .bc-photo{background:linear-gradient(160deg,#1a0040 0%,#09001c 50%,#0d0028 100%);}
+.bc:nth-child(2) .bc-photo{background:linear-gradient(160deg,#001a30 0%,#000d1a 50%,#000818 100%);}
+.bc:nth-child(3) .bc-photo{background:linear-gradient(160deg,#1e0200 0%,#100000 50%,#160008 100%);}
+.bc-photo::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,204,0,0.09) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.bc-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.4,0,.2,1);z-index:1;}
+.bc:hover .bc-photo img{transform:scale(1.06);}
+.bc-photo-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,0,12,1) 0%,rgba(4,0,12,0.2) 55%,transparent 100%);z-index:2;pointer-events:none;}
+
+/* placeholder emoji icon in photo zone */
+.bc-photo-icon{position:relative;z-index:3;font-size:52px;filter:drop-shadow(0 0 20px rgba(255,204,0,0.35));}
+
+.bc-cat{position:absolute;top:14px;left:14px;font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:700;letter-spacing:3px;color:var(--hot);text-transform:uppercase;z-index:4;text-shadow:0 0 8px var(--hot);}
+
+/* content body */
+.bc-body{padding:20px 18px 22px;flex:1;display:flex;flex-direction:column;}
+.bc-date{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:12px;opacity:.7;}
+.bc-title{font-family:'Black Ops One',sans-serif;font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;margin-bottom:10px;line-height:1.25;text-shadow:0 0 20px rgba(255,255,255,.08);}
+.bc-excerpt{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:rgba(255,214,245,0.7);line-height:1.65;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;letter-spacing:.3px;}
+.bc-more{display:inline-block;margin-top:16px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;text-decoration:none;border-bottom:1px solid rgba(255,204,0,.4);padding-bottom:3px;transition:border-color .2s,color .2s,text-shadow .2s;}
+.bc-more:hover{color:#fff;border-color:#fff;text-shadow:0 0 10px rgba(255,255,255,.4);}
+
+/* ═══════════════════════════════════════
+   ── PORTFOLIO — 5-PANEL UNIFIED GRID ──
+   ═══════════════════════════════════════ */
+#portfolio{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
+
+/* The single unified grid card */
+.pf-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:420px 300px;
+  gap:4px;
+  background:rgba(255,0,200,0.06);
+  border:1px solid rgba(255,0,200,0.2);
+  padding:4px;
+  box-shadow:0 0 60px rgba(255,0,200,0.06), 0 0 120px rgba(123,0,255,0.04);
+}
+
+/* Bottom row: 3 equal columns */
+.pf-grid-bottom{
+  grid-column:1/3;
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:4px;
+}
+
+/* Individual panel */
+.pf-panel{
+  position:relative;
+  overflow:hidden;
+  background:rgba(6,0,16,0.92);
+  cursor:pointer;
+  display:flex;
+  align-items:flex-end;
+  /* dark atmospheric bg gradient per panel — overridden per section */
+  background:linear-gradient(160deg,rgba(8,0,20,0.95) 0%,rgba(4,0,10,0.98) 100%);
+}
+
+/* Per-section tint overlays (always present, subtle) */
+.pf-panel[data-section="portraits"]{background:linear-gradient(160deg,rgba(12,0,28,0.96) 0%,rgba(6,0,16,0.99) 100%);}
+.pf-panel[data-section="digital"]  {background:linear-gradient(160deg,rgba(0,8,28,0.96) 0%,rgba(0,4,16,0.99) 100%);}
+.pf-panel[data-section="video"]    {background:linear-gradient(160deg,rgba(16,4,0,0.96) 0%,rgba(10,2,0,0.99) 100%);}
+.pf-panel[data-section="branding"] {background:linear-gradient(160deg,rgba(14,0,22,0.96) 0%,rgba(8,0,14,0.99) 100%);}
+.pf-panel[data-section="lifestyle"]{background:linear-gradient(160deg,rgba(0,10,24,0.96) 0%,rgba(0,6,16,0.99) 100%);}
+
+/* Media layers */
+.pf-panel-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .7s cubic-bezier(.4,0,.2,1), opacity .4s ease;
+  opacity:1;
+}
+.pf-panel:hover .pf-panel-img{
+  transform:scale(1.06);
+}
+
+.pf-panel-video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity .4s ease;
+}
+.pf-panel:hover .pf-panel-video{
+  opacity:1;
+}
+
+/* Permanent gradient overlay — always visible at bottom */
+.pf-panel-grad{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,8,0.88) 0%,
+    rgba(0,0,8,0.35) 35%,
+    rgba(0,0,8,0.08) 65%,
+    transparent 100%
+  );
+  z-index:2;
+  pointer-events:none;
+}
+
+/* Hover tint — magenta sheen sweeps in */
+.pf-panel::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(135deg, rgba(255,0,200,0.08) 0%, rgba(123,0,255,0.06) 100%);
+  opacity:0;
+  transition:opacity .4s ease;
+  z-index:3;
+  pointer-events:none;
+}
+.pf-panel:hover::before{
+  opacity:1;
+}
+
+/* Glow border on hover */
+.pf-panel::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border:1px solid transparent;
+  transition:border-color .35s, box-shadow .35s;
+  z-index:5;
+  pointer-events:none;
+}
+.pf-panel:hover::after{
+  border-color:rgba(255,0,200,0.5);
+  box-shadow:inset 0 0 30px rgba(255,0,200,0.06);
+}
+
+/* Label block — always visible, bottom of panel */
+.pf-panel-label{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  z-index:4;
+  padding:22px 24px 22px;
+  pointer-events:none;
+}
+.pf-panel-cat{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  letter-spacing:5px;
+  color:var(--hot);
+  text-transform:uppercase;
+  text-shadow:0 0 10px rgba(255,180,0,0.6);
+  margin-bottom:6px;
+  opacity:0.85;
+}
+.pf-panel-name{
+  font-family:'Black Ops One',sans-serif;
+  font-size:clamp(22px,3vw,38px);
+  color:#fff;
+  text-transform:uppercase;
+  line-height:0.9;
+  letter-spacing:2px;
+  text-shadow:0 2px 20px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.6);
+}
+/* Smaller text for bottom row panels */
+.pf-grid-bottom .pf-panel-name{
+  font-size:clamp(18px,2vw,28px);
+}
+.pf-grid-bottom .pf-panel-cat{
+  font-size:9px;
+  letter-spacing:4px;
+}
+
+/* Play icon for video panels */
+.pf-panel-play{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:rgba(0,0,0,0.5);
+  border:1.5px solid rgba(255,0,200,0.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--hot);
+  font-size:20px;
+  z-index:4;
+  transition:opacity .3s, transform .3s;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 20px rgba(255,0,200,0.2);
+}
+.pf-panel:hover .pf-panel-play{
+  opacity:0;
+  transform:translate(-50%,-50%) scale(0.75);
+}
+
+/* Image rotation dots */
+.pf-panel-dots{
+  position:absolute;
+  top:16px;
+  right:16px;
+  display:flex;
+  gap:5px;
+  z-index:5;
+  opacity:0;
+  transition:opacity .3s;
+}
+.pf-panel:hover .pf-panel-dots{
+  opacity:1;
+}
+.pf-panel-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.25);
+  border:1px solid rgba(255,255,255,0.1);
+  transition:background .3s, box-shadow .3s;
+}
+.pf-panel-dot.active{
+  background:var(--hot);
+  box-shadow:0 0 6px var(--hot);
+  border-color:var(--hot);
+}
+
+/* No-media placeholder */
+.pf-panel-empty{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  z-index:1;
+}
+.pf-panel-empty-icon{
+  font-size:32px;
+  opacity:0.18;
+}
+.pf-panel-empty-txt{
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  letter-spacing:3px;
+  color:rgba(255,0,200,0.2);
+  text-transform:uppercase;
+  text-align:center;
+  line-height:1.8;
+}
+
+/* ── BOOKING ── */
+#booking{scroll-margin-top:90px;background:var(--void);}
+.bkg{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.svl{display:flex;flex-direction:column;gap:2px;}
+.sv{padding:18px 20px;background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.12);cursor:pointer;transition:all .2s;display:flex;gap:14px;align-items:flex-start;}
+.sv:hover,.sv.on{border-color:var(--hot);background:rgba(255,0,200,0.06);}
+.svi{font-size:24px;flex-shrink:0;}
+.svn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.svd{font-size:14px;color:var(--mute);line-height:1.6;}
+.pnote{margin-top:20px;padding:16px 20px;border-left:2px solid var(--hot);background:rgba(255,0,200,0.04);font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);line-height:1.7;letter-spacing:1px;}
+.fm{display:flex;flex-direction:column;gap:16px;}
+.fg{display:flex;flex-direction:column;gap:7px;}
+.fl{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;text-shadow:0 0 6px rgba(255,0,200,0.5);}
+.fi,.fta,.fse{background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);color:var(--txt);padding:14px 16px;font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none;transition:border-color .2s;width:100%;}
+.fi:focus,.fta:focus,.fse:focus{border-color:var(--hot);box-shadow:0 0 10px rgba(255,0,200,0.2);}
+.fta{height:115px;resize:vertical;}
+.fbtn{padding:16px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Black Ops One',sans-serif;font-size:17px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .25s;margin-top:2px;position:relative;overflow:hidden;}
+.fbtn::before{content:'';position:absolute;inset:0;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1;}
+.fbtn:hover{color:#000;box-shadow:0 0 20px var(--hot);}
+.fbtn:hover::before{transform:scaleX(1);}
+.csel{position:relative;}
+.csel-selected{background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);color:var(--txt);padding:12px 15px;font-family:'Barlow Condensed',sans-serif;font-size:14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:border-color .2s;user-select:none;}
+.csel-selected:hover,.csel.open .csel-selected{border-color:var(--hot);}
+.csel-arrow{font-size:12px;color:var(--hot);transition:transform .2s;}
+.csel.open .csel-arrow{transform:rotate(180deg);}
+.csel-opts{display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:#080008;border:1px solid var(--hot);border-top:none;}
+.csel.open .csel-opts{display:block;}
+.csel-opt{padding:14px 16px;cursor:pointer;border-bottom:1px solid rgba(255,0,200,0.12);transition:background .2s;}
+.csel-opt:last-child{border-bottom:none;}
+.csel-opt:hover{background:rgba(255,0,200,0.08);}
+.csel-opt strong{display:block;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;color:var(--txt);margin-bottom:3px;}
+.csel-opt span{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--mute);letter-spacing:1px;}
+
+/* ── ABOUT — updated to OASENSE ── */
+#about{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
+.av{aspect-ratio:3/4;background:linear-gradient(135deg,rgba(255,0,200,0.08),rgba(123,0,255,0.08));border:1px solid rgba(255,0,200,0.2);display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;overflow:hidden;}
+.av::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(255,0,200,0.15) 0%,transparent 60%);}
+.av img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.av-corner{position:absolute;width:24px;height:24px;border-color:var(--hot);border-style:solid;box-shadow:0 0 8px var(--hot);}
+.av-corner.tl{top:0;left:0;border-width:2px 0 0 2px;}
+.av-corner.tr{top:0;right:0;border-width:2px 2px 0 0;}
+.av-corner.bl{bottom:0;left:0;border-width:0 0 2px 2px;}
+.av-corner.br{bottom:0;right:0;border-width:0 2px 2px 0;}
+.apull{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-style:italic;font-size:clamp(20px,3vw,34px);color:var(--hot);line-height:1.4;padding:20px 0 20px 20px;border-left:2px solid var(--hot);text-shadow:0 0 15px rgba(255,0,200,0.5);margin-bottom:26px;}
+.abod{font-size:18px;color:var(--mute);line-height:1.9;}
+.abod p+p{margin-top:16px;}
+.socr{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px;}
+.slnk{padding:12px 20px;border:1px solid rgba(255,0,200,0.25);color:rgba(255,255,255,0.65);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;transition:all .2s;}
+.slnk:hover{border-color:var(--hot);color:var(--hot);}
+/* About photo overlay edit hint (shows if user is admin — add class 'is-admin' to body via JS) */
+.av-edit-hint{position:absolute;bottom:0;left:0;right:0;padding:14px;background:rgba(0,0,8,.78);text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;opacity:0;transition:opacity .25s;z-index:5;}
+.av:hover .av-edit-hint{opacity:1;}
+
+/* ── REWARDS ── */
+#rewards{background:var(--void);}
+.rtop{text-align:center;padding:48px 32px;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);margin-bottom:48px;position:relative;overflow:hidden;}
+.rtop::before{content:'SOL';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Black Ops One',sans-serif;font-size:200px;color:rgba(255,0,200,0.03);pointer-events:none;white-space:nowrap;}
+.rnum{font-family:'Black Ops One',sans-serif;font-size:clamp(70px,11vw,130px);color:var(--hot);text-shadow:0 0 30px var(--hot),0 0 60px rgba(255,0,200,0.4);}
+.rlbl{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:5px;color:var(--mute);text-transform:uppercase;margin-top:8px;}
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:3px;margin-bottom:24px;}
+.ri{padding:28px 18px;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.15);text-align:center;transition:all .2s;}
+.ri:hover{border-color:var(--hot);}
+.ricon{font-size:32px;margin-bottom:12px;}
+.rp{font-family:'Black Ops One',sans-serif;font-size:30px;color:var(--hot);}
+.rw{font-family:'Share Tech Mono',monospace;font-size:14px;color:rgba(255,255,255,0.65);margin-top:6px;line-height:1.6;letter-spacing:1px;}
+.rdm{padding:28px 30px;background:rgba(255,0,200,0.05);border:1px solid rgba(255,0,200,0.2);border-left:3px solid var(--hot);}
+.rdm h4{font-family:'Black Ops One',sans-serif;font-size:17px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:10px;}
+.rdm p{font-family:'Share Tech Mono',monospace;font-size:14px;color:rgba(255,255,255,0.65);line-height:2;letter-spacing:1px;}
+
+/* ── DONATION ── */
+#donation{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);scroll-margin-top:110px;}
+.dtop{text-align:center;margin-bottom:52px;}
+.raised{font-family:'Black Ops One',sans-serif;font-size:clamp(64px,10vw,120px);color:#fff;line-height:1;}
+.raised span{color:var(--hot);text-shadow:0 0 30px var(--hot);}
+.rsub{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:5px;color:var(--mute);text-transform:uppercase;margin-top:8px;}
+.dd{font-size:17px;color:var(--mute);max-width:400px;margin:14px auto 0;line-height:1.8;}
+.ag2{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:24px;}
+.ab{min-width:80px;padding:15px 20px;text-align:center;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);color:var(--txt);font-family:'Black Ops One',sans-serif;font-size:24px;cursor:pointer;transition:all .2s;}
+.ab:hover,.ab.on{border-color:var(--hot);color:var(--hot);box-shadow:0 0 15px rgba(255,0,200,0.2);}
+.cw{max-width:260px;margin:0 auto 24px;}
+.fr{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:36px;}
+.frb{padding:11px 26px;background:transparent;border:1px solid rgba(255,0,200,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.frb:hover,.frb.on{border-color:var(--hot);color:var(--hot);}
+.db{display:block;margin:0 auto;padding:18px 60px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.db::before{content:'';position:absolute;inset:0;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1;}
+.db:hover{color:#000;box-shadow:0 0 30px var(--hot);}
+.db:hover::before{transform:scaleX(1);}
+.don-goal-bar{max-width:500px;margin:0 auto 20px;}
+.don-goal-label{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:2px;margin-bottom:8px;}
+.don-goal-track{height:4px;background:rgba(255,0,200,0.15);border-radius:2px;}
+.don-goal-fill{height:100%;background:linear-gradient(to right,var(--hot),var(--mag));border-radius:2px;transition:width 1s ease;box-shadow:0 0 8px var(--hot);}
+
+/* ── NEWSLETTER ── */
+#newsletter{padding:90px 40px;background:linear-gradient(135deg,rgba(255,0,200,0.07) 0%,rgba(20,0,30,0.98) 45%,rgba(123,0,255,0.07) 100%);border-top:1px solid rgba(255,0,200,0.2);border-bottom:1px solid rgba(255,0,200,0.2);text-align:center;position:relative;z-index:10;}
+.nlt{font-family:'Black Ops One',sans-serif;font-size:clamp(30px,6vw,68px);color:#fff;text-transform:uppercase;margin-bottom:10px;}
+.nlt span{color:var(--hot);}
+.nls{font-family:'Share Tech Mono',monospace;font-size:14px;color:#d0a0e0;margin-bottom:32px;letter-spacing:2px;}
+.nlf{display:flex;max-width:500px;margin:0 auto;}
+.nlf input{flex:1;padding:15px 18px;background:rgba(255,0,200,0.05);border:1px solid rgba(255,0,200,0.25);border-right:none;color:var(--txt);font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none;}
+.nlf input:focus{border-color:var(--hot);}
+.nlf button{padding:15px 28px;background:var(--hot);border:1px solid var(--hot);color:#000;font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.nlf button:hover{background:var(--mag);border-color:var(--mag);}
+
+/* ── CONTACT ── */
+#contact{background:var(--void);scroll-margin-top:110px;}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:60px;}
+.cit{display:flex;gap:14px;align-items:flex-start;padding:16px 0;border-bottom:1px solid rgba(255,0,200,0.12);}
+.cic{font-size:22px;flex-shrink:0;margin-top:2px;}
+.citext h4{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;color:var(--hot);}
+.citext p{font-size:16px;color:rgba(255,255,255,0.6);line-height:1.7;}
+.cbc{margin-top:22px;padding:22px;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.15);border-left:2px solid var(--hot);}
+.cbc h3{font-family:'Black Ops One',sans-serif;font-size:22px;letter-spacing:2px;color:var(--hot);margin-bottom:8px;text-transform:uppercase;}
+.cbc p{font-size:15px;color:var(--mute);line-height:1.8;margin-bottom:16px;}
+.mp{display:flex;gap:7px;margin-bottom:14px;}
+.mb2{flex:1;padding:12px;text-align:center;background:transparent;border:1px solid rgba(255,0,200,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.mb2.on{border-color:var(--hot);color:var(--hot);}
+
+/* ── FAQ ── */
+.sec2{padding:72px 40px;position:relative;z-index:10;}
+.fw{max-width:680px;margin:0 auto;}
+.fqi{border-bottom:1px solid rgba(255,0,200,0.15);}
+.fqb{width:100%;display:flex;justify-content:space-between;align-items:center;padding:22px 0;background:transparent;border:none;color:var(--txt);cursor:pointer;text-align:left;font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+.fqa2{color:var(--hot);font-size:22px;transition:transform .3s;flex-shrink:0;margin-left:14px;}
+.fqi.open .fqa2{transform:rotate(45deg);}
+.fqan{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.fqi.open .fqan{max-height:180px;}
+.fqai{padding:0 0 18px;font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--mute);line-height:2;letter-spacing:1px;}
+
+/* ── SOL AI ── */
+#sol{position:fixed;bottom:24px;right:24px;z-index:6000;}
+.solbtn{padding:11px 28px;border-radius:40px;background:rgba(4,0,12,0.65);border:1px solid rgba(255,0,200,0.7);box-shadow:0 0 18px rgba(255,0,200,0.25),0 4px 20px rgba(0,0,0,0.55);backdrop-filter:blur(14px);cursor:pointer;transition:all .2s;animation:sbp 4s ease-in-out infinite;display:flex;align-items:center;justify-content:center;}
+.solbtn:hover{background:rgba(255,0,200,0.15);box-shadow:0 0 28px rgba(255,0,200,0.45),0 4px 22px rgba(0,0,0,0.55);border-color:rgba(255,0,200,1);transform:translateY(-2px);}
+@keyframes sbp{0%,100%{box-shadow:0 0 18px rgba(255,0,200,0.25),0 4px 20px rgba(0,0,0,0.55);}50%{box-shadow:0 0 26px rgba(255,0,200,0.4),0 4px 20px rgba(0,0,0,0.55);}}
+.solbtn-label{font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:#fff;white-space:nowrap;line-height:1;}
+.solp{position:absolute;bottom:56px;right:0;width:330px;background:#000;border:1px solid var(--hot);box-shadow:0 0 30px rgba(255,0,200,.18);display:none;flex-direction:column;overflow:hidden;}
+.solp.open{display:flex;}
+.solh{padding:14px 16px;background:rgba(255,0,200,.07);border-bottom:1px solid rgba(255,0,200,.18);display:flex;align-items:center;gap:10px;}
+.solav{width:30px;height:30px;border-radius:50%;background:rgba(255,0,200,0.15);border:1px solid rgba(255,0,200,0.4);display:flex;align-items:center;justify-content:center;font-size:14px;}
+.soln{font-family:'Black Ops One',sans-serif;font-size:15px;color:var(--hot);letter-spacing:2px;}
+.sols{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;margin-top:2px;}
+.solx{margin-left:auto;background:none;border:none;color:var(--mute);cursor:pointer;font-size:19px;}
+.solx:hover{color:var(--hot);}
+.solm{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:9px;min-height:170px;max-height:280px;}
+.solmsg{padding:10px 14px;font-family:'Share Tech Mono',monospace;font-size:13px;line-height:1.7;background:rgba(255,0,200,.04);border-left:2px solid var(--hot);color:var(--txt);letter-spacing:.5px;}
+.solmsg.u{align-self:flex-end;background:rgba(255,0,200,.07);border-left:none;border-right:2px solid var(--mag);}
+.solin{padding:9px;border-top:1px solid rgba(255,0,200,.18);display:flex;gap:7px;}
+.solinp{flex:1;padding:9px 13px;background:rgba(255,0,200,.04);border:1px solid rgba(255,0,200,.18);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:13px;outline:none;}
+.solinp:focus{border-color:var(--hot);}
+.solsend{padding:9px 15px;background:var(--hot);border:none;color:#000;font-size:14px;cursor:pointer;font-family:'Black Ops One',sans-serif;transition:all .2s;}
+.solsend:hover{background:var(--mag);}
+
+/* ── SOL CREATURE ── */
+#solCreatureWrap{position:fixed;bottom:78px;right:14px;width:140px;height:140px;overflow:visible;pointer-events:none;z-index:9100;}
+.sol-particle{position:fixed;width:4px;height:4px;border-radius:50%;opacity:0;pointer-events:none;z-index:9050;}
+.solEl{position:absolute;left:50%;top:50%;width:140px;height:140px;transform:translate(-50%,-50%);z-index:1;pointer-events:auto;cursor:grab;}
+.solEl:active{cursor:grabbing;}
+.solGlow{position:absolute;width:130px;height:130px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;filter:blur(24px);background:radial-gradient(circle,rgba(255,180,0,0.35),rgba(255,180,0,0) 70%);}
+.outerFlame{position:absolute;width:98px;height:112px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(ellipse at center bottom,rgba(215,150,0,0) 0%,rgba(215,150,0,0.4) 50%,rgba(215,150,0,0) 100%);}
+.midFlame{position:absolute;width:70px;height:88px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(ellipse at center bottom,#ffcc00 0%,rgba(255,180,0,0.5) 40%,transparent 70%);}
+.solCore{position:absolute;width:44px;height:56px;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fffff0 0%,#ffee88 25%,#ffcc00 55%,#ff8800 80%);box-shadow:0 0 40px rgba(255,180,0,0.6),0 0 12px rgba(255,240,160,0.9) inset;display:flex;justify-content:center;align-items:center;cursor:grab;}
+.solCore:active{cursor:grabbing;}
+.solEyes{display:flex;gap:6px;transform:translateY(6px);transition:transform 0.1s linear;}
+.solEye{width:7px;height:9px;background:rgba(0,0,0,0.65);border-radius:50%;}
+
+/* ── SOL HINT ── */
+#solHint{position:fixed;z-index:6002;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;gap:2px;opacity:0;transition:opacity .6s ease;}
+#solHint.show{opacity:1;}
+#solHint.hide{opacity:0;}
+.sol-hint-bubble{background:rgba(4,0,12,0.88);border:1px solid rgba(255,0,200,0.5);border-radius:10px;padding:8px 14px;white-space:nowrap;backdrop-filter:blur(12px);}
+.sol-hint-bubble span:first-child{font-family:'Black Ops One',sans-serif;font-size:11px;letter-spacing:2px;color:var(--hot);}
+.sol-hint-bubble span:last-child{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:#fff;}
+.sol-hint-arrow{width:0;height:0;border-top:10px solid rgba(255,0,200,0.6);border-left:8px solid transparent;margin-left:auto;margin-right:8px;}
+
+/* ── COLOR PICKER ── */
+.sol-color-btn{width:26px;height:26px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);background:radial-gradient(circle at 40% 35%,color-mix(in srgb,var(--sc) 60%,#fff 40%),var(--sc) 55%,var(--sc2) 85%);box-shadow:0 0 8px var(--sc);cursor:pointer;transition:transform .15s,border-color .15s;padding:0;}
+.sol-color-btn:hover{transform:scale(1.25);border-color:rgba(255,255,255,0.5);}
+.sol-color-btn.active{border-color:#fff;transform:scale(1.15);}
+
+/* ── NEED HELP ── */
+#needHelp{position:fixed;right:24px;top:80px;z-index:5500;display:flex;flex-direction:column;align-items:flex-end;gap:8px;opacity:0;transform:translateX(20px);pointer-events:none;transition:opacity .4s ease,transform .4s cubic-bezier(.34,1.56,.64,1);}
+#needHelp.peeking{opacity:1;transform:translateX(0);pointer-events:auto;}
+#needHelp.hidden-nh{opacity:0;transform:translateX(20px);pointer-events:none;}
+#needHelp.dismissed{display:none;}
+.nh-row{display:flex;align-items:center;gap:6px;}
+.nh-dismiss{width:28px;height:28px;border-radius:50%;background:rgba(4,0,12,0.65);border:1px solid rgba(255,0,200,0.55);color:rgba(255,255,255,0.55);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.nh-dismiss:hover{background:rgba(255,0,200,0.18);color:#fff;border-color:rgba(255,0,200,1);}
+.nh-tab{padding:11px 20px;border-radius:40px;background:rgba(4,0,12,0.65);border:1px solid rgba(255,0,200,0.7);backdrop-filter:blur(14px);color:#fff;font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:2px;cursor:pointer;display:flex;align-items:center;gap:8px;white-space:nowrap;animation:sbp 4s ease-in-out infinite;transition:all .2s;}
+.nh-tab:hover{background:rgba(255,0,200,0.15);border-color:rgba(255,0,200,1);transform:translateY(-1px);}
+.nh-tab-dot{width:7px;height:7px;border-radius:50%;background:var(--hot);animation:nhDot 2s ease-in-out infinite;}
+@keyframes nhDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.65);}}
+#backToTop{display:none;width:34px;height:34px;border-radius:50%;background:rgba(4,0,12,0.65);border:1px solid rgba(255,255,255,0.3);color:#fff;font-size:16px;cursor:pointer;transition:all .2s;margin-top:6px;align-self:center;}
+#backToTop:hover{background:rgba(255,255,255,0.12);border-color:#fff;}
+#needHelp.scrolled-down #backToTop{display:flex;align-items:center;justify-content:center;}
+.nh-popup{position:fixed;right:24px;top:130px;z-index:5600;width:260px;background:rgba(4,0,12,0.85);border:1px solid rgba(255,0,200,0.5);border-radius:16px;box-shadow:0 0 28px rgba(255,0,200,0.2),0 12px 40px rgba(0,0,0,0.75);backdrop-filter:blur(18px);display:none;flex-direction:column;overflow:hidden;}
+.nh-popup.open{display:flex;animation:nhPop .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes nhPop{from{opacity:0;transform:translateY(-12px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
+.nh-popup-head{padding:18px 20px 14px;border-bottom:1px solid rgba(255,0,200,0.12);display:flex;justify-content:space-between;align-items:flex-start;}
+.nh-popup-title{font-family:'Black Ops One',sans-serif;font-size:19px;letter-spacing:2px;color:#fff;}
+.nh-popup-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,0,200,0.6);letter-spacing:1px;margin-top:3px;}
+.nh-close{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.5);cursor:pointer;font-size:14px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.nh-close:hover{color:#fff;background:rgba(255,0,200,0.22);border-color:var(--hot);}
+.nh-btns{display:flex;flex-direction:column;}
+.nh-btn{padding:16px 20px;background:transparent;border:none;border-bottom:1px solid rgba(255,0,200,0.08);color:var(--txt);font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:1.5px;cursor:pointer;text-align:left;transition:all .18s;display:flex;align-items:center;gap:12px;text-transform:uppercase;}
+.nh-btn:last-child{border-bottom:none;}
+.nh-btn:hover{background:rgba(255,0,200,0.09);color:var(--hot);padding-left:26px;}
+.nh-btn-icon{font-size:20px;flex-shrink:0;}
+.nh-btn-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1px;margin-top:3px;font-weight:normal;text-transform:none;}
+.nh-thanks{padding:22px 20px 24px;text-align:center;display:none;flex-direction:column;align-items:center;gap:10px;}
+.nh-thanks.show{display:flex;}
+
+/* ── AUTH ── */
+.ov{position:fixed;inset:0;background:rgba(0,0,5,.9);z-index:8000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);padding:20px;}
+.ov.open{display:flex;}
+.mo{background:#000;border:1px solid var(--hot);width:100%;max-width:390px;padding:38px;position:relative;box-shadow:0 0 40px rgba(255,0,200,.3);animation:mi .3s ease;}
+@keyframes mi{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.mx{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:19px;}
+.mx:hover{color:var(--hot);}
+.mt2{font-family:'Black Ops One',sans-serif;font-size:28px;color:#fff;text-transform:uppercase;margin-bottom:5px;letter-spacing:2px;}
+.ms2{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);margin-bottom:22px;letter-spacing:1px;line-height:1.7;}
+.soa{display:flex;flex-direction:column;gap:7px;margin-bottom:18px;}
+.sob{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid rgba(255,0,200,.2);background:rgba(255,0,200,.03);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s;letter-spacing:1px;}
+.sob:hover{border-color:var(--hot);}
+.ord{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.ord::before,.ord::after{content:'';flex:1;height:1px;background:rgba(255,0,200,.2);}
+.ord span{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--mute);letter-spacing:3px;text-transform:uppercase;}
+.pwh{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--mute);letter-spacing:1px;margin-top:4px;}
+.pwbw{height:2px;background:rgba(255,0,200,.15);margin-top:6px;}
+.pwb{height:100%;width:0%;transition:width .3s,background .3s;}
+.msw{text-align:center;margin-top:16px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);}
+.msw a{color:var(--hot);cursor:pointer;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--hot);color:#000;padding:13px 30px;font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:700;letter-spacing:3px;z-index:9000;display:none;white-space:nowrap;box-shadow:0 0 30px var(--hot);}
+
+/* ── FOOTER ── */
+footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px 36px;position:relative;z-index:10;}
+.ftg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;max-width:1120px;margin:0 auto 48px;}
+.ftl{font-family:'Black Ops One',sans-serif;font-size:24px;letter-spacing:5px;color:var(--hot);text-decoration:none;display:block;margin-bottom:14px;text-transform:uppercase;}
+.ftbr p{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);line-height:1.9;max-width:260px;letter-spacing:1px;}
+.ftcol h4{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:18px;}
+.ftcol ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.ftcol ul a{color:var(--mute);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;transition:color .2s;}
+.ftcol ul a:hover{color:var(--hot);}
+.ftbot{max-width:1120px;margin:0 auto;padding-top:28px;border-top:1px solid rgba(255,0,200,.15);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;}
+.ftcopy{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(255,0,200,.3);letter-spacing:2px;}
+.ftlinks{display:flex;gap:16px;flex-wrap:wrap;}
+.ftlinks a{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(255,0,200,.3);text-decoration:none;transition:color .2s;letter-spacing:1px;}
+.ftlinks a:hover{color:var(--hot);}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  nav{padding:0 18px;}.nav-links{display:none;}.hbg{display:flex;}
+  section{padding:72px 20px;}.sec2{padding:56px 20px;}#newsletter{padding:72px 20px;}
+  .bkg,.ag,.cg{grid-template-columns:1fr;gap:40px;}
+  .ftg{grid-template-columns:1fr 1fr;}
+  .band#manifesto{padding:60px 20px;}
+  .pf-grid{grid-template-columns:1fr;grid-template-rows:300px 300px auto;}
+  .pf-grid-bottom{grid-column:auto;grid-template-columns:1fr 1fr;gap:4px;}
+  .pf-panel-name{font-size:clamp(20px,4vw,32px);}
+  .shop-promo{grid-template-columns:1fr 1fr;}
+  .blog-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:600px){
+  .ftg{grid-template-columns:1fr;}
+  .nlf{flex-direction:column;}
+  .nlf input{border-right:1px solid rgba(255,0,200,.25);border-bottom:none;}
+  .solp{width:calc(100vw - 48px);right:0;}
+  .pf-grid-bottom{grid-template-columns:1fr;}
+  .shop-promo{grid-template-columns:1fr 1fr;}
+  .blog-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="logo">OASENSE</a>
+  <ul class="nav-links">
+    <li><a href="https://merci-chi.github.io/OAS/shop" target="_blank">Shop</a></li>
+    <li><a href="https://merci-chi.github.io/OAS/blog" target="_blank">Blog</a></li>
+    <li><a href="https://merci-chi.github.io/OAS/portfolio" target="_blank">Portfolio</a></li>
+    <li><a href="#booking">PHOTOSHOOT</a></li>
+    <li><a href="#music">Music</a></li>
+    <li><a href="#donation">Donate</a></li>
+    <li><a href="#contact">Contact Us</a></li>
+  </ul>
+  <div class="nav-btns">
+    <button class="nbl" onclick="oA('login')">Log In</button>
+    <button class="nbr" onclick="oA('signup')">Sign Up</button>
+    <div class="hbg" onclick="tM()"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<div class="mob" id="mob">
+  <a href="https://merci-chi.github.io/OAS/shop" target="_blank" onclick="tM()">Shop</a>
+  <a href="https://merci-chi.github.io/OAS/blog" target="_blank" onclick="tM()">Blog</a>
+  <a href="#booking" onclick="tM()">Photoshoot</a>
+  <a href="#music" onclick="tM()">Music</a>
+  <a href="#donation" onclick="tM()">Donate</a>
+  <a href="#contact" onclick="tM()">Contact Us</a>
+  <a href="https://merci-chi.github.io/OAS/portfolio" target="_blank" onclick="tM()">Portfolio</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-smoke">
+    <div class="smoke-blob s1"></div><div class="smoke-blob s2"></div><div class="smoke-blob s3"></div>
+  </div>
+  <p class="hero-label">// Mind. Body. Soul. Your Oasis — Make it make sense.</p>
+  <h1 class="hero-title" style="position:relative;display:inline-block;">
+    <div class="hero-title-glow"></div>
+    <span id="glitchWord" style="display:block;">OASENSE</span>
+    <canvas id="glitchCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;"></canvas>
+  </h1>
+  <p class="hero-sub">You Are The Light — Embrace It</p>
+  <p class="hero-desc">Photography · Digital Art · Video · Apparel · Music<br/>A creative studio built to help you wake up to your potential.</p>
+  <div class="hero-ctas">
+    <a href="#shop" class="btn-hot">Enter Shop</a>
+    <a href="#about" class="btn-ghost">Our Story</a>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<div class="band" id="manifesto">
+  <div class="mq-wrap">
+    <p class="mq">"It wasn't until I realized —<br/><span class="hot-word">I am the light myself.</span><br/>That we are ALL the light —<br/>that my life began to transform."</p>
+    <p class="mq-by">— Angel Alvarez · Founder of Oasense</p>
+  </div>
+</div>
+
+<!-- SHOP — PROMO 4-PANEL -->
+<section id="shop">
+  <div class="wrap">
+    <p class="sec-tag">// 01 — The Store</p>
+    <h2 class="sec-title">Shop <span class="hot">Oasense</span></h2>
+    <div class="vhs-line"></div>
+    <div class="shop-promo" id="shopPromo">
+      <div class="shop-promo-loading"><div class="sg-spinner"></div><div class="sg-loading-txt">Loading...</div></div>
+    </div>
+    <div style="text-align:center;margin-top:32px;">
+      <a href="https://merci-chi.github.io/OAS/shop" target="_blank" class="btn-hot">ENTER SHOP — SEE ALL</a>
+    </div>
+  </div>
+</section>
+
+<!-- MUSIC — LIVE AUDIO PLAYER -->
+<section id="music">
+  <div class="wrap">
+    <p class="sec-tag">// 02 — Sound</p>
+    <h2 class="sec-title">Music <span class="hot">Demos</span></h2>
+    <div class="vhs-line"></div>
+    <p style="font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--mute);margin-bottom:36px;line-height:1.9;letter-spacing:1px;max-width:500px;">Raw sessions from the studio. Angel's sonic world — dark, expansive, honest.</p>
+    <div class="tl" id="trackList">
+      <!-- rendered by loadMusic() -->
+    </div>
+    <a href="https://soundcloud.com/solxstate" target="_blank" class="sc-link">☁ Full Catalog on SoundCloud</a>
+  </div>
+</section>
+
+<!-- BLOG — OASENSE BLOG -->
+<section id="blog">
+  <div class="wrap">
+    <p class="sec-tag">// 03 — The Feed</p>
+    <h2 class="sec-title">Oasense <span class="hot">Blog</span></h2>
+    <div class="vhs-line"></div>
+    <div class="blog-grid" id="blogGrid">
+      <div style="grid-column:1/-1;padding:60px 20px;text-align:center;">
+        <div class="sg-spinner"></div><div class="sg-loading-txt">Loading posts...</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:32px;">
+      <a href="https://merci-chi.github.io/OAS/blog" target="_blank" class="btn-hot">SEE ALL POSTS — OPEN BLOG</a>
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO — UNIFIED 5-PANEL GRID -->
+<section id="portfolio">
+  <div class="wrap">
+    <p class="sec-tag">// 04 — The Work</p>
+    <h2 class="sec-title">Port<span class="hot">folio</span></h2>
+    <div class="vhs-line"></div>
+    <div id="pf-root">
+      <!-- rendered by JS -->
+    </div>
+    <p style="margin-top:24px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--mute);letter-spacing:3px;">FULL PORTFOLIO ON REQUEST · <a href="#contact" style="color:var(--hot);">CONTACT US</a></p>
+    <div style="text-align:center;margin-top:28px;">
+      <a href="https://merci-chi.github.io/OAS/portfolio" target="_blank" class="btn-hot">ABOUT US</a>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING -->
+<section id="booking">
+  <div class="wrap">
+    <p class="sec-tag">// 05 — Sessions</p>
+    <h2 class="sec-title">Book a <span class="hot">Shoot</span></h2>
+    <div class="vhs-line"></div>
+    <div class="bkg">
+      <div>
+        <p style="font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--mute);line-height:1.9;margin-bottom:24px;letter-spacing:1px;">Soul-centered sessions built on intention. Select your session type and share your vision.</p>
+        <div class="svl">
+          <div class="sv on" onclick="pS(this,'Cinematic Portraits')"><div class="svi">📸</div><div><div class="svn">Cinematic Portraits</div><div class="svd">Personal branding and artful lifestyle portraits.</div></div></div>
+          <div class="sv" onclick="pS(this,'Brand / Business')"><div class="svi">👔</div><div><div class="svn">Brand / Business</div><div class="svd">Visual identity for entrepreneurs and creators.</div></div></div>
+          <div class="sv" onclick="pS(this,'Events')"><div class="svi">🎉</div><div><div class="svn">Events</div><div class="svd">Candid and editorial coverage.</div></div></div>
+          <div class="sv" onclick="pS(this,'Video / Content')"><div class="svi">🎬</div><div><div class="svn">Video / Content</div><div class="svd">Short-form, reels, or full production.</div></div></div>
+        </div>
+        <div class="pnote">Pricing is custom to each project. Contact us to discuss your vision — we'll find what works.</div>
+      </div>
+      <div class="fm">
+        <div class="fg"><label class="fl">Your Name</label><input class="fi" placeholder="Full name"/></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="you@example.com"/></div>
+        <div class="fg"><label class="fl">Preferred Date</label><input type="date" class="fi"/></div>
+        <div class="fg"><label class="fl">Session Type</label>
+          <div class="csel" id="cselWrap">
+            <div class="csel-selected" id="cselDisplay" onclick="toggleCsel()">
+              <span id="cselText">📸 Cinematic Portraits</span><span class="csel-arrow">▾</span>
+            </div>
+            <div class="csel-opts" id="cselOpts">
+              <div class="csel-opt" onclick="pickSel('📸 Cinematic Portraits','Cinematic Portraits')"><strong>📸 CINEMATIC PORTRAITS</strong><span>Personal branding and artful lifestyle portraits.</span></div>
+              <div class="csel-opt" onclick="pickSel('👔 Brand / Business','Brand / Business')"><strong>👔 BRAND / BUSINESS</strong><span>Visual identity for entrepreneurs and creators.</span></div>
+              <div class="csel-opt" onclick="pickSel('🎉 Events','Events')"><strong>🎉 EVENTS</strong><span>Candid and editorial coverage.</span></div>
+              <div class="csel-opt" onclick="pickSel('🎬 Video / Content','Video / Content')"><strong>🎬 VIDEO / CONTENT</strong><span>Short-form, reels, or full production.</span></div>
+              <div class="csel-opt" onclick="pickSel('✨ Other','Other')"><strong>✨ OTHER</strong><span>Have something else in mind? Tell us below.</span></div>
+            </div>
+          </div>
+          <input type="hidden" id="svSel" value="Cinematic Portraits"/>
+        </div>
+        <div class="fg"><label class="fl">Your Vision</label><textarea class="fta" placeholder="Describe the vibe, the purpose, the feeling you want to capture..."></textarea></div>
+        <button class="fbtn" onclick="toast('REQUEST SENT — WE\'LL BE IN TOUCH ✓')">Send Request</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT — changed to ABOUT OASENSE, fully Supabase-driven -->
+<section id="about">
+  <div class="wrap">
+    <p class="sec-tag">// 06 — Our Story</p>
+    <h2 class="sec-title">About <span class="hot">Oasense</span></h2>
+    <div class="vhs-line"></div>
+    <div class="ag">
+      <div class="av" id="aboutPhoto">☀️
+        <div class="av-corner tl"></div><div class="av-corner tr"></div>
+        <div class="av-corner bl"></div><div class="av-corner br"></div>
+      </div>
+      <div>
+        <div class="apull" id="aboutPullquote">"I harnessed the power of my light to create Oasense — a purpose bigger than myself, dedicated to helping humanity heal and rise."</div>
+        <div class="abod" id="aboutBody">
+          <p>I'm Angel Alvarez — photographer, musician, digital artist, content creator, and storyteller. Someone who uses creativity as a tool for self-mastery.</p>
+          <p>Oasense began during one of the most transformative chapters of my life — rebuilding myself, learning to create from truth instead of survival.</p>
+          <p>Through spiritual clothing, books, and content, I inspire others to see their own light. <strong style="color:var(--hot);">You are the light. Embrace it.</strong></p>
+        </div>
+        <div class="socr">
+          <a href="https://www.youtube.com/channel/UCzpmNmYs5r2_8OjG33FNsgA" target="_blank" class="slnk">YouTube</a>
+          <a href="https://discord.com/invite/FG57HKHbwz" target="_blank" class="slnk">Discord</a>
+          <a href="https://www.instagram.com/oasense.shop" target="_blank" class="slnk">Instagram</a>
+          <a href="https://www.facebook.com/profile.php?id=61584155414643" target="_blank" class="slnk">Facebook</a>
+          <a href="https://www.tiktok.com/@solxstate" target="_blank" class="slnk">TikTok</a>
+          <a href="https://soundcloud.com/solxstate" target="_blank" class="slnk">SoundCloud</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REWARDS -->
+<section id="rewards">
+  <div class="wrap">
+    <p class="sec-tag">// 07 — Loyalty</p>
+    <h2 class="sec-title">My <span class="hot">Rewards</span></h2>
+    <div class="vhs-line"></div>
+    <div class="rtop">
+      <div class="rnum">0</div>
+      <div class="rlbl">Your Sol Points</div>
+      <p style="font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--mute);margin-top:12px;letter-spacing:1px;">Log in to see your balance and redeem rewards</p>
+      <button class="btn-hot" style="margin-top:20px;" onclick="oA('login')">Log In to Check Points</button>
+    </div>
+    <h3 style="font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:22px;">HOW TO EARN SOL POINTS</h3>
+    <div class="rg">
+      <div class="ri"><div class="ricon">🛍️</div><div class="rp">10 pts</div><div class="rw">Per $1 spent in the shop</div></div>
+      <div class="ri"><div class="ricon">💬</div><div class="rp">50 pts</div><div class="rw">Leave a product review</div></div>
+      <div class="ri"><div class="ricon">📧</div><div class="rp">100 pts</div><div class="rw">Subscribe to newsletter</div></div>
+      <div class="ri"><div class="ricon">📷</div><div class="rp">200 pts</div><div class="rw">Share with #Oasense</div></div>
+      <div class="ri"><div class="ricon">❤️</div><div class="rp">5 pts</div><div class="rw">Like a blog post</div></div>
+      <div class="ri"><div class="ricon">🔗</div><div class="rp">150 pts</div><div class="rw">Refer a friend</div></div>
+      <div class="ri"><div class="ricon">🎂</div><div class="rp">500 pts</div><div class="rw">Birthday bonus</div></div>
+      <div class="ri"><div class="ricon">💸</div><div class="rp">250 pts</div><div class="rw">Make a donation</div></div>
+    </div>
+    <div class="rdm"><h4>Redeem Points</h4><p>500 pts = $5 off · 1,000 pts = $12 off · 2,500 pts = $35 off + exclusive digital content · 5,000 pts = free product</p></div>
+  </div>
+</section>
+
+<!-- DONATION -->
+<section id="donation">
+  <div class="wrap">
+    <p class="sec-tag">// 08 — Support the Mission</p>
+    <h2 class="sec-title">Fuel <span class="hot">The Light</span></h2>
+    <div class="vhs-line"></div>
+    <div class="dtop">
+      <div class="raised"><span>$</span><span id="rn">0</span></div>
+      <div class="rsub" id="donSubLabel">Total Raised — Thank You 🙏</div>
+      <p class="dd" id="donDesc">Every dollar helps Oasense keep creating resources to help others wake up to their potential.</p>
+      <div class="don-goal-bar" id="donGoalBar" style="display:none;margin-top:24px;">
+        <div class="don-goal-label">
+          <span id="donGoalRaisedLbl">$0 raised</span>
+          <span id="donGoalLbl">Goal: $0</span>
+        </div>
+        <div class="don-goal-track"><div class="don-goal-fill" id="donGoalFill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="ag2" id="donAmounts">
+      <button class="ab" onclick="pA(1,this)">$1</button>
+      <button class="ab" onclick="pA(5,this)">$5</button>
+      <button class="ab on" onclick="pA(10,this)">$10</button>
+      <button class="ab" onclick="pA(25,this)">$25</button>
+      <button class="ab" onclick="pA(50,this)">$50</button>
+      <button class="ab" onclick="pA(100,this)">$100</button>
+      <button class="ab" onclick="pA('other',this)">Other</button>
+    </div>
+    <div class="cw" id="cw" style="display:none;"><input type="number" class="fi" placeholder="Enter amount ($)" id="ca" min="1"/></div>
+    <div class="fr">
+      <button class="frb on" onclick="pF(this)">One-Time</button>
+      <button class="frb" onclick="pF(this)">Weekly</button>
+      <button class="frb" onclick="pF(this)">Monthly</button>
+      <button class="frb" onclick="pF(this)">Yearly</button>
+    </div>
+    <button class="db" onclick="don()">Donate Now ☀️</button>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div id="newsletter">
+  <div class="wrap">
+    <p class="sec-tag" style="text-align:center;display:block;">// Signal</p>
+    <h2 class="nlt">SUBSCRIBE TO OUR<br/><span>NEWSLETTER</span></h2>
+    <p class="nls">Weekly drops — behind-the-scenes, new work, exclusive discounts &amp; spiritual insights.</p>
+    <div class="nlf"><input type="email" placeholder="your@email.com" id="nle"/><button onclick="jNL()">Join</button></div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <p class="sec-tag">// 09 — Get In Touch</p>
+    <h2 class="sec-title">Contact <span class="hot">Us</span></h2>
+    <div class="vhs-line"></div>
+    <div class="cg">
+      <div>
+        <div class="cit"><div class="cic">📧</div><div class="citext"><h4>Email</h4><p>Messages go directly to our inbox. We reply within 1–2 business days.</p></div></div>
+        <div class="cit"><div class="cic">📍</div><div class="citext"><h4>Location</h4><p>Remote &amp; in-person sessions. Based in the US.</p></div></div>
+        <div class="cit"><div class="cic">📲</div><div class="citext"><h4>Social</h4><p>@oasense.shop on Instagram &amp; Facebook · @solxstate on TikTok &amp; SoundCloud</p></div></div>
+        <div class="cbc"><h3>Open for Collaboration</h3><p>Always open to working with aligned creators, brands, and dreamers. If your energy matches Oasense's vision — let's build something.</p><button class="btn-ghost" onclick="document.getElementById('si').value='Collaboration Inquiry'">Start Collab Conversation</button></div>
+      </div>
+      <div>
+        <div class="fg" style="margin-bottom:14px;"><label class="fl">Preferred Response Method</label><div class="mp"><button class="mb2 on" onclick="pM(this,'email')">📧 Email</button><button class="mb2" onclick="pM(this,'phone')">📱 Phone</button></div></div>
+        <div class="fm">
+          <div class="fg"><label class="fl">Your Name</label><input class="fi" placeholder="Full name"/></div>
+          <div class="fg" id="emailField"><label class="fl">Email Address</label><input type="email" class="fi" placeholder="your@email.com"/></div>
+          <div class="fg" id="phoneField" style="display:none;"><label class="fl">Phone Number</label><input type="tel" class="fi" placeholder="+1 (555) 000-0000"/></div>
+          <div class="fg"><label class="fl">Subject</label><input class="fi" placeholder="What's this about?" id="si"/></div>
+          <div class="fg"><label class="fl">Message</label><textarea class="fta" style="height:130px;" placeholder="Tell us everything. We actually read this."></textarea></div>
+          <button class="fbtn" onclick="toast('MESSAGE SENT — WE\'LL REPLY WITHIN 1–2 DAYS ✓')">Send Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<div class="sec2" id="faq">
+  <div class="wrap">
+    <p class="sec-tag">// Questions</p>
+    <h2 class="sec-title" style="font-size:clamp(28px,4vw,52px);">FAQ</h2>
+    <div class="vhs-line"></div>
+    <div class="fw">
+      <div class="fqi"><button class="fqb" onclick="fq(this)">How do I track my order?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Once your order ships, you'll receive a tracking number via email to follow your package.</div></div></div>
+      <div class="fqi"><button class="fqb" onclick="fq(this)">What is your return policy?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Returns accepted within 30 days. Items must be unworn and in original condition. Contact us to start a return.</div></div></div>
+      <div class="fqi"><button class="fqb" onclick="fq(this)">How do I care for my Oasense tee?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Wash inside out with cold water. Tumble dry on low heat to maintain quality and preserve the print.</div></div></div>
+      <div class="fqi"><button class="fqb" onclick="fq(this)">What payment methods do you accept?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Visa, Mastercard, American Express, PayPal, and Apple Pay.</div></div></div>
+      <div class="fqi"><button class="fqb" onclick="fq(this)">How long does shipping take?<span class="fqa2">+</span></button><div class="fqan"><div class="fqai">Standard: 5–7 business days. Express: 2–3 business days. Both available at checkout.</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ftg">
+    <div class="ftbr"><a href="#hero" class="ftl">OASENSE</a><p>A creative studio for photography, digital art, video &amp; mindful merchandise. You are the light — embrace it.</p></div>
+    <div class="ftcol"><h4>Navigate</h4><ul><li><a href="https://merci-chi.github.io/OAS/shop" target="_blank">Shop</a></li><li><a href="https://merci-chi.github.io/OAS/blog" target="_blank">Blog</a></li><li><a href="https://merci-chi.github.io/OAS/portfolio" target="_blank">Portfolio</a></li><li><a href="#booking">Photoshoot</a></li><li><a href="#music">Music</a></li><li><a href="#donation">Donate</a></li><li><a href="#contact">Contact Us</a></li></ul></div>
+    <div class="ftcol"><h4>Support</h4><ul><li><a href="#faq">FAQ</a></li><li><a href="#contact">Contact</a></li><li><a href="#">Shipping Policy</a></li><li><a href="#">Refund Policy</a></li></ul></div>
+    <div class="ftcol"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms &amp; Conditions</a></li><li><a href="#">Accessibility</a></li><li><a href="#">Cookie Policy</a></li></ul></div>
+  </div>
+  <div class="ftbot">
+    <p class="ftcopy">© 2025 OASENSE.SHOP — ALL RIGHTS RESERVED</p>
+    <div class="ftlinks"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Accessibility</a><a href="#">Shipping</a><a href="#">Refunds</a></div>
+  </div>
+</footer>
+
+<!-- NEED HELP -->
+<div id="needHelp">
+  <div class="nh-row">
+    <button class="nh-dismiss" onclick="dismissNH()">✕</button>
+    <button class="nh-tab" onclick="openNH()"><span class="nh-tab-dot"></span>NEED HELP?</button>
+  </div>
+  <button id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">^</button>
+</div>
+<div class="nh-popup" id="nhPopup">
+  <div class="nh-popup-head">
+    <div><div class="nh-popup-title">HEY THERE 👋</div><div class="nh-popup-sub">WHAT BRINGS YOU HERE?</div></div>
+    <button class="nh-close" onclick="closeNH()">✕</button>
+  </div>
+  <div class="nh-btns" id="nhBtns">
+    <button class="nh-btn" onclick="nhChoice('shop')"><span class="nh-btn-icon">🛍️</span><div><div>ENTER SHOP</div><div class="nh-btn-sub">Browse apparel, accessories &amp; digital</div></div></button>
+    <button class="nh-btn" onclick="nhChoice('contact')"><span class="nh-btn-icon">💬</span><div><div>CONTACT US</div><div class="nh-btn-sub">Book a session or ask a question</div></div></button>
+    <button class="nh-btn" onclick="nhChoice('looking')"><span class="nh-btn-icon">👀</span><div><div>JUST LOOKING</div><div class="nh-btn-sub">Take your time, explore freely</div></div></button>
+  </div>
+  <div class="nh-thanks" id="nhThanks">
+    <p style="font-family:'Share Tech Mono',monospace;font-size:14px;color:#fff;letter-spacing:1px;line-height:1.9;">SOUNDS GOOD!<br/>IF YOU NEED GUIDANCE,<br/>JUST ASK <strong style="color:var(--hot);">SOL</strong></p>
+    <div style="margin-top:12px;border-top:1px solid rgba(255,0,200,0.15);padding-top:14px;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);letter-spacing:2px;">Site Color</span>
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button onclick="setSolColor('magenta')" class="sol-color-btn" style="--sc:#ff00c8;--sc2:#cc00aa;"></button>
+        <button onclick="setSolColor('blue')"    class="sol-color-btn" style="--sc:#00eeff;--sc2:#0077ff;"></button>
+        <button onclick="setSolColor('green')"   class="sol-color-btn" style="--sc:#00ff88;--sc2:#00cc55;"></button>
+        <button onclick="setSolColor('yellow')"  class="sol-color-btn active" style="--sc:#ffcc00;--sc2:#ff8800;"></button>
+        <button onclick="setSolColor('red')"     class="sol-color-btn" style="--sc:#ff3300;--sc2:#cc1100;"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOL HINT -->
+<div id="solHint">
+  <div class="sol-hint-bubble"><span>HINT: </span><span>Hold &amp; drag your Companion</span></div>
+  <div class="sol-hint-arrow"></div>
+</div>
+
+<!-- SOL CREATURE -->
+<div id="solCreatureWrap">
+  <div class="solEl" id="solEl">
+    <div class="solGlow" id="solGlow"></div>
+    <div class="outerFlame" id="outerFlame"></div>
+    <div class="midFlame" id="midFlame"></div>
+    <div class="solCore" id="solCore">
+      <div class="solEyes" id="solEyes"><div class="solEye"></div><div class="solEye"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SOL AI -->
+<div id="sol">
+  <div class="solp" id="solp">
+    <div class="solh">
+      <div class="solav">☀️</div>
+      <div><div class="soln">SOL AI</div><div class="sols">● ONLINE — HERE TO HELP</div></div>
+      <button class="solx" onclick="tSol()">×</button>
+    </div>
+    <div class="solm" id="solm">
+      <div class="solmsg">Hey! I'm Sol ☀️ — your guide to everything Oasense. Ask me about the shop, bookings, music, or anything else!</div>
+    </div>
+    <div class="solin">
+      <input class="solinp" id="solinp" placeholder="Ask Sol anything..." onkeydown="if(event.key==='Enter')sSol()"/>
+      <button class="solsend" onclick="sSol()">↑</button>
+    </div>
+  </div>
+  <button class="solbtn" onclick="tSol()"><span class="solbtn-label">ASK SOL</span></button>
+</div>
+
+<!-- AUTH -->
+<div class="ov" id="ov" onclick="cAOut(event)">
+  <div class="mo">
+    <button class="mx" onclick="cA()">×</button>
+    <div id="lv">
+      <div class="mt2">Welcome Back</div>
+      <div class="ms2">Log in to access your Sol Points, orders, and more.</div>
+      <div class="soa"><button class="sob" onclick="soc('Google')">🔵 Continue with Google</button><button class="sob" onclick="soc('Facebook')">🔷 Continue with Facebook</button><button class="sob" onclick="soc('Apple')">⚫ Continue with Apple</button></div>
+      <div class="ord"><span>or</span></div>
+      <div class="fm">
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="your@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" placeholder="••••••••"/></div>
+        <button class="fbtn" onclick="dL()">Log In</button>
+      </div>
+      <div class="msw">Don't have an account? <a onclick="swA('signup')">Sign Up</a></div>
+    </div>
+    <div id="sv" style="display:none;">
+      <div class="mt2">Join Oasense</div>
+      <div class="ms2">Create your account to earn Sol Points and join the journey.</div>
+      <div class="soa"><button class="sob" onclick="soc('Google')">🔵 Continue with Google</button><button class="sob" onclick="soc('Facebook')">🔷 Continue with Facebook</button><button class="sob" onclick="soc('Apple')">⚫ Continue with Apple</button></div>
+      <div class="ord"><span>or</span></div>
+      <div class="fm">
+        <div class="fg"><label class="fl">Full Name</label><input class="fi" placeholder="Your name"/></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="your@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" id="pwin" placeholder="••••••••" oninput="pws()"/><div class="pwh">Min 8 chars · 1 uppercase · 1 number</div><div class="pwbw"><div class="pwb" id="pwb"></div></div></div>
+        <button class="fbtn" onclick="dS()">Create Account</button>
+      </div>
+      <div class="msw">Already have an account? <a onclick="swA('login')">Log In</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  SUPABASE INIT
+// ═══════════════════════════════════════════════
+const SUPABASE_URL = "https://smlfppydhwyqrudktzzr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_NmZR8KThSmcc-yiOz7kV7Q_Nv0XZK9V";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const DEV_BASE = "https://merci-chi.github.io/OAS/DEV/";
+const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const mediaUrl = f => f ? (f.startsWith('http') ? f : DEV_BASE + f) : '';
+
+// ═══════════════════════════════════════════════
+//  SHOP — PROMO 4-PANEL
+//  Supabase table: products
+//  Columns used:
+//    id, title/name, price, discount/discount_percent,
+//    badge  ('% '|'New!'|'Hot!'|'Ltd'),
+//    img/image_url/image      — primary image URL
+//    img2/image_url2/image2   — second image URL (enables flip)
+//    shop_url                 — deep-link to item in shop (optional, fallback: /shop)
+//    status                   — must be 'live'
+//  Promo shows 4 items, priority: badge=% > New! > Hot! > Ltd > none, newest first
+// ═══════════════════════════════════════════════
+const SHOP_URL = 'https://merci-chi.github.io/OAS/shop';
+async function loadShop() {
+  const root = document.getElementById('shopPromo');
+  try {
+    const { data, error } = await db.from('products').select('*').eq('status','live').order('created_at',{ascending:false}).limit(40);
+    if (error) throw error;
+    const items = (data||[]).map(r => ({
+      id: r.id,
+      title: r.title || r.name || '',
+      desc: r.desc || r.description || '',
+      price: parseFloat(r.price||0),
+      discount: parseInt(r.discount || r.discount_percent || 0) || 0,
+      badge: r.badge || '',
+      img: r.img || r.image_url || r.image || '',
+      img2: r.img2 || r.image_url2 || r.image2 || '',
+      shopUrl: r.shop_url || SHOP_URL,
+    }));
+
+    // Sort: % badge first, then New!, then Hot!, then Ltd, then rest
+    const badgeRank = b => b==='%'?0:b==='New!'?1:b==='Hot!'?2:b==='Ltd'?3:4;
+    items.sort((a,b) => badgeRank(a.badge) - badgeRank(b.badge));
+
+    const promo = items.slice(0,4);
+    if (!promo.length) {
+      root.innerHTML = renderShopEmpty(); return;
+    }
+    root.innerHTML = promo.map(item => renderPromoCard(item)).join('');
+    initShopFlip();
+  } catch(e) {
+    console.error('Shop error:',e);
+    document.getElementById('shopPromo').innerHTML = renderShopEmpty();
+  }
+}
+function renderShopEmpty() {
+  // 4 vivid placeholder cards — no dimming, full-color
+  const PLACEHOLDERS = [
+    { icon:'👕', cat:'Apparel', ctaLabel:'Shop →' },
+    { icon:'💾', cat:'Digital',  ctaLabel:'Shop →' },
+    { icon:'📸', cat:'Photography', ctaLabel:'Shop →' },
+    { icon:'✨', cat:'Collection',  ctaLabel:'Shop →' },
+  ];
+  return PLACEHOLDERS.map(p => `
+    <div class="sp-card" onclick="window.open('${SHOP_URL}','_blank')">
+      <div class="sp-inner">
+        <div class="sp-face">
+          <div class="sp-img">
+            <div class="sp-img-placeholder">
+              <div class="sp-img-placeholder-icon">${p.icon}</div>
+              <div class="sp-img-placeholder-label">${p.cat}</div>
+            </div>
+          </div>
+          <div class="sp-info">
+            <div class="sp-name">Title</div>
+            <div class="sp-desc">Description</div>
+            <div class="sp-price-row">
+              <div class="sp-price">$0.00</div>
+              <a class="sp-cta" href="${SHOP_URL}" target="_blank" onclick="event.stopPropagation()">${p.ctaLabel}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function renderPromoCard(item) {
+  const hasDisc = item.discount > 0;
+  const salePrice = hasDisc ? (item.price * (1 - item.discount/100)).toFixed(2) : item.price.toFixed(2);
+  const hasFlip = !!item.img2;
+  const EMOJIS = {apparel:'👕',digital:'💾',photography:'📸',other:'✨'};
+
+  // Badge
+  let badgeHtml = '';
+  if (item.badge==='%' && hasDisc) badgeHtml = `<div class="sp-badge pct">${item.discount}% OFF</div>`;
+  else if (item.badge==='New!')      badgeHtml = `<div class="sp-badge new">NEW</div>`;
+  else if (item.badge==='Hot!')      badgeHtml = `<div class="sp-badge hot">HOT</div>`;
+  else if (item.badge==='Ltd')       badgeHtml = `<div class="sp-badge ltd">LIMITED</div>`;
+
+  const imgFront = item.img ? `<img src="${_esc(item.img)}" alt="${_esc(item.title)}"/>` : '✨';
+  const imgBack  = item.img2? `<img src="${_esc(item.img2)}" alt="${_esc(item.title)} alt"/>` : imgFront;
+
+  const priceBlock = `<div>
+    ${hasDisc ? `<span class="sp-was">$${item.price.toFixed(2)}</span>` : ''}
+    <div class="sp-price">$${salePrice}</div>
+    ${hasDisc ? `<div class="sp-disc">${item.discount}% OFF</div>` : ''}
+  </div>`;
+
+  const frontFace = `
+    <div class="sp-face">
+      <div class="sp-img">
+        ${imgFront}
+        <div class="sp-img-grad"></div>
+        ${badgeHtml}
+        ${hasFlip ? `<div class="sp-flip-hint" title="See other side">⟳</div>` : ''}
+      </div>
+      <div class="sp-info">
+        <div class="sp-name">${_esc(item.title)}</div>
+        ${item.desc ? `<div class="sp-desc">${_esc(item.desc.substring(0,60)+(item.desc.length>60?'...':''))}</div>` : ''}
+        <div class="sp-price-row">
+          ${priceBlock}
+          <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
+        </div>
+      </div>
+    </div>`;
+
+  const backFace = `
+    <div class="sp-face sp-back">
+      <div class="sp-img">
+        ${imgBack}
+        <div class="sp-img-grad"></div>
+        <div class="sp-back-label"><span>VIEW IN SHOP →</span></div>
+      </div>
+      <div class="sp-info">
+        <div class="sp-name">${_esc(item.title)}</div>
+        <div class="sp-price-row">
+          ${priceBlock}
+          <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
+        </div>
+      </div>
+    </div>`;
+
+  return `<div class="sp-card" data-url="${_esc(item.shopUrl)}" ${hasFlip?'data-flip="1"':''}>
+    <div class="sp-inner">
+      ${frontFace}
+      ${hasFlip ? backFace : ''}
+    </div>
+  </div>`;
+}
+function initShopFlip() {
+  document.querySelectorAll('.sp-card[data-flip="1"]').forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('.sp-cta')) return;
+      card.classList.toggle('flipped');
+    });
+  });
+  // Non-flippable cards go straight to shop
+  document.querySelectorAll('.sp-card:not([data-flip])').forEach(card => {
+    card.addEventListener('click', () => window.open(card.dataset.url,'_blank'));
+  });
+}
+db.channel('shop-rt').on('postgres_changes',{event:'*',schema:'public',table:'products'},loadShop).subscribe();
+
+// ═══════════════════════════════════════════════
+//  BLOG — OASENSE BLOG 3-CARD GRID
+//  Supabase table: blog_posts
+//  Columns used:
+//    id, title, excerpt/content (trimmed to 160 chars),
+//    photo_url/image_url/image — cover photo
+//    category, emoji (fallback icon if no photo)
+//    created_at / date (formatted display date)
+//    slug / id — used to build the deep link to blog page
+//    status  — must be 'published'
+//  Blog page: https://merci-chi.github.io/OAS/blog
+// ═══════════════════════════════════════════════
+const BLOG_BASE = 'https://merci-chi.github.io/OAS/blog';
+async function loadBlog() {
+  const el = document.getElementById('blogGrid');
+  try {
+    const { data, error } = await db.from('blog_posts').select('*').eq('status','published').order('created_at',{ascending:false}).limit(3);
+    if (error) throw error;
+    if (!data || !data.length) {
+      el.innerHTML = renderBlogEmpty(); return;
+    }
+    const BG = ['linear-gradient(135deg,#1a0020,#2d0040)','linear-gradient(135deg,#18000a,#380018)','linear-gradient(135deg,#000e28,#001840)'];
+    el.innerHTML = data.map((p,i) => {
+      const date = p.date || (p.created_at ? new Date(p.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '');
+      const excerpt = (p.excerpt || p.content || '').substring(0,160);
+      const photo = p.photo_url || p.image_url || p.image || '';
+      const emoji = p.emoji || '✍️';
+      const postUrl = p.slug ? `${BLOG_BASE}/${p.slug}` : `${BLOG_BASE}#post-${p.id}`;
+      const photoHtml = photo
+        ? `<img src="${_esc(mediaUrl(photo))}" alt="${_esc(p.title||'')}"/>`
+        : `<span style="font-size:48px;z-index:1;">${emoji}</span>`;
+
+      return `<a class="bc" href="${_esc(postUrl)}" target="_blank" style="text-decoration:none;color:inherit;">
+        <div class="bc-photo" style="background:${BG[i%BG.length]};">
+          ${photoHtml}
+          <div class="bc-photo-grad"></div>
+          <div class="bc-cat">${_esc(p.category||'Blog')}</div>
+        </div>
+        <div class="bc-body">
+          <div class="bc-date">${_esc(date)}</div>
+          <div class="bc-title">${_esc(p.title||'Untitled')}</div>
+          <div class="bc-excerpt">${_esc(excerpt)}${excerpt.length>=160?'…':''}</div>
+          <span class="bc-more">See more →</span>
+        </div>
+      </a>`;
+    }).join('');
+  } catch(e) {
+    console.error('Blog error:',e);
+    el.innerHTML = renderBlogEmpty();
+  }
+}
+function renderBlogEmpty() {
+  // 3 vivid full-color placeholder cards — no dimming
+  const PLACEHOLDERS = [
+    { icon:'✍️', cat:'Culture',  title:'Nothing yet!',   date:'Coming Soon' },
+    { icon:'🌟', cat:'Lifestyle', title:'Nothing yet!',  date:'Coming Soon' },
+    { icon:'🔥', cat:'Editorial', title:'Nothing yet!', date:'Coming Soon' },
+  ];
+  return PLACEHOLDERS.map(p => `
+    <a class="bc" href="${BLOG_BASE}" target="_blank">
+      <div class="bc-photo">
+        <div class="bc-photo-grad"></div>
+        <div class="bc-photo-icon">${p.icon}</div>
+        <div class="bc-cat">${p.cat}</div>
+      </div>
+      <div class="bc-body">
+        <div class="bc-date">${p.date}</div>
+        <div class="bc-title">${p.title}</div>
+        <div class="bc-excerpt">Post content will appear here once published</div>
+        <span class="bc-more">See more →</span>
+      </div>
+    </a>`).join('');
+}
+
+// ═══════════════════════════════════════════════
+//  PORTFOLIO — UNIFIED 5-PANEL GRID
+// ═══════════════════════════════════════════════
+/*
+  Supabase table: portfolio_items
+  Columns:
+    id            (int, auto)
+    section       (text) — 'portraits' | 'digital' | 'video' | 'branding' | 'lifestyle'
+    media_url     (text) — filename relative to DEV_BASE OR full https:// URL
+    media_type    (text) — 'photo' | 'video'
+    sort_order    (int)
+    title         (text, optional — shown as hover overlay if set)
+    thumbnail_url (text, optional) — for video thumbnail image
+    alt_images    (text, optional) — JSON array of extra photo URLs for hover rotation
+                  e.g. '["img2.jpg","img3.jpg"]'
+
+  Layout: 2 large panels on top (portraits left, digital right)
+          3 equal panels on bottom (video, branding, lifestyle)
+  Each panel accepts any number of items from that section.
+  Videos play muted on hover. Photos rotate on hover.
+*/
+
+const PF_PANELS = [
+  { section:'portraits', name:'Portraits', cat:'Cinematic',  row:'top' },
+  { section:'digital',   name:'Digital Art', cat:'Originals', row:'top' },
+  { section:'video',     name:'Video',      cat:'Content',   row:'bottom' },
+  { section:'branding',  name:'Branding',   cat:'Identity',  row:'bottom' },
+  { section:'lifestyle', name:'Lifestyle',  cat:'Editorial', row:'bottom' },
+];
+
+async function loadPortfolio() {
+  const root = document.getElementById('pf-root');
+  try {
+    const { data, error } = await db.from('portfolio_items').select('*').order('sort_order',{ascending:true});
+    if (error) throw error;
+    const items = data || [];
+
+    // Build the single unified grid
+    root.innerHTML = buildUnifiedGrid(items);
+    initPanelHovers();
+  } catch(e) {
+    console.error('Portfolio error:', e);
+    // Still render empty grid so layout is visible
+    root.innerHTML = buildUnifiedGrid([]);
+    initPanelHovers();
+  }
+}
+
+function buildUnifiedGrid(items) {
+  const bySection = s => items.filter(i => i.section === s);
+
+  const topPanels = PF_PANELS.filter(p => p.row === 'top');
+  const botPanels = PF_PANELS.filter(p => p.row === 'bottom');
+
+  return `<div class="pf-grid">
+    ${topPanels.map(p => buildPanel(p, bySection(p.section))).join('')}
+    <div class="pf-grid-bottom">
+      ${botPanels.map(p => buildPanel(p, bySection(p.section))).join('')}
+    </div>
+  </div>`;
+}
+
+function buildPanel(panelMeta, items) {
+  const { section, name, cat } = panelMeta;
+  const firstItem = items[0] || null;
+
+  // Determine if first item is a video
+  const isVid = firstItem
+    ? (firstItem.media_type === 'video' || /\.(mp4|webm|mov)/i.test(firstItem.media_url || ''))
+    : false;
+
+  // Collect all photo images across all items for this section
+  const allPhotos = items
+    .filter(i => i.media_type !== 'video' && !/\.(mp4|webm|mov)/i.test(i.media_url || ''))
+    .flatMap(i => {
+      const urls = [mediaUrl(i.media_url)];
+      try { if (i.alt_images) urls.push(...JSON.parse(i.alt_images).map(mediaUrl)); } catch(e){}
+      return urls.filter(Boolean);
+    });
+
+  // Collect all videos
+  const allVideos = items.filter(i =>
+    i.media_type === 'video' || /\.(mp4|webm|mov)/i.test(i.media_url || '')
+  );
+
+  let mediaHtml = '';
+
+  if (allVideos.length > 0) {
+    // Show thumbnail of first video as still, video plays on hover
+    const vid = allVideos[0];
+    const thumb = vid.thumbnail_url ? mediaUrl(vid.thumbnail_url) : '';
+    mediaHtml += thumb
+      ? `<img class="pf-panel-img" src="${_esc(thumb)}" alt="${_esc(vid.title||name)}"/>`
+      : '';
+    mediaHtml += `<video class="pf-panel-video" src="${_esc(mediaUrl(vid.media_url))}"
+      muted playsinline loop preload="none"></video>`;
+    mediaHtml += `<div class="pf-panel-play">▶</div>`;
+  } else if (allPhotos.length > 0) {
+    // Photo panel — show first, rotate through rest on hover
+    mediaHtml += `<img class="pf-panel-img"
+      src="${_esc(allPhotos[0])}" alt="${_esc(name)}"
+      data-photos='${JSON.stringify(allPhotos).replace(/'/g,"&#39;")}'/>`;
+    if (allPhotos.length > 1) {
+      mediaHtml += `<div class="pf-panel-dots">
+        ${allPhotos.map((_,i)=>`<div class="pf-panel-dot${i===0?' active':''}"></div>`).join('')}
+      </div>`;
+    }
+  } else {
+    // Empty placeholder
+    const icons = {portraits:'📸',digital:'🎨',video:'🎬',branding:'✨',lifestyle:'🌆'};
+    mediaHtml += `<div class="pf-panel-empty">
+      <div class="pf-panel-empty-icon">${icons[section]||'🌌'}</div>
+      <div class="pf-panel-empty-txt">Add via Supabase<br/>section: ${section}</div>
+    </div>`;
+  }
+
+  // Permanent gradient + label
+  mediaHtml += `<div class="pf-panel-grad"></div>`;
+  mediaHtml += `<div class="pf-panel-label">
+    <div class="pf-panel-cat">${_esc(cat)}</div>
+    <div class="pf-panel-name">${_esc(name)}</div>
+  </div>`;
+
+  return `<div class="pf-panel" data-section="${_esc(section)}">${mediaHtml}</div>`;
+}
+
+function initPanelHovers() {
+  // Photo rotation
+  document.querySelectorAll('.pf-panel').forEach(panel => {
+    const img = panel.querySelector('.pf-panel-img');
+    if (!img || !img.dataset.photos) return;
+
+    let photos;
+    try { photos = JSON.parse(img.dataset.photos); } catch(e){ return; }
+    if (photos.length <= 1) return;
+
+    const dots = panel.querySelectorAll('.pf-panel-dot');
+    let idx = 0, timer = null;
+
+    const showPhoto = (i) => {
+      idx = (i + photos.length) % photos.length;
+      img.style.opacity = '0';
+      setTimeout(() => { img.src = photos[idx]; img.style.opacity = '1'; }, 250);
+      dots.forEach((d, di) => d.classList.toggle('active', di === idx));
+    };
+
+    panel.addEventListener('mouseenter', () => {
+      timer = setInterval(() => showPhoto(idx + 1), 1100);
+    });
+    panel.addEventListener('mouseleave', () => {
+      clearInterval(timer);
+      img.style.opacity = '0';
+      setTimeout(() => { img.src = photos[0]; img.style.opacity = '1'; idx = 0; }, 200);
+      dots.forEach((d, i) => d.classList.toggle('active', i === 0));
+    });
+  });
+
+  // Video hover play
+  document.querySelectorAll('.pf-panel').forEach(panel => {
+    const video = panel.querySelector('.pf-panel-video');
+    if (!video) return;
+    panel.addEventListener('mouseenter', () => video.play());
+    panel.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+  });
+}
+
+// ═══════════════════════════════════════════════
+//  ABOUT + SITE SETTINGS — Fully Supabase-driven
+// ═══════════════════════════════════════════════
+/*
+  Supabase table: site_settings  (key TEXT, value TEXT)
+  ─────────────────────────────────────────────────────
+  ABOUT SECTION — all editable from DEV, live instantly:
+    about_photo_url    — portrait image URL or filename (relative to DEV_BASE)
+    about_pullquote    — italic pull-quote (the big highlighted text)
+    about_body         — body paragraphs, separated by \n\n
+    about_title        — optional: overrides the colored word in heading
+                         (default: "Oasense")
+
+  To edit from DEV:  upsert rows in site_settings with the keys above.
+  Changes reflect on main site immediately (Supabase realtime channel below).
+
+  DONATION:
+    donation_total     — current total raised (number string)
+    donation_goal      — goal amount
+    donation_desc      — description paragraph
+    donation_amounts   — comma-separated amounts e.g. "10,25,50,100"
+*/
+async function loadSiteSettings() {
+  try {
+    const { data } = await db.from('site_settings').select('key,value');
+    if (!data) return;
+    const S = {};
+    data.forEach(r => { S[r.key] = r.value; });
+
+    // ── ABOUT PHOTO ──────────────────────────────
+    if (S.about_photo_url) {
+      const url = mediaUrl(S.about_photo_url);
+      const av = document.getElementById('aboutPhoto');
+      // preserve corner brackets
+      const corners = Array.from(av.querySelectorAll('.av-corner')).map(el=>el.outerHTML).join('');
+      av.innerHTML = `<img src="${_esc(url)}" alt="Oasense Photo"/>` + corners;
+    }
+
+    // ── ABOUT PULL QUOTE ─────────────────────────
+    if (S.about_pullquote) {
+      document.getElementById('aboutPullquote').textContent = S.about_pullquote;
+    }
+
+    // ── ABOUT BODY ───────────────────────────────
+    if (S.about_body) {
+      document.getElementById('aboutBody').innerHTML =
+        S.about_body.split('\n\n').map(p => `<p>${p.replace(/\n/g,'<br/>')}</p>`).join('');
+    }
+
+    // ── ABOUT HEADING OVERRIDE ───────────────────
+    if (S.about_title) {
+      const hot = document.querySelector('#about .sec-title .hot');
+      if (hot) hot.textContent = S.about_title;
+    }
+
+    // ── DONATION ─────────────────────────────────
+    const total = parseFloat(S.donation_total || '0') || 0;
+    const rnEl = document.getElementById('rn');
+    if (rnEl) rnEl.textContent = total.toLocaleString();
+    if (S.donation_desc) {
+      const dd = document.getElementById('donDesc');
+      if (dd) dd.textContent = S.donation_desc;
+    }
+    if (S.donation_goal) {
+      const goal = parseFloat(S.donation_goal) || 0;
+      if (goal > 0) {
+        const pct = Math.min(100, Math.round((total/goal)*100));
+        const bar = document.getElementById('donGoalBar');
+        if (bar) {
+          bar.style.display = 'block';
+          document.getElementById('donGoalRaisedLbl').textContent = `$${total.toLocaleString()} raised`;
+          document.getElementById('donGoalLbl').textContent = `Goal: $${goal.toLocaleString()}`;
+          setTimeout(() => { document.getElementById('donGoalFill').style.width = pct+'%'; }, 400);
+        }
+      }
+    }
+    if (S.donation_amounts) {
+      const amts = S.donation_amounts.split(',').map(a=>a.trim()).filter(Boolean);
+      if (amts.length) {
+        const ag = document.getElementById('donAmounts');
+        if (ag) ag.innerHTML = amts.map((a,i)=>`<button class="ab${i===2?' on':''}" onclick="pA(${isNaN(a)?`'other'`:a},this)">${isNaN(a)?a:'$'+a}</button>`).join('')
+          + `<button class="ab" onclick="pA('other',this)">Other</button>`;
+      }
+    }
+  } catch(e) { console.error('Settings error:',e); }
+}
+// Realtime: any change to site_settings refreshes About + donation live
+db.channel('settings-rt').on('postgres_changes',{event:'*',schema:'public',table:'site_settings'},loadSiteSettings).subscribe();
+
+// ═══════════════════════════════════════════════
+//  CANVAS BG
+// ═══════════════════════════════════════════════
+const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');
+let W,H,t=0;
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+const smokeParts=[];
+for(let i=0;i<80;i++)smokeParts.push({x:Math.random()*1000,y:Math.random()*1000,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*180+80,a:Math.random()*.08+.01,phase:Math.random()*Math.PI*2,hue:Math.random()*60+300});
+const dotParts=[];
+for(let i=0;i<120;i++)dotParts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.5+.3,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,a:Math.random()*.45+.08,phase:Math.random()*Math.PI*2,hue:Math.random()<.7?310+Math.random()*40:260+Math.random()*30});
+function drawBG(){
+  ctx.clearRect(0,0,W,H);
+  const g=ctx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,W*.8);
+  g.addColorStop(0,'rgba(10,0,20,1)');g.addColorStop(1,'rgba(0,0,5,1)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  t+=.004;
+  smokeParts.forEach(p=>{
+    p.x+=p.vx+Math.sin(t+p.phase)*.3;p.y+=p.vy+Math.cos(t+p.phase)*.2;
+    if(p.x<-p.r)p.x=W+p.r;if(p.x>W+p.r)p.x=-p.r;
+    if(p.y<-p.r)p.y=H+p.r;if(p.y>H+p.r)p.y=-p.r;
+    const g2=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+    g2.addColorStop(0,`hsla(${p.hue},100%,60%,${p.a})`);g2.addColorStop(1,'hsla(0,0%,0%,0)');
+    ctx.fillStyle=g2;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+  });
+  const GRID=60;ctx.save();ctx.strokeStyle='rgba(255,0,200,.045)';ctx.lineWidth=.5;
+  for(let x=0;x<W;x+=GRID){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=GRID){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.fillStyle='rgba(255,0,200,.07)';
+  for(let x=0;x<W;x+=GRID)for(let y=0;y<H;y+=GRID){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+  ctx.restore();
+  dotParts.forEach(p=>{
+    p.x+=p.vx+Math.sin(t*.6+p.phase)*.15;p.y+=p.vy+Math.cos(t*.6+p.phase)*.12;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    const pulse=p.a*(.6+.4*Math.sin(t*1.5+p.phase));
+    ctx.save();ctx.globalAlpha=pulse;
+    const dg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);
+    dg.addColorStop(0,`hsla(${p.hue},100%,80%,1)`);dg.addColorStop(1,`hsla(${p.hue},100%,60%,0)`);
+    ctx.fillStyle=dg;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,Math.PI*2);ctx.fill();ctx.restore();
+  });
+  if(Math.random()>.97){ctx.fillStyle=`rgba(255,0,200,${Math.random()*.04})`;ctx.fillRect(0,Math.random()*H,W,Math.random()*3+1);}
+  requestAnimationFrame(drawBG);
+}
+drawBG();
+
+// ═══════════════════════════════════════════════
+//  TITLE GLITCH
+// ═══════════════════════════════════════════════
+(function(){
+  const gc=document.getElementById('glitchCanvas');if(!gc)return;
+  const gctx=gc.getContext('2d');const TEXT='OASENSE',FF="'Black Ops One',sans-serif";
+  let W2=0,H2=0,FS=0,pink=null,mag=null;
+  function buildLayers(){
+    function mk(c){const t=document.createElement('canvas');t.width=W2;t.height=H2;const x=t.getContext('2d');x.font=`${FS}px ${FF}`;x.textBaseline='middle';x.textAlign='center';x.fillStyle=c;x.fillText(TEXT,W2/2,H2/2);return t;}
+    pink=mk('#ff44cc');mag=mk('#cc00ff');
+  }
+  function measure(){const w=document.getElementById('glitchWord');if(!w)return;const r=w.getBoundingClientRect();if(!r.width)return;W2=gc.width=Math.ceil(r.width)+4;H2=gc.height=Math.ceil(r.height)+4;FS=parseFloat(window.getComputedStyle(w).fontSize);buildLayers();}
+  setTimeout(measure,600);window.addEventListener('resize',()=>setTimeout(measure,150));
+  let glitching=false,gFrame=0,gTotal=0,acc=0,nextG=rg(),lastT=performance.now(),rects=[],slices=[];
+  function rg(){return 3500+Math.random()*7000;}
+  function fire(){if(!pink)return;glitching=true;gFrame=0;gTotal=10+Math.floor(Math.random()*20);rects=[];slices=[];
+    for(let i=0;i<6+Math.floor(Math.random()*8);i++){const t2=Math.random();rects.push({x:Math.random()*W2*.1,y:Math.random()*H2,w:W2*.3+Math.random()*W2*.65,h:1+Math.random()*12,col:t2<.32?`rgba(255,20,200,${.7+Math.random()*.3})`:t2<.58?`rgba(204,0,255,${.6+Math.random()*.35})`:t2<.76?`rgba(255,100,220,${.55+Math.random()*.4})`:`rgba(0,0,6,${.85+Math.random()*.15})`,life:2+Math.floor(Math.random()*10),fr:0});}
+    for(let i=0;i<1+Math.floor(Math.random()*4);i++)slices.push({y:4+Math.random()*(H2-8),h:5+Math.random()*22,shift:(Math.random()-.5)*34,colSrc:Math.random()>.5?pink:mag,life:2+Math.floor(Math.random()*8),fr:0});
+  }
+  function draw2(){if(!pink)return;gctx.clearRect(0,0,W2,H2);if(!glitching)return;let alive=false;
+    slices.forEach(s=>{if(s.fr>=s.life)return;alive=true;const a=1-(s.fr/s.life)*.5;gctx.save();gctx.globalAlpha=a*.75;gctx.drawImage(s.colSrc,0,s.y,W2,s.h,s.shift,s.y,W2,s.h);gctx.globalAlpha=a*.2;gctx.drawImage(s.colSrc,0,s.y,W2,s.h,-s.shift*.4,s.y,W2,s.h);gctx.restore();s.fr++;});
+    rects.forEach(r=>{if(r.fr>=r.life)return;alive=true;gctx.save();gctx.globalAlpha=1-(r.fr/r.life)*.55;gctx.fillStyle=r.col;gctx.fillRect(r.x,r.y,r.w,r.h);gctx.restore();r.fr++;});
+    gFrame++;if(gFrame%3===0&&Math.random()>.45)rects.push({x:Math.random()*W2*.2,y:Math.random()*H2,w:8+Math.random()*W2*.6,h:1+Math.random()*4,col:Math.random()>.5?'rgba(255,0,200,.95)':'rgba(220,0,255,.85)',life:2,fr:0});
+    if(!alive||gFrame>gTotal+15){glitching=false;gctx.clearRect(0,0,W2,H2);acc=0;nextG=rg();}
+  }
+  function tick2(now){const dt=now-lastT;lastT=now;if(glitching)draw2();else{acc+=dt;gctx.clearRect(0,0,W2,H2);if(pink&&acc>=nextG)fire();}requestAnimationFrame(tick2);}
+  setTimeout(()=>{lastT=performance.now();requestAnimationFrame(tick2);},700);
+})();
+
+// ═══════════════════════════════════════════════
+//  SOL CREATURE
+// ═══════════════════════════════════════════════
+(function(){
+  const wrap=document.getElementById('solCreatureWrap'),solEl=document.getElementById('solEl'),core=document.getElementById('solCore'),eyes=document.getElementById('solEyes'),glow=document.getElementById('solGlow'),outer=document.getElementById('outerFlame'),mid=document.getElementById('midFlame');
+  if(!solEl)return;
+  const LERP=.09;
+  let posX=window.innerWidth-14-70,posY=window.innerHeight-78-70,targetX=posX,targetY=posY;
+  let dragging=false,flameX=0,flameY=0,velX=0,velY=0,pmx=0,pmy=0,floatO=0,floatD=1;
+  function applyPos(){wrap.style.left=(posX-70)+'px';wrap.style.top=(posY-70)+'px';wrap.style.right='auto';wrap.style.bottom='auto';}
+  function animLoop(){
+    if(dragging){posX+=(targetX-posX)*LERP;posY+=(targetY-posY)*LERP;applyPos();}
+    floatO+=floatD*.1;if(floatO>4||floatO<-4)floatD*=-1;
+    if(!dragging)solEl.style.transform=`translate(-50%,-50%) translateY(${floatO}px)`;
+    else solEl.style.transform='translate(-50%,-50%)';
+    flameX+=(-velX-flameX)*.15;flameY+=(-velY-flameY)*.15;
+    const dist=Math.sqrt(flameX*flameX+flameY*flameY);if(dist>27){flameX*=27/dist;flameY*=27/dist;}
+    outer.style.transform=`translate(calc(-50% + ${flameX}px),calc(-50% + ${flameY}px))`;
+    mid.style.transform=`translate(calc(-50% + ${flameX*.7}px),calc(-50% + ${flameY*.7}px))`;
+    glow.style.transform=`translate(calc(-50% + ${flameX*.45}px),calc(-50% + ${flameY*.45}px))`;
+    const hint=document.getElementById('solHint');
+    if(hint&&!window._solDragged){const wr=wrap.getBoundingClientRect();const hw=hint.offsetWidth||210;const hh=hint.offsetHeight||36;hint.style.left=(wr.left-hw-16)+'px';hint.style.top=(wr.top+wr.height*.2-hh/2+floatO)+'px';}
+    requestAnimationFrame(animLoop);
+  }
+  animLoop();
+  setTimeout(()=>{const h=document.getElementById('solHint');if(h&&!window._solDragged)h.classList.add('show');},2000);
+  core.addEventListener('mousedown',e=>{dragging=true;pmx=e.clientX;pmy=e.clientY;document.body.style.userSelect='none';e.preventDefault();e.stopPropagation();});
+  document.addEventListener('mousemove',e=>{
+    if(dragging){velX=(e.clientX-pmx)*1.4;velY=(e.clientY-pmy)*1.4;pmx=e.clientX;pmy=e.clientY;targetX=Math.max(70,Math.min(window.innerWidth-70,e.clientX));targetY=Math.max(70,Math.min(window.innerHeight-70,e.clientY));}
+    else{const r=wrap.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=Math.max(-8,Math.min(8,(e.clientX-cx)*.04)),dy=Math.max(-8,Math.min(8,(e.clientY-cy)*.04));if(eyes)eyes.style.transform=`translate(${dx}px,${6+dy}px)`;}
+  });
+  document.addEventListener('mouseup',()=>{if(!dragging)return;dragging=false;document.body.style.userSelect='';if(!window._solDragged){window._solDragged=true;const h=document.getElementById('solHint');if(h){h.classList.remove('show');h.classList.add('hide');}}});
+  core.addEventListener('touchstart',e=>{dragging=true;const tc=e.touches[0];pmx=tc.clientX;pmy=tc.clientY;document.body.style.userSelect='none';e.preventDefault();},{passive:false});
+  document.addEventListener('touchmove',e=>{if(!dragging)return;const tc=e.touches[0];velX=(tc.clientX-pmx)*1.4;velY=(tc.clientY-pmy)*1.4;pmx=tc.clientX;pmy=tc.clientY;targetX=Math.max(70,Math.min(window.innerWidth-70,tc.clientX));targetY=Math.max(70,Math.min(window.innerHeight-70,tc.clientY));e.preventDefault();},{passive:false});
+  document.addEventListener('touchend',()=>{if(!dragging)return;dragging=false;document.body.style.userSelect='';if(!window._solDragged){window._solDragged=true;const h=document.getElementById('solHint');if(h){h.classList.remove('show');h.classList.add('hide');}}});
+  function blink(){if(eyes){eyes.style.display='none';setTimeout(()=>eyes.style.display='flex',120);}setTimeout(blink,9000+Math.random()*14000);}
+  setTimeout(blink,9000+Math.random()*14000);
+  function mkParticle(){const p=document.createElement('div');p.className='sol-particle';const sz=2+Math.random()*4;p.style.cssText=`width:${sz}px;height:${sz}px;opacity:${.3+Math.random()*.6};background:rgba(${getSolParticleColor()},0.8);left:${posX+(Math.random()*44-22)}px;top:${posY+(Math.random()*44-22)}px`;document.body.appendChild(p);const angle=Math.random()*Math.PI*2,speed=.15+Math.random()*.25;let life=150+Math.random()*50;
+    function ap(){life--;if(life<=0){p.remove();return;}p.style.left=(parseFloat(p.style.left)+Math.cos(angle)*speed)+'px';p.style.top=(parseFloat(p.style.top)+Math.sin(angle)*speed-.06)+'px';p.style.opacity=Math.min(life/200,parseFloat(p.style.opacity)).toString();requestAnimationFrame(ap);}ap();}
+  setInterval(mkParticle,180);
+})();
+
+// ═══════════════════════════════════════════════
+//  NEED HELP / NAV / COLOR
+// ═══════════════════════════════════════════════
+setTimeout(()=>{const n=document.getElementById('needHelp');if(n)n.classList.add('peeking');},10000);
+window.addEventListener('scroll',()=>{const n=document.getElementById('needHelp');if(!n)return;n.classList.toggle('scrolled-down',window.scrollY>200);},{passive:true});
+function dismissNH(){document.getElementById('needHelp').classList.add('dismissed');document.getElementById('nhPopup').classList.remove('open');}
+function openNH(){document.getElementById('nhPopup').classList.add('open');document.getElementById('needHelp').classList.add('hidden-nh');document.getElementById('nhBtns').style.display='flex';document.getElementById('nhThanks').classList.remove('show');}
+function closeNH(){document.getElementById('nhPopup').classList.remove('open');document.getElementById('needHelp').classList.remove('hidden-nh');}
+function nhChoice(t){if(t==='shop'){closeNH();document.getElementById('shop').scrollIntoView({behavior:'smooth'});}else if(t==='contact'){closeNH();document.getElementById('contact').scrollIntoView({behavior:'smooth'});}else if(t==='looking'){document.getElementById('nhBtns').style.display='none';document.getElementById('nhThanks').classList.add('show');}}
+function tM(){document.getElementById('mob').classList.toggle('open');}
+
+const SOL_PALETTES={magenta:{hot:'#FF00C8',mag:'#CC00FF',deep:'#7B00FF',hot2:'#FF3DE8',particle:'255,0,200',core:'radial-gradient(circle,#fff8ff 0%,#ff88ee 25%,#ff00c8 55%,#cc00aa 80%)',coreShadow:'0 0 40px rgba(255,0,200,0.6),0 0 12px rgba(255,200,255,0.9) inset',glow:'rgba(255,0,200,0.35)'},blue:{hot:'#00EEFF',mag:'#0077FF',deep:'#0033CC',hot2:'#44FFFF',particle:'0,200,255',core:'radial-gradient(circle,#ffffff 0%,#88eeff 25%,#00eeff 55%,#0077ff 80%)',coreShadow:'0 0 40px rgba(0,200,255,0.6)',glow:'rgba(0,200,255,0.35)'},green:{hot:'#00FF88',mag:'#00CC55',deep:'#008833',hot2:'#44FFAA',particle:'0,255,120',core:'radial-gradient(circle,#ffffff 0%,#88ffcc 25%,#00ff88 55%,#00cc55 80%)',coreShadow:'0 0 40px rgba(0,255,120,0.6)',glow:'rgba(0,255,120,0.35)'},yellow:{hot:'#FFCC00',mag:'#FF8800',deep:'#CC5500',hot2:'#FFDD44',particle:'255,180,0',core:'radial-gradient(circle,#fffff0 0%,#ffee88 25%,#ffcc00 55%,#ff8800 80%)',coreShadow:'0 0 40px rgba(255,180,0,0.6),0 0 12px rgba(255,240,160,0.9) inset',glow:'rgba(255,180,0,0.35)'},red:{hot:'#FF3300',mag:'#CC1100',deep:'#881100',hot2:'#FF6644',particle:'255,60,0',core:'radial-gradient(circle,#fff0ee 0%,#ff9988 25%,#ff3300 55%,#cc1100 80%)',coreShadow:'0 0 40px rgba(255,60,0,0.6)',glow:'rgba(255,60,0,0.35)'}};
+let _pc='255,180,0';
+function getSolParticleColor(){return _pc;}
+function setSolColor(name){
+  const p=SOL_PALETTES[name];if(!p)return;
+  const r=document.documentElement;
+  r.style.setProperty('--hot',p.hot);r.style.setProperty('--mag',p.mag);r.style.setProperty('--deep',p.deep);r.style.setProperty('--hot2',p.hot2);
+  const core=document.getElementById('solCore'),glow=document.getElementById('solGlow');
+  if(core){core.style.background=p.core;core.style.boxShadow=p.coreShadow;}
+  if(glow)glow.style.background=`radial-gradient(circle,${p.glow},rgba(0,0,0,0) 70%)`;
+  _pc=p.particle;
+  document.querySelectorAll('.sol-color-btn').forEach(b=>b.classList.remove('active'));
+  const names=['magenta','blue','green','yellow','red'],btns=document.querySelectorAll('.sol-color-btn');
+  const idx=names.indexOf(name);if(btns[idx])btns[idx].classList.add('active');
+}
+
+// ═══════════════════════════════════════════════
+//  MISC UI
+// ═══════════════════════════════════════════════
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000);}
+function pM(b,m){document.querySelectorAll('.mb2').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('emailField').style.display=m==='email'?'block':'none';document.getElementById('phoneField').style.display=m==='phone'?'block':'none';}
+
+// ═══════════════════════════════════════════════
+//  MUSIC — REAL AUDIO PLAYER
+//  Supabase table: tracks
+//  Columns:
+//    id          (int, auto)
+//    title       (text)  — track name e.g. "SOLXSTATE — AWAKEN"
+//    label       (text)  — sub-label e.g. "Demo · 3:42"
+//    audio_url   (text)  — full URL or filename relative to DEV_BASE
+//    sort_order  (int)
+//    likes       (int, default 0)
+//    status      (text)  — 'live' | 'draft'
+//
+//  Supabase table: track_comments
+//    id          (int, auto)
+//    track_id    (int)   — FK → tracks.id
+//    author      (text)  — anon display name
+//    comment     (text)
+//    created_at  (timestamp)
+// ═══════════════════════════════════════════════
+
+// Fallback tracks (used when Supabase has no data)
+const FALLBACK_TRACKS = [
+  { id:1, title:'SOLXSTATE — AWAKEN',          label:'Demo · 3:42', audio_url:'', likes:0 },
+  { id:2, title:'SOLXSTATE — INNER LIGHT',     label:'Demo · 4:18', audio_url:'', likes:0 },
+  { id:3, title:'SOLXSTATE — REBUILD',         label:'Demo · 2:55', audio_url:'', likes:0 },
+  { id:4, title:'SOLXSTATE — WHY (F34)',        label:'Demo · 3:06', audio_url:'', likes:0 },
+  { id:5, title:'SOLXSTATE — WARRIOR (MASTERED)', label:'Demo · 2:42', audio_url:'', likes:0 },
+];
+
+let TRACKS = [];       // loaded from Supabase or fallback
+let currentAudio = null;
+let currentTrackEl = null;
+let currentTrackIdx = -1;
+let commentCounts = {}; // trackId → count
+
+async function loadMusic() {
+  try {
+    const { data, error } = await db.from('tracks').select('*').eq('status','live').order('sort_order',{ascending:true});
+    TRACKS = (data && data.length) ? data : FALLBACK_TRACKS;
+  } catch(e) {
+    TRACKS = FALLBACK_TRACKS;
+  }
+  renderTracks();
+}
+
+function renderTracks() {
+  const list = document.getElementById('trackList');
+  list.innerHTML = TRACKS.map((t, i) => {
+    const hasAudio = !!(t.audio_url);
+    return `<div class="tk${hasAudio?'':' no-src'}" id="tk-${t.id}" data-idx="${i}" data-id="${t.id}">
+      <div class="tk-top" onclick="tkToggle(${i})">
+        <button class="tpb" id="tpb-${t.id}" onclick="event.stopPropagation();tkToggle(${i})">▶</button>
+        <div>
+          <div class="tn">${_esc(t.title)}</div>
+          <div class="tm">${_esc(t.label||'')}</div>
+        </div>
+        <button class="tskip" onclick="event.stopPropagation();tkSkip(${i},-15)" title="Back 15s">«15</button>
+        <button class="tskip" onclick="event.stopPropagation();tkSkip(${i},+15)" title="Skip 15s">15»</button>
+        <div class="tt"><span class="tc" id="tc-${t.id}">0:00</span> / <span id="td-${t.id}">-:--</span></div>
+      </div>
+      <div class="tbw" id="tbw-${t.id}" onclick="event.stopPropagation();tkSeek(event,${i})" title="Seek">
+        <div class="tb" id="tb-${t.id}"></div>
+      </div>
+      <div class="tk-no-audio">⚠ Add audio_url to Supabase · table: tracks</div>
+      <div class="tk-social">
+        <button class="tsb" id="tlk-${t.id}" onclick="tkLike(${t.id})">
+          <span class="ti">♥</span><span id="tlkn-${t.id}">${t.likes||0}</span>
+        </button>
+        <button class="tsb" onclick="tkComment(${t.id})">
+          <span class="ti">💬</span><span id="tcom-${t.id}">0</span>
+        </button>
+        <button class="tsb" onclick="tkShare(${t.id},'${_esc(t.title)}')">
+          <span class="ti">↗</span><span>Share</span>
+        </button>
+      </div>
+      <div class="tk-comments" id="tray-${t.id}">
+        <div class="tk-comments-list" id="clist-${t.id}">
+          <div class="tk-comments-empty">Be the first to comment</div>
+        </div>
+        <div class="tk-comment-input-row">
+          <input class="tk-comment-input" id="cinput-${t.id}" placeholder="Leave a comment…" maxlength="280"
+            onkeydown="if(event.key==='Enter')tkSendComment(${t.id})"/>
+          <button class="tk-comment-send" onclick="tkSendComment(${t.id})">Send</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Load comment counts + comments for each track
+  TRACKS.forEach(t => loadTrackComments(t.id));
+
+  // Check liked tracks from localStorage
+  const likedSet = getLikedTracks();
+  likedSet.forEach(id => {
+    const btn = document.getElementById('tlk-'+id);
+    if (btn) btn.classList.add('liked');
+  });
+}
+
+// ── AUDIO CONTROL ─────────────────────────────
+function tkToggle(idx) {
+  const track = TRACKS[idx];
+  if (!track) return;
+
+  const el = document.getElementById('tk-'+track.id);
+
+  // If same track — toggle play/pause
+  if (currentTrackIdx === idx && currentAudio) {
+    if (currentAudio.paused) {
+      currentAudio.play();
+      el.classList.add('pl');
+      document.getElementById('tpb-'+track.id).textContent = '⏸';
+    } else {
+      currentAudio.pause();
+      el.classList.remove('pl');
+      document.getElementById('tpb-'+track.id).textContent = '▶';
+    }
+    return;
+  }
+
+  // Stop current
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.src = '';
+    if (currentTrackEl) {
+      currentTrackEl.classList.remove('pl');
+      const oldT = TRACKS[currentTrackIdx];
+      if (oldT) document.getElementById('tpb-'+oldT.id).textContent = '▶';
+    }
+  }
+
+  if (!track.audio_url) {
+    toast('No audio file set — add audio_url in Supabase!');
+    return;
+  }
+
+  const url = mediaUrl(track.audio_url);
+  const audio = new Audio(url);
+  audio.preload = 'auto';
+  currentAudio = audio;
+  currentTrackIdx = idx;
+  currentTrackEl = el;
+
+  el.classList.add('pl');
+  document.getElementById('tpb-'+track.id).textContent = '⏸';
+
+  audio.addEventListener('loadedmetadata', () => {
+    const dur = audio.duration;
+    document.getElementById('td-'+track.id).textContent = fmtTime(dur);
+  });
+
+  audio.addEventListener('timeupdate', () => {
+    const cur = audio.currentTime, dur = audio.duration || 1;
+    const pct = (cur / dur * 100).toFixed(2);
+    const bar = document.getElementById('tb-'+track.id);
+    const bw  = document.getElementById('tbw-'+track.id);
+    if (bar) bar.style.width = pct+'%';
+    if (bw)  bw.style.setProperty('--pct', pct+'%');
+    document.getElementById('tc-'+track.id).textContent = fmtTime(cur);
+  });
+
+  audio.addEventListener('ended', () => {
+    el.classList.remove('pl');
+    document.getElementById('tpb-'+track.id).textContent = '▶';
+    currentTrackIdx = -1;
+    currentAudio = null;
+    currentTrackEl = null;
+    // Auto-advance to next track
+    if (idx + 1 < TRACKS.length) setTimeout(() => tkToggle(idx+1), 600);
+  });
+
+  audio.addEventListener('error', () => {
+    el.classList.remove('pl');
+    document.getElementById('tpb-'+track.id).textContent = '▶';
+    toast('Could not load audio — check the file URL in Supabase');
+  });
+
+  audio.play().catch(() => {
+    el.classList.remove('pl');
+    document.getElementById('tpb-'+track.id).textContent = '▶';
+    toast('Playback blocked — tap/click the track again to play');
+  });
+}
+
+function tkSkip(idx, secs) {
+  if (currentTrackIdx !== idx || !currentAudio) {
+    // Start playing first
+    tkToggle(idx);
+    return;
+  }
+  currentAudio.currentTime = Math.max(0, Math.min(currentAudio.duration||0, currentAudio.currentTime + secs));
+}
+
+function tkSeek(e, idx) {
+  const track = TRACKS[idx];
+  if (!track) return;
+  if (currentTrackIdx !== idx || !currentAudio) { tkToggle(idx); return; }
+  const bw = document.getElementById('tbw-'+track.id);
+  const rect = bw.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  currentAudio.currentTime = pct * (currentAudio.duration || 0);
+}
+
+function fmtTime(s) {
+  if (!isFinite(s)) return '-:--';
+  const m = Math.floor(s/60), sec = Math.floor(s%60);
+  return m+':'+(sec<10?'0':'')+sec;
+}
+
+// ── LIKES ─────────────────────────────────────
+function getLikedTracks() {
+  try { return new Set(JSON.parse(localStorage.getItem('oasense_liked_tracks')||'[]')); } catch(e){ return new Set(); }
+}
+function saveLikedTracks(set) {
+  try { localStorage.setItem('oasense_liked_tracks', JSON.stringify([...set])); } catch(e){}
+}
+
+async function tkLike(trackId) {
+  const btn = document.getElementById('tlk-'+trackId);
+  const numEl = document.getElementById('tlkn-'+trackId);
+  if (!btn || !numEl) return;
+
+  const liked = getLikedTracks();
+  const isLiked = liked.has(trackId);
+  const newLikes = Math.max(0, parseInt(numEl.textContent||'0') + (isLiked ? -1 : 1));
+
+  // Optimistic UI
+  btn.classList.toggle('liked', !isLiked);
+  numEl.textContent = newLikes;
+  if (isLiked) liked.delete(trackId); else liked.add(trackId);
+  saveLikedTracks(liked);
+
+  // Persist to Supabase
+  try {
+    await db.from('tracks').update({ likes: newLikes }).eq('id', trackId);
+  } catch(e) { console.warn('Like update failed:', e); }
+}
+
+// ── COMMENTS ──────────────────────────────────
+async function loadTrackComments(trackId) {
+  try {
+    const { data } = await db.from('track_comments')
+      .select('*').eq('track_id', trackId).order('created_at',{ascending:false}).limit(20);
+    const comments = data || [];
+    commentCounts[trackId] = comments.length;
+    const countEl = document.getElementById('tcom-'+trackId);
+    if (countEl) countEl.textContent = comments.length;
+
+    const list = document.getElementById('clist-'+trackId);
+    if (!list) return;
+    if (!comments.length) {
+      list.innerHTML = '<div class="tk-comments-empty">Be the first to comment</div>';
+    } else {
+      list.innerHTML = comments.map(c => {
+        const dt = c.created_at ? new Date(c.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
+        return `<div class="tk-comment">
+          <div class="tk-comment-author">${_esc(c.author||'Anonymous')} <span style="opacity:.4;font-size:8px;">${dt}</span></div>
+          <div class="tk-comment-text">${_esc(c.comment||'')}</div>
+        </div>`;
+      }).join('');
+    }
+  } catch(e) { console.warn('Comments load failed:', e); }
+}
+
+function tkComment(trackId) {
+  const tray = document.getElementById('tray-'+trackId);
+  if (!tray) return;
+  tray.classList.toggle('open');
+  if (tray.classList.contains('open')) {
+    setTimeout(() => { const inp = document.getElementById('cinput-'+trackId); if(inp) inp.focus(); }, 50);
+  }
+}
+
+async function tkSendComment(trackId) {
+  const inp = document.getElementById('cinput-'+trackId);
+  const text = (inp.value||'').trim();
+  if (!text) return;
+
+  inp.value = '';
+  inp.disabled = true;
+
+  try {
+    await db.from('track_comments').insert({
+      track_id: trackId,
+      author: 'Visitor',
+      comment: text,
+    });
+    await loadTrackComments(trackId);
+  } catch(e) {
+    toast('Could not post comment — try again');
+    console.warn('Comment insert failed:', e);
+  }
+
+  inp.disabled = false;
+  inp.focus();
+}
+
+function tkShare(trackId, title) {
+  const url = location.href.split('#')[0] + '#music';
+  if (navigator.share) {
+    navigator.share({ title: title + ' — OASENSE', url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => toast('LINK COPIED! ✓')).catch(() => toast('LINK COPIED!'));
+  }
+}
+
+// Realtime likes
+db.channel('tracks-rt').on('postgres_changes',{event:'UPDATE',schema:'public',table:'tracks'},(payload) => {
+  const t = payload.new;
+  const numEl = document.getElementById('tlkn-'+t.id);
+  const liked = getLikedTracks();
+  // Only update if not the local user (avoid fighting optimistic update)
+  if (numEl && !liked.has(t.id)) numEl.textContent = t.likes || 0;
+}).subscribe();
+
+// Realtime comments
+db.channel('comments-rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'track_comments'},(payload) => {
+  loadTrackComments(payload.new.track_id);
+}).subscribe();
+
+// Blog
+function lk(b,postId){b.classList.toggle('lk');const s=b.querySelector('span');const n=parseInt(s.textContent)+(b.classList.contains('lk')?1:-1);s.textContent=n;if(postId)db.from('blog_posts').update({likes:n}).eq('id',postId).then(()=>{});}
+function sh(){navigator.share?navigator.share({title:'Oasense',url:location.href}):toast('LINK COPIED!');}
+
+// Booking
+function pS(el,n){document.querySelectorAll('.sv').forEach(s=>s.classList.remove('on'));el.classList.add('on');}
+function toggleCsel(){document.getElementById('cselWrap').classList.toggle('open');}
+function pickSel(label,val){document.getElementById('cselText').textContent=label;document.getElementById('svSel').value=val;document.getElementById('cselWrap').classList.remove('open');}
+document.addEventListener('click',e=>{const w=document.getElementById('cselWrap');if(w&&!w.contains(e.target))w.classList.remove('open');});
+
+// Donation
+let sa=10;
+function pA(a,b){document.querySelectorAll('.ab').forEach(x=>x.classList.remove('on'));b.classList.add('on');sa=a;document.getElementById('cw').style.display=a==='other'?'block':'none';}
+function pF(b){document.querySelectorAll('.frb').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
+async function don(){
+  const a=sa==='other'?(parseInt(document.getElementById('ca').value)||0):sa;
+  if(!a){toast('PLEASE ENTER AN AMOUNT');return;}
+  toast(`THANK YOU FOR YOUR $${a} DONATION! ☀️`);
+  try {
+    const { data:cur } = await db.from('site_settings').select('value').eq('key','donation_total').single();
+    const newTotal = (parseFloat(cur?.value||'0')||0) + parseFloat(a);
+    await db.from('site_settings').upsert({key:'donation_total',value:String(newTotal)},{onConflict:'key'});
+    document.getElementById('rn').textContent = newTotal.toLocaleString();
+    const { data:goalRow } = await db.from('site_settings').select('value').eq('key','donation_goal').single();
+    const goal = parseFloat(goalRow?.value||'0')||0;
+    if(goal>0){
+      const pct=Math.min(100,Math.round((newTotal/goal)*100));
+      document.getElementById('donGoalFill').style.width=pct+'%';
+      document.getElementById('donGoalRaisedLbl').textContent=`$${newTotal.toLocaleString()} raised`;
+    }
+  } catch(e) {
+    const el=document.getElementById('rn');el.textContent=(parseFloat(el.textContent.replace(/,/g,''))+parseFloat(a)).toLocaleString();
+  }
+}
+
+// Newsletter
+function jNL(){const v=document.getElementById('nle').value;if(!v||!v.includes('@')){toast('PLEASE ENTER A VALID EMAIL');return;}toast("YOU'RE IN! WELCOME TO THE LIGHT ☀️");document.getElementById('nle').value='';}
+
+// FAQ
+function fq(b){b.parentElement.classList.toggle('open');}
+
+// Sol AI
+const skb={price:['price','cost','how much'],booking:['book','session','shoot'],shipping:['ship','delivery','track'],return:['return','refund'],points:['point','reward','sol'],social:['instagram','youtube','tiktok','discord'],music:['music','song','soundcloud','demo'],contact:['contact','email'],collab:['collab','collaboration']};
+const sr={price:'Pricing is custom per project. Shop items start at $9.99 (digital) to $64.99 (apparel). For photoshoots — use the Booking section!',booking:'Request a session in the Booking section. Full refund if you cancel 48+ hours in advance!',shipping:'Standard: 5–7 business days. Express: 2–3 days. Tracking number sent by email once shipped!',return:'Returns accepted within 30 days. Items must be unworn. Contact us to start a return.',points:'Earn Sol Points shopping (10pts/$1), reviewing (50pts), subscribing (100pts), sharing #Oasense (200pts) and more!',social:'Find Angel on Instagram @oasense.shop, TikTok @solxstate, YouTube, Discord & SoundCloud!',music:"Angel makes music as SOLXSTATE. Stream demos right here or find the full catalog on soundcloud.com/solxstate",contact:'Use the Contact form or email oasense.shop@gmail.com. We respond within 1–2 business days!',collab:"We're open for collaborations! Hit \"Start Collab Conversation\" in the Contact section."};
+function tSol(){document.getElementById('solp').classList.toggle('open');}
+function sSol(){const inp=document.getElementById('solinp'),m=inp.value.trim();if(!m)return;const ms=document.getElementById('solm');ms.innerHTML+=`<div class="solmsg u">${m}</div>`;inp.value='';const l=m.toLowerCase();let r='Great question! Check the relevant section or email oasense.shop@gmail.com ☀️';for(const[k,ks]of Object.entries(skb))if(ks.some(kw=>l.includes(kw))){r=sr[k];break;}setTimeout(()=>{ms.innerHTML+=`<div class="solmsg">${r}</div>`;ms.scrollTop=ms.scrollHeight;},500);ms.scrollTop=ms.scrollHeight;}
+
+// Auth
+function oA(t){document.getElementById('ov').classList.add('open');swA(t);}
+function cA(){document.getElementById('ov').classList.remove('open');}
+function cAOut(e){if(e.target===document.getElementById('ov'))cA();}
+function swA(t){document.getElementById('lv').style.display=t==='login'?'block':'none';document.getElementById('sv').style.display=t==='signup'?'block':'none';}
+function soc(p){toast('CONNECTING TO '+p.toUpperCase()+'...');setTimeout(()=>{cA();toast('WELCOME TO OASENSE! ☀️');},1200);}
+function dL(){toast('WELCOME BACK! ☀️');cA();}
+function dS(){const p=document.getElementById('pwin').value;if(!p||p.length<8||!/[A-Z]/.test(p)||!/[0-9]/.test(p)){toast('PASSWORD: 8+ CHARS, 1 UPPERCASE, 1 NUMBER');return;}toast('ACCOUNT CREATED! WELCOME ☀️');cA();}
+function pws(){const v=document.getElementById('pwin').value;let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;const c=['#FF00C8','#ff9500','#39e75f'];document.getElementById('pwb').style.width=(s*33.3)+'%';document.getElementById('pwb').style.background=c[s-1]||'';}
+
+// Scroll reveal
+const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}}));
+document.querySelectorAll('.po,.ri,.tk,.sv').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(18px)';el.style.transition='opacity .5s ease,transform .5s ease';obs.observe(el);});
+
+// ═══════════════════════════════════════════════
+//  INIT ALL
+// ═══════════════════════════════════════════════
+loadMusic();
+loadShop();
+loadBlog();
+loadPortfolio();
+loadSiteSettings();
+
+// Realtime
+db.channel('blog-rt').on('postgres_changes',{event:'*',schema:'public',table:'blog_posts'},loadBlog).subscribe();
+db.channel('portfolio-rt').on('postgres_changes',{event:'*',schema:'public',table:'portfolio_items'},()=>{loadPortfolio();}).subscribe();
+db.channel('settings-rt').on('postgres_changes',{event:'*',schema:'public',table:'site_settings'},loadSiteSettings).subscribe();
+</script>
+</body>
+</html>.nbr:hover{background:transparent;color:var(--hot);}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.hbg span{width:22px;height:1.5px;background:var(--hot);box-shadow:0 0 6px var(--hot);}
+.mob{display:none;position:fixed;inset:0;z-index:4900;background:rgba(0,0,5,0.97);flex-direction:column;align-items:center;justify-content:center;gap:24px;}
+.mob.open{display:flex;}
+.mob a{font-family:'Black Ops One',sans-serif;font-size:32px;letter-spacing:4px;color:var(--txt);text-decoration:none;text-transform:uppercase;transition:all .2s;}
+.mob a:hover{color:var(--hot);text-shadow:0 0 20px var(--hot);}
+
+/* ── HERO ── */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:100px 20px 80px;position:relative;z-index:10;}
+.hero-smoke{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.smoke-blob{position:absolute;border-radius:50%;filter:blur(80px);animation:smokeFloat 10s ease-in-out infinite;}
+.s1{width:500px;height:500px;background:rgba(255,0,200,0.12);top:-100px;right:-100px;}
+.s2{width:400px;height:400px;background:rgba(204,0,255,0.1);bottom:-50px;left:-100px;animation-delay:-4s;}
+.s3{width:300px;height:300px;background:rgba(123,0,255,0.08);top:40%;left:30%;animation-delay:-7s;}
+@keyframes smokeFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-20px) scale(1.1);}66%{transform:translate(-20px,30px) scale(.9);}}
+.hero-label{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:6px;color:var(--hot);text-transform:uppercase;margin-bottom:20px;animation:fadeUp .8s ease both;text-shadow:0 0 10px var(--hot);}
+.hero-title{font-family:'Black Ops One',sans-serif;font-size:clamp(80px,16vw,220px);line-height:.85;color:#fff;position:relative;text-transform:uppercase;animation:fadeUp .8s ease .1s both;}
+#glitchCanvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5;}
+#glitchWord{font-family:'Black Ops One',sans-serif;font-size:clamp(80px,16vw,220px);display:block;color:#fff;text-transform:uppercase;line-height:.85;}
+.hero-title-glow{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,0,200,0.2) 0%,transparent 70%);filter:blur(20px);pointer-events:none;animation:glowPulse 3s ease-in-out infinite;}
+@keyframes glowPulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+.hero-sub{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:clamp(22px,5vw,48px);letter-spacing:8px;text-transform:uppercase;color:var(--hot2);margin-top:16px;text-shadow:0 0 20px var(--hot);animation:fadeUp .8s ease .25s both;}
+.hero-desc{font-size:18px;color:var(--mute);line-height:1.8;max-width:500px;margin:20px auto 0;font-weight:300;animation:fadeUp .8s ease .4s both;}
+.hero-ctas{display:flex;gap:16px;margin-top:40px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s ease .55s both;}
+.btn-hot{padding:16px 44px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Black Ops One',sans-serif;font-size:17px;letter-spacing:3px;cursor:pointer;text-decoration:none;display:inline-block;text-transform:uppercase;transition:all .3s;position:relative;overflow:hidden;z-index:0;}
+.btn-hot::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--hot),var(--mag));opacity:0;transition:opacity .3s;z-index:-1;}
+.btn-hot:hover{color:#fff;border-color:var(--mag);box-shadow:0 0 28px rgba(255,0,200,0.5),0 0 60px rgba(255,0,200,0.2);}
+.btn-hot:hover::before{opacity:1;}
+.btn-ghost{padding:16px 44px;background:rgba(255,0,200,0.1);border:1px solid rgba(255,0,200,0.3);color:var(--txt);font-family:'Black Ops One',sans-serif;font-size:17px;letter-spacing:3px;cursor:pointer;text-decoration:none;display:inline-block;text-transform:uppercase;transition:all .25s;}
+.btn-ghost:hover{border-color:var(--hot);color:var(--hot);background:rgba(255,0,200,0.15);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── SECTIONS ── */
+section,div.band{position:relative;z-index:10;}
+section{padding:100px 40px;}
+.wrap{max-width:1120px;margin:0 auto;}
+.sec-tag{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:5px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;}
+.sec-title{font-family:'Black Ops One',sans-serif;font-size:clamp(52px,8vw,110px);text-transform:uppercase;line-height:.9;color:#fff;margin-bottom:52px;}
+.sec-title .hot{color:var(--hot);display:inline;}
+.vhs-line{height:1px;background:linear-gradient(to right,transparent,rgba(255,0,200,0.45),rgba(204,0,255,0.35),transparent);margin-bottom:40px;}
+
+/* ── MANIFESTO ── */
+.band#manifesto{padding:80px 40px;background:linear-gradient(135deg,rgba(255,0,200,0.06) 0%,rgba(0,0,5,1) 40%,rgba(123,0,255,0.06) 100%);border-top:1px solid rgba(255,0,200,0.2);border-bottom:1px solid rgba(255,0,200,0.2);text-align:center;overflow:hidden;}
+.mq-wrap{max-width:900px;margin:0 auto;}
+.mq{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:clamp(26px,5vw,68px);text-transform:uppercase;letter-spacing:2px;color:#fff;line-height:1.15;}
+.mq .hot-word{color:var(--hot);font-style:italic;text-shadow:0 0 20px var(--hot),0 0 40px var(--hot);}
+.mq-by{margin-top:20px;font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:4px;color:var(--mute);text-transform:uppercase;}
+
+/* ── SHOP ── */
+#shop{background:var(--void);}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sg-spinner{width:42px;height:42px;border:2px solid rgba(255,0,200,0.2);border-top-color:var(--hot);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+.sg-loading-txt{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);letter-spacing:3px;text-transform:uppercase;}
+
+/* ── 4-CARD PROMO GRID ── */
+.shop-promo{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:rgba(255,204,0,0.06);border:1px solid rgba(255,204,0,0.25);padding:4px;box-shadow:0 0 60px rgba(255,204,0,0.04),0 0 120px rgba(255,136,0,0.03);}
+
+/* flip wrapper */
+.sp-card{position:relative;cursor:pointer;perspective:1100px;}
+.sp-card::after{content:'';position:absolute;inset:0;border:1px solid transparent;transition:border-color .35s,box-shadow .35s;z-index:6;pointer-events:none;}
+.sp-card:hover::after{border-color:rgba(255,204,0,0.7);box-shadow:inset 0 0 20px rgba(255,204,0,0.04),0 0 40px rgba(255,136,0,0.12);}
+.sp-inner{width:100%;transition:transform .65s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;}
+.sp-card.flipped .sp-inner{transform:rotateY(180deg);}
+.sp-face{width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.sp-back{position:absolute;top:0;left:0;transform:rotateY(180deg);}
+
+/* ── IMAGE ZONE — vivid gradient placeholder when no photo ── */
+.sp-img{
+  width:100%;aspect-ratio:3/4;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;
+}
+/* placeholder bg — each card gets a different radial by nth-child */
+.sp-card:nth-child(1) .sp-img{background:linear-gradient(160deg,#1a0040 0%,#0d001a 50%,#200010 100%);}
+.sp-card:nth-child(2) .sp-img{background:linear-gradient(160deg,#001a28 0%,#000d18 50%,#001228 100%);}
+.sp-card:nth-child(3) .sp-img{background:linear-gradient(160deg,#1a0828 0%,#0a0018 50%,#180024 100%);}
+.sp-card:nth-child(4) .sp-img{background:linear-gradient(160deg,#200800 0%,#120000 50%,#180004 100%);}
+/* subtle radial glow in center */
+.sp-img::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(255,204,0,0.07) 0%,transparent 65%);pointer-events:none;z-index:0;}
+.sp-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.4,0,.2,1);z-index:1;}
+.sp-card:hover .sp-face .sp-img img{transform:scale(1.07);}
+/* gradient sweep on hover */
+.sp-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,8,.82) 0%,rgba(0,0,8,.1) 50%,transparent 100%);z-index:2;pointer-events:none;}
+
+/* placeholder icon + label inside empty image zone */
+.sp-img-placeholder{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:none;}
+.sp-img-placeholder-icon{font-size:52px;filter:drop-shadow(0 0 16px rgba(255,204,0,0.4));}
+.sp-img-placeholder-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,204,0,0.5);text-transform:uppercase;}
+
+/* badges */
+.sp-badge{position:absolute;top:12px;left:12px;font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;padding:5px 11px;text-transform:uppercase;z-index:4;}
+.sp-badge.pct{background:var(--hot);color:#000;box-shadow:0 0 12px var(--hot),0 0 24px rgba(255,204,0,0.3);}
+.sp-badge.new{background:#00ff88;color:#000;box-shadow:0 0 10px #00ff88;}
+.sp-badge.hot{background:#ff3300;color:#fff;box-shadow:0 0 10px #ff3300;}
+.sp-badge.ltd{background:#aa44ff;color:#fff;box-shadow:0 0 10px #aa44ff;}
+
+/* flip hint */
+.sp-flip-hint{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,8,.75);border:1px solid rgba(255,204,0,.6);color:rgba(255,204,0,1);font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.6);transition:opacity .25s,transform .25s;z-index:4;backdrop-filter:blur(10px);}
+.sp-card:hover .sp-flip-hint{opacity:1;transform:scale(1);}
+
+/* ── INFO STRIP ── */
+.sp-info{background:rgba(4,0,12,1);border:1px solid rgba(255,204,0,.18);border-top:none;padding:16px 16px 18px;}
+.sp-name{font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:5px;line-height:1.25;text-shadow:0 0 20px rgba(255,255,255,0.1);}
+.sp-desc{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:rgba(255,214,245,0.65);letter-spacing:.5px;line-height:1.5;margin-bottom:12px;}
+.sp-price-row{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.sp-price{font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--hot);line-height:1;text-shadow:0 0 14px rgba(255,204,0,0.4);}
+.sp-was{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);text-decoration:line-through;display:block;margin-bottom:3px;}
+.sp-disc{font-family:'Share Tech Mono',monospace;font-size:9px;color:#00ff88;letter-spacing:1px;margin-top:3px;}
+.sp-cta{padding:8px 14px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;white-space:nowrap;flex-shrink:0;}
+.sp-cta:hover{background:var(--hot);color:#000;box-shadow:0 0 16px var(--hot);}
+
+/* back face */
+.sp-back .sp-img{aspect-ratio:3/4;}
+.sp-back-label{position:absolute;bottom:0;left:0;right:0;padding:24px 16px;background:linear-gradient(to top,rgba(0,0,10,.95) 0%,transparent 100%);z-index:4;text-align:center;}
+.sp-back-label span{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:5px;color:var(--hot);text-transform:uppercase;text-shadow:0 0 12px var(--hot);}
+
+/* ── MUSIC ── */
+#music{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
 .tl{display:flex;flex-direction:column;gap:2px;margin-bottom:32px;}
 .tk{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:16px;padding:18px 22px;background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.15);transition:all .2s;cursor:pointer;}
 .tk:hover{border-color:var(--hot);background:rgba(255,0,200,0.06);}
