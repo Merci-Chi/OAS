@@ -85,36 +85,71 @@ section{padding:100px 40px;}
 
 /* ── SHOP ── */
 #shop{background:var(--void);}
-.filter-row{display:flex;gap:8px;margin-bottom:40px;flex-wrap:wrap;}
-.fb{padding:9px 26px;background:transparent;border:1px solid rgba(255,0,200,0.25);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-.fb.on,.fb:hover{border-color:var(--hot);color:var(--hot);box-shadow:0 0 12px rgba(255,0,200,0.2);}
-.sg{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:2px;}
-.sg-loading{grid-column:1/-1;padding:60px 20px;text-align:center;}
-.sg-spinner{width:42px;height:42px;border:2px solid rgba(255,0,200,0.2);border-top-color:var(--hot);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
 @keyframes spin{to{transform:rotate(360deg);}}
+.sg-spinner{width:42px;height:42px;border:2px solid rgba(255,0,200,0.2);border-top-color:var(--hot);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
 .sg-loading-txt{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);letter-spacing:3px;text-transform:uppercase;}
-.pr{background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.15);transition:all .3s;cursor:pointer;overflow:hidden;position:relative;}
-.pr::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,0,200,0.05),transparent);transition:left .4s ease;}
-.pr:hover{border-color:var(--hot);box-shadow:0 0 20px rgba(255,0,200,0.15),inset 0 0 20px rgba(255,0,200,0.03);}
-.pr:hover::before{left:100%;}
-.pr-flip{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(4,0,12,0.75);border:1px solid rgba(255,0,200,0.4);color:rgba(255,0,200,0.8);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;transform:scale(0.7);transition:opacity .2s,transform .2s;z-index:5;}
-.pr:hover .pr-flip{opacity:1;transform:scale(1);}
-.pi{width:100%;aspect-ratio:1;background:rgba(255,0,200,0.05);display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;overflow:hidden;}
-.pi img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
-.pbdg{position:absolute;top:10px;left:10px;background:var(--hot);color:#000;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;padding:4px 12px;text-transform:uppercase;box-shadow:0 0 10px var(--hot);}
-.pb{padding:22px 24px 28px;}
-.pn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:20px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
-.pd{font-size:15px;color:var(--mute);line-height:1.6;margin-bottom:18px;}
-.pf{display:flex;align-items:center;justify-content:space-between;}
-.pp{font-family:'Black Ops One',sans-serif;font-size:26px;color:var(--hot);}
-.pp s{font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(255,255,255,.3);display:block;margin-bottom:2px;}
-.pp-disc{font-family:'Share Tech Mono',monospace;font-size:10px;color:#00ff88;letter-spacing:1px;margin-top:2px;}
-.pa{padding:9px 20px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-.pa:hover{background:var(--hot);color:#000;box-shadow:0 0 15px var(--hot);}
-.sg-empty{grid-column:1/-1;padding:60px 20px;text-align:center;border:1px dashed rgba(255,0,200,0.1);}
-.sg-empty-icon{font-size:52px;margin-bottom:14px;opacity:.5;}
-.sg-empty-title{font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:4px;color:rgba(255,255,255,0.1);text-transform:uppercase;margin-bottom:10px;}
-.sg-empty-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(170,102,204,0.3);letter-spacing:2px;line-height:1.8;}
+
+/* ── 4-CARD PROMO GRID ── */
+.shop-promo{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:rgba(255,204,0,0.06);border:1px solid rgba(255,204,0,0.25);padding:4px;box-shadow:0 0 60px rgba(255,204,0,0.04),0 0 120px rgba(255,136,0,0.03);}
+
+/* flip wrapper */
+.sp-card{position:relative;cursor:pointer;perspective:1100px;}
+.sp-card::after{content:'';position:absolute;inset:0;border:1px solid transparent;transition:border-color .35s,box-shadow .35s;z-index:6;pointer-events:none;}
+.sp-card:hover::after{border-color:rgba(255,204,0,0.7);box-shadow:inset 0 0 20px rgba(255,204,0,0.04),0 0 40px rgba(255,136,0,0.12);}
+.sp-inner{width:100%;transition:transform .65s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;}
+.sp-card.flipped .sp-inner{transform:rotateY(180deg);}
+.sp-face{width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.sp-back{position:absolute;top:0;left:0;transform:rotateY(180deg);}
+
+/* ── IMAGE ZONE — vivid gradient placeholder when no photo ── */
+.sp-img{
+  width:100%;aspect-ratio:3/4;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;
+}
+/* placeholder bg — each card gets a different radial by nth-child */
+.sp-card:nth-child(1) .sp-img{background:linear-gradient(160deg,#1a0040 0%,#0d001a 50%,#200010 100%);}
+.sp-card:nth-child(2) .sp-img{background:linear-gradient(160deg,#001a28 0%,#000d18 50%,#001228 100%);}
+.sp-card:nth-child(3) .sp-img{background:linear-gradient(160deg,#1a0828 0%,#0a0018 50%,#180024 100%);}
+.sp-card:nth-child(4) .sp-img{background:linear-gradient(160deg,#200800 0%,#120000 50%,#180004 100%);}
+/* subtle radial glow in center */
+.sp-img::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 42%,rgba(255,204,0,0.07) 0%,transparent 65%);pointer-events:none;z-index:0;}
+.sp-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.4,0,.2,1);z-index:1;}
+.sp-card:hover .sp-face .sp-img img{transform:scale(1.07);}
+/* gradient sweep on hover */
+.sp-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,8,.82) 0%,rgba(0,0,8,.1) 50%,transparent 100%);z-index:2;pointer-events:none;}
+
+/* placeholder icon + label inside empty image zone */
+.sp-img-placeholder{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:none;}
+.sp-img-placeholder-icon{font-size:52px;filter:drop-shadow(0 0 16px rgba(255,204,0,0.4));}
+.sp-img-placeholder-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,204,0,0.5);text-transform:uppercase;}
+
+/* badges */
+.sp-badge{position:absolute;top:12px;left:12px;font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;padding:5px 11px;text-transform:uppercase;z-index:4;}
+.sp-badge.pct{background:var(--hot);color:#000;box-shadow:0 0 12px var(--hot),0 0 24px rgba(255,204,0,0.3);}
+.sp-badge.new{background:#00ff88;color:#000;box-shadow:0 0 10px #00ff88;}
+.sp-badge.hot{background:#ff3300;color:#fff;box-shadow:0 0 10px #ff3300;}
+.sp-badge.ltd{background:#aa44ff;color:#fff;box-shadow:0 0 10px #aa44ff;}
+
+/* flip hint */
+.sp-flip-hint{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,8,.75);border:1px solid rgba(255,204,0,.6);color:rgba(255,204,0,1);font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.6);transition:opacity .25s,transform .25s;z-index:4;backdrop-filter:blur(10px);}
+.sp-card:hover .sp-flip-hint{opacity:1;transform:scale(1);}
+
+/* ── INFO STRIP ── */
+.sp-info{background:rgba(4,0,12,1);border:1px solid rgba(255,204,0,.18);border-top:none;padding:16px 16px 18px;}
+.sp-name{font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:5px;line-height:1.25;text-shadow:0 0 20px rgba(255,255,255,0.1);}
+.sp-desc{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:rgba(255,214,245,0.65);letter-spacing:.5px;line-height:1.5;margin-bottom:12px;}
+.sp-price-row{display:flex;align-items:center;justify-content:space-between;gap:6px;}
+.sp-price{font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--hot);line-height:1;text-shadow:0 0 14px rgba(255,204,0,0.4);}
+.sp-was{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);text-decoration:line-through;display:block;margin-bottom:3px;}
+.sp-disc{font-family:'Share Tech Mono',monospace;font-size:9px;color:#00ff88;letter-spacing:1px;margin-top:3px;}
+.sp-cta{padding:8px 14px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block;white-space:nowrap;flex-shrink:0;}
+.sp-cta:hover{background:var(--hot);color:#000;box-shadow:0 0 16px var(--hot);}
+
+/* back face */
+.sp-back .sp-img{aspect-ratio:3/4;}
+.sp-back-label{position:absolute;bottom:0;left:0;right:0;padding:24px 16px;background:linear-gradient(to top,rgba(0,0,10,.95) 0%,transparent 100%);z-index:4;text-align:center;}
+.sp-back-label span{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:5px;color:var(--hot);text-transform:uppercase;text-shadow:0 0 12px var(--hot);}
 
 /* ── MUSIC ── */
 #music{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
@@ -134,27 +169,35 @@ section{padding:100px 40px;}
 
 /* ── BLOG ── */
 #blog{background:var(--void);}
-.bg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;}
-.po{background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.15);overflow:hidden;transition:all .3s;}
-.po:hover{border-color:var(--hot);box-shadow:0 0 20px rgba(255,0,200,0.1);}
-.pth{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:48px;position:relative;overflow:hidden;}
-.pth::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(0,0,5,.8));}
-.ptag{position:absolute;bottom:12px;left:12px;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--hot);text-transform:uppercase;z-index:1;text-shadow:0 0 8px var(--hot);}
-.pbo{padding:24px;}
-.ptit{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;line-height:1.2;}
-.pex{font-size:15px;color:var(--mute);line-height:1.7;margin-bottom:18px;}
-.pft{display:flex;align-items:center;justify-content:space-between;padding-top:16px;border-top:1px solid rgba(255,0,200,0.15);}
-.pau{display:flex;align-items:center;gap:10px;}
-.ppfp{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--hot),var(--mag));display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 8px var(--hot);}
-.pan{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--txt);}
-.pdt{font-size:11px;color:var(--mute);margin-top:2px;}
-.pac{display:flex;gap:6px;}
-.pab{padding:6px 14px;background:transparent;border:1px solid rgba(255,0,200,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s;}
-.pab:hover,.pab.lk{border-color:var(--hot);color:var(--hot);}
-.blog-empty{padding:60px 20px;text-align:center;border:1px dashed rgba(255,0,200,0.1);}
-.blog-empty-icon{font-size:52px;margin-bottom:14px;opacity:.5;}
-.blog-empty-title{font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:4px;color:rgba(255,255,255,0.1);text-transform:uppercase;margin-bottom:10px;}
-.blog-empty-sub{font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(170,102,204,0.3);letter-spacing:2px;line-height:1.8;}
+.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:rgba(255,204,0,0.05);border:1px solid rgba(255,204,0,0.2);padding:4px;box-shadow:0 0 60px rgba(255,204,0,0.03);}
+
+/* each blog card */
+.bc{background:rgba(4,0,12,1);border:1px solid rgba(255,204,0,.15);overflow:hidden;cursor:pointer;transition:border-color .3s,box-shadow .35s;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
+.bc:hover{border-color:rgba(255,204,0,.55);box-shadow:0 0 30px rgba(255,204,0,0.08),inset 0 0 30px rgba(255,204,0,0.02);}
+
+/* photo area */
+.bc-photo{width:100%;height:210px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+/* per-card gradient backgrounds */
+.bc:nth-child(1) .bc-photo{background:linear-gradient(160deg,#1a0040 0%,#09001c 50%,#0d0028 100%);}
+.bc:nth-child(2) .bc-photo{background:linear-gradient(160deg,#001a30 0%,#000d1a 50%,#000818 100%);}
+.bc:nth-child(3) .bc-photo{background:linear-gradient(160deg,#1e0200 0%,#100000 50%,#160008 100%);}
+.bc-photo::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(255,204,0,0.09) 0%,transparent 60%);pointer-events:none;z-index:0;}
+.bc-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .65s cubic-bezier(.4,0,.2,1);z-index:1;}
+.bc:hover .bc-photo img{transform:scale(1.06);}
+.bc-photo-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,0,12,1) 0%,rgba(4,0,12,0.2) 55%,transparent 100%);z-index:2;pointer-events:none;}
+
+/* placeholder emoji icon in photo zone */
+.bc-photo-icon{position:relative;z-index:3;font-size:52px;filter:drop-shadow(0 0 20px rgba(255,204,0,0.35));}
+
+.bc-cat{position:absolute;top:14px;left:14px;font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:700;letter-spacing:3px;color:var(--hot);text-transform:uppercase;z-index:4;text-shadow:0 0 8px var(--hot);}
+
+/* content body */
+.bc-body{padding:20px 18px 22px;flex:1;display:flex;flex-direction:column;}
+.bc-date{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:12px;opacity:.7;}
+.bc-title{font-family:'Black Ops One',sans-serif;font-size:17px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;margin-bottom:10px;line-height:1.25;text-shadow:0 0 20px rgba(255,255,255,.08);}
+.bc-excerpt{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:rgba(255,214,245,0.7);line-height:1.65;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;letter-spacing:.3px;}
+.bc-more{display:inline-block;margin-top:16px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;text-decoration:none;border-bottom:1px solid rgba(255,204,0,.4);padding-bottom:3px;transition:border-color .2s,color .2s,text-shadow .2s;}
+.bc-more:hover{color:#fff;border-color:#fff;text-shadow:0 0 10px rgba(255,255,255,.4);}
 
 /* ═══════════════════════════════════════
    ── PORTFOLIO — 5-PANEL UNIFIED GRID ──
@@ -439,6 +482,9 @@ section{padding:100px 40px;}
 .socr{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px;}
 .slnk{padding:12px 20px;border:1px solid rgba(255,0,200,0.25);color:rgba(255,255,255,0.65);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;transition:all .2s;}
 .slnk:hover{border-color:var(--hot);color:var(--hot);}
+/* About photo overlay edit hint (shows if user is admin — add class 'is-admin' to body via JS) */
+.av-edit-hint{position:absolute;bottom:0;left:0;right:0;padding:14px;background:rgba(0,0,8,.78);text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;opacity:0;transition:opacity .25s;z-index:5;}
+.av:hover .av-edit-hint{opacity:1;}
 
 /* ── REWARDS ── */
 #rewards{background:var(--void);}
@@ -646,6 +692,8 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   .pf-grid{grid-template-columns:1fr;grid-template-rows:300px 300px auto;}
   .pf-grid-bottom{grid-column:auto;grid-template-columns:1fr 1fr;gap:4px;}
   .pf-panel-name{font-size:clamp(20px,4vw,32px);}
+  .shop-promo{grid-template-columns:1fr 1fr;}
+  .blog-grid{grid-template-columns:1fr 1fr;}
 }
 @media(max-width:600px){
   .ftg{grid-template-columns:1fr;}
@@ -653,6 +701,8 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   .nlf input{border-right:1px solid rgba(255,0,200,.25);border-bottom:none;}
   .solp{width:calc(100vw - 48px);right:0;}
   .pf-grid-bottom{grid-template-columns:1fr;}
+  .shop-promo{grid-template-columns:1fr 1fr;}
+  .blog-grid{grid-template-columns:1fr;}
 }
 </style>
 </head>
@@ -715,23 +765,17 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   </div>
 </div>
 
-<!-- SHOP -->
+<!-- SHOP — PROMO 4-PANEL -->
 <section id="shop">
   <div class="wrap">
     <p class="sec-tag">// 01 — The Store</p>
     <h2 class="sec-title">Shop <span class="hot">Oasense</span></h2>
     <div class="vhs-line"></div>
-    <div class="filter-row">
-      <button class="fb on" onclick="sf('all',this)">All</button>
-      <button class="fb" onclick="sf('apparel',this)">Apparel</button>
-      <button class="fb" onclick="sf('digital',this)">Digital</button>
-      <button class="fb" onclick="sf('photography',this)">Photography</button>
+    <div class="shop-promo" id="shopPromo">
+      <div class="shop-promo-loading"><div class="sg-spinner"></div><div class="sg-loading-txt">Loading...</div></div>
     </div>
-    <div class="sg" id="sg">
-      <div class="sg-loading"><div class="sg-spinner"></div><div class="sg-loading-txt">Loading products...</div></div>
-    </div>
-    <div style="text-align:center;margin-top:40px;">
-      <a href="https://merci-chi.github.io/OAS/shop" target="_blank" class="btn-hot">SEE MORE — OPEN SHOP</a>
+    <div style="text-align:center;margin-top:32px;">
+      <a href="https://merci-chi.github.io/OAS/shop" target="_blank" class="btn-hot">ENTER SHOP — SEE ALL</a>
     </div>
   </div>
 </section>
@@ -754,17 +798,19 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   </div>
 </section>
 
-<!-- BLOG (Supabase) -->
+<!-- BLOG — OASENSE BLOG -->
 <section id="blog">
   <div class="wrap">
     <p class="sec-tag">// 03 — The Feed</p>
-    <h2 class="sec-title">Sol's <span class="hot">Blog</span></h2>
+    <h2 class="sec-title">Oasense <span class="hot">Blog</span></h2>
     <div class="vhs-line"></div>
-    <div id="blogGrid">
-      <div class="sg-loading"><div class="sg-spinner"></div><div class="sg-loading-txt">Loading posts...</div></div>
+    <div class="blog-grid" id="blogGrid">
+      <div style="grid-column:1/-1;padding:60px 20px;text-align:center;">
+        <div class="sg-spinner"></div><div class="sg-loading-txt">Loading posts...</div>
+      </div>
     </div>
-    <div style="text-align:center;margin-top:40px;">
-      <a href="https://merci-chi.github.io/OAS/blog" target="_blank" class="btn-hot">SEE MORE — OPEN BLOG</a>
+    <div style="text-align:center;margin-top:32px;">
+      <a href="https://merci-chi.github.io/OAS/blog" target="_blank" class="btn-hot">SEE ALL POSTS — OPEN BLOG</a>
     </div>
   </div>
 </section>
@@ -1109,85 +1155,229 @@ const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/
 const mediaUrl = f => f ? (f.startsWith('http') ? f : DEV_BASE + f) : '';
 
 // ═══════════════════════════════════════════════
-//  SHOP
+//  SHOP — PROMO 4-PANEL
+//  Supabase table: products
+//  Columns used:
+//    id, title/name, price, discount/discount_percent,
+//    badge  ('% '|'New!'|'Hot!'|'Ltd'),
+//    img/image_url/image      — primary image URL
+//    img2/image_url2/image2   — second image URL (enables flip)
+//    shop_url                 — deep-link to item in shop (optional, fallback: /shop)
+//    status                   — must be 'live'
+//  Promo shows 4 items, priority: badge=% > New! > Hot! > Ltd > none, newest first
 // ═══════════════════════════════════════════════
-let shopItems = [], activeFilter = 'all';
+const SHOP_URL = 'https://merci-chi.github.io/OAS/shop';
 async function loadShop() {
+  const root = document.getElementById('shopPromo');
   try {
-    const { data, error } = await db.from('products').select('*').eq('status','live').order('created_at',{ascending:false}).limit(8);
+    const { data, error } = await db.from('products').select('*').eq('status','live').order('created_at',{ascending:false}).limit(40);
     if (error) throw error;
-    shopItems = (data||[]).map(r => ({
-      id: r.id, title: r.title || r.name || '', desc: r.desc || r.description || '',
-      price: r.price || '0', discount: r.discount || r.discount_percent || '',
-      category: (r.category||'other').toLowerCase(), badge: r.badge || '',
+    const items = (data||[]).map(r => ({
+      id: r.id,
+      title: r.title || r.name || '',
+      desc: r.desc || r.description || '',
+      price: parseFloat(r.price||0),
+      discount: parseInt(r.discount || r.discount_percent || 0) || 0,
+      badge: r.badge || '',
       img: r.img || r.image_url || r.image || '',
+      img2: r.img2 || r.image_url2 || r.image2 || '',
+      shopUrl: r.shop_url || SHOP_URL,
     }));
-    renderShop();
+
+    // Sort: % badge first, then New!, then Hot!, then Ltd, then rest
+    const badgeRank = b => b==='%'?0:b==='New!'?1:b==='Hot!'?2:b==='Ltd'?3:4;
+    items.sort((a,b) => badgeRank(a.badge) - badgeRank(b.badge));
+
+    const promo = items.slice(0,4);
+    if (!promo.length) {
+      root.innerHTML = renderShopEmpty(); return;
+    }
+    root.innerHTML = promo.map(item => renderPromoCard(item)).join('');
+    initShopFlip();
   } catch(e) {
-    document.getElementById('sg').innerHTML = `<div class="sg-empty"><div class="sg-empty-icon">🌌</div><div class="sg-empty-title">No Items Yet</div><div class="sg-empty-sub">Items added to the live site will appear here</div></div>`;
+    console.error('Shop error:',e);
+    document.getElementById('shopPromo').innerHTML = renderShopEmpty();
   }
 }
-function renderShop() {
-  const sg = document.getElementById('sg');
-  const filtered = activeFilter==='all' ? shopItems : shopItems.filter(i=>i.category===activeFilter);
-  if (!filtered.length) {
-    sg.innerHTML = `<div class="sg-empty"><div class="sg-empty-icon">🌌</div><div class="sg-empty-title">No Items Yet</div><div class="sg-empty-sub">Items added to the live site will appear here</div></div>`; return;
-  }
-  const EMOJIS={apparel:'👕',digital:'💾',photography:'📸',other:'✨'};
-  sg.innerHTML = filtered.map(item => {
-    const hasDisc = item.discount && parseInt(item.discount)>0;
-    const dp = hasDisc ? (parseFloat(item.price||0)*(1-parseInt(item.discount)/100)).toFixed(2) : null;
-    const emoji = EMOJIS[item.category]||'✨';
-    let badge = '';
-    if(item.badge==='New!') badge=`<div class="pbdg">NEW</div>`;
-    else if(item.badge==='Hot!') badge=`<div class="pbdg">HOT</div>`;
-    else if(item.badge==='%') badge=`<div class="pbdg">${item.discount||''}% OFF</div>`;
-    else if(item.badge==='Ltd') badge=`<div class="pbdg">LTD</div>`;
-    const imgHtml = item.img ? `<img src="${_esc(item.img)}" alt="${_esc(item.title)}"/>` : '';
-    const priceHtml = item.category==='photography'
-      ? `<a href="#booking" class="pa">Book Now</a>`
-      : `<div>${hasDisc?`<s>$${item.price}</s>`:''}<span class="pp">$${dp||item.price}</span>${hasDisc?`<div class="pp-disc">${item.discount}% OFF</div>`:''}</div>
-         <button class="pa" onclick="event.stopPropagation();toast('ADDED TO CART ✓')">Add to Cart</button>`;
-    return `<div class="pr" data-c="${_esc(item.category)}">
-      <button class="pr-flip" onclick="event.stopPropagation();window.open('https://merci-chi.github.io/OAS/shop','_blank')">⟳</button>
-      <div class="pi">${imgHtml}${emoji}${badge}</div>
-      <div class="pb"><div class="pn">${_esc(item.title)}</div><div class="pd">${_esc((item.desc||'').substring(0,80)+(item.desc&&item.desc.length>80?'...':''))}</div><div class="pf">${priceHtml}</div></div>
+function renderShopEmpty() {
+  // 4 vivid placeholder cards — no dimming, full-color
+  const PLACEHOLDERS = [
+    { icon:'👕', cat:'Apparel', ctaLabel:'Shop →' },
+    { icon:'💾', cat:'Digital',  ctaLabel:'Shop →' },
+    { icon:'📸', cat:'Photography', ctaLabel:'Shop →' },
+    { icon:'✨', cat:'Collection',  ctaLabel:'Shop →' },
+  ];
+  return PLACEHOLDERS.map(p => `
+    <div class="sp-card" onclick="window.open('${SHOP_URL}','_blank')">
+      <div class="sp-inner">
+        <div class="sp-face">
+          <div class="sp-img">
+            <div class="sp-img-placeholder">
+              <div class="sp-img-placeholder-icon">${p.icon}</div>
+              <div class="sp-img-placeholder-label">${p.cat}</div>
+            </div>
+          </div>
+          <div class="sp-info">
+            <div class="sp-name">Title</div>
+            <div class="sp-desc">Description</div>
+            <div class="sp-price-row">
+              <div class="sp-price">$0.00</div>
+              <a class="sp-cta" href="${SHOP_URL}" target="_blank" onclick="event.stopPropagation()">${p.ctaLabel}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+function renderPromoCard(item) {
+  const hasDisc = item.discount > 0;
+  const salePrice = hasDisc ? (item.price * (1 - item.discount/100)).toFixed(2) : item.price.toFixed(2);
+  const hasFlip = !!item.img2;
+  const EMOJIS = {apparel:'👕',digital:'💾',photography:'📸',other:'✨'};
+
+  // Badge
+  let badgeHtml = '';
+  if (item.badge==='%' && hasDisc) badgeHtml = `<div class="sp-badge pct">${item.discount}% OFF</div>`;
+  else if (item.badge==='New!')      badgeHtml = `<div class="sp-badge new">NEW</div>`;
+  else if (item.badge==='Hot!')      badgeHtml = `<div class="sp-badge hot">HOT</div>`;
+  else if (item.badge==='Ltd')       badgeHtml = `<div class="sp-badge ltd">LIMITED</div>`;
+
+  const imgFront = item.img ? `<img src="${_esc(item.img)}" alt="${_esc(item.title)}"/>` : '✨';
+  const imgBack  = item.img2? `<img src="${_esc(item.img2)}" alt="${_esc(item.title)} alt"/>` : imgFront;
+
+  const priceBlock = `<div>
+    ${hasDisc ? `<span class="sp-was">$${item.price.toFixed(2)}</span>` : ''}
+    <div class="sp-price">$${salePrice}</div>
+    ${hasDisc ? `<div class="sp-disc">${item.discount}% OFF</div>` : ''}
+  </div>`;
+
+  const frontFace = `
+    <div class="sp-face">
+      <div class="sp-img">
+        ${imgFront}
+        <div class="sp-img-grad"></div>
+        ${badgeHtml}
+        ${hasFlip ? `<div class="sp-flip-hint" title="See other side">⟳</div>` : ''}
+      </div>
+      <div class="sp-info">
+        <div class="sp-name">${_esc(item.title)}</div>
+        ${item.desc ? `<div class="sp-desc">${_esc(item.desc.substring(0,60)+(item.desc.length>60?'...':''))}</div>` : ''}
+        <div class="sp-price-row">
+          ${priceBlock}
+          <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
+        </div>
+      </div>
     </div>`;
-  }).join('');
-  sg.querySelectorAll('.pr').forEach((el,i)=>{
-    el.style.opacity='0'; el.style.transform='translateY(18px)';
-    el.style.transition=`opacity .5s ease ${i*.06}s,transform .5s ease ${i*.06}s`;
-    setTimeout(()=>{el.style.opacity='1';el.style.transform='translateY(0)';},50);
+
+  const backFace = `
+    <div class="sp-face sp-back">
+      <div class="sp-img">
+        ${imgBack}
+        <div class="sp-img-grad"></div>
+        <div class="sp-back-label"><span>VIEW IN SHOP →</span></div>
+      </div>
+      <div class="sp-info">
+        <div class="sp-name">${_esc(item.title)}</div>
+        <div class="sp-price-row">
+          ${priceBlock}
+          <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
+        </div>
+      </div>
+    </div>`;
+
+  return `<div class="sp-card" data-url="${_esc(item.shopUrl)}" ${hasFlip?'data-flip="1"':''}>
+    <div class="sp-inner">
+      ${frontFace}
+      ${hasFlip ? backFace : ''}
+    </div>
+  </div>`;
+}
+function initShopFlip() {
+  document.querySelectorAll('.sp-card[data-flip="1"]').forEach(card => {
+    card.addEventListener('click', e => {
+      if (e.target.closest('.sp-cta')) return;
+      card.classList.toggle('flipped');
+    });
+  });
+  // Non-flippable cards go straight to shop
+  document.querySelectorAll('.sp-card:not([data-flip])').forEach(card => {
+    card.addEventListener('click', () => window.open(card.dataset.url,'_blank'));
   });
 }
-function sf(cat,btn){document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');activeFilter=cat;renderShop();}
 db.channel('shop-rt').on('postgres_changes',{event:'*',schema:'public',table:'products'},loadShop).subscribe();
 
 // ═══════════════════════════════════════════════
-//  BLOG
+//  BLOG — OASENSE BLOG 3-CARD GRID
+//  Supabase table: blog_posts
+//  Columns used:
+//    id, title, excerpt/content (trimmed to 160 chars),
+//    photo_url/image_url/image — cover photo
+//    category, emoji (fallback icon if no photo)
+//    created_at / date (formatted display date)
+//    slug / id — used to build the deep link to blog page
+//    status  — must be 'published'
+//  Blog page: https://merci-chi.github.io/OAS/blog
 // ═══════════════════════════════════════════════
+const BLOG_BASE = 'https://merci-chi.github.io/OAS/blog';
 async function loadBlog() {
+  const el = document.getElementById('blogGrid');
   try {
     const { data, error } = await db.from('blog_posts').select('*').eq('status','published').order('created_at',{ascending:false}).limit(3);
     if (error) throw error;
-    const el = document.getElementById('blogGrid');
     if (!data || !data.length) {
-      el.innerHTML = `<div class="blog-empty"><div class="blog-empty-icon">🌌</div><div class="blog-empty-title">No Posts Yet</div><div class="blog-empty-sub">Blog posts added to the live site will appear here</div></div>`; return;
+      el.innerHTML = renderBlogEmpty(); return;
     }
-    const bgColors = ['linear-gradient(135deg,#1a0020,#2d0040)','linear-gradient(135deg,#200010,#400020)','linear-gradient(135deg,#100020,#200040)','linear-gradient(135deg,#0a0018,#150030)'];
-    el.innerHTML = `<div class="bg-grid">${data.map((p,i) => {
-      const bg = bgColors[i % bgColors.length], emoji = p.emoji || '✍️', likes = p.likes || 0;
+    const BG = ['linear-gradient(135deg,#1a0020,#2d0040)','linear-gradient(135deg,#18000a,#380018)','linear-gradient(135deg,#000e28,#001840)'];
+    el.innerHTML = data.map((p,i) => {
       const date = p.date || (p.created_at ? new Date(p.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '');
-      return `<div class="po">
-        <div class="pth" style="background:${bg};">${emoji}<span class="ptag">${_esc(p.category||'Blog')}</span></div>
-        <div class="pbo"><div class="ptit">${_esc(p.title||'')}</div><div class="pex">${_esc((p.excerpt||p.content||'').substring(0,120)+'...')}</div>
-        <div class="pft"><div class="pau"><div class="ppfp">☀️</div><div><div class="pan">${_esc(p.author||'Sol · Angel Alvarez')}</div><div class="pdt">${_esc(date)}</div></div></div>
-        <div class="pac"><button class="pab" onclick="lk(this,${p.id})">♥ <span>${likes}</span></button><button class="pab" onclick="sh()">↗</button></div></div>
-        </div></div>`;
-    }).join('')}</div>`;
+      const excerpt = (p.excerpt || p.content || '').substring(0,160);
+      const photo = p.photo_url || p.image_url || p.image || '';
+      const emoji = p.emoji || '✍️';
+      const postUrl = p.slug ? `${BLOG_BASE}/${p.slug}` : `${BLOG_BASE}#post-${p.id}`;
+      const photoHtml = photo
+        ? `<img src="${_esc(mediaUrl(photo))}" alt="${_esc(p.title||'')}"/>`
+        : `<span style="font-size:48px;z-index:1;">${emoji}</span>`;
+
+      return `<a class="bc" href="${_esc(postUrl)}" target="_blank" style="text-decoration:none;color:inherit;">
+        <div class="bc-photo" style="background:${BG[i%BG.length]};">
+          ${photoHtml}
+          <div class="bc-photo-grad"></div>
+          <div class="bc-cat">${_esc(p.category||'Blog')}</div>
+        </div>
+        <div class="bc-body">
+          <div class="bc-date">${_esc(date)}</div>
+          <div class="bc-title">${_esc(p.title||'Untitled')}</div>
+          <div class="bc-excerpt">${_esc(excerpt)}${excerpt.length>=160?'…':''}</div>
+          <span class="bc-more">See more →</span>
+        </div>
+      </a>`;
+    }).join('');
   } catch(e) {
-    document.getElementById('blogGrid').innerHTML = `<div class="blog-empty"><div class="blog-empty-icon">🌌</div><div class="blog-empty-title">No Posts Yet</div><div class="blog-empty-sub">Blog posts added to the live site will appear here</div></div>`;
+    console.error('Blog error:',e);
+    el.innerHTML = renderBlogEmpty();
   }
+}
+function renderBlogEmpty() {
+  // 3 vivid full-color placeholder cards — no dimming
+  const PLACEHOLDERS = [
+    { icon:'✍️', cat:'Culture',  title:'Nothing yet!',   date:'Coming Soon' },
+    { icon:'🌟', cat:'Lifestyle', title:'Nothing yet!',  date:'Coming Soon' },
+    { icon:'🔥', cat:'Editorial', title:'Nothing yet!', date:'Coming Soon' },
+  ];
+  return PLACEHOLDERS.map(p => `
+    <a class="bc" href="${BLOG_BASE}" target="_blank">
+      <div class="bc-photo">
+        <div class="bc-photo-grad"></div>
+        <div class="bc-photo-icon">${p.icon}</div>
+        <div class="bc-cat">${p.cat}</div>
+      </div>
+      <div class="bc-body">
+        <div class="bc-date">${p.date}</div>
+        <div class="bc-title">${p.title}</div>
+        <div class="bc-excerpt">Post content will appear here once published</div>
+        <span class="bc-more">See more →</span>
+      </div>
+    </a>`).join('');
 }
 
 // ═══════════════════════════════════════════════
@@ -1357,63 +1547,93 @@ function initPanelHovers() {
 }
 
 // ═══════════════════════════════════════════════
-//  ABOUT + SITE SETTINGS
+//  ABOUT + SITE SETTINGS — Fully Supabase-driven
 // ═══════════════════════════════════════════════
 /*
-  Supabase table: site_settings
-  Keys:
-    about_pullquote    — italic pull quote text
-    about_body         — body text, paragraphs separated by \n\n
-    about_photo_url    — portrait image URL / filename
-    about_title        — (optional) override the "About Oasense" heading (just the colored word)
-    donation_total     — current total raised
+  Supabase table: site_settings  (key TEXT, value TEXT)
+  ─────────────────────────────────────────────────────
+  ABOUT SECTION — all editable from DEV, live instantly:
+    about_photo_url    — portrait image URL or filename (relative to DEV_BASE)
+    about_pullquote    — italic pull-quote (the big highlighted text)
+    about_body         — body paragraphs, separated by \n\n
+    about_title        — optional: overrides the colored word in heading
+                         (default: "Oasense")
+
+  To edit from DEV:  upsert rows in site_settings with the keys above.
+  Changes reflect on main site immediately (Supabase realtime channel below).
+
+  DONATION:
+    donation_total     — current total raised (number string)
     donation_goal      — goal amount
     donation_desc      — description paragraph
-    donation_amounts   — comma-separated custom amounts
+    donation_amounts   — comma-separated amounts e.g. "10,25,50,100"
 */
 async function loadSiteSettings() {
   try {
     const { data } = await db.from('site_settings').select('key,value');
     if (!data) return;
-    const settings = {};
-    data.forEach(r => { settings[r.key] = r.value; });
+    const S = {};
+    data.forEach(r => { S[r.key] = r.value; });
 
-    // About section
-    if (settings.about_pullquote) document.getElementById('aboutPullquote').textContent = settings.about_pullquote;
-    if (settings.about_body) {
-      document.getElementById('aboutBody').innerHTML = settings.about_body.split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br/>')}</p>`).join('');
-    }
-    if (settings.about_photo_url) {
-      const url = mediaUrl(settings.about_photo_url);
+    // ── ABOUT PHOTO ──────────────────────────────
+    if (S.about_photo_url) {
+      const url = mediaUrl(S.about_photo_url);
       const av = document.getElementById('aboutPhoto');
-      const corners = av.innerHTML.match(/<div class="av-corner[^"]*"[^>]*><\/div>/g)||[];
-      av.innerHTML = `<img src="${_esc(url)}" alt="Oasense"/>` + corners.join('');
+      // preserve corner brackets
+      const corners = Array.from(av.querySelectorAll('.av-corner')).map(el=>el.outerHTML).join('');
+      av.innerHTML = `<img src="${_esc(url)}" alt="Oasense Photo"/>` + corners;
     }
 
-    // Donation
-    const total = parseFloat(settings.donation_total || '0') || 0;
-    document.getElementById('rn').textContent = total.toLocaleString();
-    if (settings.donation_desc) document.getElementById('donDesc').textContent = settings.donation_desc;
-    if (settings.donation_goal) {
-      const goal = parseFloat(settings.donation_goal) || 0;
+    // ── ABOUT PULL QUOTE ─────────────────────────
+    if (S.about_pullquote) {
+      document.getElementById('aboutPullquote').textContent = S.about_pullquote;
+    }
+
+    // ── ABOUT BODY ───────────────────────────────
+    if (S.about_body) {
+      document.getElementById('aboutBody').innerHTML =
+        S.about_body.split('\n\n').map(p => `<p>${p.replace(/\n/g,'<br/>')}</p>`).join('');
+    }
+
+    // ── ABOUT HEADING OVERRIDE ───────────────────
+    if (S.about_title) {
+      const hot = document.querySelector('#about .sec-title .hot');
+      if (hot) hot.textContent = S.about_title;
+    }
+
+    // ── DONATION ─────────────────────────────────
+    const total = parseFloat(S.donation_total || '0') || 0;
+    const rnEl = document.getElementById('rn');
+    if (rnEl) rnEl.textContent = total.toLocaleString();
+    if (S.donation_desc) {
+      const dd = document.getElementById('donDesc');
+      if (dd) dd.textContent = S.donation_desc;
+    }
+    if (S.donation_goal) {
+      const goal = parseFloat(S.donation_goal) || 0;
       if (goal > 0) {
         const pct = Math.min(100, Math.round((total/goal)*100));
-        document.getElementById('donGoalBar').style.display = 'block';
-        document.getElementById('donGoalRaisedLbl').textContent = `$${total.toLocaleString()} raised`;
-        document.getElementById('donGoalLbl').textContent = `Goal: $${goal.toLocaleString()}`;
-        setTimeout(() => { document.getElementById('donGoalFill').style.width = pct+'%'; }, 400);
+        const bar = document.getElementById('donGoalBar');
+        if (bar) {
+          bar.style.display = 'block';
+          document.getElementById('donGoalRaisedLbl').textContent = `$${total.toLocaleString()} raised`;
+          document.getElementById('donGoalLbl').textContent = `Goal: $${goal.toLocaleString()}`;
+          setTimeout(() => { document.getElementById('donGoalFill').style.width = pct+'%'; }, 400);
+        }
       }
     }
-    if (settings.donation_amounts) {
-      const amts = settings.donation_amounts.split(',').map(a=>a.trim()).filter(Boolean);
+    if (S.donation_amounts) {
+      const amts = S.donation_amounts.split(',').map(a=>a.trim()).filter(Boolean);
       if (amts.length) {
         const ag = document.getElementById('donAmounts');
-        ag.innerHTML = amts.map((a,i)=>`<button class="ab${i===2?' on':''}" onclick="pA(${isNaN(a)?`'other'`:a},this)">${isNaN(a)?a:'$'+a}</button>`).join('')
+        if (ag) ag.innerHTML = amts.map((a,i)=>`<button class="ab${i===2?' on':''}" onclick="pA(${isNaN(a)?`'other'`:a},this)">${isNaN(a)?a:'$'+a}</button>`).join('')
           + `<button class="ab" onclick="pA('other',this)">Other</button>`;
       }
     }
   } catch(e) { console.error('Settings error:',e); }
 }
+// Realtime: any change to site_settings refreshes About + donation live
+db.channel('settings-rt').on('postgres_changes',{event:'*',schema:'public',table:'site_settings'},loadSiteSettings).subscribe();
 
 // ═══════════════════════════════════════════════
 //  CANVAS BG
