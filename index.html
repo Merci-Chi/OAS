@@ -4,13 +4,11 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>OASENSE.SHOP — YOU ARE THE LIGHT</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js">
-const supabaseUrl = "YOUR_PROJECT_URL"
-const supabaseKey = "YOUR_PUBLIC_ANON_KEY"
-const supabase = window.supabase.createClient(
-  supabaseUrl,
-  supabaseKey
-)
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabaseUrl = "https://smlfppydhwyqrudktzzr.supabase.co";
+const supabaseKey = "sb_publishable_NmZR8KThSmcc-yiOz7kV7Q_Nv0XZK9V"; // frontend safe
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 <style>
