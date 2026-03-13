@@ -1,8 +1,109 @@
-
 // ============================================================
 // OASENSE DEV PANEL — DEV.js
 // Targets: https://merci-chi.github.io/OAS/DEV
+// Database: Supabase
 // ============================================================
+
+// ── Supabase Config ─────────────────────────────────────────
+const SUPABASE_URL = "https://smlfppydhwyqrudktzzr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_NmZR8KThSmcc-yiOz7kV7Q_Nv0XZK9V";
+
+// Minimal Supabase REST client (no SDK needed)
+const sb = {
+  async select(table, filters = {}) {
+    let url = `${SUPABASE_URL}/rest/v1/${table}?select=*&order=created_at.desc`;
+    for (const [k, v] of Object.entries(filters)) {
+      url += `&${k}=eq.${encodeURIComponent(v)}`;
+    }
+    const res = await fetch(url, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (!res.ok) { console.error(`SELECT ${table} failed`, await res.text()); return []; }
+    return res.json();
+  },
+
+  async insert(table, data) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(Array.isArray(data) ? data : [data])
+    });
+    if (!res.ok) { console.error(`INSERT ${table} failed`, await res.text()); return null; }
+    const rows = await res.json();
+    return rows[0] ?? null;
+  },
+
+  async update(table, id, data) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) { console.error(`UPDATE ${table} failed`, await res.text()); return null; }
+    const rows = await res.json();
+    return rows[0] ?? null;
+  },
+
+  async upsert(table, data) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation,resolution=merge-duplicates'
+      },
+      body: JSON.stringify(Array.isArray(data) ? data : [data])
+    });
+    if (!res.ok) { console.error(`UPSERT ${table} failed`, await res.text()); return null; }
+    const rows = await res.json();
+    return rows[0] ?? null;
+  },
+
+  async delete(table, id) {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`
+      }
+    });
+    if (!res.ok) { console.error(`DELETE ${table} failed`, await res.text()); }
+  }
+};
+
+// ── Supabase Table Names ─────────────────────────────────────
+const T = {
+  bookings:     'bookings',
+  crm:          'crm',
+  shop:         'shop',
+  orders:       'orders',
+  invoices:     'invoices',
+  testimonials: 'testimonials',
+  blog:         'blog',
+  portfolio:    'portfolio',
+  about:        'about',
+  donations:    'donations',
+  newsletter:   'newsletter',
+  users:        'users',
+  ai_prompts:   'ai_prompts',
+  audit_logs:   'audit_logs',
+  sol:          'sol_config'
+};
 
 // ── Auth ────────────────────────────────────────────────────
 const USERS = {
@@ -13,104 +114,72 @@ const USERS = {
 const OVERRIDE = { user: 'DEV', code: 'mems01' };
 let currentUser = null;
 
-// ── Storage helpers ─────────────────────────────────────────
-const store = {
-  get: (k, def = []) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } },
-  set: (k, v)        => localStorage.setItem(k, JSON.stringify(v)),
-  obj: (k, def = {}) => { try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } }
-};
+// ── Helpers ──────────────────────────────────────────────────
+const uid     = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const fmtDate = d  => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const fmtAmt  = n  => '$' + parseFloat(n || 0).toFixed(2);
 
-// ── LIVE DATABASE SYNC ─────────────────────────────────────
-async function syncToDatabase(key, data) {
-  try {
-    await fetch('https://merci-chi.github.io/OAS/database.json', {
-      method: 'POST', // or 'PUT' depending on your backend
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ [key]: data })
-    });
-    console.log(`Synced ${key} to database.json`);
-  } catch (e) {
-    console.error(`Failed to sync ${key}:`, e);
-  }
+function toast(msg, type = 'success') {
+  const t = document.createElement('div');
+  t.className = 'toast toast-' + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
 }
 
-// ── USER ROLE + BADGE SYSTEM ─────────────────────────────
-function getUserBadge(name){
-  if(!name) return 'USER';
+function confirmDel(msg, cb) {
+  if (confirm(msg)) cb();
+}
+
+// ── USER ROLE + BADGE SYSTEM ─────────────────────────────────
+function getUserBadge(name) {
+  if (!name) return 'USER';
   const n = name.toLowerCase();
-
-  if(n.includes('kiara')) return 'DEV';
-  if(n.includes('sol')) return 'OWNER';
-  if(n.includes('swift agent')) return 'HACKER';
-
+  if (n.includes('kiara')) return 'DEV';
+  if (n.includes('sol'))   return 'OWNER';
+  if (n.includes('swift agent')) return 'HACKER';
   return 'USER';
 }
 
-// ── CRM LINK ─────────────────────────────────────────────
-function getOrCreateCRM(name,email=''){
-  const crm = store.get(K.crm);
-
-  let user = crm.find(c=>c.email===email || c.name===name);
-
-  if(!user){
-    user={
-      id:'CRM'+Math.floor(Math.random()*100000),
+// ── CRM auto-create ──────────────────────────────────────────
+async function getOrCreateCRM(name, email = '') {
+  const crm = await sb.select(T.crm);
+  let user = crm.find(c => c.email === email || c.name === name);
+  if (!user) {
+    user = await sb.insert(T.crm, {
+      id:         uid(),
       name,
       email,
-      badge:getUserBadge(name),
-      createdAt:new Date().toISOString(),
-      lastSeen:null,
-      logs:[]
-    };
-
-    crm.unshift(user);
-    store.set(K.crm,crm);
+      badge:      getUserBadge(name),
+      created_at: new Date().toISOString(),
+      last_seen:  null,
+      logs:       []
+    });
   }
-
   return user;
 }
 
-// ── AUDIT LOGGER ─────────────────────────────────────────
-function logAction(userName,action,ref=''){
-  const crm = store.get(K.crm);
-  const user = crm.find(c=>c.name===userName);
-
-  if(!user) return;
-
-  const now = new Date();
-
-  const log={
-    time:now.toLocaleString(),
+// ── Audit Logger ─────────────────────────────────────────────
+async function logAction(userName, action, ref = '') {
+  await sb.insert(T.audit_logs, {
+    id:         uid(),
+    user_name:  userName,
     action,
-    ref
-  };
+    ref,
+    time:       new Date().toISOString()
+  });
 
-  if(!user.logs) user.logs=[];
-  user.logs.unshift(log);
-
-  user.lastSeen = now.toISOString();
-
-  store.set(K.crm,crm);
+  // Also update last_seen on CRM record
+  const crm = await sb.select(T.crm);
+  const user = crm.find(c => c.name === userName);
+  if (user) {
+    await sb.update(T.crm, user.id, { last_seen: new Date().toISOString() });
+  }
 }
 
-// ── Keys ────────────────────────────────────────────────────
-const K = {
-  bookings:    'oas_bookings',
-  crm:         'oas_crm',
-  shop:        'oas_shop',
-  orders:      'oas_orders',
-  invoices:    'oas_invoices',
-  testimonials:'oas_testimonials',
-  blog:        'oas_blog',
-  users:       'oas_users',
-  sol:         'oas_sol_config',
-  donations:   'oas_donations',
-  newsletter:  'oas_newsletter',
-  portfolio:   'oas_portfolio',
-  about:       'oas_about'
-};
-
-// ── Boot ─────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   const saved = sessionStorage.getItem('oas_session');
   if (saved) { currentUser = JSON.parse(saved); showPanel(); }
@@ -135,24 +204,24 @@ function showLogin() {
   document.getElementById('l-code').addEventListener('keydown', e => e.key === 'Enter' && doLogin());
 }
 
-function doLogin() {
-  const u = document.getElementById('l-user').value.trim().toUpperCase();
-  const c = document.getElementById('l-code').value.trim();
+async function doLogin() {
+  const u   = document.getElementById('l-user').value.trim().toUpperCase();
+  const c   = document.getElementById('l-code').value.trim();
   const err = document.getElementById('l-err');
   if ((u === OVERRIDE.user && c === OVERRIDE.code) ||
       (USERS[u] && USERS[u].code === c)) {
     currentUser = { username: u, role: USERS[u]?.role || 'admin' };
     sessionStorage.setItem('oas_session', JSON.stringify(currentUser));
-      // CRM logging
-  const user = getOrCreateCRM(currentUser.username);
-  logAction(currentUser.username, 'Login / Logout');
-
+    await getOrCreateCRM(currentUser.username);
+    await logAction(currentUser.username, 'Login');
     showPanel();
   } else {
     err.textContent = 'Invalid credentials.';
   }
 }
+
 function logout() {
+  if (currentUser) logAction(currentUser.username, 'Logout');
   sessionStorage.removeItem('oas_session');
   currentUser = null;
   showLogin();
@@ -224,35 +293,17 @@ function closeModal() {
   document.getElementById('modal-box').style.display = 'none';
 }
 
-// ── Helpers ──────────────────────────────────────────────────
-const uid    = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-const fmtDate= d  => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-const fmtAmt = n  => '$' + parseFloat(n || 0).toFixed(2);
-
-function toast(msg, type = 'success') {
-  const t = document.createElement('div');
-  t.className = 'toast toast-' + type;
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 3000);
-}
-
-function confirmDel(msg, cb) {
-  if (confirm(msg)) cb();
-}
-
 // ══════════════════════════════════════════════════════════
 // BOOKINGS
 // ══════════════════════════════════════════════════════════
-function render_bookings() {
-  const items = store.get(K.bookings);
-  const mc    = document.getElementById('main-content');
-  mc.innerHTML = `
+async function render_bookings() {
+  document.getElementById('main-content').innerHTML = `
   <div class="section-header">
     <h1>📅 BOOKINGS</h1>
     <button class="btn-primary" onclick="openBookingForm()">+ NEW BOOKING</button>
   </div>
-  <div class="card-grid" id="bookings-grid"></div>`;
+  <div class="card-grid" id="bookings-grid"><p class="empty">Loading…</p></div>`;
+  const items = await sb.select(T.bookings);
   renderBookingCards(items);
 }
 
@@ -277,9 +328,12 @@ function renderBookingCards(items) {
   </div>`).join('');
 }
 
-function openBookingForm(id) {
-  const items = store.get(K.bookings);
-  const b = id ? items.find(x => x.id === id) : {};
+async function openBookingForm(id) {
+  let b = {};
+  if (id) {
+    const items = await sb.select(T.bookings);
+    b = items.find(x => x.id === id) || {};
+  }
   openModal(`
   <h2>${id ? 'Edit' : 'New'} Booking</h2>
   <label>Name<input id="bf-name" value="${b.name||''}"></label>
@@ -299,29 +353,27 @@ function openBookingForm(id) {
   </div>`);
 }
 
-function saveBooking(id) {
-  const items = store.get(K.bookings);
-  const data  = {
-    id:    id || uid(),
-    name:  document.getElementById('bf-name').value,
-    email: document.getElementById('bf-email').value,
-    phone: document.getElementById('bf-phone').value,
-    type:  document.getElementById('bf-type').value,
-    date:  document.getElementById('bf-date').value,
-    status:document.getElementById('bf-status').value,
-    notes: document.getElementById('bf-notes').value
+async function saveBooking(id) {
+  const data = {
+    id:     id || uid(),
+    name:   document.getElementById('bf-name').value,
+    email:  document.getElementById('bf-email').value,
+    phone:  document.getElementById('bf-phone').value,
+    type:   document.getElementById('bf-type').value,
+    date:   document.getElementById('bf-date').value,
+    status: document.getElementById('bf-status').value,
+    notes:  document.getElementById('bf-notes').value
   };
-  logAction(currentUser.username,'Scheduled Photoshoot',data.id);
-  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
-  else items.unshift(data);
-  store.set(K.bookings, items);
+  await sb.upsert(T.bookings, data);
+  await logAction(currentUser.username, 'Scheduled Photoshoot', data.id);
   closeModal(); render_bookings(); toast('Booking saved');
 }
 
 function editBooking(id) { openBookingForm(id); }
+
 function deleteBooking(id) {
-  confirmDel('Delete this booking?', () => {
-    store.set(K.bookings, store.get(K.bookings).filter(x=>x.id!==id));
+  confirmDel('Delete this booking?', async () => {
+    await sb.delete(T.bookings, id);
     render_bookings(); toast('Deleted', 'error');
   });
 }
@@ -329,15 +381,15 @@ function deleteBooking(id) {
 // ══════════════════════════════════════════════════════════
 // CRM
 // ══════════════════════════════════════════════════════════
-function render_crm() {
-  const items = store.get(K.crm);
+async function render_crm() {
   document.getElementById('main-content').innerHTML = `
   <div class="section-header">
     <h1>👥 CRM</h1>
     <button class="btn-primary" onclick="openCRMForm()">+ NEW CONTACT</button>
   </div>
   <input id="crm-search" class="search-input" placeholder="Search contacts…" oninput="filterCRM(this.value)">
-  <div class="card-grid" id="crm-grid"></div>`;
+  <div class="card-grid" id="crm-grid"><p class="empty">Loading…</p></div>`;
+  const items = await sb.select(T.crm);
   renderCRMCards(items);
 }
 
@@ -359,17 +411,20 @@ function renderCRMCards(items) {
   </div>`).join('');
 }
 
-function filterCRM(q) {
-  const items = store.get(K.crm).filter(c =>
-    (c.name+c.email+c.phone+(c.tags||[]).join('')).toLowerCase().includes(q.toLowerCase()));
+async function filterCRM(q) {
+  const items = (await sb.select(T.crm)).filter(c =>
+    (c.name + c.email + c.phone + (c.tags || []).join('')).toLowerCase().includes(q.toLowerCase()));
   renderCRMCards(items);
 }
 
-function openCRMForm(id) {
-  const items = store.get(K.crm);
-  const c = id ? items.find(x=>x.id===id) : {};
+async function openCRMForm(id) {
+  let c = {};
+  if (id) {
+    const items = await sb.select(T.crm);
+    c = items.find(x => x.id === id) || {};
+  }
   openModal(`
-  <h2>${id?'Edit':'New'} Contact</h2>
+  <h2>${id ? 'Edit' : 'New'} Contact</h2>
   <label>Name<input id="cf-name" value="${c.name||''}"></label>
   <label>Email<input id="cf-email" value="${c.email||''}"></label>
   <label>Phone<input id="cf-phone" value="${c.phone||''}"></label>
@@ -381,32 +436,30 @@ function openCRMForm(id) {
   </div>`);
 }
 
-function saveCRM(id) {
-  const items = store.get(K.crm);
-  const data  = {
-    id:    id || uid(),
-    name:  document.getElementById('cf-name').value,
-    email: document.getElementById('cf-email').value.toLowerCase().trim(),
-    phone: document.getElementById('cf-phone').value,
-    tags:  document.getElementById('cf-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
-    notes: document.getElementById('cf-notes').value,
-    createdAt: id ? items.find(x=>x.id===id)?.createdAt : new Date().toISOString()
+async function saveCRM(id) {
+  const data = {
+    id:         id || uid(),
+    name:       document.getElementById('cf-name').value,
+    email:      document.getElementById('cf-email').value.toLowerCase().trim(),
+    phone:      document.getElementById('cf-phone').value,
+    tags:       document.getElementById('cf-tags').value.split(',').map(t => t.trim()).filter(Boolean),
+    notes:      document.getElementById('cf-notes').value,
+    created_at: id ? undefined : new Date().toISOString()
   };
-  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
-  else items.unshift(data);
-  store.set(K.crm, items);
+  if (!id) data.created_at = new Date().toISOString();
+  await sb.upsert(T.crm, data);
   closeModal(); render_crm(); toast('Contact saved');
 }
 
 function deleteCRM(id) {
-  confirmDel('Delete this contact?', () => {
-    store.set(K.crm, store.get(K.crm).filter(x=>x.id!==id));
+  confirmDel('Delete this contact?', async () => {
+    await sb.delete(T.crm, id);
     render_crm(); toast('Deleted', 'error');
   });
 }
 
-function openCRMByEmail(email) {
-  const crm = store.get(K.crm);
+async function openCRMByEmail(email) {
+  const crm = await sb.select(T.crm);
   const c = crm.find(x => x.email?.toLowerCase() === email?.toLowerCase());
   if (!c) return toast('Not in CRM', 'error');
   openModal(`
@@ -426,44 +479,44 @@ function openCRMByEmail(email) {
 // ══════════════════════════════════════════════════════════
 let shopTab = 'ALL';
 
-function render_shop() {
+async function render_shop() {
   document.getElementById('main-content').innerHTML = `
   <div class="section-header">
     <h1>🛍️ SHOP</h1>
     <button class="btn-primary" onclick="openShopForm()">+ ADD ITEM</button>
   </div>
-  <div class="promo-slots-preview" id="promo-preview"></div>
+  <div class="promo-slots-preview" id="promo-preview"><p class="empty">Loading…</p></div>
   <div class="tab-row">
-    ${['ALL','PROMO','LIVE','DRAFT'].map(t=>`
+    ${['ALL','PROMO','LIVE','DRAFT'].map(t => `
       <button class="tab-btn ${shopTab===t?'active':''}" onclick="setShopTab('${t}')">${t}</button>`).join('')}
   </div>
-  <div class="card-grid" id="shop-grid"></div>`;
-  renderPromoSlots();
-  renderShopCards();
+  <div class="card-grid" id="shop-grid"><p class="empty">Loading…</p></div>`;
+  const all = await sb.select(T.shop);
+  renderPromoSlots(all);
+  renderShopCards(all);
 }
 
 function setShopTab(t) { shopTab = t; render_shop(); }
 
-function renderPromoSlots() {
-  const all   = store.get(K.shop);
-  const promos= all.filter(x=>x.status==='Promo').slice(0,4);
-  const slots = [...promos, ...Array(4-promos.length).fill(null)];
-  const el    = document.getElementById('promo-preview');
+function renderPromoSlots(all) {
+  const promos = all.filter(x => x.status === 'Promo').slice(0, 4);
+  const slots  = [...promos, ...Array(4 - promos.length).fill(null)];
+  const el     = document.getElementById('promo-preview');
   if (!el) return;
   el.innerHTML = `<div class="promo-label">LIVE SITE PROMO SLOTS (4 max)</div><div class="promo-slots">${
-    slots.map((p,i) => p
+    slots.map((p, i) => p
       ? `<div class="promo-slot filled"><span>${p.name}</span><small>${fmtAmt(p.price)}</small></div>`
       : `<div class="promo-slot empty"><span>SLOT ${i+1}</span><small>Empty</small></div>`
     ).join('')}</div>`;
 }
 
-function renderShopCards() {
+function renderShopCards(allItems) {
   const grid = document.getElementById('shop-grid');
   if (!grid) return;
-  let items = store.get(K.shop).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
-  if (shopTab === 'PROMO') items = items.filter(x=>x.status==='Promo').slice(0,4);
-  else if (shopTab === 'LIVE')  items = items.filter(x=>x.status==='Live');
-  else if (shopTab === 'DRAFT') items = items.filter(x=>x.status==='Draft');
+  let items = [...allItems].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  if (shopTab === 'PROMO') items = items.filter(x => x.status === 'Promo').slice(0, 4);
+  else if (shopTab === 'LIVE')  items = items.filter(x => x.status === 'Live');
+  else if (shopTab === 'DRAFT') items = items.filter(x => x.status === 'Draft');
   if (!items.length) { grid.innerHTML = '<p class="empty">No items here.</p>'; return; }
   grid.innerHTML = items.map(item => `
   <div class="card">
@@ -482,11 +535,14 @@ function renderShopCards() {
   </div>`).join('');
 }
 
-function openShopForm(id) {
-  const items = store.get(K.shop);
-  const s = id ? items.find(x=>x.id===id) : {};
+async function openShopForm(id) {
+  let s = {};
+  if (id) {
+    const items = await sb.select(T.shop);
+    s = items.find(x => x.id === id) || {};
+  }
   openModal(`
-  <h2>${id?'Edit':'Add'} Shop Item</h2>
+  <h2>${id ? 'Edit' : 'Add'} Shop Item</h2>
   <label>Name<input id="sf-name" value="${s.name||''}"></label>
   <label>Price<input id="sf-price" type="number" step="0.01" value="${s.price||''}"></label>
   <label>Description<textarea id="sf-desc">${s.description||''}</textarea></label>
@@ -507,44 +563,32 @@ function openShopForm(id) {
   </div>`);
 }
 
-function saveShopItem(id) {
-  const items = store.get(K.shop);
+async function saveShopItem(id) {
+  const status = document.getElementById('sf-status').value;
+  if (status === 'Promo') {
+    const all = await sb.select(T.shop);
+    const promoCount = all.filter(x => x.status === 'Promo' && x.id !== id).length;
+    if (promoCount >= 4) { toast('Max 4 PROMO slots!', 'error'); return; }
+  }
   const data = {
-  id: id || uid(),
-  name: document.getElementById('sf-name').value,
-  price: document.getElementById('sf-price').value,
-  description: document.getElementById('sf-desc').value,
-  badge: document.getElementById('sf-badge').value,
-  status: document.getElementById('sf-status').value,
-  image: document.getElementById('sf-image').value,
-  createdAt: id ? items.find(x => x.id === id)?.createdAt : new Date().toISOString()
-};
-
-// Optional audit logs for admin actions
-if (id) {
-  logAction(currentUser.username, 'Admin Action - Updated Item Price', data.id);
-  logAction(currentUser.username, 'Admin Action - Modified Inventory Quantity', data.id);
-} else {
-  logAction(currentUser.username, 'Admin Action - Added New Item to Store', data.id);
+    id:          id || uid(),
+    name:        document.getElementById('sf-name').value,
+    price:       document.getElementById('sf-price').value,
+    description: document.getElementById('sf-desc').value,
+    badge:       document.getElementById('sf-badge').value,
+    status,
+    image:       document.getElementById('sf-image').value,
+    created_at:  id ? undefined : new Date().toISOString()
+  };
+  if (!id) data.created_at = new Date().toISOString();
+  await sb.upsert(T.shop, data);
+  await logAction(currentUser.username, id ? 'Admin Action - Updated Shop Item' : 'Admin Action - Added New Item to Store', data.id);
+  closeModal(); render_shop(); toast('Item saved');
 }
 
-  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
-  else items.unshift(data);
-
-  store.set(K.shop, items);
-
-  // AUDIT LOG
-  if (id) logAction(currentUser.username, 'Admin Action - Updated Item Price', data.id);
-  else logAction(currentUser.username, 'Admin Action - Added New Item to Store', data.id);
-
-  closeModal(); 
-  render_shop(); 
-  toast('Item saved');
-}
-  
 function deleteShopItem(id) {
-  confirmDel('Delete this item?', () => {
-    store.set(K.shop, store.get(K.shop).filter(x=>x.id!==id));
+  confirmDel('Delete this item?', async () => {
+    await sb.delete(T.shop, id);
     render_shop(); toast('Deleted', 'error');
   });
 }
@@ -552,49 +596,52 @@ function deleteShopItem(id) {
 // ══════════════════════════════════════════════════════════
 // ORDERS
 // ══════════════════════════════════════════════════════════
-function render_orders() {
-  const items = store.get(K.orders);
+async function render_orders() {
   document.getElementById('main-content').innerHTML = `
   <div class="section-header"><h1>📦 ORDERS</h1></div>
-  <div class="card-grid">
-    ${!items.length ? '<p class="empty">No orders yet.</p>' : items.map(o=>`
-    <div class="card">
-      <div class="card-header">
-        <span class="badge badge-${(o.status||'pending').toLowerCase()}">${o.status||'Pending'}</span>
-        <span class="card-date">${fmtDate(o.date)}</span>
-      </div>
-      <h3>#${o.id?.slice(-6).toUpperCase()}</h3>
-      <p>${o.customer}</p>
-      <p>${o.items?.map(i=>`${i.name} x${i.qty}`).join(', ')||'—'}</p>
-      <p><strong>Total:</strong> ${fmtAmt(o.total)}</p>
-    </div>`).join('')}
-  </div>`;
+  <div class="card-grid" id="orders-grid"><p class="empty">Loading…</p></div>`;
+  const items = await sb.select(T.orders);
+  const grid  = document.getElementById('orders-grid');
+  if (!grid) return;
+  if (!items.length) { grid.innerHTML = '<p class="empty">No orders yet.</p>'; return; }
+  grid.innerHTML = items.map(o => `
+  <div class="card">
+    <div class="card-header">
+      <span class="badge badge-${(o.status||'pending').toLowerCase()}">${o.status||'Pending'}</span>
+      <span class="card-date">${fmtDate(o.date || o.created_at)}</span>
+    </div>
+    <h3>#${o.id?.slice(-6).toUpperCase()}</h3>
+    <p>${o.customer}</p>
+    <p>${(o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ')||'—'}</p>
+    <p><strong>Total:</strong> ${fmtAmt(o.total)}</p>
+  </div>`).join('');
 }
 
 // ══════════════════════════════════════════════════════════
 // INVOICES
 // ══════════════════════════════════════════════════════════
-function render_invoices() {
-  const items = store.get(K.invoices);
+async function render_invoices() {
   document.getElementById('main-content').innerHTML = `
   <div class="section-header">
     <h1>🧾 INVOICES</h1>
     <button class="btn-primary" onclick="openInvoiceForm()">+ NEW INVOICE</button>
   </div>
-  <div class="card-grid" id="inv-grid"></div>`;
-  const grid = document.getElementById('inv-grid');
-  if (!items.length) { grid.innerHTML='<p class="empty">No invoices yet.</p>'; return; }
-  grid.innerHTML = items.map(inv=>`
+  <div class="card-grid" id="inv-grid"><p class="empty">Loading…</p></div>`;
+  const items = await sb.select(T.invoices);
+  const grid  = document.getElementById('inv-grid');
+  if (!grid) return;
+  if (!items.length) { grid.innerHTML = '<p class="empty">No invoices yet.</p>'; return; }
+  grid.innerHTML = items.map(inv => `
   <div class="card">
     <div class="card-header">
       <span class="badge badge-${(inv.status||'unpaid').toLowerCase()}">${inv.status||'Unpaid'}</span>
-      <span class="card-date">${fmtDate(inv.date)}</span>
+      <span class="card-date">${fmtDate(inv.date || inv.created_at)}</span>
     </div>
     <h3>${inv.client}</h3>
     <p>${fmtAmt(inv.amount)}</p>
     <p>${inv.description||''}</p>
     <div class="card-actions">
-      <button class="btn-sm" onclick="toggleInvoicePaid('${inv.id}')">
+      <button class="btn-sm" onclick="toggleInvoicePaid('${inv.id}','${inv.status}')">
         ${inv.status==='Paid'?'Mark Unpaid':'Mark Paid'}
       </button>
       <button class="btn-sm btn-danger" onclick="deleteInvoice('${inv.id}')">Delete</button>
@@ -615,57 +662,55 @@ function openInvoiceForm() {
   </div>`);
 }
 
-function saveInvoice() {
-  const items = store.get(K.invoices);
-  items.unshift({
-    id: uid(),
-    client: document.getElementById('if-client').value,
-    amount: document.getElementById('if-amount').value,
+async function saveInvoice() {
+  await sb.insert(T.invoices, {
+    id:          uid(),
+    client:      document.getElementById('if-client').value,
+    amount:      document.getElementById('if-amount').value,
     description: document.getElementById('if-desc').value,
-    date: document.getElementById('if-date').value,
-    status: 'Unpaid'
+    date:        document.getElementById('if-date').value,
+    status:      'Unpaid',
+    created_at:  new Date().toISOString()
   });
-  store.set(K.invoices, items);
   closeModal(); render_invoices(); toast('Invoice created');
 }
 
-function toggleInvoicePaid(id) {
-  const items = store.get(K.invoices);
-  const inv   = items.find(x=>x.id===id);
-  if (inv) inv.status = inv.status==='Paid' ? 'Unpaid' : 'Paid';
-  store.set(K.invoices, items);
+async function toggleInvoicePaid(id, currentStatus) {
+  await sb.update(T.invoices, id, { status: currentStatus === 'Paid' ? 'Unpaid' : 'Paid' });
   render_invoices();
 }
 
 function deleteInvoice(id) {
-  confirmDel('Delete invoice?', () => {
-    store.set(K.invoices, store.get(K.invoices).filter(x=>x.id!==id));
-    render_invoices(); toast('Deleted','error');
+  confirmDel('Delete invoice?', async () => {
+    await sb.delete(T.invoices, id);
+    render_invoices(); toast('Deleted', 'error');
   });
 }
 
 // ══════════════════════════════════════════════════════════
 // TESTIMONIALS
 // ══════════════════════════════════════════════════════════
-function render_testimonials() {
-  const items = store.get(K.testimonials);
+async function render_testimonials() {
   document.getElementById('main-content').innerHTML = `
   <div class="section-header">
     <h1>⭐ TESTIMONIALS</h1>
     <button class="btn-primary" onclick="openTestForm()">+ ADD</button>
   </div>
-  <div class="card-grid">
-    ${!items.length ? '<p class="empty">No testimonials yet.</p>' : items.map(t=>`
-    <div class="card">
-      <div class="stars">${'★'.repeat(t.rating||5)}</div>
-      <p>"${t.quote}"</p>
-      <h4>— ${t.name}</h4>
-      <p class="card-date">${fmtDate(t.date)}</p>
-      <div class="card-actions">
-        <button class="btn-sm btn-danger" onclick="deleteTesti('${t.id}')">Delete</button>
-      </div>
-    </div>`).join('')}
-  </div>`;
+  <div class="card-grid" id="testi-grid"><p class="empty">Loading…</p></div>`;
+  const items = await sb.select(T.testimonials);
+  const grid  = document.getElementById('testi-grid');
+  if (!grid) return;
+  if (!items.length) { grid.innerHTML = '<p class="empty">No testimonials yet.</p>'; return; }
+  grid.innerHTML = items.map(t => `
+  <div class="card">
+    <div class="stars">${'★'.repeat(t.rating||5)}</div>
+    <p>"${t.quote}"</p>
+    <h4>— ${t.name}</h4>
+    <p class="card-date">${fmtDate(t.date || t.created_at)}</p>
+    <div class="card-actions">
+      <button class="btn-sm btn-danger" onclick="deleteTesti('${t.id}')">Delete</button>
+    </div>
+  </div>`).join('');
 }
 
 function openTestForm() {
@@ -680,17 +725,22 @@ function openTestForm() {
   </div>`);
 }
 
-function saveTesti() {
-  const items = store.get(K.testimonials);
-  items.unshift({ id:uid(), name:document.getElementById('tf-name').value, rating:document.getElementById('tf-rating').value, quote:document.getElementById('tf-quote').value, date:new Date().toISOString() });
-  store.set(K.testimonials, items);
+async function saveTesti() {
+  await sb.insert(T.testimonials, {
+    id:         uid(),
+    name:       document.getElementById('tf-name').value,
+    rating:     document.getElementById('tf-rating').value,
+    quote:      document.getElementById('tf-quote').value,
+    date:       new Date().toISOString(),
+    created_at: new Date().toISOString()
+  });
   closeModal(); render_testimonials(); toast('Testimonial saved');
 }
 
 function deleteTesti(id) {
-  confirmDel('Delete testimonial?', () => {
-    store.set(K.testimonials, store.get(K.testimonials).filter(x=>x.id!==id));
-    render_testimonials(); toast('Deleted','error');
+  confirmDel('Delete testimonial?', async () => {
+    await sb.delete(T.testimonials, id);
+    render_testimonials(); toast('Deleted', 'error');
   });
 }
 
@@ -699,30 +749,30 @@ function deleteTesti(id) {
 // ══════════════════════════════════════════════════════════
 const BLOG_CATS = ['MINDSET','PHOTOGRAPHY','CREATIVE LIFE','MUSIC','BUSINESS'];
 
-function render_blog() {
-  const items = store.get(K.blog);
+async function render_blog() {
   document.getElementById('main-content').innerHTML = `
   <div class="section-header">
     <h1>✍️ BLOG</h1>
     <button class="btn-primary" onclick="openBlogForm()">+ NEW POST</button>
   </div>
-  <div class="card-grid" id="blog-grid"></div>`;
+  <div class="card-grid" id="blog-grid"><p class="empty">Loading…</p></div>`;
+  const items = await sb.select(T.blog);
   renderBlogCards(items);
 }
 
 function renderBlogCards(items) {
   const grid = document.getElementById('blog-grid');
   if (!grid) return;
-  if (!items.length) { grid.innerHTML='<p class="empty">No posts yet.</p>'; return; }
-  grid.innerHTML = items.map(p=>`
+  if (!items.length) { grid.innerHTML = '<p class="empty">No posts yet.</p>'; return; }
+  grid.innerHTML = items.map(p => `
   <div class="card">
-    ${p.coverImage ? `<img src="${p.coverImage}" class="card-img" alt="${p.title}">` : ''}
+    ${p.cover_image ? `<img src="${p.cover_image}" class="card-img" alt="${p.title}">` : ''}
     <div class="card-header">
       <span class="badge badge-cat">${p.category||'UNCATEGORIZED'}</span>
       <span class="badge badge-${p.status==='Live'?'live':'draft'}">${p.status||'Draft'}</span>
     </div>
     <h3>${p.title}</h3>
-    <p class="card-date">${fmtDate(p.date)}</p>
+    <p class="card-date">${fmtDate(p.date || p.created_at)}</p>
     <p>${(p.excerpt||p.content||'').slice(0,100)}…</p>
     <div class="card-actions">
       <button class="btn-sm" onclick="openBlogForm('${p.id}')">Edit</button>
@@ -731,17 +781,18 @@ function renderBlogCards(items) {
   </div>`).join('');
 }
 
-function openBlogForm(id) {
-  const items = store.get(K.blog);
-  const p = id ? items.find(x=>x.id===id) : {};
-  const savedCats = store.get('oas_blog_cats', BLOG_CATS);
-  const allCats = [...new Set([...BLOG_CATS, ...savedCats])];
+async function openBlogForm(id) {
+  let p = {};
+  if (id) {
+    const items = await sb.select(T.blog);
+    p = items.find(x => x.id === id) || {};
+  }
   openModal(`
-  <h2>${id?'Edit':'New'} Post</h2>
+  <h2>${id ? 'Edit' : 'New'} Post</h2>
   <label>Title<input id="bg-title" value="${p.title||''}"></label>
   <label>Category</label>
   <div class="cat-chips" id="cat-chips">
-    ${allCats.map(c=>`<span class="cat-chip ${p.category===c?'selected':''}" onclick="selectBlogCat('${c}', event)">${c}</span>`).join('')}
+    ${BLOG_CATS.map(c=>`<span class="cat-chip ${p.category===c?'selected':''}" onclick="selectBlogCat('${c}', event)">${c}</span>`).join('')}
   </div>
   <input id="bg-cat-input" placeholder="Custom category…" oninput="this.value=this.value.toUpperCase()">
   <button class="btn-sm" onclick="addCustomCat()">+ Add</button>
@@ -751,7 +802,7 @@ function openBlogForm(id) {
       ${['Draft','Live'].map(s=>`<option ${p.status===s?'selected':''}>${s}</option>`).join('')}
     </select>
   </label>
-  <label>Cover Image URL<input id="bg-image" value="${p.coverImage||''}"></label>
+  <label>Cover Image URL<input id="bg-image" value="${p.cover_image||''}"></label>
   <label>Excerpt<input id="bg-excerpt" value="${p.excerpt||''}"></label>
   <label>Content<textarea id="bg-content" rows="8">${p.content||''}</textarea></label>
   <button class="btn-sm" onclick="aiEnhanceBlog()">✨ AI Enhance</button>
@@ -762,9 +813,9 @@ function openBlogForm(id) {
 }
 
 function selectBlogCat(c, e) {
-  e.stopPropagation();
+  e?.stopPropagation();
   document.querySelectorAll('.cat-chip').forEach(el => el.classList.remove('selected'));
-  e.currentTarget.classList.add('selected');
+  (e?.currentTarget || document.querySelector(`.cat-chip[onclick*="${c}"]`))?.classList.add('selected');
   document.getElementById('bg-category').value = c;
 }
 
@@ -776,20 +827,18 @@ function addCustomCat() {
   const chip  = document.createElement('span');
   chip.className = 'cat-chip selected';
   chip.textContent = cat;
-  chip.onclick = () => selectBlogCat(cat);
-  chips.querySelectorAll('.cat-chip').forEach(el=>el.classList.remove('selected'));
+  chip.onclick = (e) => selectBlogCat(cat, e);
+  chips.querySelectorAll('.cat-chip').forEach(el => el.classList.remove('selected'));
   chips.appendChild(chip);
   document.getElementById('bg-category').value = cat;
   input.value = '';
-  const saved = store.get('oas_blog_cats', BLOG_CATS);
-  if (!saved.includes(cat)) { saved.push(cat); store.set('oas_blog_cats', saved); }
 }
 
 async function aiEnhanceBlog() {
   const content = document.getElementById('bg-content').value;
   const title   = document.getElementById('bg-title').value;
   const cat     = document.getElementById('bg-category').value;
-  if (!content) { toast('Add some content first','error'); return; }
+  if (!content) { toast('Add some content first', 'error'); return; }
   const btn = event.target;
   btn.textContent = '⏳ Enhancing…'; btn.disabled = true;
   try {
@@ -805,56 +854,58 @@ async function aiEnhanceBlog() {
     const data = await res.json();
     document.getElementById('bg-content').value = data.content?.[0]?.text || content;
     toast('AI enhanced!');
-  } catch(e) { toast('AI error','error'); }
+  } catch(e) { toast('AI error', 'error'); }
   btn.textContent = '✨ AI Enhance'; btn.disabled = false;
 }
 
-function saveBlog(id) {
-  const items = store.get(K.blog);
-  const data  = {
-    id:         id || uid(),
-    title:      document.getElementById('bg-title').value,
-    category:   document.getElementById('bg-category').value || 'UNCATEGORIZED',
-    status:     document.getElementById('bg-status').value,
-    coverImage: document.getElementById('bg-image').value,
-    excerpt:    document.getElementById('bg-excerpt').value,
-    content:    document.getElementById('bg-content').value,
-    date:       id ? items.find(x=>x.id===id)?.date : new Date().toISOString()
+async function saveBlog(id) {
+  const data = {
+    id:          id || uid(),
+    title:       document.getElementById('bg-title').value,
+    category:    document.getElementById('bg-category').value || 'UNCATEGORIZED',
+    status:      document.getElementById('bg-status').value,
+    cover_image: document.getElementById('bg-image').value,
+    excerpt:     document.getElementById('bg-excerpt').value,
+    content:     document.getElementById('bg-content').value,
+    date:        id ? undefined : new Date().toISOString(),
+    created_at:  id ? undefined : new Date().toISOString()
   };
-  if (id) { const i=items.findIndex(x=>x.id===id); items[i]=data; }
-  else items.unshift(data);
-  store.set(K.blog, items);
+  if (!id) { data.date = new Date().toISOString(); data.created_at = new Date().toISOString(); }
+  await sb.upsert(T.blog, data);
   closeModal(); render_blog(); toast('Post saved');
 }
 
 function deleteBlog(id) {
-  confirmDel('Delete post?', () => {
-    store.set(K.blog, store.get(K.blog).filter(x=>x.id!==id));
-    render_blog(); toast('Deleted','error');
+  confirmDel('Delete post?', async () => {
+    await sb.delete(T.blog, id);
+    render_blog(); toast('Deleted', 'error');
   });
 }
 
 // ══════════════════════════════════════════════════════════
 // PORTFOLIO
 // ══════════════════════════════════════════════════════════
-function render_portfolio() {
-  const p = store.obj(K.portfolio);
+async function render_portfolio() {
+  const rows = await sb.select(T.portfolio);
+  // Portfolio is stored as a single JSON row with key="portfolio"
+  const row  = rows.find(r => r.key === 'portfolio') || { data: {} };
+  const p    = row.data || {};
   document.getElementById('main-content').innerHTML = `
   <div class="section-header"><h1>🖼️ PORTFOLIO</h1></div>
   <p class="section-note">Media set here powers the live site portfolio section.</p>
   <div class="portfolio-sections">
-    ${renderPortfolioSection('portraits', 'Cinematic Portraits', p.portraits||[], 'photo', true)}
-    ${renderPortfolioSection('digitalart', 'Digital Art Originals', p.digitalart||[], 'photo', true)}
-    ${renderPortfolioSection('video', 'Video Content', p.video||[], 'video', false)}
-    ${renderPortfolioSection('branding', 'Branding Identity', p.branding||[], 'photo', false)}
-    ${renderPortfolioSection('editorial', 'Lifestyle Editorial', p.editorial||[], 'both', false)}
+    ${renderPortfolioSection('portraits',  'Cinematic Portraits',    p.portraits  ||[], 'photo', true)}
+    ${renderPortfolioSection('digitalart', 'Digital Art Originals',  p.digitalart ||[], 'photo', true)}
+    ${renderPortfolioSection('video',      'Video Content',          p.video      ||[], 'video', false)}
+    ${renderPortfolioSection('branding',   'Branding Identity',      p.branding   ||[], 'photo', false)}
+    ${renderPortfolioSection('editorial',  'Lifestyle Editorial',    p.editorial  ||[], 'both',  false)}
   </div>`;
 }
 
-function renderPortfolioSection(key, label, items, type, arrows) {
-  const urls = items.map((url,i)=>`
+function renderPortfolioSection(key, label, items, type) {
+  const urls = items.map((url, i) => `
     <div class="port-item">
-      ${type==='video'||url?.match(/\.(mp4|webm|mov)$/i) 
+      ${type === 'video' || url?.match(/\.(mp4|webm|mov)$/i)
         ? `<video src="${url}" class="port-media" loop muted onmouseenter="this.play()" onmouseleave="this.pause()"></video>`
         : `<img src="${url}" class="port-media" alt="${label}">`}
       <button class="btn-sm btn-danger port-del" onclick="removePortfolioItem('${key}',${i})">✕</button>
@@ -864,34 +915,37 @@ function renderPortfolioSection(key, label, items, type, arrows) {
     <h3>${label}</h3>
     <div class="port-grid" id="port-${key}">${urls || '<p class="empty">No media</p>'}</div>
     <div class="port-add">
-      <input id="port-url-${key}" placeholder="${type==='video'?'Video':'Image'} URL…">
-      <button class="btn-sm btn-primary" onclick="addPortfolioItem('${key}','${type}')">+ Add</button>
+      <input id="port-url-${key}" placeholder="${type === 'video' ? 'Video' : 'Image'} URL…">
+      <button class="btn-sm btn-primary" onclick="addPortfolioItem('${key}')">+ Add</button>
     </div>
   </div>`;
 }
 
-function addPortfolioItem(key, type) {
+async function addPortfolioItem(key) {
   const url = document.getElementById(`port-url-${key}`).value.trim();
-  if (!url) { toast('Enter a URL','error'); return; }
-  const p = store.obj(K.portfolio);
-  if (!p[key]) p[key] = [];
-  p[key].push(url);
-  store.set(K.portfolio, p);
+  if (!url) { toast('Enter a URL', 'error'); return; }
+  const rows = await sb.select(T.portfolio);
+  const row  = rows.find(r => r.key === 'portfolio') || { key: 'portfolio', data: {} };
+  if (!row.data[key]) row.data[key] = [];
+  row.data[key].push(url);
+  await sb.upsert(T.portfolio, { id: row.id || uid(), key: 'portfolio', data: row.data });
   render_portfolio();
 }
 
-function removePortfolioItem(key, idx) {
-  const p = store.obj(K.portfolio);
-  p[key].splice(idx, 1);
-  store.set(K.portfolio, p);
+async function removePortfolioItem(key, idx) {
+  const rows = await sb.select(T.portfolio);
+  const row  = rows.find(r => r.key === 'portfolio') || { key: 'portfolio', data: {} };
+  row.data[key].splice(idx, 1);
+  await sb.upsert(T.portfolio, { id: row.id || uid(), key: 'portfolio', data: row.data });
   render_portfolio();
 }
 
 // ══════════════════════════════════════════════════════════
 // ABOUT
 // ══════════════════════════════════════════════════════════
-function render_about() {
-  const a = store.obj(K.about);
+async function render_about() {
+  const rows = await sb.select(T.about);
+  const a    = rows[0] || {};
   document.getElementById('main-content').innerHTML = `
   <div class="section-header"><h1>ℹ️ ABOUT OASENSE</h1></div>
   <p class="section-note">This data feeds the "About Oasense" section on the live site.</p>
@@ -905,12 +959,13 @@ function render_about() {
     <label>Description
       <textarea id="ab-desc" rows="6">${a.description||''}</textarea>
     </label>
-    <button class="btn-primary" onclick="saveAbout()">Save</button>
+    <button class="btn-primary" onclick="saveAbout('${a.id||''}')">Save</button>
   </div>`;
 }
 
-function saveAbout() {
-  store.set(K.about, {
+async function saveAbout(id) {
+  await sb.upsert(T.about, {
+    id:          id || uid(),
     media:       document.getElementById('ab-media').value,
     quote:       document.getElementById('ab-quote').value,
     description: document.getElementById('ab-desc').value
@@ -921,24 +976,26 @@ function saveAbout() {
 // ══════════════════════════════════════════════════════════
 // AI PROMPTS
 // ══════════════════════════════════════════════════════════
-function render_ai_prompts() {
-  const items = store.get('oas_ai_prompts');
+async function render_ai_prompts() {
   document.getElementById('main-content').innerHTML = `
   <div class="section-header">
     <h1>🤖 AI PROMPTS</h1>
     <button class="btn-primary" onclick="openPromptForm()">+ NEW PROMPT</button>
   </div>
-  <div class="card-grid">
-    ${!items.length ? '<p class="empty">No prompts saved.</p>' : items.map(pr=>`
-    <div class="card">
-      <h3>${pr.name}</h3>
-      <p>${pr.prompt.slice(0,120)}…</p>
-      <div class="card-actions">
-        <button class="btn-sm" onclick="usePrompt('${pr.id}')">Use</button>
-        <button class="btn-sm btn-danger" onclick="deletePrompt('${pr.id}')">Delete</button>
-      </div>
-    </div>`).join('')}
-  </div>`;
+  <div class="card-grid" id="prompts-grid"><p class="empty">Loading…</p></div>`;
+  const items = await sb.select(T.ai_prompts);
+  const grid  = document.getElementById('prompts-grid');
+  if (!grid) return;
+  if (!items.length) { grid.innerHTML = '<p class="empty">No prompts saved.</p>'; return; }
+  grid.innerHTML = items.map(pr => `
+  <div class="card">
+    <h3>${pr.name}</h3>
+    <p>${pr.prompt.slice(0,120)}…</p>
+    <div class="card-actions">
+      <button class="btn-sm" onclick="usePrompt('${pr.id}')">Use</button>
+      <button class="btn-sm btn-danger" onclick="deletePrompt('${pr.id}')">Delete</button>
+    </div>
+  </div>`).join('');
 }
 
 function openPromptForm() {
@@ -952,22 +1009,26 @@ function openPromptForm() {
   </div>`);
 }
 
-function savePrompt() {
-  const items = store.get('oas_ai_prompts');
-  items.unshift({ id:uid(), name:document.getElementById('pf-name').value, prompt:document.getElementById('pf-prompt').value });
-  store.set('oas_ai_prompts', items);
+async function savePrompt() {
+  await sb.insert(T.ai_prompts, {
+    id:         uid(),
+    name:       document.getElementById('pf-name').value,
+    prompt:     document.getElementById('pf-prompt').value,
+    created_at: new Date().toISOString()
+  });
   closeModal(); render_ai_prompts(); toast('Prompt saved');
 }
 
 function deletePrompt(id) {
-  confirmDel('Delete prompt?', () => {
-    store.set('oas_ai_prompts', store.get('oas_ai_prompts').filter(x=>x.id!==id));
-    render_ai_prompts(); toast('Deleted','error');
+  confirmDel('Delete prompt?', async () => {
+    await sb.delete(T.ai_prompts, id);
+    render_ai_prompts(); toast('Deleted', 'error');
   });
 }
 
-function usePrompt(id) {
-  const pr = store.get('oas_ai_prompts').find(x=>x.id===id);
+async function usePrompt(id) {
+  const items = await sb.select(T.ai_prompts);
+  const pr    = items.find(x => x.id === id);
   if (!pr) return;
   openModal(`
   <h2>${pr.name}</h2>
@@ -987,8 +1048,8 @@ async function runPrompt() {
   result.textContent = '⏳ Running…';
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:`${prompt}\n\n${input}`}] })
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role:'user', content:`${prompt}\n\n${input}` }] })
     });
     const data = await res.json();
     result.textContent = data.content?.[0]?.text || 'No response';
@@ -998,37 +1059,37 @@ async function runPrompt() {
 // ══════════════════════════════════════════════════════════
 // DONATIONS
 // ══════════════════════════════════════════════════════════
-function render_donations() {
-  const items = store.get(K.donations);
-  const total = items.reduce((s,d)=>s+parseFloat(d.amount||0),0);
-  const avg   = items.length ? (total/items.length) : 0;
+async function render_donations() {
   document.getElementById('main-content').innerHTML = `
   <div class="section-header">
     <h1>💝 DONATIONS</h1>
     <button class="btn-primary" onclick="openDonationForm()">+ ADD MANUALLY</button>
   </div>
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-num">${fmtAmt(total)}</div><div class="stat-label">Total Raised</div></div>
-    <div class="stat-card"><div class="stat-num">${items.length}</div><div class="stat-label">Total Donations</div></div>
-    <div class="stat-card"><div class="stat-num">${fmtAmt(avg)}</div><div class="stat-label">Avg Donation</div></div>
-  </div>
-  <div class="card-grid" id="donations-grid"></div>`;
+  <div class="stats-row" id="donation-stats"></div>
+  <div class="card-grid" id="donations-grid"><p class="empty">Loading…</p></div>`;
+  const items = await sb.select(T.donations);
+  const total = items.reduce((s, d) => s + parseFloat(d.amount || 0), 0);
+  const avg   = items.length ? (total / items.length) : 0;
+  document.getElementById('donation-stats').innerHTML = `
+  <div class="stat-card"><div class="stat-num">${fmtAmt(total)}</div><div class="stat-label">Total Raised</div></div>
+  <div class="stat-card"><div class="stat-num">${items.length}</div><div class="stat-label">Total Donations</div></div>
+  <div class="stat-card"><div class="stat-num">${fmtAmt(avg)}</div><div class="stat-label">Avg Donation</div></div>`;
   renderDonationCards(items);
 }
 
-function renderDonationCards(items) {
+async function renderDonationCards(items) {
   const grid = document.getElementById('donations-grid');
   if (!grid) return;
-  if (!items.length) { grid.innerHTML='<p class="empty">No donations yet.</p>'; return; }
-  const crm = store.get(K.crm);
-  grid.innerHTML = [...items].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(d=>{
-    const inCRM = d.email && crm.find(c=>c.email?.toLowerCase()===d.email?.toLowerCase());
-    const pts   = Math.floor(parseFloat(d.amount||0)*10);
+  if (!items.length) { grid.innerHTML = '<p class="empty">No donations yet.</p>'; return; }
+  const crm = await sb.select(T.crm);
+  grid.innerHTML = [...items].sort((a, b) => new Date(b.created_at || b.date) - new Date(a.created_at || a.date)).map(d => {
+    const inCRM = d.email && crm.find(c => c.email?.toLowerCase() === d.email?.toLowerCase());
+    const pts   = Math.floor(parseFloat(d.amount || 0) * 10);
     return `
     <div class="card">
       <div class="card-header">
         <span class="badge badge-live">${fmtAmt(d.amount)}</span>
-        <span class="card-date">${fmtDate(d.date)}</span>
+        <span class="card-date">${fmtDate(d.date || d.created_at)}</span>
       </div>
       <h3>${d.anonymous ? 'Anonymous' : (d.name||'Unknown')}</h3>
       ${d.email ? `<p>${d.email} ${inCRM?`<button class="btn-sm" onclick="openCRMByEmail('${d.email}')">CRM</button>`:''}</p>` : ''}
@@ -1055,54 +1116,68 @@ function openDonationForm() {
   </div>`);
 }
 
-function saveDonation() {
-  const items = store.get(K.donations);
+async function saveDonation() {
   const email = document.getElementById('df-email').value.trim().toLowerCase();
-  items.unshift({
+  const name  = document.getElementById('df-name').value;
+  const donation = {
     id:        uid(),
     amount:    document.getElementById('df-amount').value,
-    name:      document.getElementById('df-name').value,
+    name,
     email,
     anonymous: document.getElementById('df-anon').checked,
     comment:   document.getElementById('df-comment').value,
-    date:      new Date().toISOString()
-  });
-  store.set(K.donations, items);
-// Auto-add to CRM if email provided and not already in CRM
-if (email) {
-  const crm = store.get(K.crm);
-  const exists = crm.some(c => c.email?.toLowerCase() === email);
-  if (!exists) {
-    crm.unshift({
-      id: uid(),
-      name: document.getElementById('df-name').value || 'Donor',
-      email: email,
-      phone: '',
-      tags: ['DONOR'],
-      notes: document.getElementById('df-comment').value,
-      createdAt: new Date().toISOString()
-    });
-    store.set(K.crm, crm);
+    date:      new Date().toISOString(),
+    created_at: new Date().toISOString()
+  };
+  await sb.insert(T.donations, donation);
+
+  // Auto-add to CRM if email provided
+  if (email) {
+    const crm = await sb.select(T.crm);
+    const exists = crm.some(c => c.email?.toLowerCase() === email);
+    if (!exists) {
+      await sb.insert(T.crm, {
+        id:         uid(),
+        name:       name || 'Donor',
+        email,
+        phone:      '',
+        tags:       ['DONOR'],
+        notes:      donation.comment,
+        created_at: new Date().toISOString()
+      });
+    }
   }
+
+  closeModal(); render_donations(); toast('Donation saved');
 }
-render_donations();
-closeModal();
-toast('Donation saved');
+
+function deleteDonation(id) {
+  confirmDel('Delete donation?', async () => {
+    await sb.delete(T.donations, id);
+    render_donations(); toast('Deleted', 'error');
+  });
+}
 
 // Public function called from live site donation form
-window.submitDonation = function(data) {
-  const items = store.get(K.donations);
-  items.unshift({ id:uid(), ...data, date:new Date().toISOString() });
-  store.set(K.donations, items);
-  if (data.email && !data.anonymous) autoAddToCRM(data.email, data.name);
+window.submitDonation = async function(data) {
+  await sb.insert(T.donations, { id: uid(), ...data, created_at: new Date().toISOString() });
+  if (data.email && !data.anonymous) {
+    const crm = await sb.select(T.crm);
+    if (!crm.some(c => c.email?.toLowerCase() === data.email?.toLowerCase())) {
+      await sb.insert(T.crm, { id: uid(), name: data.name || 'Donor', email: data.email, tags: ['DONOR'], created_at: new Date().toISOString() });
+    }
+  }
 };
 
 // ══════════════════════════════════════════════════════════
 // NEWSLETTER
 // ══════════════════════════════════════════════════════════
-function render_newsletter() {
-  const subs    = store.get(K.newsletter);
-  const crm     = store.get(K.crm);
+async function render_newsletter() {
+  document.getElementById('main-content').innerHTML = `
+  <div class="section-header"><h1>📧 NEWSLETTER</h1></div>
+  <p class="empty">Loading…</p>`;
+  const subs = await sb.select(T.newsletter);
+  const crm  = await sb.select(T.crm);
   document.getElementById('main-content').innerHTML = `
   <div class="section-header"><h1>📧 NEWSLETTER</h1></div>
   <div class="newsletter-layout">
@@ -1118,12 +1193,12 @@ function render_newsletter() {
     <div class="newsletter-subs">
       <h3>Subscribers (${subs.length})</h3>
       <div id="subs-list">
-        ${!subs.length ? '<p class="empty">No subscribers yet.</p>' : [...subs].sort((a,b)=>new Date(b.date)-new Date(a.date)).map(s=>{
-          const inCRM = crm.find(c=>c.email?.toLowerCase()===s.email?.toLowerCase());
+        ${!subs.length ? '<p class="empty">No subscribers yet.</p>' : [...subs].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(s => {
+          const inCRM = crm.find(c => c.email?.toLowerCase() === s.email?.toLowerCase());
           return `<div class="sub-row">
             <div>
               <strong>${s.email}</strong>
-              <small>${fmtDate(s.date)}</small>
+              <small>${fmtDate(s.created_at || s.date)}</small>
             </div>
             <div class="sub-actions">
               ${inCRM?`<button class="btn-sm" onclick="openCRMByEmail('${s.email}')">CRM</button>`:''}
@@ -1138,48 +1213,51 @@ function render_newsletter() {
 
 async function aiEnhanceNewsletter() {
   const content = document.getElementById('nl-content').value;
-  if (!content) { toast('Add content first','error'); return; }
+  if (!content) { toast('Add content first', 'error'); return; }
   const btn = event.target;
   btn.textContent = '⏳ Enhancing…'; btn.disabled = true;
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model:'claude-sonnet-4-20250514', max_tokens:1000,
-        messages:[{role:'user',content:`Enhance this newsletter email for OASENSE creative studio. Make it engaging, warm, and on-brand. Return only the improved email body:\n\n${content}`}]
+        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        messages: [{ role:'user', content:`Enhance this newsletter email for OASENSE creative studio. Make it engaging, warm, and on-brand. Return only the improved email body:\n\n${content}` }]
       })
     });
     const data = await res.json();
     document.getElementById('nl-content').value = data.content?.[0]?.text || content;
     toast('AI enhanced!');
-  } catch(e) { toast('AI error','error'); }
+  } catch(e) { toast('AI error', 'error'); }
   btn.textContent = '✨ AI Enhance'; btn.disabled = false;
 }
 
-function sendNewsletter() {
-  const subs    = store.get(K.newsletter);
+async function sendNewsletter() {
+  const subs    = await sb.select(T.newsletter);
   const subject = document.getElementById('nl-subject').value;
   const body    = document.getElementById('nl-content').value;
-  if (!subs.length) { toast('No subscribers','error'); return; }
-  if (!subject)     { toast('Add a subject','error'); return; }
-  const emails = subs.map(s=>s.email).join(',');
+  if (!subs.length) { toast('No subscribers', 'error'); return; }
+  if (!subject)     { toast('Add a subject', 'error'); return; }
+  const emails = subs.map(s => s.email).join(',');
   window.location.href = `mailto:${emails}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 function deleteSub(id) {
-  confirmDel('Remove subscriber?', () => {
-    store.set(K.newsletter, store.get(K.newsletter).filter(x=>x.id!==id));
-    render_newsletter(); toast('Removed','error');
+  confirmDel('Remove subscriber?', async () => {
+    await sb.delete(T.newsletter, id);
+    render_newsletter(); toast('Removed', 'error');
   });
 }
 
 // Public function called from live site newsletter form
-window.subscribeEmail = function(email) {
-  const subs = store.get(K.newsletter);
-  if (subs.find(s=>s.email?.toLowerCase()===email?.toLowerCase())) return;
-  subs.unshift({ id:uid(), email:email.toLowerCase().trim(), date:new Date().toISOString() });
-  store.set(K.newsletter, subs);
-  autoAddToCRM(email, '');
+window.subscribeEmail = async function(email) {
+  const subs = await sb.select(T.newsletter);
+  if (subs.find(s => s.email?.toLowerCase() === email?.toLowerCase())) return;
+  await sb.insert(T.newsletter, { id: uid(), email: email.toLowerCase().trim(), created_at: new Date().toISOString() });
+  // Auto-add to CRM
+  const crm = await sb.select(T.crm);
+  if (!crm.some(c => c.email?.toLowerCase() === email?.toLowerCase())) {
+    await sb.insert(T.crm, { id: uid(), name: email, email: email.toLowerCase().trim(), tags: ['SUBSCRIBER'], created_at: new Date().toISOString() });
+  }
 };
 
 // ══════════════════════════════════════════════════════════
@@ -1190,11 +1268,11 @@ function render_users() {
     document.getElementById('main-content').innerHTML = '<p style="padding:2rem;opacity:.5">Admin only.</p>';
     return;
   }
-  const items = store.get(K.users, Object.entries(USERS).map(([u,v])=>({id:uid(),username:u,role:v.role})));
+  const items = Object.entries(USERS).map(([u, v]) => ({ username: u, role: v.role }));
   document.getElementById('main-content').innerHTML = `
   <div class="section-header"><h1>🔒 USERS</h1></div>
   <div class="card-grid">
-    ${items.map(u=>`
+    ${items.map(u => `
     <div class="card">
       <h3>${u.username}</h3>
       <p><strong>Role:</strong> ${u.role}</p>
@@ -1203,125 +1281,14 @@ function render_users() {
 }
 
 // ══════════════════════════════════════════════════════════
-// EXPOSE to live site (cross-origin localStorage sharing)
+// EXPOSE to live site
 // ══════════════════════════════════════════════════════════
 window.OAS_DEV = {
-  getShopPromo:     () => store.get(K.shop).filter(x=>x.status==='Promo').slice(0,4),
-  getShopLive:      () => store.get(K.shop).filter(x=>x.status==='Live'),
-  getBlogLive:      () => store.get(K.blog).filter(x=>x.status==='Live').sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3),
-  getPortfolio:     () => store.obj(K.portfolio),
-  getAbout:         () => store.obj(K.about),
-  submitDonation:   window.submitDonation,
-  subscribeEmail:   window.subscribeEmail
+  getShopPromo:   async () => (await sb.select(T.shop)).filter(x => x.status === 'Promo').slice(0, 4),
+  getShopLive:    async () => (await sb.select(T.shop)).filter(x => x.status === 'Live'),
+  getBlogLive:    async () => (await sb.select(T.blog)).filter(x => x.status === 'Live').sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3),
+  getPortfolio:   async () => { const rows = await sb.select(T.portfolio); return rows.find(r => r.key === 'portfolio')?.data || {}; },
+  getAbout:       async () => { const rows = await sb.select(T.about); return rows[0] || {}; },
+  submitDonation: window.submitDonation,
+  subscribeEmail: window.subscribeEmail
 };
-
-// ── LIVE DATABASE SYNC ─────────────────────────────────────
-async function syncToDatabase(key, data) {
-  try {
-    // Replace with your actual backend endpoint or path
-    // e.g., '/database.json' if using a server endpoint
-    await fetch('https://merci-chi.github.io/OAS/database.json', {
-      method: 'POST', // or 'PUT' depending on your server setup
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ [key]: data })
-    });
-    console.log(`Synced ${key} to database.json`);
-  } catch (e) {
-    console.error(`Failed to sync ${key}:`, e);
-  }
-}
-
-function saveBooking(id) {
-  const items = store.get(K.bookings);
-  const data  = {
-    id:    id || uid(),
-    name:  document.getElementById('bf-name').value,
-    email: document.getElementById('bf-email').value,
-    phone: document.getElementById('bf-phone').value,
-    type:  document.getElementById('bf-type').value,
-    date:  document.getElementById('bf-date').value,
-    status:document.getElementById('bf-status').value,
-    notes: document.getElementById('bf-notes').value
-  };
-  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
-  else items.unshift(data);
-  store.set(K.bookings, items);
-  syncToDatabase(K.bookings, items); // <-- SYNC
-  closeModal(); render_bookings(); toast('Booking saved');
-}
-
-function saveShopItem(id) {
-  const items = store.get(K.shop);
-  const status= document.getElementById('sf-status').value;
-  if (status === 'Promo') {
-    const promoCount = items.filter(x=>x.status==='Promo' && x.id!==id).length;
-    if (promoCount >= 4) { toast('Max 4 PROMO slots!', 'error'); return; }
-  }
-  const data = {
-    id: id || uid(),
-    name: document.getElementById('sf-name').value,
-    price: document.getElementById('sf-price').value,
-    description: document.getElementById('sf-desc').value,
-    badge: document.getElementById('sf-badge').value,
-    status,
-    image: document.getElementById('sf-image').value,
-    createdAt: id ? items.find(x=>x.id===id)?.createdAt : new Date().toISOString()
-  };
-  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
-  else items.unshift(data);
-  store.set(K.shop, items);
-  syncToDatabase(K.shop, items); // <-- SYNC
-  closeModal(); render_shop(); toast('Item saved');
-}
-
-function saveCRM(id) {
-  const items = store.get(K.crm);
-  const data  = {
-    id:    id || uid(),
-    name:  document.getElementById('cf-name').value,
-    email: document.getElementById('cf-email').value.toLowerCase().trim(),
-    phone: document.getElementById('cf-phone').value,
-    tags:  document.getElementById('cf-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
-    notes: document.getElementById('cf-notes').value,
-    createdAt: id ? items.find(x=>x.id===id)?.createdAt : new Date().toISOString()
-  };
-  if (id) { const i = items.findIndex(x=>x.id===id); items[i]=data; }
-  else items.unshift(data);
-  store.set(K.crm, items);
-  syncToDatabase(K.crm, items); // <-- SYNC
-  closeModal(); render_crm(); toast('Contact saved');
-}
-
-function saveDonation() {
-  const items = store.get(K.donations);
-  const donation = {
-    id: uid(),
-    amount: parseFloat(document.getElementById('df-amount').value) || 0,
-    name: document.getElementById('df-name').value,
-    email: document.getElementById('df-email').value,
-    anonymous: document.getElementById('df-anon').checked,
-    comment: document.getElementById('df-comment').value,
-    date: new Date().toISOString()
-  };
-  items.unshift(donation);
-  store.set(K.donations, items);
-  closeModal();
-  render_donations();
-  toast('Donation saved');
-}
-  items.unshift({
-    id:        uid(),
-    amount:    document.getElementById('df-amount').value,
-    name:      document.getElementById('df-name').value,
-    email,
-    anonymous: document.getElementById('df-anon').checked,
-    comment:   document.getElementById('df-comment').value,
-    date:      new Date().toISOString()
-  });
-  store.set(K.donations, items);
-  syncToDatabase(K.donations, items); // <-- SYNC
-  render_donations(); toast('Donation added');
-}
-
-store.set(KEY, DATA);
-syncToDatabase(KEY, DATA);
