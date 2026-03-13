@@ -559,9 +559,24 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .audit-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.4);letter-spacing:1px;text-align:right;white-space:nowrap;padding-left:12px;}
 .badge-chip{display:inline-flex;align-items:center;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:2px;white-space:nowrap;}
 .badge-hacker{background:rgba(255,59,59,0.12);border:1px solid rgba(255,59,59,0.5);color:var(--red);text-shadow:0 0 6px rgba(255,59,59,0.4);}
-.badge-dev{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.45);color:var(--hot);}
-.badge-owner{background:rgba(255,105,180,0.1);border:1px solid rgba(255,105,180,0.45);color:var(--pink);}
+.badge-dev{background:rgba(255,105,180,0.1);border:1px solid rgba(255,105,180,0.5);color:var(--pink);text-shadow:0 0 6px rgba(255,105,180,0.3);}
+.badge-owner{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.45);color:var(--green);text-shadow:0 0 6px rgba(0,255,136,0.3);}
 .badge-user{background:rgba(170,102,204,0.1);border:1px solid rgba(170,102,204,0.35);color:var(--mute);}
+/* ARCHIVE LOG STYLES */
+.archive-month-btn{padding:8px 18px;background:rgba(255,204,0,0.04);border:1px solid rgba(255,204,0,0.25);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.archive-month-btn:hover,.archive-month-btn.active{border-color:var(--hot);color:var(--hot);background:rgba(255,204,0,0.08);}
+.archive-selector{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
+.archive-sel-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.45);text-transform:uppercase;margin-right:4px;}
+/* DB LOOKUP */
+.db-lookup-result{background:rgba(255,204,0,0.03);border:1px solid rgba(255,204,0,0.3);padding:18px 20px;margin-bottom:6px;animation:fadeIn .3s ease;}
+.db-lookup-key{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:10px;}
+.db-lookup-field{display:flex;gap:12px;padding:5px 0;border-bottom:1px solid rgba(255,204,0,0.06);font-family:'Barlow Condensed',sans-serif;font-size:16px;}
+.db-lookup-field:last-child{border-bottom:none;}
+.db-lookup-field-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.45);text-transform:uppercase;min-width:80px;padding-top:3px;flex-shrink:0;}
+/* DB VIEW TOGGLE */
+.db-view-toggle{display:flex;gap:2px;margin-bottom:24px;}
+.db-view-btn{padding:10px 24px;background:transparent;border:1px solid rgba(255,204,0,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.db-view-btn.active{border-color:var(--hot);color:var(--hot);background:rgba(255,204,0,0.06);}
 .db-user-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:16px 20px;margin-bottom:3px;transition:border-color .2s;cursor:pointer;}
 .db-user-card:hover{border-color:rgba(255,204,0,0.4);}
 .db-user-grid{display:grid;grid-template-columns:50px 1fr auto;gap:14px;align-items:center;}
@@ -893,8 +908,13 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 
 <!-- DATABASE / AUDIT LOG -->
 <div class="dev-section" id="sec-database">
-  <div class="topbar"><div><div class="panel-title">Audit <span class="hot">Log</span></div><div class="panel-sub">// AUDIT LOG · User Registry · Session Tracking · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openAddUser()">+ Add User</button></div></div>
+  <div class="topbar">
+    <div><div class="panel-title">Data<span class="hot">base</span></div><div class="panel-sub">// Audit Log · User Registry · DB Lookup · 🔥 Firebase Synced</div></div>
+    <div class="topbar-actions"><button class="btn btn-sm" onclick="openAddUser()">+ Add User</button></div>
+  </div>
   <div class="vhs-line"></div>
+
+  <!-- ADD USER FORM -->
   <div id="addUserFormWrap" class="card" style="display:none;margin-bottom:22px;">
     <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">ADD USER</div>
     <div class="row row-3">
@@ -904,34 +924,85 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
     </div>
     <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="saveUser()">Add User</button><button class="btn btn-ghost btn-sm" onclick="closeAddUser()">Cancel</button></div>
   </div>
+
+  <!-- STATS -->
   <div class="db-header-stats" id="dbStatsBar"></div>
-  <div class="audit-tabs">
-    <button class="audit-tab active" onclick="switchAuditTab('all',this)">📋 All</button>
-    <button class="audit-tab admin-tab" onclick="switchAuditTab('admin',this)">🔐 ADMIN</button>
-    <button class="audit-tab user-tab" onclick="switchAuditTab('users',this)">👤 USERS</button>
+
+  <!-- VIEW TOGGLE -->
+  <div class="db-view-toggle">
+    <button class="db-view-btn active" id="dbViewBtnLog" onclick="switchDbView('log',this)">📋 Audit Log</button>
+    <button class="db-view-btn" id="dbViewBtnUsers" onclick="switchDbView('users',this)">👤 User Registry</button>
+    <button class="db-view-btn" id="dbViewBtnLookup" onclick="switchDbView('lookup',this)">🔍 DB Lookup</button>
   </div>
-  <div style="font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:5px;color:rgba(255,204,0,0.35);text-transform:uppercase;margin-bottom:14px;margin-top:6px;">▸ AUDIT LOG</div>
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
-    <div class="action-filter-wrap">
-      <button class="action-filter-btn" onclick="toggleActionFilterDD()"><span id="actionFilterLabel">⊞ Sort by Action</span> ▾</button>
-      <div class="action-filter-dd" id="actionFilterDD"></div>
+
+  <!-- ── AUDIT LOG VIEW ── -->
+  <div id="dbViewLog">
+    <div class="audit-tabs">
+      <button class="audit-tab active" onclick="switchAuditTab('all',this)">📋 All</button>
+      <button class="audit-tab admin-tab" onclick="switchAuditTab('admin',this)">🔐 ADMIN</button>
+      <button class="audit-tab user-tab" onclick="switchAuditTab('users',this)">👤 USERS</button>
     </div>
-    <div id="activeFilterChip" style="display:none;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--hot);padding:6px 14px;border:1px solid rgba(255,204,0,0.4);background:rgba(255,204,0,0.05);display:flex;align-items:center;gap:8px;">
-      <span id="activeFilterText">—</span><button onclick="clearActionFilter()" style="background:none;border:none;color:var(--red);cursor:pointer;margin-left:8px;font-size:14px;line-height:1;">×</button>
+
+    <!-- MONTH/YEAR SELECTOR -->
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+      <div class="archive-selector" id="archiveSelector">
+        <span class="archive-sel-label">📅 Month:</span>
+      </div>
+      <button class="btn btn-sm" style="border-color:rgba(255,59,59,0.4);color:rgba(255,59,59,0.7);font-size:9px;letter-spacing:2px;" onclick="exportMonthLog()" title="Export current month as JSON">↓ Export Month</button>
     </div>
-    <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.4);letter-spacing:2px;"><span id="auditCountLabel">0 entries</span></div>
+
+    <div style="font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:5px;color:rgba(255,204,0,0.35);text-transform:uppercase;margin-bottom:14px;">▸ AUDIT LOG</div>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+      <div class="action-filter-wrap">
+        <button class="action-filter-btn" onclick="toggleActionFilterDD()"><span id="actionFilterLabel">⊞ Sort by Action</span> ▾</button>
+        <div class="action-filter-dd" id="actionFilterDD"></div>
+      </div>
+      <div id="activeFilterChip" style="display:none;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--hot);padding:6px 14px;border:1px solid rgba(255,204,0,0.4);background:rgba(255,204,0,0.05);align-items:center;gap:8px;">
+        <span id="activeFilterText">—</span><button onclick="clearActionFilter()" style="background:none;border:none;color:var(--red);cursor:pointer;margin-left:8px;font-size:14px;line-height:1;">×</button>
+      </div>
+      <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.4);letter-spacing:2px;"><span id="auditCountLabel">0 entries</span></div>
+    </div>
+    <div class="audit-log" id="auditLog"></div>
+    <div class="empty-state" id="auditEmpty" style="display:none;">No log entries for this period ☀️</div>
   </div>
-  <div class="audit-log" id="auditLog"></div>
-  <div class="empty-state" id="auditEmpty" style="display:none;">No log entries yet ☀️</div>
-  <div style="margin-top:40px;">
+
+  <!-- ── USER REGISTRY VIEW ── -->
+  <div id="dbViewUsers" style="display:none;">
     <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
-      <span>User Registry</span><span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.4);font-weight:normal;">// All registered accounts</span>
+      <span>User Registry</span>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.4);font-weight:normal;">// Unique registered accounts only</span>
       <span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.5);" id="dbCount">0 users</span>
     </div>
     <div style="margin-bottom:16px;"><input class="fi" id="userSearchInput" placeholder="🔍 Search users by name or email…" oninput="renderUsers()" style="width:100%;max-width:400px;"/></div>
     <div id="usersList"></div>
     <div class="empty-state" id="usersEmpty">No users registered yet ☀️</div>
   </div>
+
+  <!-- ── DB LOOKUP VIEW ── -->
+  <div id="dbViewLookup" style="display:none;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+      🔍 Database Lookup
+      <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.4);font-weight:normal;margin-left:12px;">// Search by REF #, name, or keyword across all collections</span>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+      <input class="fi" id="dbLookupInput" placeholder="Search REF #, name, item title, email…" style="flex:1;max-width:440px;" oninput="runDbLookup()" onkeydown="if(event.key==='Enter')runDbLookup()"/>
+      <select class="fi fse" id="dbLookupCollection" onchange="runDbLookup()" style="max-width:180px;">
+        <option value="all">All Collections</option>
+        <option value="shopItems">Shop Items</option>
+        <option value="bookings">Bookings</option>
+        <option value="crm">CRM People</option>
+        <option value="orders">Orders</option>
+        <option value="invoices">Invoices</option>
+        <option value="testimonials">Testimonials</option>
+        <option value="blogPosts">Blog Posts</option>
+        <option value="appUsers">Users</option>
+      </select>
+    </div>
+    <div id="dbLookupResults"></div>
+    <div class="empty-state" id="dbLookupEmpty" style="display:none;">No results found — try a different term ☀️</div>
+  </div>
+
 </div>
 
 </div><!-- /main -->
@@ -1033,7 +1104,7 @@ function startFirebaseListeners() {
   fsAuditListen(entries => {
     auditLogData.length = 0;
     entries.forEach(x => auditLogData.push(x));
-    renderAuditLog();
+    if (!_auditViewMonth) renderAuditLog();
     updateDbStats();
   });
 
@@ -1042,7 +1113,14 @@ function startFirebaseListeners() {
     initAIPrompts();
   });
 
-  setTimeout(() => showSync('synced', 'Firebase Connected'), 2000);
+  setTimeout(() => {
+    showSync('synced', 'Firebase Connected');
+    // Archive old entries and build month selector
+    setTimeout(() => {
+      archiveOldEntries();
+      loadArchiveMonthList();
+    }, 3000);
+  }, 2000);
 }
 
 // ══ SAVE/DELETE WRAPPERS ══
@@ -1118,31 +1196,17 @@ function populateActionFilterDD(){ const dd=document.getElementById('actionFilte
 function setActionFilter(action){ auditActionFilter=action; document.getElementById('actionFilterDD').classList.remove('open'); if(action){document.getElementById('activeFilterChip').style.display='flex';document.getElementById('activeFilterText').textContent=action;document.getElementById('actionFilterLabel').textContent='⊞ '+action;}else{document.getElementById('activeFilterChip').style.display='none';document.getElementById('actionFilterLabel').textContent='⊞ Sort by Action';} renderAuditLog(); }
 function clearActionFilter(){ setActionFilter(null); }
 
-function renderAuditLog(){
-  const container=document.getElementById('auditLog'),empty=document.getElementById('auditEmpty');
-  let entries=[...auditLogData];
-  if(auditTabFilter==='admin') entries=entries.filter(e=>{const b=e.badge||'USER';return e.type==='admin'||isAdminAction(e.action)||['DEV','OWNER','HACKER'].includes(b);});
-  else if(auditTabFilter==='users') entries=entries.filter(e=>{const b=e.badge||'USER';return b==='USER'&&(e.type==='user'||USER_ACTIONS.includes(e.action));});
-  if(auditActionFilter) entries=entries.filter(e=>e.action===auditActionFilter);
-  document.getElementById('auditCountLabel').textContent=entries.length+' entr'+(entries.length===1?'y':'ies');
-  if(!entries.length){container.innerHTML='';empty.style.display='block';return;}
-  empty.style.display='none';
-  container.innerHTML=entries.map(e=>{
-    const badge=e.badge||'USER',badgeCls=getBadgeClass(badge),isPrivileged=['DEV','OWNER','HACKER'].includes(badge),isAdmin=isPrivileged||e.type==='admin'||isAdminAction(e.action);
-    let identityHTML = isPrivileged
-      ? `<div class="audit-actor">${esc(e.actor)}</div><div class="audit-identity-sub"><span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--red);text-transform:uppercase;">ADMIN</span><span class="audit-id-divider">|</span><span class="badge-chip ${badgeCls}" style="font-size:8px;padding:2px 6px;">${badge}</span></div>`
-      : `<div class="audit-actor">${esc(e.actor)}</div><div class="audit-identity-sub">${e.crmId?`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.6);">#${e.crmId}</span><span class="audit-id-divider">|</span>`:''}<span class="badge-chip ${badgeCls}" style="font-size:8px;padding:2px 6px;">${badge}</span></div>`;
-    return`<div class="audit-entry ${isAdmin?'admin-action':'user-action'}"><div class="audit-left">${identityHTML}</div><div class="audit-vert-divider"></div><div class="audit-middle"><div class="audit-action-name">${esc(e.action)}</div>${e.ref?`<span class="audit-ref">${esc(e.ref)}</span>`:''}</div><div class="audit-time">${fmtTs(e.ts)}<br/><span style="font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span></div></div>`;
-  }).join('');
-}
-
 function updateDbStats(){
   const bar=document.getElementById('dbStatsBar');if(!bar)return;
   const seenNames={};appUsers.forEach(u=>{const key=(u.name||'').toLowerCase().trim();if(!seenNames[key]||(u.seenAt||0)>(seenNames[key].seenAt||0))seenNames[key]=u;});
-  const totalUsers=Object.keys(seenNames).length,totalAudit=auditLogData.length;
+  const totalUsers=Object.keys(seenNames).length;
+  // Total audit = live + archived (approximate from live only)
+  const totalAudit=auditLogData.length;
+  const now=new Date(); const monthStart=new Date(now.getFullYear(),now.getMonth(),1).getTime();
+  const thisMonthCount=auditLogData.filter(e=>(e.ts||0)>=monthStart).length;
   const adminEntries=auditLogData.filter(e=>{const b=e.badge||'USER';return e.type==='admin'||isAdminAction(e.action)||['DEV','OWNER','HACKER'].includes(b);}).length;
   const userEntries=auditLogData.filter(e=>{const b=e.badge||'USER';return b==='USER';}).length;
-  bar.innerHTML=`<div class="db-stat-card"><div class="db-stat-num">${totalUsers}</div><div class="db-stat-label">Registered Users</div></div><div class="db-stat-card"><div class="db-stat-num" style="color:var(--green);">${totalAudit}</div><div class="db-stat-label">Total Log Entries</div></div><div class="db-stat-card"><div class="db-stat-num" style="color:var(--red);">${adminEntries}</div><div class="db-stat-label">Admin Actions</div></div><div class="db-stat-card"><div class="db-stat-num" style="color:var(--blue);">${userEntries}</div><div class="db-stat-label">User Actions</div></div>`;
+  bar.innerHTML=`<div class="db-stat-card"><div class="db-stat-num">${totalUsers}</div><div class="db-stat-label">Unique Users</div></div><div class="db-stat-card"><div class="db-stat-num" style="color:var(--green);">${thisMonthCount}</div><div class="db-stat-label">This Month</div></div><div class="db-stat-card"><div class="db-stat-num" style="color:var(--red);">${adminEntries}</div><div class="db-stat-label">Admin Actions</div></div><div class="db-stat-card"><div class="db-stat-num" style="color:var(--blue);">${userEntries}</div><div class="db-stat-label">User Actions</div></div>`;
 }
 
 // ══ LOGIN ══
@@ -1259,14 +1323,7 @@ function updateCRMBadge(){document.getElementById('crmBadge').textContent=people
 function openAddPerson(){const f=document.getElementById('addPersonForm');f.style.display='block';f.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeAddPerson(){document.getElementById('addPersonForm').style.display='none';}
 
-async function savePerson(){
-  const name=document.getElementById('ap-name').value.trim();if(!name){alert('Name is required.');return;}
-  const newPerson={id:Math.floor(Date.now()),cat:document.getElementById('ap-cat').value,name,age:document.getElementById('ap-age').value||'',phone:document.getElementById('ap-phone').value.trim(),email:document.getElementById('ap-email').value.trim(),ig:document.getElementById('ap-ig').value.trim(),addr:document.getElementById('ap-addr').value.trim(),notes:document.getElementById('ap-notes').value.trim(),rating:''};
-  await savePersonFS(newPerson);closeAddPerson();
-  ['ap-name','ap-age','ap-phone','ap-email','ap-ig','ap-addr','ap-notes'].forEach(id=>document.getElementById(id).value='');
-}
-
-function switchCRM(filter,btn){crmFilter=filter;document.querySelectorAll('.crm-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderCRM();}
+async function switchCRM(filter,btn){crmFilter=filter;document.querySelectorAll('.crm-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderCRM();}
 function toggleRatingFilterDD(){document.getElementById('ratingFilterDD').classList.toggle('open');}
 function setRatingFilter(val){crmRatingFilter=val;document.getElementById('ratingFilterDD').classList.remove('open');const labels={all:'● All Ratings',green:'🟢 High',yellow:'🟡 Medium',red:'🔴 Low',none:'⚪ Unrated'};document.getElementById('ratingFilterLabel').textContent=labels[val]||'All Ratings';renderCRM();}
 function sortByRating(arr){const order={green:0,yellow:1,red:2,'':3};return[...arr].sort((a,b)=>(order[a.rating||'']??3)-(order[b.rating||'']??3));}
@@ -1418,10 +1475,6 @@ function invProductFilter(){const q=document.getElementById('inv-product').value
 function selectInvProduct(idx){const s=_invProductOpts[idx];if(!s)return;document.getElementById('inv-product').value=s.title;document.getElementById('invProductDD').classList.remove('open');_invPrice=parseFloat(s.price)||0;_invDisc=s.discount||'-';const dp=s.discount&&s.discount!=='-'?(_invPrice*(1-parseInt(s.discount)/100)).toFixed(2):null;document.getElementById('invPriceDisplay').textContent=s.price?(dp?`$${dp}`:`$${s.price}`):'—';document.getElementById('invDiscDisplay').textContent=s.discount&&s.discount!=='-'?s.discount+'%':'—';}
 function receiptTypeChanged(){const t=document.getElementById('inv-receipt-type').value;const wrap=document.getElementById('inv-receipt-input-wrap');const inp=document.getElementById('inv-receipt-val');if(t==='none'){wrap.style.display='none';inp.value='';return;}wrap.style.display='block';inp.value='';inp.placeholder=t==='text'?'+1 (000) 000-0000':'example@gmail.com';}
 async function saveInvoice(){const client=document.getElementById('inv-client').value.trim(),product=document.getElementById('inv-product').value.trim(),date=document.getElementById('inv-date').value;if(!client||!product){alert('Client and product are required.');return;}const receiptType=document.getElementById('inv-receipt-type').value,receiptVal=document.getElementById('inv-receipt-val').value.trim();const disc=_invDisc,discAmt=disc!=='-'?_invPrice*(parseInt(disc)/100):0,afterDisc=_invPrice-discAmt,tax=afterDisc*NV_TAX,total=afterDisc+tax;const newId=Math.floor(Date.now());await saveInvoiceFS({id:newId,client,product,price:_invPrice,disc,date,receiptType,receiptVal,status:'unpaid',total});closeNewInvoice();}
-function openOverrideModal(){document.getElementById('ov-user').value='';document.getElementById('ov-pass').value='';document.getElementById('ov-err').style.display='none';document.getElementById('overrideAuthWrap').style.display='block';document.getElementById('overrideEditWrap').style.display='none';document.getElementById('overrideModal').classList.add('open');}
-function closeOverrideModal(){document.getElementById('overrideModal').classList.remove('open');}
-function checkOverrideAuth(){const u=document.getElementById('ov-user').value.trim(),p=document.getElementById('ov-pass').value;if(u==='DEV'&&p==='mems01'){document.getElementById('overrideAuthWrap').style.display='none';document.getElementById('overrideEditWrap').style.display='block';document.getElementById('ov-price').value=_invPrice||'';document.getElementById('ov-disc').value=_invDisc==='-'?'':_invDisc;}else{document.getElementById('ov-err').style.display='block';}}
-function applyOverride(){const p=parseFloat(document.getElementById('ov-price').value)||_invPrice,d=document.getElementById('ov-disc').value.trim()||'-';_invPrice=p;_invDisc=d;const dp=d!=='-'?(p*(1-parseInt(d)/100)).toFixed(2):null;document.getElementById('invPriceDisplay').textContent=`$${dp||p.toFixed(2)}`;document.getElementById('invDiscDisplay').textContent=d!=='-'?d+'%':'—';closeOverrideModal();}
 async function cycleInvStatus(id){const inv=invoices.find(x=>String(x.id)===String(id));if(!inv)return;const s=['unpaid','paid','cancelled'];await saveInvoiceFS({...inv,status:s[(s.indexOf(inv.status||'unpaid')+1)%s.length]});}
 async function deleteInvoice(id){if(!confirm('Delete this invoice?'))return;await deleteInvoiceFS(id);}
 function renderInvoices(){const list=document.getElementById('invoiceList'),empty=document.getElementById('invoiceEmpty');updateInvBadge();if(!invoices.length){list.innerHTML='';empty.style.display='block';return;}empty.style.display='none';list.innerHTML=invoices.map(inv=>{const discAmt=inv.disc!=='-'?inv.price*(parseInt(inv.disc)/100):0,afterDisc=inv.price-discAmt,taxAmt=afterDisc*NV_TAX,total=afterDisc+taxAmt;return`<div class="inv-card"><div class="inv-card-header"><div><div style="font-family:'Black Ops One',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;">${inv.client}</div><div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);margin-top:2px;">${inv.product} · ${inv.date?formatDate(inv.date):''}</div></div><div style="display:flex;align-items:center;gap:8px;"><span class="inv-status ${inv.status||'unpaid'}" onclick="cycleInvStatus(${inv.id})" style="cursor:pointer;" title="Click to cycle">${inv.status||'unpaid'}</span><button class="btn btn-red btn-sm" onclick="deleteInvoice(${inv.id})">✕</button></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-top:10px;border-top:1px solid rgba(255,204,0,0.1);"><div class="order-total-row"><span class="ot-lbl">Price</span><span class="ot-val">$${inv.price.toFixed(2)}</span></div>${inv.disc!=='-'?`<div class="order-total-row"><span class="ot-lbl">Discount (${inv.disc}%)</span><span class="ot-val" style="color:var(--green);">−$${discAmt.toFixed(2)}</span></div>`:''}<div class="order-total-row"><span class="ot-lbl">Sales Tax (NV 8.375%)</span><span class="ot-val">$${taxAmt.toFixed(2)}</span></div><div class="order-total-row grand"><span class="ot-lbl">Total</span><span class="ot-val">$${total.toFixed(2)}</span></div></div>${inv.receiptType&&inv.receiptType!=='none'?`<div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,204,0,0.08);font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:1px;">${inv.receiptType==='text'?'📱 TEXT':'📧 EMAIL'} receipt → ${inv.receiptVal||'—'}</div>`:''}</div>`;}).join('');}
@@ -1504,51 +1557,6 @@ function toggleDbDetail(id){document.getElementById('dbdetail-'+id)?.classList.t
 async function updateUserNotes(id){const u=appUsers.find(x=>String(x.id)===String(id));if(!u)return;await saveAppUserFS({...u,notes:document.getElementById(`unotes-${id}`).value});}
 async function deleteUser(id){if(!confirm('Delete this user?'))return;await deleteAppUserFS(id);}
 
-function renderUsers(){
-  const list=document.getElementById('usersList'),empty=document.getElementById('usersEmpty');
-  updateUsersBadge();
-  const seenNames={};
-  [...appUsers].sort((a,b)=>(b.seenAt||0)-(a.seenAt||0)).forEach(u=>{const key=(u.name||'').toLowerCase().trim();if(!seenNames[key])seenNames[key]=u;});
-  let unique=Object.values(seenNames).sort((a,b)=>(b.seenAt||0)-(a.seenAt||0));
-  const q=(document.getElementById('userSearchInput')?.value||'').toLowerCase().trim();
-  if(q)unique=unique.filter(u=>(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q));
-  document.getElementById('dbCount').textContent=unique.length+' user'+(unique.length!==1?'s':'');
-  if(!appUsers.length){list.innerHTML='';empty.style.display='block';return;}
-  if(!unique.length){list.innerHTML='<div class="empty-state" style="display:block;">No users match your search ☀️</div>';empty.style.display='none';return;}
-  empty.style.display='none';
-  const provStyle={GOOGLE:'background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.4);color:#4285F4;',IOS:'background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:#fff;',FACEBOOK:'background:rgba(66,103,178,0.15);border:1px solid rgba(66,103,178,0.4);color:#4267B2;',EMAIL:'background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);',SYSTEM:'background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);'};
-  list.innerHTML=unique.map(u=>{
-    const badge=u.badge||getUserBadge(u.name),badgeCls=getBadgeClass(badge);
-    const crmMatch=people.find(p=>(u.email&&p.email===u.email)||(p.name.toLowerCase()===u.name.toLowerCase()));
-    const crmIdDisp=crmMatch?getPersonCRMIdDisplay(crmMatch):'—';
-    const allLogs=auditLogData.filter(e=>e.actor===u.name);
-    const topLogs=allLogs.slice(0,10);const hasMore=allLogs.length>10;
-    const logRowHTML=(e)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,204,0,0.05);"><span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#fff;">${esc(e.action)}</span>${e.ref?`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.4);">${esc(e.ref)}</span>`:''}<span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span></div>`;
-    return`<div class="db-user-card" onclick="toggleDbDetail(${u.id})">
-      <div class="db-user-grid">
-        <div class="db-avatar">👤</div>
-        <div>
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <div class="db-user-name">${esc(u.name)}</div>
-            <span class="badge-chip ${badgeCls}">${badge}</span>
-            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.5);">${crmIdDisp}</span>
-            ${crmMatch?`<div class="crm-bubble" onclick="event.stopPropagation();openCRMFromUser('${esc(u.name)}','${esc(u.email||'')}')" style="font-size:8px;padding:2px 7px;"><span class="crm-dot"></span>CRM</div>`:''}
-            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 8px;${provStyle[u.provider]||provStyle.EMAIL}">${u.provider}</span>
-          </div>
-          <div class="db-last-seen">Last seen: ${timeSince(u.seenAt)}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;"><div class="db-live-dot"></div></div>
-      </div>
-      <div class="db-user-detail" id="dbdetail-${u.id}">
-        ${topLogs.length?`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:8px;">Recent Activity (🔥 Firebase)</div><div>${topLogs.map(logRowHTML).join('')}</div>${hasMore?`<div style="display:none;" id="dbact-more-${u.id}">${allLogs.slice(10).map(logRowHTML).join('')}</div><button onclick="event.stopPropagation();toggleAllActivity(${u.id},${allLogs.length})" id="dbact-btn-${u.id}" class="btn btn-ghost btn-sm" style="margin-top:8px;font-size:10px;letter-spacing:2px;">▾ Show all ${allLogs.length} entries</button>`:''}<div style="margin-top:12px;"></div>`:''}
-        <div class="fg"><label class="fl">Notes (private)</label><textarea class="fta" id="unotes-${u.id}" style="min-height:60px;" placeholder="Internal notes…">${esc(u.notes||'')}</textarea></div>
-        <div style="display:flex;gap:8px;margin-top:6px;"><button class="btn btn-fill btn-sm" onclick="event.stopPropagation();updateUserNotes(${u.id})">Save Notes</button><button class="btn btn-red btn-sm" onclick="event.stopPropagation();deleteUser(${u.id})">Delete</button></div>
-      </div>
-    </div>`;
-  }).join('');
-  updateDbStats();
-}
-
 function toggleAllActivity(userId,total){const more=document.getElementById('dbact-more-'+userId),btn=document.getElementById('dbact-btn-'+userId);if(!more||!btn)return;const expanded=more.style.display!=='none';more.style.display=expanded?'none':'block';btn.textContent=expanded?`▾ Show all ${total} entries`:'▴ Collapse';}
 
 // ══ SHOP EXPORT ══
@@ -1572,9 +1580,397 @@ document.addEventListener('click',e=>{
   if(e.target===document.getElementById('confirmModal'))closeConfirmModal();
 });
 
+// ══ DB VIEW TOGGLE ══
+function switchDbView(view, btn) {
+  ['log','users','lookup'].forEach(v => {
+    document.getElementById('dbView' + v.charAt(0).toUpperCase() + v.slice(1)).style.display = v === view ? 'block' : 'none';
+  });
+  document.querySelectorAll('.db-view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (view === 'users') renderUsers();
+  if (view === 'lookup') runDbLookup();
+}
+
+// ══ AUDIT LOG — MONTHLY SYSTEM ══
+// auditLogData holds ALL entries from Firestore (last 500)
+// We filter to current month by default; archived months stored in Firestore as auditArchive/YYYY-MM
+let _auditViewMonth = null; // null = current month
+let _auditViewYear  = null;
+let _archivedLogData = []; // when viewing a past month
+
+function getCurrentMonthKey() {
+  const now = new Date();
+  return now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+}
+function getMonthLabel(key) {
+  const [y, m] = key.split('-');
+  return new Date(parseInt(y), parseInt(m)-1, 1).toLocaleString('en-US',{month:'long',year:'numeric'});
+}
+
+// Build archive month buttons from available archived logs in Firestore
+async function loadArchiveMonthList() {
+  const sel = document.getElementById('archiveSelector');
+  if (!sel) return;
+  try {
+    const snap = await db.collection('auditArchive').get();
+    const months = [];
+    snap.forEach(doc => months.push(doc.id));
+    months.sort().reverse();
+
+    const currentKey = getCurrentMonthKey();
+    let html = '<span class="archive-sel-label">📅 Period:</span>';
+    // Always show current month button
+    html += `<button class="archive-month-btn ${!_auditViewMonth ? 'active' : ''}" onclick="selectAuditMonth(null)">${getMonthLabel(currentKey)} (Live)</button>`;
+    months.forEach(key => {
+      html += `<button class="archive-month-btn ${_auditViewMonth === key ? 'active' : ''}" onclick="selectAuditMonth('${key}')">${getMonthLabel(key)}</button>`;
+    });
+    sel.innerHTML = html;
+  } catch(e) {
+    console.warn('Archive list load failed:', e);
+    const currentKey = getCurrentMonthKey();
+    sel.innerHTML = `<span class="archive-sel-label">📅 Period:</span><button class="archive-month-btn active" onclick="selectAuditMonth(null)">${getMonthLabel(currentKey)} (Live)</button>`;
+  }
+}
+
+async function selectAuditMonth(monthKey) {
+  _auditViewMonth = monthKey;
+  auditActionFilter = null;
+  document.getElementById('activeFilterChip').style.display = 'none';
+  document.getElementById('actionFilterLabel').textContent = '⊞ Sort by Action';
+  document.querySelectorAll('.archive-month-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (!monthKey) {
+    // Current month — use live auditLogData filtered to this month
+    _archivedLogData = [];
+    renderAuditLog();
+    return;
+  }
+  // Load archived month from Firestore
+  showSync('syncing', 'Loading ' + getMonthLabel(monthKey) + '…');
+  try {
+    const doc = await db.collection('auditArchive').doc(monthKey).get();
+    _archivedLogData = doc.exists ? (doc.data().entries || []) : [];
+    showSync('synced', 'Loaded ✓');
+  } catch(e) {
+    console.error('Archive load failed:', e);
+    _archivedLogData = [];
+    showSync('error', 'Load failed');
+  }
+  renderAuditLog();
+}
+
+// Archive entries older than current month to Firestore + remove from live collection
+async function archiveOldEntries() {
+  const currentKey = getCurrentMonthKey();
+  const [cy, cm] = currentKey.split('-').map(Number);
+  const cutoff = new Date(cy, cm-1, 1).getTime(); // start of current month
+
+  const toArchive = auditLogData.filter(e => e.ts < cutoff);
+  if (!toArchive.length) return;
+
+  // Group by month key
+  const byMonth = {};
+  toArchive.forEach(e => {
+    const d = new Date(e.ts);
+    const key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    if (!byMonth[key]) byMonth[key] = [];
+    byMonth[key].push(e);
+  });
+
+  // Write each month to auditArchive collection
+  for (const [key, entries] of Object.entries(byMonth)) {
+    try {
+      // Merge with existing if already partially archived
+      const existing = await db.collection('auditArchive').doc(key).get();
+      const existingEntries = existing.exists ? (existing.data().entries || []) : [];
+      const allEntries = [...existingEntries, ...entries];
+      // Deduplicate by id
+      const seen = new Set(); const unique = [];
+      allEntries.forEach(e => { if (!seen.has(String(e.id))) { seen.add(String(e.id)); unique.push(e); } });
+      unique.sort((a,b) => b.ts - a.ts);
+      await db.collection('auditArchive').doc(key).set({ entries: unique.map(e => fsSafe(e)), month: key, archivedAt: Date.now() });
+    } catch(err) { console.error('Archive write failed for', key, err); }
+  }
+
+  // Delete archived entries from live auditLog collection
+  const batch = db.batch();
+  toArchive.forEach(e => batch.delete(db.collection('auditLog').doc(String(e.id))));
+  try { await batch.commit(); } catch(err) { console.error('Batch delete failed:', err); }
+
+  loadArchiveMonthList();
+}
+
+async function exportMonthLog() {
+  const key = _auditViewMonth || getCurrentMonthKey();
+  const entries = _auditViewMonth ? _archivedLogData : getFilteredAuditEntries();
+  const label = getMonthLabel(key);
+  const data = { month: label, period: key, exported_at: new Date().toISOString(), total_entries: entries.length, entries };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `OASENSE-AUDIT-${key}.json`; a.click();
+  URL.revokeObjectURL(url);
+  if (currentUser) addAuditEntry(currentUser.name, 'Updated Store Settings', 'Exported audit log: ' + label);
+}
+
+// ══ DB LOOKUP ══
+function runDbLookup() {
+  const q = (document.getElementById('dbLookupInput')?.value || '').trim().toLowerCase();
+  const col = document.getElementById('dbLookupCollection')?.value || 'all';
+  const results = document.getElementById('dbLookupResults');
+  const empty = document.getElementById('dbLookupEmpty');
+  if (!results) return;
+
+  if (!q) { results.innerHTML = ''; empty.style.display = 'none'; return; }
+
+  const collections = {
+    shopItems: { label: '🛍️ Shop Item', data: shopItems, fields: ['title','desc','id','category','subcategory','status'] },
+    bookings:  { label: '📅 Booking',   data: bookings,  fields: ['name','type','date','phone','email','ig','notes','id'] },
+    crm:       { label: '👥 CRM',       data: people,    fields: ['name','phone','email','ig','addr','notes','cat','id','crmId'] },
+    orders:    { label: '🧾 Order',     data: orders,    fields: ['name','phone','date','id'] },
+    invoices:  { label: '💳 Invoice',   data: invoices,  fields: ['client','product','date','id','status'] },
+    testimonials:{ label: '⭐ Review',  data: testimonials, fields: ['author','body','date','id'] },
+    blogPosts: { label: '✍️ Blog Post', data: blogPosts, fields: ['title','content','author','date','id'] },
+    appUsers:  { label: '👤 User',      data: appUsers,  fields: ['name','email','provider','id'] },
+  };
+
+  const searchCols = col === 'all' ? Object.entries(collections) : [[col, collections[col]]].filter(x=>x[1]);
+  const hits = [];
+
+  searchCols.forEach(([colKey, colDef]) => {
+    if (!colDef) return;
+    colDef.data.forEach(item => {
+      const matchFields = colDef.fields.filter(f => {
+        const v = item[f];
+        if (!v) return false;
+        // Also search inside items array for orders
+        if (f === 'items' && Array.isArray(v)) return v.some(x => String(x.name||'').toLowerCase().includes(q));
+        return String(v).toLowerCase().includes(q);
+      });
+      // Also search order items
+      if (colKey === 'orders' && item.items) {
+        const hasItem = item.items.some(x => String(x.name||'').toLowerCase().includes(q));
+        if (hasItem && !matchFields.includes('items')) matchFields.push('items (line items)');
+      }
+      if (matchFields.length) hits.push({ colKey, label: colDef.label, item, matchFields });
+    });
+  });
+
+  if (!hits.length) { results.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  results.innerHTML = hits.map(h => {
+    const item = h.item;
+    const allFields = Object.entries(item).filter(([k,v]) => v !== null && v !== '' && k !== 'img' && k !== 'img2');
+    const fieldRows = allFields.map(([k,v]) => {
+      const isMatch = h.matchFields.includes(k);
+      const display = Array.isArray(v) ? v.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(', ') : String(v);
+      return `<div class="db-lookup-field">
+        <span class="db-lookup-field-lbl">${k}</span>
+        <span style="color:${isMatch ? 'var(--hot)' : 'rgba(255,255,255,0.7)'};">${esc(display.substring(0,200))}${display.length>200?'…':''}</span>
+      </div>`;
+    }).join('');
+    return `<div class="db-lookup-result">
+      <div class="db-lookup-key">${h.label} &nbsp;·&nbsp; REF #${item.id || '—'}</div>
+      ${fieldRows}
+    </div>`;
+  }).join('');
+}
+
+// ══ CRM DEDUPLICATION ══
+// savePerson now checks for existing name match before adding
+async function savePerson(){
+  const name = document.getElementById('ap-name').value.trim();
+  if (!name) { alert('Name is required.'); return; }
+  // Check for duplicate name (case-insensitive)
+  const existing = people.find(p => p.name.toLowerCase() === name.toLowerCase());
+  if (existing) {
+    if (!confirm(\`"${name}" already exists in CRM. Add anyway as a separate entry?\`)) return;
+  }
+  const newPerson = {
+    id: Math.floor(Date.now()),
+    cat: document.getElementById('ap-cat').value,
+    name, age: document.getElementById('ap-age').value || '',
+    phone: document.getElementById('ap-phone').value.trim(),
+    email: document.getElementById('ap-email').value.trim(),
+    ig: document.getElementById('ap-ig').value.trim(),
+    addr: document.getElementById('ap-addr').value.trim(),
+    notes: document.getElementById('ap-notes').value.trim(),
+    rating: ''
+  };
+  await savePersonFS(newPerson);
+  closeAddPerson();
+  ['ap-name','ap-age','ap-phone','ap-email','ap-ig','ap-addr','ap-notes'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ══ UPDATED renderUsers — strictly deduplicated, one card per unique person ══
+function renderUsers(){
+  const list = document.getElementById('usersList'), empty = document.getElementById('usersEmpty');
+  updateUsersBadge();
+
+  // Deduplicate: keep only the most-recently-seen record per unique name (case-insensitive)
+  const seenMap = {};
+  [...appUsers].forEach(u => {
+    const key = (u.name || '').toLowerCase().trim();
+    if (!key) return;
+    if (!seenMap[key] || (u.seenAt || 0) > (seenMap[key].seenAt || 0)) seenMap[key] = u;
+  });
+  let unique = Object.values(seenMap).sort((a,b) => (b.seenAt||0) - (a.seenAt||0));
+
+  const q = (document.getElementById('userSearchInput')?.value || '').toLowerCase().trim();
+  if (q) unique = unique.filter(u => (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q));
+
+  document.getElementById('dbCount').textContent = unique.length + ' user' + (unique.length !== 1 ? 's' : '');
+
+  if (!appUsers.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  if (!unique.length) { list.innerHTML = '<div class="empty-state" style="display:block;">No users match your search ☀️</div>'; empty.style.display = 'none'; return; }
+  empty.style.display = 'none';
+
+  const provStyle = {
+    GOOGLE:   'background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.4);color:#4285F4;',
+    IOS:      'background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:#fff;',
+    FACEBOOK: 'background:rgba(66,103,178,0.15);border:1px solid rgba(66,103,178,0.4);color:#4267B2;',
+    EMAIL:    'background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);',
+    SYSTEM:   'background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);'
+  };
+
+  list.innerHTML = unique.map(u => {
+    const badge = u.badge || getUserBadge(u.name);
+    const badgeCls = getBadgeClass(badge);
+    const crmMatch = people.find(p => (u.email && p.email === u.email) || p.name.toLowerCase() === u.name.toLowerCase());
+    const crmIdDisp = crmMatch ? getPersonCRMIdDisplay(crmMatch) : '—';
+    const allLogs = auditLogData.filter(e => e.actor === u.name);
+    const topLogs = allLogs.slice(0, 8);
+    const hasMore = allLogs.length > 8;
+    const logRow = e => `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,204,0,0.05);">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#fff;">${esc(e.action)}</span>
+      ${e.ref ? `<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.4);">${esc(e.ref)}</span>` : ''}
+      <span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span>
+    </div>`;
+
+    return `<div class="db-user-card" onclick="toggleDbDetail(${u.id})">
+      <div class="db-user-grid">
+        <div class="db-avatar">👤</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <div class="db-user-name">${esc(u.name)}</div>
+            <span class="badge-chip ${badgeCls}">${badge}</span>
+            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.5);">${crmIdDisp}</span>
+            ${crmMatch ? `<div class="crm-bubble" onclick="event.stopPropagation();openCRMFromUser('${esc(u.name)}','${esc(u.email||'')}')" style="font-size:8px;padding:2px 7px;"><span class="crm-dot"></span>CRM</div>` : ''}
+            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;padding:2px 8px;${provStyle[u.provider]||provStyle.EMAIL}">${u.provider}</span>
+          </div>
+          <div class="db-last-seen">Last seen: ${timeSince(u.seenAt)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;"><div class="db-live-dot"></div></div>
+      </div>
+      <div class="db-user-detail" id="dbdetail-${u.id}">
+        ${topLogs.length ? `
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:8px;">Recent Activity</div>
+        <div>${topLogs.map(logRow).join('')}</div>
+        ${hasMore ? `<div style="display:none;" id="dbact-more-${u.id}">${allLogs.slice(8).map(logRow).join('')}</div>
+        <button onclick="event.stopPropagation();toggleAllActivity(${u.id},${allLogs.length})" id="dbact-btn-${u.id}" class="btn btn-ghost btn-sm" style="margin-top:8px;font-size:10px;letter-spacing:2px;">▾ Show all ${allLogs.length} entries</button>` : ''}
+        <div style="margin-top:12px;"></div>` : ''}
+        <div class="fg"><label class="fl">Notes (private)</label><textarea class="fta" id="unotes-${u.id}" style="min-height:60px;" placeholder="Internal notes…">${esc(u.notes||'')}</textarea></div>
+        <div style="display:flex;gap:8px;margin-top:6px;">
+          <button class="btn btn-fill btn-sm" onclick="event.stopPropagation();updateUserNotes(${u.id})">Save Notes</button>
+          <button class="btn btn-red btn-sm" onclick="event.stopPropagation();deleteUser(${u.id})">Delete</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  updateDbStats();
+}
+
+// ══ UPDATED renderAuditLog — month-aware ══
+function getFilteredAuditEntries() {
+  // Decide which source to use
+  let entries;
+  if (_auditViewMonth) {
+    entries = [..._archivedLogData];
+  } else {
+    // Current month only
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    entries = auditLogData.filter(e => (e.ts || 0) >= monthStart);
+  }
+  // Tab filter
+  if (auditTabFilter === 'admin') entries = entries.filter(e => {
+    const b = e.badge||'USER'; return e.type==='admin'||isAdminAction(e.action)||['DEV','OWNER','HACKER'].includes(b);
+  });
+  else if (auditTabFilter === 'users') entries = entries.filter(e => {
+    const b = e.badge||'USER'; return b==='USER' && (e.type==='user'||USER_ACTIONS.includes(e.action));
+  });
+  // Action filter
+  if (auditActionFilter) entries = entries.filter(e => e.action === auditActionFilter);
+  return entries;
+}
+
+function renderAuditLog(){
+  const container = document.getElementById('auditLog'), empty = document.getElementById('auditEmpty');
+  if (!container) return;
+  const entries = getFilteredAuditEntries();
+  document.getElementById('auditCountLabel').textContent = entries.length + ' entr' + (entries.length===1?'y':'ies');
+
+  if (!entries.length) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+
+  container.innerHTML = entries.map(e => {
+    const badge = e.badge||'USER', badgeCls = getBadgeClass(badge);
+    const isPrivileged = ['DEV','OWNER','HACKER'].includes(badge);
+    const isAdmin = isPrivileged || e.type==='admin' || isAdminAction(e.action);
+    const identityHTML = isPrivileged
+      ? `<div class="audit-actor">${esc(e.actor)}</div><div class="audit-identity-sub"><span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--red);text-transform:uppercase;">ADMIN</span><span class="audit-id-divider">|</span><span class="badge-chip ${badgeCls}" style="font-size:8px;padding:2px 6px;">${badge}</span></div>`
+      : `<div class="audit-actor">${esc(e.actor)}</div><div class="audit-identity-sub">${e.crmId?`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.6);">#${e.crmId}</span><span class="audit-id-divider">|</span>`:''}<span class="badge-chip ${badgeCls}" style="font-size:8px;padding:2px 6px;">${badge}</span></div>`;
+    return `<div class="audit-entry ${isAdmin?'admin-action':'user-action'}">
+      <div class="audit-left">${identityHTML}</div>
+      <div class="audit-vert-divider"></div>
+      <div class="audit-middle"><div class="audit-action-name">${esc(e.action)}</div>${e.ref?`<span class="audit-ref">${esc(e.ref)}</span>`:''}</div>
+      <div class="audit-time">${fmtTs(e.ts)}<br/><span style="font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ══ OVERRIDE MODAL — properly unlocked price/discount editing ══
+function openOverrideModal(){
+  document.getElementById('ov-user').value='';
+  document.getElementById('ov-pass').value='';
+  document.getElementById('ov-err').style.display='none';
+  document.getElementById('overrideAuthWrap').style.display='block';
+  document.getElementById('overrideEditWrap').style.display='none';
+  document.getElementById('overrideModal').classList.add('open');
+}
+function closeOverrideModal(){document.getElementById('overrideModal').classList.remove('open');}
+function checkOverrideAuth(){
+  const u=document.getElementById('ov-user').value.trim();
+  const p=document.getElementById('ov-pass').value;
+  // Allow any of the 3 admin logins
+  const valid = (u==='DEV'&&p==='test23')||(u==='KIARA'&&p==='duke23')||(u==='SOL'&&p==='sol23')||(u==='DEV'&&p==='mems01');
+  if(valid){
+    document.getElementById('overrideAuthWrap').style.display='none';
+    document.getElementById('overrideEditWrap').style.display='block';
+    document.getElementById('ov-price').value = _invPrice || '';
+    document.getElementById('ov-disc').value = _invDisc === '-' ? '' : _invDisc;
+  } else {
+    document.getElementById('ov-err').style.display='block';
+  }
+}
+function applyOverride(){
+  const p=parseFloat(document.getElementById('ov-price').value);
+  const d=document.getElementById('ov-disc').value.trim();
+  if (!isNaN(p) && p >= 0) _invPrice = p;
+  _invDisc = d || '-';
+  const dp = _invDisc!=='-' ? (_invPrice*(1-parseInt(_invDisc)/100)).toFixed(2) : null;
+  document.getElementById('invPriceDisplay').textContent = '$' + (dp || _invPrice.toFixed(2));
+  document.getElementById('invDiscDisplay').textContent = _invDisc!=='-' ? _invDisc+'%' : '—';
+  closeOverrideModal();
+}
+
 // ══ INIT ══
 updateSubcatOptions();
 initAIPrompts();
+// Archive old entries and load month list after login (called from startFirebaseListeners)
 </script>
 </body>
 </html>
