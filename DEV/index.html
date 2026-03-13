@@ -614,7 +614,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="login-box">
     <div class="login-logo">OASENSE</div>
     <div class="login-sub">// DEV PANEL — SECURE ACCESS</div>
-    <div class="login-firebase-badge">🔥 Firebase v8 · Realtime Sync Active</div>
+    <div class="login-firebase-badge">🔥 Firebase Realtime Sync · Live</div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;color:rgba(255,59,59,0.5);text-align:center;margin-bottom:16px;line-height:1.6;">If saves fail: set Firestore rules to<br/>allow read, write: if true;</div>
     <div class="login-attempts" id="loginAttempts"></div>
     <div class="fg"><label class="fl">User</label><input class="fi" id="loginUser" placeholder="USERNAME" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')doLogin()"/></div>
@@ -1217,30 +1217,65 @@ const USERS = {
 };
 
 function doLogin(){
-  const u=document.getElementById('loginUser').value.trim().toUpperCase();
-  const c=document.getElementById('loginCode').value.trim();
-  let match=null;
-  for(const k in USERS){ if(USERS[k].user===u&&(USERS[k].code===c||USERS[k].code===c.toLowerCase())){match={...USERS[k],_key:k};break;} }
-  if(match){
-    loginAttempts=0;currentUser=match;
-    document.getElementById('loginOverlay').style.display='none';
-    document.getElementById('appWrap').classList.add('unlocked');
-    document.getElementById('sbUserLabel').textContent='// '+match.role;
-    document.getElementById('sbAvatarEmoji').textContent=match.emoji;
-    const savedPhoto=localStorage.getItem('oas_photo_'+match._key);
-    if(savedPhoto){const img=document.createElement('img');img.src=savedPhoto;img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%;';document.getElementById('sbAvatar').innerHTML='';document.getElementById('sbAvatar').appendChild(img);}
-    const toast=document.getElementById('welcomeToast');toast.textContent=match.welcome;toast.className='welcome-toast '+(match.toastClass||'');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),3500);
-    startFirebaseListeners();
-    logUserSession(match);
-    startSessionTimeout();
-    setTimeout(()=>addAuditEntry(match.name,'Login',null),1000);
-  } else {
-    loginAttempts++;
-    const errEl=document.getElementById('loginErr'),attEl=document.getElementById('loginAttempts');
-    errEl.style.display='block';
-    if(loginAttempts===1){errEl.textContent='❌ Access declined.';attEl.style.display='none';}
-    else{errEl.textContent='❌ Access declined ('+loginAttempts+'×)';attEl.style.display='block';attEl.textContent='⚠️ '+(loginAttempts>=5?'Multiple failed attempts.':'Wrong username or code.');}
-    const box=document.querySelector('.login-box');box.style.animation='none';setTimeout(()=>{box.style.animation='shake .4s ease';},10);
+  try {
+    const u = document.getElementById('loginUser').value.trim().toUpperCase();
+    const c = document.getElementById('loginCode').value.trim();
+    let match = null;
+
+    // Check against all users — username must match, code is case-insensitive
+    for (const k in USERS) {
+      const U = USERS[k];
+      if (U.user === u && U.code.toLowerCase() === c.toLowerCase()) {
+        match = {...U, _key: k};
+        break;
+      }
+    }
+
+    if (match) {
+      loginAttempts = 0;
+      currentUser = match;
+      document.getElementById('loginOverlay').style.display = 'none';
+      document.getElementById('appWrap').classList.add('unlocked');
+      document.getElementById('sbUserLabel').textContent = '// ' + match.role;
+      document.getElementById('sbAvatarEmoji').textContent = match.emoji;
+      const savedPhoto = localStorage.getItem('oas_photo_' + match._key);
+      if (savedPhoto) {
+        const img = document.createElement('img');
+        img.src = savedPhoto;
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+        document.getElementById('sbAvatar').innerHTML = '';
+        document.getElementById('sbAvatar').appendChild(img);
+      }
+      const toast = document.getElementById('welcomeToast');
+      toast.textContent = match.welcome;
+      toast.className = 'welcome-toast ' + (match.toastClass || '');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+      startFirebaseListeners();
+      logUserSession(match);
+      startSessionTimeout();
+      setTimeout(() => addAuditEntry(match.name, 'Login', null), 1500);
+    } else {
+      loginAttempts++;
+      const errEl = document.getElementById('loginErr');
+      const attEl = document.getElementById('loginAttempts');
+      errEl.style.display = 'block';
+      if (loginAttempts === 1) {
+        errEl.textContent = '❌ Access declined.';
+        attEl.style.display = 'none';
+      } else {
+        errEl.textContent = '❌ Access declined (' + loginAttempts + '×)';
+        attEl.style.display = 'block';
+        attEl.textContent = '⚠️ ' + (loginAttempts >= 5 ? 'Multiple failed attempts.' : 'Wrong username or code.');
+      }
+      const box = document.querySelector('.login-box');
+      box.style.animation = 'none';
+      setTimeout(() => { box.style.animation = 'shake .4s ease'; }, 10);
+    }
+  } catch(err) {
+    console.error('doLogin error:', err);
+    document.getElementById('loginErr').textContent = '❌ Error: ' + err.message;
+    document.getElementById('loginErr').style.display = 'block';
   }
 }
 
@@ -1786,7 +1821,7 @@ async function savePerson(){
   // Check for duplicate name (case-insensitive)
   const existing = people.find(p => p.name.toLowerCase() === name.toLowerCase());
   if (existing) {
-    if (!confirm(\`"${name}" already exists in CRM. Add anyway as a separate entry?\`)) return;
+    if (!confirm(`"${name}" already exists in CRM. Add anyway as a separate entry?`)) return;
   }
   const newPerson = {
     id: Math.floor(Date.now()),
