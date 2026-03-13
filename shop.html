@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Shop — OASENSE.SHOP</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
-<!-- ✅ Supabase CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --hot:#FFCC00;--mag:#FF8800;--deep:#CC5500;
@@ -790,14 +788,6 @@ footer{background:#000;border-top:1px solid rgba(255,180,0,.2);padding:60px 40px
 
 <script>
 // ════════════════════════════════════════════════════════════════
-//  SUPABASE INIT
-// ════════════════════════════════════════════════════════════════
-const SUPABASE_URL = "https://smlfppydhwyqrudktzzr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_NmZR8KThSmcc-yiOz7kV7Q_Nv0XZK9V";
-// ✅ Correct: access via the global supabaseJs object from the CDN
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-// ════════════════════════════════════════════════════════════════
 //  LOCAL STORAGE HELPERS (cart only)
 // ════════════════════════════════════════════════════════════════
 const OAS = {
@@ -1262,6 +1252,178 @@ loadItems();
 subscribeToProducts();
 updateCartBadge();
 renderSubcats();
+  function exportShopDatabase() {
+  const discountLabel = (d) => (!d || d === '-') ? 'No Discount' : d + '% Off';
+  const badgeLabel = (b) => {
+    if (!b || b === '-') return 'N/A';
+    if (b === 'New!') return 'NEW';
+    if (b === 'Hot!') return 'HOT';
+    if (b === '%') return '%';
+    return b.toUpperCase();
+  };
+
+  // Only export LIVE items to liveshop.json
+  const liveItems = shopItems.filter(x => x.status === 'live');
+
+  const database = {
+    exported_at: new Date().toISOString(),
+    total_items: liveItems.length,
+    shop_items: liveItems.map(item => {
+      const priceNum = parseFloat(item.price) || 0;
+      const discNum = (item.discount && item.discount !== '-') ? parseInt(item.discount) : 0;
+      const discountedPrice = discNum > 0 ? (priceNum * (1 - discNum / 100)).toFixed(2) : null;
+      return {
+        id: item.id,
+        title: item.title || '',
+        description: item.desc || '',
+        category: {
+          main: item.category || 'other',
+          subcategory: item.subcategory || 'Other'
+        },
+        pricing: {
+          base_price: '$' + priceNum.toFixed(2),
+          discount: discountLabel(item.discount),
+          discounted_price: discountedPrice ? '$' + discountedPrice : null,
+          discount_percent: discNum || null,
+          is_free: discNum === 100
+        },
+        badge: badgeLabel(item.badge),
+        images: {
+          primary: item.img || null,
+          secondary: item.img2 || null
+        },
+        status: 'LIVE',
+        created_at: item.createdAt || null
+      };
+    })
+  };
+
+  const json = JSON.stringify(database, null, 2);
+
+  // Download as file
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'liveshop.json';
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // Show copy modal for GitHub
+  showExportCopyModal(json, liveItems.length);
+
+  if (currentUser) {
+    addAuditEntry(currentUser.name, 'Updated Store Settings',
+      'Exported liveshop.json (' + liveItems.length + ' live items)');
+  }
+}
+
+function showExportCopyModal(json, count) {
+  const existing = document.getElementById('exportCopyModal');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'exportCopyModal';
+  overlay.className = 'modal-overlay open';
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:560px;">
+      <button class="modal-close" onclick="document.getElementById('exportCopyModal').remove()">×</button>
+      <div class="modal-title">📦 Deploy to Live Shop</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(0,255,136,0.7);margin-bottom:16px;text-transform:uppercase;">
+        ✓ ${count} live item${count !== 1 ? 's' : ''} ready to deploy
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,204,0,0.5);margin-bottom:10px;text-transform:uppercase;">Steps to publish:</div>
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;color:rgba(255,255,255,0.7);line-height:2;margin-bottom:16px;">
+        1. The file <strong style="color:var(--hot);">liveshop.json</strong> just downloaded<br/>
+        2. Go to your GitHub repo → <strong style="color:var(--hot);">OAS/database/</strong><br/>
+        3. Upload & commit <strong style="color:var(--hot);">liveshop.json</strong> (overwrite existing)<br/>
+        4. GitHub Pages rebuilds in ~60 seconds<br/>
+        5. Live shop auto-refreshes ✓
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.4);margin-bottom:8px;text-transform:uppercase;">Or copy the JSON directly:</div>
+      <textarea id="exportJsonTA" style="width:100%;height:120px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,204,0,0.25);color:rgba(255,255,255,0.6);font-family:'Share Tech Mono',monospace;font-size:10px;padding:10px;resize:vertical;letter-spacing:.5px;">${json.replace(/</g,'&lt;')}</textarea>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="btn btn-fill btn-sm" style="flex:1;" onclick="
+          const ta=document.getElementById('exportJsonTA');
+          ta.select();document.execCommand('copy');
+          this.textContent='✓ Copied!';setTimeout(()=>this.textContent='Copy JSON',2000);
+        ">Copy JSON</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('exportCopyModal').remove()">Done</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+  // ══ CONFIG ══
+const JSON_URL = 'https://merci-chi.github.io/OAS/database/liveshop.json';
+
+const OAS = {
+  get:(k,d=[])=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch{return d;}},
+  set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch{}}
+};
+const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+const SUBCATS = {
+  apparel:    ['All','Women','Men','Kids','Accessories','Other'],
+  digital:    ['All','Book','Podcast','Printables','Other'],
+  photography:['All','Cinematic Portraits','Brand / Business','Events','Video / Content','Other']
+};
+const EMOJIS = {apparel:'👕',digital:'💾',photography:'📸',other:'✨'};
+
+let allItems    = [];
+let activeTab   = 'all';
+let activeSubcat= 'All';
+let sortMode    = 'newest';
+let gridCols    = 3;
+let modalItem   = null;
+let bookingService = '';
+let cart = OAS.get('oas_cart_live', []);
+
+// ══ LOAD FROM JSON ══
+async function loadItems() {
+  try {
+    // Cache-busting so GitHub Pages always serves fresh JSON
+    const res = await fetch(JSON_URL + '?v=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    allItems = (data.shop_items || [])
+      .filter(item => item.status === 'LIVE')
+      .map(item => ({
+        id:          item.id,
+        title:       item.title || '',
+        desc:        item.description || '',
+        price:       (item.pricing?.base_price || '$0').replace('$', ''),
+        discount:    item.pricing?.discount_percent ? String(item.pricing.discount_percent) : '',
+        category:    item.category?.main || 'other',
+        subcategory: item.category?.subcategory || '',
+        badge:       normaliseBadge(item.badge),
+        img:         item.images?.primary || '',
+        img2:        item.images?.secondary || '',
+        sold:        0,
+        createdAt:   item.created_at || '',
+      }));
+
+    renderGrid();
+  } catch (err) {
+    console.error('Shop load error:', err);
+    document.getElementById('itemsGrid').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🌌</div>
+        <div class="empty-title">Shop Coming Soon</div>
+        <div class="empty-sub">We're stocking up — check back soon ☀️</div>
+      </div>`;
+  }
+}
+
+// Convert "NEW"→"New!", "HOT"→"Hot!", "%"→"%" from export format back to display format
+function normaliseBadge(b) {
+  if (!b || b === 'N/A') return '';
+  if (b === 'NEW') return 'New!';
+  if (b === 'HOT') return 'Hot!';
+  if (b === '%') return '%';
+  return b;
+}
 </script>
 </body>
 </html>
