@@ -5,7 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>OASENSE — DEV PANEL</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
-<style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "XXX",
+  appId: "XXX"
+};
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+</script><style>
 :root{
   --hot:#FFCC00;--mag:#FF8800;--deep:#CC5500;--hot2:#FFDD44;
   --void:#000005;--txt:#FFD6F5;--mute:#AA66CC;
@@ -459,6 +476,15 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="login-box">
     <div class="login-logo">OASENSE</div>
     <div class="login-sub">// DEV PANEL — SECURE ACCESS</div>
+    <button id="initDbBtn">Initialize Firestore Schema</button>
+
+<script>
+document.getElementById('initDbBtn').addEventListener('click', async () => {
+  console.log('🚀 Initializing Firestore Schema...');
+  await initializeSchema(); // make sure initializeSchema() from your script is loaded
+  console.log('✅ Schema Initialized!');
+});
+</script>
     <div class="login-attempts" id="loginAttempts"></div>
     <div class="fg"><label class="fl">User</label><input class="fi" id="loginUser" placeholder="USERNAME" autocomplete="off" autocapitalize="none" onkeydown="if(event.key==='Enter')doLogin()"/></div>
     <div class="fg"><label class="fl">Code</label><input class="fi" type="password" id="loginCode" placeholder="ACCESS CODE" onkeydown="if(event.key==='Enter')doLogin()"/></div>
@@ -1454,6 +1480,14 @@ function doLogin(){
     const box=document.querySelector('.login-box');
     box.style.animation='none';
     setTimeout(()=>{box.style.animation='shake .4s ease';},10);
+  }
+}
+  rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;  // everything open for development
+    }
   }
 }
 
