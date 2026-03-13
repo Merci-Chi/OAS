@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Shop — OASENSE.SHOP</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<!-- ✅ Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --hot:#FFCC00;--mag:#FF8800;--deep:#CC5500;
@@ -118,7 +120,6 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 }
 .tb-main::-webkit-scrollbar{display:none;}
 
-/* Main category tabs */
 .tab-row{display:flex;gap:3px;flex-shrink:0;}
 .tab{
   padding:8px 20px;background:transparent;
@@ -132,7 +133,6 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 
 .tb-sep{width:1px;height:30px;background:rgba(255,180,0,0.18);flex-shrink:0;margin:0 6px;}
 
-/* search */
 .tb-search{
   display:flex;align-items:center;gap:8px;
   background:rgba(255,180,0,0.04);
@@ -147,7 +147,6 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .tb-search input::placeholder{color:var(--mute);}
 .tb-search svg{flex-shrink:0;opacity:.5;}
 
-/* sort */
 .sort-wrap{position:relative;}
 .tb-sort{
   padding:8px 14px;background:rgba(255,180,0,0.04);
@@ -159,15 +158,10 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 }
 .tb-sort:hover{border-color:var(--hot);color:var(--hot);}
 .sort-dd{
-  position:absolute;
-  top:calc(100% + 2px);
-  right:0;
-  background:#080008;
-  border:1px solid var(--hot);
+  position:absolute;top:calc(100% + 2px);right:0;
+  background:#080008;border:1px solid var(--hot);
   box-shadow:0 8px 30px rgba(255,180,0,0.18);
-  display:none;
-  min-width:200px;
-  z-index:9999;
+  display:none;min-width:200px;z-index:9999;
 }
 .sort-wrap.open .sort-dd{display:block;}
 .sort-opt{
@@ -179,7 +173,6 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .sort-opt:last-child{border-bottom:none;}
 .sort-opt:hover,.sort-opt.on{color:var(--hot);background:rgba(255,180,0,0.06);}
 
-/* grid toggle */
 .grid-toggle{display:flex;gap:3px;flex-shrink:0;}
 .gtb{
   width:34px;height:34px;background:transparent;
@@ -194,11 +187,7 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .tb-count span{color:var(--hot);}
 
 /* ── SUBCATEGORY ROW ── */
-.subcat-bar{
-  background:rgba(0,0,5,0.9);
-  border-bottom:1px solid rgba(255,180,0,0.1);
-  display:none;
-}
+.subcat-bar{background:rgba(0,0,5,0.9);border-bottom:1px solid rgba(255,180,0,0.1);display:none;}
 .subcat-bar.visible{display:block;}
 .subcat-inner{
   max-width:1120px;margin:0 auto;
@@ -218,6 +207,18 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 
 /* ── MAIN ── */
 .shop-body{max-width:1120px;margin:0 auto;padding:40px 40px 100px;}
+
+/* ── LOADING ── */
+.loading-state{
+  grid-column:1/-1;padding:80px 20px;text-align:center;
+}
+.loading-spinner{
+  width:48px;height:48px;border:2px solid rgba(255,180,0,0.2);
+  border-top-color:var(--hot);border-radius:50%;
+  animation:spin 0.8s linear infinite;margin:0 auto 20px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);letter-spacing:3px;text-transform:uppercase;}
 
 /* ── GRID ── */
 .items-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;transition:all .3s;}
@@ -240,7 +241,6 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .card:hover{border-color:var(--hot);box-shadow:0 0 24px rgba(255,180,0,0.12),inset 0 0 20px rgba(255,180,0,0.02);}
 .card:hover::before{opacity:1;}
 
-/* image flip */
 .card-img{
   aspect-ratio:1;position:relative;overflow:hidden;
   background:rgba(255,180,0,0.03);
@@ -259,17 +259,14 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
   display:flex;align-items:center;justify-content:center;
   font-size:64px;
 }
-.card-face.front{}
 .card-face.back{
   transform:rotateY(180deg);
   background:rgba(255,180,0,0.04);
   border:1px solid rgba(255,180,0,0.1);
 }
 .card-face img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
-.card-face.front .no-img-emoji,
-.card-face.back .no-img-emoji{font-size:64px;position:relative;}
+.card-face.front .no-img-emoji,.card-face.back .no-img-emoji{font-size:64px;position:relative;}
 
-/* badges */
 .badge-circle{
   position:absolute;top:10px;left:10px;
   width:44px;height:44px;border-radius:50%;
@@ -284,15 +281,13 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .badge-pct{background:radial-gradient(circle,#00ff88,#007744);box-shadow:0 0 12px rgba(0,255,136,.5);}
 .badge-ltd{background:radial-gradient(circle,#cc00ff,#6600cc);box-shadow:0 0 12px rgba(204,0,255,.5);}
 
-/* quick actions overlay */
 .card-actions{
   position:absolute;bottom:0;left:0;right:0;
   background:linear-gradient(to top, rgba(0,0,5,0.9) 0%, transparent 100%);
   padding:40px 14px 14px;
   opacity:0;transform:translateY(8px);
   transition:all .25s ease;
-  display:flex;gap:8px;
-  z-index:5;
+  display:flex;gap:8px;z-index:5;
 }
 .card:hover .card-actions{opacity:1;transform:translateY(0);}
 .qa-btn{
@@ -311,7 +306,6 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 }
 .qa-wish:hover,.qa-wish.wishlisted{border-color:var(--hot);color:var(--hot);}
 
-/* card body */
 .card-body{padding:18px 18px 22px;flex:1;display:flex;flex-direction:column;}
 .card-tag{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(255,180,0,0.5);text-transform:uppercase;margin-bottom:6px;}
 .card-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;line-height:1.2;flex:1;}
@@ -329,7 +323,6 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 }
 .add-btn:hover{background:var(--hot);color:#000;box-shadow:0 0 15px var(--hot);}
 
-/* LIST VIEW */
 .items-grid.cols-1 .card{flex-direction:row;height:auto;}
 .items-grid.cols-1 .card-img{width:180px;aspect-ratio:unset;height:180px;flex-shrink:0;}
 .items-grid.cols-1 .card-actions{display:none;}
@@ -337,12 +330,13 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .items-grid.cols-1 .card-name{font-size:22px;}
 .items-grid.cols-1 .card-desc{display:block;}
 
-/* PHOTOGRAPHY card — no price */
 .card.photography .card-price{display:none;}
 .card.photography .add-btn{display:none;}
 .card.photography .qa-btn{background:rgba(255,180,0,0.9);}
 
-/* empty state */
+.card-img-inner.no-flip{transform:none !important;}
+.card:hover .card-img-inner.no-flip{transform:none !important;}
+
 .empty-state{
   grid-column:1/-1;padding:80px 20px;
   text-align:center;
@@ -390,7 +384,6 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .checkout-btn:hover{background:var(--mag);box-shadow:0 0 30px rgba(255,180,0,0.4);}
 .cart-note{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;margin-top:10px;text-align:center;line-height:1.8;}
 
-/* cart fab */
 .cart-fab{
   position:fixed;bottom:100px;right:24px;z-index:6000;
   width:52px;height:52px;border-radius:50%;
@@ -423,8 +416,7 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
   max-width:860px;width:100%;
   max-height:90vh;overflow-y:auto;
   box-shadow:0 0 60px rgba(255,180,0,0.15);
-  animation:mFadeIn .3s ease;
-  position:relative;
+  animation:mFadeIn .3s ease;position:relative;
 }
 @keyframes mFadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 .modal-close{
@@ -445,8 +437,7 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .modal-img-inner{
   width:100%;height:100%;
   transform-style:preserve-3d;
-  transition:transform .6s ease;
-  position:relative;
+  transition:transform .6s ease;position:relative;
 }
 .modal-img-wrap:hover .modal-img-inner{transform:rotateY(180deg);}
 .modal-face{
@@ -486,12 +477,7 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
 .modal-add::before{content:'';position:absolute;inset:0;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1;}
 .modal-add:hover{color:#000;box-shadow:0 0 24px var(--hot);}
 .modal-add:hover::before{transform:scaleX(1);}
-.card-img-inner.no-flip{
-  transform:none !important;
-}
-.card:hover .card-img-inner.no-flip{
-  transform:none !important;
-}
+
 /* ── BOOKING MODAL ── */
 .book-ov{
   position:fixed;inset:0;background:rgba(0,0,5,0.93);
@@ -503,8 +489,7 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
   background:#000;border:1px solid rgba(255,180,0,0.4);
   max-width:540px;width:100%;
   box-shadow:0 0 80px rgba(255,180,0,0.18);
-  animation:mFadeIn .3s ease;
-  position:relative;overflow:hidden;
+  animation:mFadeIn .3s ease;position:relative;overflow:hidden;
 }
 .book-box::before{
   content:'';position:absolute;inset:0;
@@ -535,8 +520,7 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
   color:var(--txt);font-family:'Share Tech Mono',monospace;
   font-size:12px;letter-spacing:1px;
   padding:12px 14px;outline:none;
-  transition:border-color .2s;resize:none;
-  -webkit-appearance:none;
+  transition:border-color .2s;resize:none;-webkit-appearance:none;
 }
 .book-field input:focus,.book-field textarea:focus,.book-field select:focus{border-color:var(--hot);}
 .book-field select option{background:#080008;color:var(--txt);}
@@ -545,8 +529,7 @@ nav.shrunk{border-bottom-color:rgba(255,180,0,0.5);}
   border:1px solid var(--hot);color:var(--hot);
   font-family:'Black Ops One',sans-serif;font-size:18px;
   letter-spacing:3px;text-transform:uppercase;
-  cursor:pointer;transition:all .25s;
-  position:relative;overflow:hidden;
+  cursor:pointer;transition:all .25s;position:relative;overflow:hidden;
 }
 .book-send::before{content:'';position:absolute;inset:0;background:var(--hot);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:-1;}
 .book-send:hover{color:#000;box-shadow:0 0 24px var(--hot);}
@@ -664,13 +647,13 @@ footer{background:#000;border-top:1px solid rgba(255,180,0,.2);padding:60px 40px
         <span id="sortLabel">Sort: Newest</span>
         <span>▾</span>
       </button>
-  <div class="sort-dd">
-  <div class="sort-opt on" onclick="setSort('newest',this)">Sort: Newest</div>
-  <div class="sort-opt" onclick="setSort('bestselling',this)">Sort: Bestselling</div>
-  <div class="sort-opt" onclick="setSort('promo',this)">Sort: Promo</div>
-  <div class="sort-opt" onclick="setSort('priceLow',this)">Sort: Price ↓ (low → high)</div>
-  <div class="sort-opt" onclick="setSort('priceHigh',this)">Sort: Price ↑ (high → high)</div>
-</div>
+      <div class="sort-dd">
+        <div class="sort-opt on" onclick="setSort('newest',this)">Sort: Newest</div>
+        <div class="sort-opt" onclick="setSort('bestselling',this)">Sort: Bestselling</div>
+        <div class="sort-opt" onclick="setSort('promo',this)">Sort: Promo</div>
+        <div class="sort-opt" onclick="setSort('priceLow',this)">Sort: Price ↓ (low → high)</div>
+        <div class="sort-opt" onclick="setSort('priceHigh',this)">Sort: Price ↑ (high → low)</div>
+      </div>
     </div>
     <div class="grid-toggle">
       <button class="gtb on" id="gtb3" onclick="setGrid(3)" title="3 columns">⊞</button>
@@ -683,14 +666,18 @@ footer{background:#000;border-top:1px solid rgba(255,180,0,.2);padding:60px 40px
 
 <!-- SUBCATEGORY BAR -->
 <div class="subcat-bar" id="subcatBar">
-  <div class="subcat-inner" id="subcatInner">
-    <!-- filled by JS -->
-  </div>
+  <div class="subcat-inner" id="subcatInner"></div>
 </div>
 
 <!-- MAIN BODY -->
 <div class="shop-body">
-  <div class="items-grid cols-3" id="itemsGrid"></div>
+  <div class="items-grid cols-3" id="itemsGrid">
+    <!-- loading spinner shown on init -->
+    <div class="loading-state" style="grid-column:1/-1">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Loading shop...</div>
+    </div>
+  </div>
 </div>
 
 <!-- CART FAB -->
@@ -803,7 +790,15 @@ footer{background:#000;border-top:1px solid rgba(255,180,0,.2);padding:60px 40px
 
 <script>
 // ════════════════════════════════════════════════════════════════
-//  STORAGE HELPER
+//  SUPABASE INIT
+// ════════════════════════════════════════════════════════════════
+const SUPABASE_URL = "https://smlfppydhwyqrudktzzr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_NmZR8KThSmcc-yiOz7kV7Q_Nv0XZK9V";
+// ✅ Correct: access via the global supabaseJs object from the CDN
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ════════════════════════════════════════════════════════════════
+//  LOCAL STORAGE HELPERS (cart only)
 // ════════════════════════════════════════════════════════════════
 const OAS = {
   get:(k,d=[])=>{try{const v=localStorage.getItem(k);return v!==null?JSON.parse(v):d;}catch{return d;}},
@@ -819,7 +814,6 @@ const SUBCATS = {
   digital:    ['All','Book','Podcast','Printables','Other'],
   photography:['All','Cinematic Portraits','Brand / Business','Events','Video / Content','Other']
 };
-
 const EMOJIS = {apparel:'👕',digital:'💾',presets:'🎨',art:'🖼️',photography:'📸',other:'✨'};
 
 // ════════════════════════════════════════════════════════════════
@@ -835,11 +829,103 @@ let bookingService = '';
 let cart = OAS.get('oas_cart_live', []);
 
 // ════════════════════════════════════════════════════════════════
-//  LOAD ITEMS — only from oas_shop with status === 'live'
+//  LOAD ITEMS FROM SUPABASE
+//  Expects a "products" table with status column.
+//  Adjust column names below if yours differ.
 // ════════════════════════════════════════════════════════════════
-function loadItems(){
-  allItems = OAS.get('oas_shop', []).filter(x => x.status === 'live');
-  renderGrid();
+async function loadItems() {
+  try {
+    const { data, error } = await db
+      .from('products')
+      .select('*')
+      .eq('status', 'live')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    // Normalise Supabase column names → internal field names
+    // Adjust the mapping below to match your actual column names.
+    allItems = (data || []).map(row => ({
+      id:          row.id,
+      title:       row.title       || row.name || '',
+      desc:        row.desc        || row.description || '',
+      price:       row.price       || '0',
+      discount:    row.discount    || row.discount_percent || '',
+      category:    row.category    || 'other',
+      subcategory: row.subcategory || '',
+      badge:       row.badge       || '',
+      img:         row.img         || row.image_url || row.image || '',
+      img2:        row.img2        || row.image2_url || row.image2 || '',
+      sold:        row.sold        || 0,
+      status:      row.status,
+      createdAt:   row.created_at  || row.createdAt || '',
+    }));
+
+    renderGrid();
+  } catch (err) {
+    console.error('Supabase load error:', err);
+    document.getElementById('itemsGrid').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">⚠️</div>
+        <div class="empty-title">Could Not Load Shop</div>
+        <div class="empty-sub">Check your Supabase connection &amp; table name</div>
+      </div>`;
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+//  REAL-TIME SUBSCRIPTION — auto-update when products change
+// ════════════════════════════════════════════════════════════════
+function subscribeToProducts() {
+  db
+    .channel('products-live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'products' }, payload => {
+      const ev = payload.eventType;
+      if (ev === 'INSERT') {
+        const row = payload.new;
+        if (row.status === 'live') {
+          allItems.unshift(normaliseRow(row));
+          renderGrid();
+          toast('✨ New item just dropped!');
+        }
+      } else if (ev === 'UPDATE') {
+        const row = payload.new;
+        const idx = allItems.findIndex(x => String(x.id) === String(row.id));
+        if (row.status === 'live') {
+          const normalised = normaliseRow(row);
+          if (idx >= 0) allItems[idx] = normalised;
+          else allItems.unshift(normalised);
+        } else {
+          if (idx >= 0) allItems.splice(idx, 1);
+        }
+        renderGrid();
+        toast('🔄 Shop updated');
+      } else if (ev === 'DELETE') {
+        const id = payload.old.id;
+        allItems = allItems.filter(x => String(x.id) !== String(id));
+        renderGrid();
+        toast('🔄 Shop updated');
+      }
+    })
+    .subscribe();
+}
+
+function normaliseRow(row) {
+  return {
+    id:          row.id,
+    title:       row.title       || row.name || '',
+    desc:        row.desc        || row.description || '',
+    price:       row.price       || '0',
+    discount:    row.discount    || row.discount_percent || '',
+    category:    row.category    || 'other',
+    subcategory: row.subcategory || '',
+    badge:       row.badge       || '',
+    img:         row.img         || row.image_url || row.image || '',
+    img2:        row.img2        || row.image2_url || row.image2 || '',
+    sold:        row.sold        || 0,
+    status:      row.status,
+    createdAt:   row.created_at  || row.createdAt || '',
+  };
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -851,49 +937,32 @@ function renderGrid(){
 
   let items = allItems.filter(item => {
     const cat = (item.category||'other').toLowerCase();
-
-    // Main tab filter
     if(activeTab !== 'all' && cat !== activeTab) return false;
-
-    // Subcategory filter
     if(activeTab !== 'all' && activeSubcat !== 'All'){
       const sub = (item.subcategory||'Other');
       if(sub !== activeSubcat) return false;
     }
-
-    // Search
     if(search){
       const s = ((item.title||'')+' '+(item.desc||'')+' '+(cat)).toLowerCase();
       if(!s.includes(search)) return false;
     }
-
     return true;
   });
 
-  // Sort
   if(sortMode === 'newest'){
     items.sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
   } else if(sortMode === 'promo'){
-
-    
-    // Items with discount bubble to top
     items.sort((a,b)=>{
-      const ad = a.discount&&parseInt(a.discount)>0 ? 1 : 0;
-      const bd = b.discount&&parseInt(b.discount)>0 ? 1 : 0;
-      return bd - ad;
+      const ad = a.discount&&parseInt(a.discount)>0?1:0;
+      const bd = b.discount&&parseInt(b.discount)>0?1:0;
+      return bd-ad;
     });
   } else if(sortMode === 'bestselling'){
-    // Sort by sold count if available, else createdAt
     items.sort((a,b)=>(parseInt(b.sold)||0)-(parseInt(a.sold)||0));
-  } else if(sortMode === 'limited'){
-    // Items with 'limited' badge or tag bubble to top
-    items.sort((a,b)=>{
-      const al = (a.badge==='Ltd'||(a.tags||[]).includes('limited'))?1:0;
-      const bl = (b.badge==='Ltd'||(b.tags||[]).includes('limited'))?1:0;
-      return bl - al;
-    });
-  } else if(sortMode === 'name'){
-    items.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+  } else if(sortMode === 'priceLow'){
+    items.sort((a,b)=>parseFloat(a.price||0)-parseFloat(b.price||0));
+  } else if(sortMode === 'priceHigh'){
+    items.sort((a,b)=>parseFloat(b.price||0)-parseFloat(a.price||0));
   }
 
   document.getElementById('visCount').textContent = items.length;
@@ -917,14 +986,12 @@ function buildCard(item){
   const dp = hasDisc ? (parseFloat(item.price||0)*(1-parseInt(item.discount)/100)).toFixed(2) : null;
   const emoji = EMOJIS[cat] || '✨';
 
-  // Badge
   let badge = '';
   if(item.badge === 'New!')      badge=`<div class="badge-circle badge-new">NEW</div>`;
   else if(item.badge === 'Hot!') badge=`<div class="badge-circle badge-hot">HOT</div>`;
   else if(item.badge === '%')    badge=`<div class="badge-circle badge-pct">${item.discount||''}%<br/>OFF</div>`;
   else if(item.badge === 'Ltd')  badge=`<div class="badge-circle badge-ltd">LTD</div>`;
 
-  // Image faces
   const front = item.img
     ? `<img src="${_esc(item.img)}" alt="${_esc(item.title)}"/>`
     : `<span class="no-img-emoji">${emoji}</span>`;
@@ -932,7 +999,6 @@ function buildCard(item){
     ? `<img src="${_esc(item.img2)}" alt="${_esc(item.title)} back"/>`
     : `<span class="no-img-emoji" style="font-size:40px;opacity:.3">↺</span>`;
 
-  // Price / CTA section
   const priceSection = isPhoto
     ? ''
     : `<div class="card-foot">
@@ -941,14 +1007,14 @@ function buildCard(item){
           <div class="card-price">$${dp||item.price}</div>
           ${hasDisc?`<div class="card-disc">${item.discount}% OFF</div>`:''}
         </div>
-        <button class="add-btn" onclick="event.stopPropagation();quickAdd(${item.id})">+ Add</button>
+        <button class="add-btn" onclick="event.stopPropagation();quickAdd('${item.id}')">+ Add</button>
       </div>`;
 
   const qaBtn = isPhoto
     ? `<button class="qa-btn" onclick="event.stopPropagation();openBooking('${_esc(item.subcategory||item.title)}')">Book Now</button>`
-    : `<button class="qa-btn" onclick="event.stopPropagation();quickAdd(${item.id})">Add to Cart</button>`;
+    : `<button class="qa-btn" onclick="event.stopPropagation();quickAdd('${item.id}')">Add to Cart</button>`;
 
-  return `<div class="card${isPhoto?' photography':''}" onclick="openModal(getItem(${item.id}))">
+  return `<div class="card${isPhoto?' photography':''}" onclick="openModal(getItem('${item.id}'))">
     <div class="card-img">
       <div class="card-img-inner${item.img2 ? '' : ' no-flip'}">
         <div class="card-face front">${front}</div>
@@ -957,7 +1023,7 @@ function buildCard(item){
       ${badge}
       <div class="card-actions" onclick="event.stopPropagation()">
         ${qaBtn}
-        <button class="qa-wish" onclick="toggleWish(this,${item.id})" title="Wishlist">♥</button>
+        <button class="qa-wish" onclick="toggleWish(this,'${item.id}')" title="Wishlist">♥</button>
       </div>
     </div>
     <div class="card-body">
@@ -983,20 +1049,15 @@ function setTab(btn){
   renderSubcats();
   renderGrid();
 }
-
 function renderSubcats(){
   const bar = document.getElementById('subcatBar');
   const inner = document.getElementById('subcatInner');
-  if(activeTab === 'all' || !SUBCATS[activeTab]){
-    bar.classList.remove('visible');
-    return;
-  }
+  if(activeTab === 'all' || !SUBCATS[activeTab]){ bar.classList.remove('visible'); return; }
   bar.classList.add('visible');
   inner.innerHTML = SUBCATS[activeTab].map(s =>
     `<button class="sub-tab${s===activeSubcat?' on':''}" onclick="setSubcat('${s}',this)">${s}</button>`
   ).join('');
 }
-
 function setSubcat(name, btn){
   activeSubcat = name;
   document.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('on'));
@@ -1019,7 +1080,6 @@ function setSort(mode,btn){
 document.addEventListener('click',e=>{
   if(!e.target.closest('#sortWrap')) document.getElementById('sortWrap').classList.remove('open');
 });
-
 function setGrid(n){
   gridCols = n;
   document.getElementById('itemsGrid').className = 'items-grid cols-'+n;
@@ -1080,12 +1140,12 @@ function renderCart(){
         ${c.size?`<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);">Size: ${c.size}</div>`:''}
         <div class="ci-price">$${(parseFloat(dp)*c.qty).toFixed(2)}</div>
         <div class="ci-qty">
-          <button class="qty-btn" onclick="changeQty(${c.id},-1)">−</button>
+          <button class="qty-btn" onclick="changeQty('${c.id}',-1)">−</button>
           <span class="qty-num">${c.qty}</span>
-          <button class="qty-btn" onclick="changeQty(${c.id},1)">+</button>
+          <button class="qty-btn" onclick="changeQty('${c.id}',1)">+</button>
         </div>
       </div>
-      <button class="ci-remove" onclick="removeFromCart(${c.id})">×</button>
+      <button class="ci-remove" onclick="removeFromCart('${c.id}')">×</button>
     </div>`;
   }).join('');
   const total = cart.reduce((s,c)=>{
@@ -1107,18 +1167,14 @@ function openModal(item){
   const dp = hasDisc ? (parseFloat(item.price||0)*(1-parseInt(item.discount)/100)).toFixed(2) : null;
   const emoji = EMOJIS[cat] || '🎁';
 
-  // Front image
   const front = document.getElementById('modalImgFront');
   front.innerHTML = item.img ? `<img src="${_esc(item.img)}" alt="${_esc(item.title)}"/>` : emoji;
-
-  // Back image
   const back = document.getElementById('modalImgBack');
   back.innerHTML = item.img2 ? `<img src="${_esc(item.img2)}" alt="${_esc(item.title)} back"/>` : (item.img ? emoji : `<span style="opacity:.3;font-size:60px">↺</span>`);
 
   document.getElementById('modalTag').textContent = (item.subcategory||cat).toUpperCase();
   document.getElementById('modalName').textContent = item.title;
 
-  // Price / booking
   const priceRow = document.getElementById('modalPriceRow');
   const addBtn = document.getElementById('modalAddBtn');
   if(isPhoto){
@@ -1138,7 +1194,6 @@ function openModal(item){
 
   document.getElementById('modalDesc').textContent = item.desc||'A beautiful piece from Oasense.';
 
-  // Sizes
   const sizeSection = document.getElementById('sizeSection');
   const sizeRow = document.getElementById('sizeRow');
   if(cat === 'apparel'){
@@ -1198,63 +1253,15 @@ function toggleMob(){ document.getElementById('mob').classList.toggle('open'); }
 window.addEventListener('scroll',()=>{
   document.getElementById('mainNav').classList.toggle('shrunk',window.scrollY>60);
 },{passive:true});
-
 function openAuth(t){ toast(t==='login'?'LOGIN COMING SOON ☀️':'SIGNUP COMING SOON ☀️'); }
-
-// ════════════════════════════════════════════════════════════════
-//  LIVE SYNC — auto-update when DEV panel changes oas_shop
-// ════════════════════════════════════════════════════════════════
-let _lastSyncTs = localStorage.getItem('oas_shop_updated') || '0';
-
-function syncCheck(){
-  const ts = localStorage.getItem('oas_shop_updated') || '0';
-  if(ts !== _lastSyncTs){
-    _lastSyncTs = ts;
-    const prevCount = allItems.length;
-    loadItems();
-    const newCount = allItems.length;
-    const diff = newCount - prevCount;
-    if(diff > 0) toast(`✨ ${diff} new item${diff>1?'s':''} just dropped!`);
-    else if(diff < 0) toast(`🔄 Shop updated`);
-    else toast(`🔄 Shop updated`);
-  }
-}
-
-// Cross-tab: fires when a DIFFERENT tab/page writes to localStorage
-window.addEventListener('storage', e => {
-  if(e.key === 'oas_shop' || e.key === 'oas_shop_updated'){
-    _lastSyncTs = localStorage.getItem('oas_shop_updated') || '0';
-    const prevCount = allItems.length;
-    loadItems();
-    const newCount = allItems.length;
-    const diff = newCount - prevCount;
-    if(diff > 0) toast(`✨ ${diff} new item${diff>1?'s':''} just dropped!`);
-    else toast(`🔄 Shop updated`);
-  }
-});
-
-// Polling fallback (same-origin, handles same-tab DEV panel edge cases)
-setInterval(syncCheck, 2000);
 
 // ════════════════════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════════════════════
 loadItems();
+subscribeToProducts();
 updateCartBadge();
 renderSubcats();
-  async function loadProducts() {
-
- const { data, error } = await supabase
-   .from("products")
-   .select("*")
-
- console.log(data)
-
-}
-  // Supabase setup
-const supabaseUrl = "https://smlfppydhwyqrudktzzr.supabase.co";
-const supabaseKey = "sb_secret_IrZPzHOxP_T8RZ6V0yuiZw_gTxFiGmc";
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 </script>
 </body>
 </html>
