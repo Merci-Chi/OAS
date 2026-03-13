@@ -1242,6 +1242,15 @@ setInterval(syncCheck, 2000);
 loadItems();
 updateCartBadge();
 renderSubcats();
+  async function loadProducts() {
+
+ const { data, error } = await supabase
+   .from("products")
+   .select("*")
+
+ console.log(data)
+
+}
 </script>
 </body>
 </html>
