@@ -395,10 +395,20 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 
 /* AUDIT LOG ENTRIES */
 .audit-log{display:flex;flex-direction:column;gap:2px;}
-.audit-entry{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:14px 18px;transition:all .2s;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;}
+.audit-entry{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:12px 16px;transition:all .2s;display:grid;grid-template-columns:150px 1px 1fr auto;gap:0;align-items:center;}
 .audit-entry:hover{border-color:rgba(255,204,0,0.35);background:rgba(255,204,0,0.03);}
-.audit-entry.admin-action{border-left:2px solid rgba(255,59,59,0.4);}
-.audit-entry.user-action{border-left:2px solid rgba(0,255,136,0.3);}
+.audit-entry.admin-action{border-left:3px solid rgba(255,59,59,0.5);}
+.audit-entry.user-action{border-left:3px solid rgba(0,255,136,0.35);}
+.audit-left{display:flex;flex-direction:column;gap:5px;padding-right:16px;}
+.audit-actor{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:16px;letter-spacing:1px;color:#fff;text-transform:uppercase;}
+.audit-identity-sub{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.audit-id-divider{color:rgba(255,204,0,0.3);font-family:'Share Tech Mono',monospace;font-size:10px;}
+.audit-crm-id{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.5);letter-spacing:1px;}
+.audit-vert-divider{width:1px;background:rgba(255,204,0,0.15);align-self:stretch;margin:0 16px;}
+.audit-middle{padding:0;}
+.audit-action-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:1px;color:#fff;margin-bottom:3px;}
+.audit-ref{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;margin-top:3px;display:inline-block;}
+.audit-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.4);letter-spacing:1px;text-align:right;white-space:nowrap;padding-left:12px;}
 
 /* USER BADGE CHIPS */
 .badge-chip{display:inline-flex;align-items:center;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:2px;white-space:nowrap;}
@@ -406,14 +416,6 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .badge-dev{background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.45);color:var(--hot);}
 .badge-owner{background:rgba(255,105,180,0.1);border:1px solid rgba(255,105,180,0.45);color:var(--pink);}
 .badge-user{background:rgba(170,102,204,0.1);border:1px solid rgba(170,102,204,0.35);color:var(--mute);}
-
-.audit-left{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:70px;}
-.audit-actor{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#fff;text-align:center;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.audit-crm-id{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.5);letter-spacing:1px;}
-.audit-middle{}
-.audit-action-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;letter-spacing:1px;color:#fff;margin-bottom:3px;}
-.audit-ref{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;}
-.audit-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.4);letter-spacing:1px;text-align:right;white-space:nowrap;}
 
 /* DB USER LIST */
 .db-user-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:16px 20px;margin-bottom:3px;transition:border-color .2s;cursor:pointer;}
@@ -997,8 +999,8 @@ Rules:
 <div class="dev-section" id="sec-database">
   <div class="topbar">
     <div>
-      <div class="panel-title">Data<span class="hot">base</span></div>
-      <div class="panel-sub">// Audit Log · User Registry · Session Tracking</div>
+      <div class="panel-title">Audit <span class="hot">Log</span></div>
+      <div class="panel-sub">// AUDIT LOG · User Registry · Session Tracking</div>
     </div>
     <div class="topbar-actions">
       <button class="btn btn-sm" onclick="openAddUser()">+ Add User</button>
@@ -1036,6 +1038,8 @@ Rules:
     <button class="audit-tab admin-tab" onclick="switchAuditTab('admin',this)">🔐 ADMIN</button>
     <button class="audit-tab user-tab" onclick="switchAuditTab('users',this)">👤 USERS</button>
   </div>
+  <!-- AUDIT LOG label -->
+  <div style="font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:5px;color:rgba(255,204,0,0.35);text-transform:uppercase;margin-bottom:14px;margin-top:6px;">▸ AUDIT LOG</div>
 
   <!-- ACTION FILTER -->
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
@@ -1060,10 +1064,13 @@ Rules:
 
   <!-- USER REGISTRY -->
   <div style="margin-top:40px;">
-    <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:4px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--border);">
       <span>User Registry</span>
       <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.4);font-weight:normal;">// All registered accounts</span>
       <span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.5);" id="dbCount">0 users</span>
+    </div>
+    <div style="margin-bottom:16px;position:relative;">
+      <input class="fi" id="userSearchInput" placeholder="🔍 Search users by name or email…" oninput="renderUsers()" style="padding-left:14px;width:100%;max-width:400px;"/>
     </div>
     <div id="usersList"></div>
     <div class="empty-state" id="usersEmpty">No users registered yet ☀️</div>
@@ -1243,7 +1250,7 @@ function saveAuditLog(){localStorage.setItem('oas_audit',JSON.stringify(auditLog
 
 function addAuditEntry(actorName,action,ref){
   const badge=getUserBadge(actorName);
-  // Find CRM id
+  const isPrivileged=['DEV','OWNER','HACKER'].includes(badge);
   const person=people.find(p=>p.name.toLowerCase()===actorName.toLowerCase());
   const crmId=person?(getCRMId(person)||person.crmId):null;
   const entry={
@@ -1254,7 +1261,7 @@ function addAuditEntry(actorName,action,ref){
     action,
     ref:ref||null,
     ts:Date.now(),
-    type:isAdminAction(action)?'admin':'user'
+    type:(isPrivileged||isAdminAction(action))?'admin':'user'
   };
   auditLog.unshift(entry);
   if(auditLog.length>500)auditLog=auditLog.slice(0,500);
@@ -1313,9 +1320,15 @@ function renderAuditLog(){
   const empty=document.getElementById('auditEmpty');
   let entries=[...auditLog];
 
-  // Tab filter
-  if(auditTabFilter==='admin')entries=entries.filter(e=>e.type==='admin'||isAdminAction(e.action));
-  else if(auditTabFilter==='users')entries=entries.filter(e=>e.type==='user'||isUserAction(e.action));
+  // Tab filter — DEV/OWNER/HACKER always admin
+  if(auditTabFilter==='admin')entries=entries.filter(e=>{
+    const b=e.badge||'USER';
+    return e.type==='admin'||isAdminAction(e.action)||['DEV','OWNER','HACKER'].includes(b);
+  });
+  else if(auditTabFilter==='users')entries=entries.filter(e=>{
+    const b=e.badge||'USER';
+    return b==='USER'&&(e.type==='user'||isUserAction(e.action));
+  });
 
   // Action filter
   if(auditActionFilter)entries=entries.filter(e=>e.action===auditActionFilter);
@@ -1327,17 +1340,38 @@ function renderAuditLog(){
   empty.style.display='none';
 
   container.innerHTML=entries.map(e=>{
-    const badgeCls=getBadgeClass(e.badge||'USER');
-    const isAdmin=e.type==='admin'||isAdminAction(e.action);
-    const refHTML=e.ref?`<div class="audit-ref">${e.ref}</div>`:'';
+    const badge=e.badge||'USER';
+    const badgeCls=getBadgeClass(badge);
+    const isPrivileged=['DEV','OWNER','HACKER'].includes(badge);
+    const isAdmin=isPrivileged||e.type==='admin'||isAdminAction(e.action);
+    const refHTML=e.ref?`<span class="audit-ref">${e.ref}</span>`:'';
+
+    // Left identity block
+    let identityHTML='';
+    if(isPrivileged){
+      // Username on top, ADMIN | Badge below
+      identityHTML=`
+        <div class="audit-actor">${esc(e.actor)}</div>
+        <div class="audit-identity-sub">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--red);text-transform:uppercase;">ADMIN</span>
+          <span class="audit-id-divider">|</span>
+          <span class="badge-chip ${badgeCls}" style="font-size:8px;padding:2px 6px;">${badge}</span>
+        </div>`;
+    } else {
+      // Firstname Lastname on top, CRM# | Badge below
+      identityHTML=`
+        <div class="audit-actor">${esc(e.actor)}</div>
+        <div class="audit-identity-sub">
+          ${e.crmId?`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.6);">#${e.crmId}</span><span class="audit-id-divider">|</span>`:''}
+          <span class="badge-chip ${badgeCls}" style="font-size:8px;padding:2px 6px;">${badge}</span>
+        </div>`;
+    }
+
     return`<div class="audit-entry ${isAdmin?'admin-action':'user-action'}">
-      <div class="audit-left">
-        <span class="badge-chip ${badgeCls}">${e.badge||'USER'}</span>
-        <div class="audit-actor">${e.actor}</div>
-        ${e.crmId?`<div class="audit-crm-id">#${e.crmId}</div>`:''}
-      </div>
+      <div class="audit-left">${identityHTML}</div>
+      <div class="audit-vert-divider"></div>
       <div class="audit-middle">
-        <div class="audit-action-name">${e.action}</div>
+        <div class="audit-action-name">${esc(e.action)}</div>
         ${refHTML}
       </div>
       <div class="audit-time">${fmtTs(e.ts)}<br/><span style="font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span></div>
@@ -1829,29 +1863,48 @@ function fmtDuration(ms){if(!ms)return'—';const m=Math.floor(ms/60000);const h
 function renderUsers(){
   const list=document.getElementById('usersList'),empty=document.getElementById('usersEmpty');
   updateUsersBadge();
-  document.getElementById('dbCount').textContent=appUsers.length+' user'+(appUsers.length!==1?'s':'');
 
-  const sorted=[...appUsers].sort((a,b)=>(b.seenAt||0)-(a.seenAt||0));
+  // Dedup: one card per unique name (keep most recently seen)
+  const seenNames={};
+  [...appUsers].sort((a,b)=>(b.seenAt||0)-(a.seenAt||0)).forEach(u=>{
+    const key=(u.name||'').toLowerCase().trim();
+    if(!seenNames[key])seenNames[key]=u;
+  });
+  let unique=Object.values(seenNames).sort((a,b)=>(b.seenAt||0)-(a.seenAt||0));
+
+  // Search filter
+  const q=(document.getElementById('userSearchInput')?.value||'').toLowerCase().trim();
+  if(q)unique=unique.filter(u=>(u.name||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q));
+
+  document.getElementById('dbCount').textContent=unique.length+' user'+(unique.length!==1?'s':'');
 
   if(!appUsers.length){list.innerHTML='';empty.style.display='block';return;}
+  if(!unique.length){list.innerHTML='<div class="empty-state" style="display:block;">No users match your search ☀️</div>';empty.style.display='none';return;}
   empty.style.display='none';
 
-  const provClass={GOOGLE:'provider-google',IOS:'provider-ios',FACEBOOK:'provider-facebook',EMAIL:'provider-email',SYSTEM:'provider-email'};
   const provStyle={GOOGLE:'background:rgba(66,133,244,0.15);border:1px solid rgba(66,133,244,0.4);color:#4285F4;',IOS:'background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);color:#fff;',FACEBOOK:'background:rgba(66,103,178,0.15);border:1px solid rgba(66,103,178,0.4);color:#4267B2;',EMAIL:'background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);',SYSTEM:'background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.3);color:var(--hot);'};
 
-  list.innerHTML=sorted.map(u=>{
+  list.innerHTML=unique.map(u=>{
     const badge=u.badge||getUserBadge(u.name);
     const badgeCls=getBadgeClass(badge);
     const crmMatch=people.find(p=>(u.email&&p.email===u.email)||(p.name.toLowerCase()===u.name.toLowerCase()));
     const crmIdDisp=crmMatch?getPersonCRMIdDisplay(crmMatch):'—';
-    // Recent audit entries for this user
-    const userLogs=auditLog.filter(e=>e.actor===u.name).slice(0,3);
+    const allLogs=auditLog.filter(e=>e.actor===u.name);
+    const topLogs=allLogs.slice(0,10);
+    const hasMore=allLogs.length>10;
+
+    const logRowHTML=(e)=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,204,0,0.05);">
+      <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#fff;">${esc(e.action)}</span>
+      ${e.ref?`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.4);">${esc(e.ref)}</span>`:''}
+      <span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span>
+    </div>`;
+
     return`<div class="db-user-card" onclick="toggleDbDetail(${u.id})">
       <div class="db-user-grid">
         <div class="db-avatar">👤</div>
         <div>
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <div class="db-user-name">${u.name}</div>
+            <div class="db-user-name">${esc(u.name)}</div>
             <span class="badge-chip ${badgeCls}">${badge}</span>
             <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.5);">${crmIdDisp}</span>
             ${crmMatch?`<div class="crm-bubble" onclick="event.stopPropagation();openCRMFromUser('${esc(u.name)}','${esc(u.email||'')}')" style="font-size:8px;padding:2px 7px;"><span class="crm-dot"></span>CRM</div>`:''}
@@ -1864,10 +1917,15 @@ function renderUsers(){
         </div>
       </div>
       <div class="db-user-detail" id="dbdetail-${u.id}">
-        ${userLogs.length?`<div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:8px;">Recent Activity</div>
-        ${userLogs.map(e=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,204,0,0.05);"><span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#fff;">${e.action}</span>${e.ref?`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.4);">${e.ref}</span>`:''}<span style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.3);">${timeSince(e.ts)}</span></div>`).join('')}
+        ${topLogs.length?`
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);text-transform:uppercase;margin-bottom:8px;">Recent Activity</div>
+        <div id="dbact-top-${u.id}">${topLogs.map(logRowHTML).join('')}</div>
+        ${hasMore?`
+        <div id="dbact-more-${u.id}" style="display:none;">${allLogs.slice(10).map(logRowHTML).join('')}</div>
+        <button onclick="event.stopPropagation();toggleAllActivity(${u.id},${allLogs.length})" id="dbact-btn-${u.id}" class="btn btn-ghost btn-sm" style="margin-top:8px;font-size:10px;letter-spacing:2px;">▾ Show all ${allLogs.length} entries</button>
+        `:''}
         <div style="margin-top:12px;"></div>`:''}
-        <div class="fg"><label class="fl">Notes (private)</label><textarea class="fta" id="unotes-${u.id}" style="min-height:60px;" placeholder="Internal notes…">${u.notes||''}</textarea></div>
+        <div class="fg"><label class="fl">Notes (private)</label><textarea class="fta" id="unotes-${u.id}" style="min-height:60px;" placeholder="Internal notes…">${esc(u.notes||'')}</textarea></div>
         <div style="display:flex;gap:8px;margin-top:6px;">
           <button class="btn btn-fill btn-sm" onclick="event.stopPropagation();updateUserNotes(${u.id})">Save Notes</button>
           <button class="btn btn-red btn-sm" onclick="event.stopPropagation();deleteUser(${u.id})">Delete</button>
@@ -1876,8 +1934,16 @@ function renderUsers(){
     </div>`;
   }).join('');
 
-  // Update stats
   updateDbStats();
+}
+
+function toggleAllActivity(userId,total){
+  const more=document.getElementById('dbact-more-'+userId);
+  const btn=document.getElementById('dbact-btn-'+userId);
+  if(!more||!btn)return;
+  const expanded=more.style.display!=='none';
+  more.style.display=expanded?'none':'block';
+  btn.textContent=expanded?`▾ Show all ${total} entries`:'▴ Collapse';
 }
 
 // ══ OUTSIDE CLICK CLOSE ══
