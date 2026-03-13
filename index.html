@@ -1,3 +1,14 @@
+### Full page code (Firebase for About + Donation, placeholders when empty)
+
+Here’s the complete HTML you can copy‑paste as `index.html`.  
+
+- **Firebase Firestore** drives:
+  - `about_photo_url`, `about_pullquote`, `about_body`, `about_title`
+  - `donation_total`, `donation_goal`, `donation_desc`, `donation_amounts`
+  - Collection: `site_settings`, document: `global`
+- If Firestore is **empty or missing any field**, the hard‑coded HTML content remains as the **placeholder**.
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -874,7 +885,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   </div>
 </section>
 
-<!-- ABOUT — changed to ABOUT OASENSE, fully Supabase-driven -->
+<!-- ABOUT -->
 <section id="about">
   <div class="wrap">
     <p class="sec-tag">// 06 — Our Story</p>
@@ -1141,20 +1152,19 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
 </div>
 
 <div id="toast"></div>
+
+<!-- FIREBASE: SITE SETTINGS (ABOUT + DONATION) -->
 <script type="module">
-  // Firebase SDKs (v10+)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
   import {
     getFirestore,
     doc,
     onSnapshot,
-    getDoc,
     updateDoc,
     increment
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyDlHu_4elXWPeckr6C7JWbcJaLrpnDpGnc",
     authDomain: "oasense-a4582.firebaseapp.com",
@@ -1165,35 +1175,33 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     measurementId: "G-HQRCX63FYG"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
-  const db = getFirestore(app);
+  const fdb = getFirestore(app);
 
-  // Helper
-  const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
-                            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  const fEsc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                           .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-  // Firestore document with all site settings
-  const settingsRef = doc(db, "site_settings", "global");
+  const settingsRef = doc(fdb, "site_settings", "global");
 
-  // ===== ABOUT + DONATION: LOAD FROM FIREBASE =====
   function applySiteSettings(S) {
     // ABOUT PHOTO
-    if (S.about_photo_url) {
+    if (Object.prototype.hasOwnProperty.call(S, 'about_photo_url') && S.about_photo_url) {
       const av = document.getElementById('aboutPhoto');
       if (av) {
         const corners = Array.from(av.querySelectorAll('.av-corner')).map(el=>el.outerHTML).join('');
-        av.innerHTML = `<img src="${_esc(S.about_photo_url)}" alt="Oasense Photo"/>` + corners;
+        av.innerHTML = `<img src="${fEsc(S.about_photo_url)}" alt="Oasense Photo"/>` + corners;
       }
     }
+
     // ABOUT PULLQUOTE
-    if (S.about_pullquote) {
+    if (Object.prototype.hasOwnProperty.call(S, 'about_pullquote') && S.about_pullquote) {
       const el = document.getElementById('aboutPullquote');
       if (el) el.textContent = S.about_pullquote;
     }
-    // ABOUT BODY (paragraphs separated by \n\n)
-    if (S.about_body) {
+
+    // ABOUT BODY
+    if (Object.prototype.hasOwnProperty.call(S, 'about_body') && S.about_body) {
       const el = document.getElementById('aboutBody');
       if (el) {
         el.innerHTML = S.about_body
@@ -1202,74 +1210,77 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
           .join('');
       }
     }
+
     // ABOUT HEADING WORD
-    if (S.about_title) {
+    if (Object.prototype.hasOwnProperty.call(S, 'about_title') && S.about_title) {
       const hot = document.querySelector('#about .sec-title .hot');
       if (hot) hot.textContent = S.about_title;
     }
 
     // DONATION TOTAL / DESC
-    const total = Number(S.donation_total || 0);
-    const rnEl = document.getElementById('rn');
-    if (rnEl && !Number.isNaN(total)) rnEl.textContent = total.toLocaleString();
+    if (Object.prototype.hasOwnProperty.call(S, 'donation_total')) {
+      const total = Number(S.donation_total || 0);
+      const rnEl = document.getElementById('rn');
+      if (rnEl && !Number.isNaN(total)) rnEl.textContent = total.toLocaleString();
+    }
 
-    if (S.donation_desc) {
+    if (Object.prototype.hasOwnProperty.call(S, 'donation_desc') && S.donation_desc) {
       const dd = document.getElementById('donDesc');
       if (dd) dd.textContent = S.donation_desc;
     }
 
-    // DONATION GOAL + PROGRESS BAR
-    const goal = Number(S.donation_goal || 0);
-    if (goal > 0 && !Number.isNaN(goal)) {
-      const bar = document.getElementById('donGoalBar');
+    // DONATION GOAL + PROGRESS
+    if (Object.prototype.hasOwnProperty.call(S, 'donation_goal')) {
+      const total = Number(S.donation_total || 0);
+      const goal  = Number(S.donation_goal || 0);
+      const bar   = document.getElementById('donGoalBar');
       const raisedLbl = document.getElementById('donGoalRaisedLbl');
-      const goalLbl = document.getElementById('donGoalLbl');
-      const fill = document.getElementById('donGoalFill');
-      if (bar && raisedLbl && goalLbl && fill) {
+      const goalLbl   = document.getElementById('donGoalLbl');
+      const fill      = document.getElementById('donGoalFill');
+      if (bar && raisedLbl && goalLbl && fill && goal > 0 && !Number.isNaN(goal)) {
         bar.style.display = 'block';
         raisedLbl.textContent = `$${total.toLocaleString()} raised`;
-        goalLbl.textContent = `Goal: $${goal.toLocaleString()}`;
+        goalLbl.textContent   = `Goal: $${goal.toLocaleString()}`;
         const pct = Math.min(100, Math.round((total / goal) * 100));
         setTimeout(() => { fill.style.width = pct + '%'; }, 400);
       }
     }
 
-    // DONATION AMOUNTS BUTTONS
-    if (S.donation_amounts) {
+    // DONATION AMOUNTS
+    if (Object.prototype.hasOwnProperty.call(S, 'donation_amounts') && S.donation_amounts) {
       const ag = document.getElementById('donAmounts');
       if (ag) {
         const amts = String(S.donation_amounts)
           .split(',')
           .map(a => a.trim())
           .filter(Boolean);
-
-        ag.innerHTML = amts.map((a,i) => {
-          const isNum = !Number.isNaN(Number(a));
-          const val  = isNum ? Number(a) : 'other';
-          const label= isNum ? '$'+a : a;
-          const on   = i===2 ? ' on' : '';
-          return `<button class="ab${on}" onclick="pA(${isNum?val:`'other'`},this)">${label}</button>`;
-        }).join('') + `
-          <button class="ab" onclick="pA('other',this)">Other</button>`;
+        if (amts.length) {
+          ag.innerHTML = amts.map((a,i) => {
+            const isNum = !Number.isNaN(Number(a));
+            const val   = isNum ? Number(a) : 'other';
+            const label = isNum ? '$'+a : a;
+            const on    = i===2 ? ' on' : '';
+            return `<button class="ab${on}" onclick="pA(${isNum?val:`'other'`},this)">${label}</button>`;
+          }).join('') + `
+            <button class="ab" onclick="pA('other',this)">Other</button>`;
+        }
       }
     }
   }
 
-  // Live updates from Firestore
   onSnapshot(settingsRef, (snap) => {
-    if (snap.exists()) applySiteSettings(snap.data());
+    if (!snap.exists()) return;  // keep HTML placeholders
+    applySiteSettings(snap.data());
   });
 
-  // Expose a Firebase-backed donate() globally (replace your old one)
+  // Firebase-backed donate()
   window.don = async function don() {
-    // same UI logic you already use
     const cw = document.getElementById('cw');
     const other = cw && cw.style.display === 'block';
     const amount =
       other
         ? Number(document.getElementById('ca').value || 0)
         : (() => {
-            // find selected .ab
             const btn = document.querySelector('.ab.on');
             if (!btn) return 0;
             const txt = btn.textContent.replace('$','').trim();
@@ -1284,15 +1295,12 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     toast(`THANK YOU FOR YOUR $${amount} DONATION! ☀️`);
 
     try {
-      // atomically increment in Firestore
       await updateDoc(settingsRef, {
         donation_total: increment(amount)
       });
-
-      // local UI will be updated automatically by onSnapshot
+      // UI will update via onSnapshot
     } catch (e) {
       console.error(e);
-      // simple local fallback
       const rnEl = document.getElementById('rn');
       if (rnEl) {
         const cur = Number(rnEl.textContent.replace(/,/g,'')) || 0;
@@ -1301,6 +1309,8 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     }
   };
 </script>
+
+<!-- MAIN JS: SUPABASE (SHOP/BLOG/PORTFOLIO) + UI -->
 <script>
 // ═══════════════════════════════════════════════
 //  SUPABASE INIT
@@ -1315,15 +1325,6 @@ const mediaUrl = f => f ? (f.startsWith('http') ? f : DEV_BASE + f) : '';
 
 // ═══════════════════════════════════════════════
 //  SHOP — PROMO 4-PANEL
-//  Supabase table: products
-//  Columns used:
-//    id, title/name, price, discount/discount_percent,
-//    badge  ('% '|'New!'|'Hot!'|'Ltd'),
-//    img/image_url/image      — primary image URL
-//    img2/image_url2/image2   — second image URL (enables flip)
-//    shop_url                 — deep-link to item in shop (optional, fallback: /shop)
-//    status                   — must be 'live'
-//  Promo shows 4 items, priority: badge=% > New! > Hot! > Ltd > none, newest first
 // ═══════════════════════════════════════════════
 const SHOP_URL = 'https://merci-chi.github.io/OAS/shop';
 async function loadShop() {
@@ -1343,7 +1344,6 @@ async function loadShop() {
       shopUrl: r.shop_url || SHOP_URL,
     }));
 
-    // Sort: % badge first, then New!, then Hot!, then Ltd, then rest
     const badgeRank = b => b==='%'?0:b==='New!'?1:b==='Hot!'?2:b==='Ltd'?3:4;
     items.sort((a,b) => badgeRank(a.badge) - badgeRank(b.badge));
 
@@ -1359,7 +1359,6 @@ async function loadShop() {
   }
 }
 function renderShopEmpty() {
-  // 4 vivid placeholder cards — no dimming, full-color
   const PLACEHOLDERS = [
     { icon:'👕', cat:'Apparel', ctaLabel:'Shop →' },
     { icon:'💾', cat:'Digital',  ctaLabel:'Shop →' },
@@ -1392,9 +1391,7 @@ function renderPromoCard(item) {
   const hasDisc = item.discount > 0;
   const salePrice = hasDisc ? (item.price * (1 - item.discount/100)).toFixed(2) : item.price.toFixed(2);
   const hasFlip = !!item.img2;
-  const EMOJIS = {apparel:'👕',digital:'💾',photography:'📸',other:'✨'};
 
-  // Badge
   let badgeHtml = '';
   if (item.badge==='%' && hasDisc) badgeHtml = `<div class="sp-badge pct">${item.discount}% OFF</div>`;
   else if (item.badge==='New!')      badgeHtml = `<div class="sp-badge new">NEW</div>`;
@@ -1458,7 +1455,6 @@ function initShopFlip() {
       card.classList.toggle('flipped');
     });
   });
-  // Non-flippable cards go straight to shop
   document.querySelectorAll('.sp-card:not([data-flip])').forEach(card => {
     card.addEventListener('click', () => window.open(card.dataset.url,'_blank'));
   });
@@ -1467,15 +1463,6 @@ db.channel('shop-rt').on('postgres_changes',{event:'*',schema:'public',table:'pr
 
 // ═══════════════════════════════════════════════
 //  BLOG — OASENSE BLOG 3-CARD GRID
-//  Supabase table: blog_posts
-//  Columns used:
-//    id, title, excerpt/content (trimmed to 160 chars),
-//    photo_url/image_url/image — cover photo
-//    category, emoji (fallback icon if no photo)
-//    created_at / date (formatted display date)
-//    slug / id — used to build the deep link to blog page
-//    status  — must be 'published'
-//  Blog page: https://merci-chi.github.io/OAS/blog
 // ═══════════════════════════════════════════════
 const BLOG_BASE = 'https://merci-chi.github.io/OAS/blog';
 async function loadBlog() {
@@ -1517,7 +1504,6 @@ async function loadBlog() {
   }
 }
 function renderBlogEmpty() {
-  // 3 vivid full-color placeholder cards — no dimming
   const PLACEHOLDERS = [
     { icon:'✍️', cat:'Culture',  title:'Nothing yet!',   date:'Coming Soon' },
     { icon:'🌟', cat:'Lifestyle', title:'Nothing yet!',  date:'Coming Soon' },
@@ -1542,25 +1528,6 @@ function renderBlogEmpty() {
 // ═══════════════════════════════════════════════
 //  PORTFOLIO — UNIFIED 5-PANEL GRID
 // ═══════════════════════════════════════════════
-/*
-  Supabase table: portfolio_items
-  Columns:
-    id            (int, auto)
-    section       (text) — 'portraits' | 'digital' | 'video' | 'branding' | 'lifestyle'
-    media_url     (text) — filename relative to DEV_BASE OR full https:// URL
-    media_type    (text) — 'photo' | 'video'
-    sort_order    (int)
-    title         (text, optional — shown as hover overlay if set)
-    thumbnail_url (text, optional) — for video thumbnail image
-    alt_images    (text, optional) — JSON array of extra photo URLs for hover rotation
-                  e.g. '["img2.jpg","img3.jpg"]'
-
-  Layout: 2 large panels on top (portraits left, digital right)
-          3 equal panels on bottom (video, branding, lifestyle)
-  Each panel accepts any number of items from that section.
-  Videos play muted on hover. Photos rotate on hover.
-*/
-
 const PF_PANELS = [
   { section:'portraits', name:'Portraits', cat:'Cinematic',  row:'top' },
   { section:'digital',   name:'Digital Art', cat:'Originals', row:'top' },
@@ -1575,13 +1542,10 @@ async function loadPortfolio() {
     const { data, error } = await db.from('portfolio_items').select('*').order('sort_order',{ascending:true});
     if (error) throw error;
     const items = data || [];
-
-    // Build the single unified grid
     root.innerHTML = buildUnifiedGrid(items);
     initPanelHovers();
   } catch(e) {
     console.error('Portfolio error:', e);
-    // Still render empty grid so layout is visible
     root.innerHTML = buildUnifiedGrid([]);
     initPanelHovers();
   }
@@ -1589,10 +1553,8 @@ async function loadPortfolio() {
 
 function buildUnifiedGrid(items) {
   const bySection = s => items.filter(i => i.section === s);
-
   const topPanels = PF_PANELS.filter(p => p.row === 'top');
   const botPanels = PF_PANELS.filter(p => p.row === 'bottom');
-
   return `<div class="pf-grid">
     ${topPanels.map(p => buildPanel(p, bySection(p.section))).join('')}
     <div class="pf-grid-bottom">
@@ -1603,14 +1565,7 @@ function buildUnifiedGrid(items) {
 
 function buildPanel(panelMeta, items) {
   const { section, name, cat } = panelMeta;
-  const firstItem = items[0] || null;
 
-  // Determine if first item is a video
-  const isVid = firstItem
-    ? (firstItem.media_type === 'video' || /\.(mp4|webm|mov)/i.test(firstItem.media_url || ''))
-    : false;
-
-  // Collect all photo images across all items for this section
   const allPhotos = items
     .filter(i => i.media_type !== 'video' && !/\.(mp4|webm|mov)/i.test(i.media_url || ''))
     .flatMap(i => {
@@ -1619,7 +1574,6 @@ function buildPanel(panelMeta, items) {
       return urls.filter(Boolean);
     });
 
-  // Collect all videos
   const allVideos = items.filter(i =>
     i.media_type === 'video' || /\.(mp4|webm|mov)/i.test(i.media_url || '')
   );
@@ -1627,7 +1581,6 @@ function buildPanel(panelMeta, items) {
   let mediaHtml = '';
 
   if (allVideos.length > 0) {
-    // Show thumbnail of first video as still, video plays on hover
     const vid = allVideos[0];
     const thumb = vid.thumbnail_url ? mediaUrl(vid.thumbnail_url) : '';
     mediaHtml += thumb
@@ -1637,7 +1590,6 @@ function buildPanel(panelMeta, items) {
       muted playsinline loop preload="none"></video>`;
     mediaHtml += `<div class="pf-panel-play">▶</div>`;
   } else if (allPhotos.length > 0) {
-    // Photo panel — show first, rotate through rest on hover
     mediaHtml += `<img class="pf-panel-img"
       src="${_esc(allPhotos[0])}" alt="${_esc(name)}"
       data-photos='${JSON.stringify(allPhotos).replace(/'/g,"&#39;")}'/>`;
@@ -1647,7 +1599,6 @@ function buildPanel(panelMeta, items) {
       </div>`;
     }
   } else {
-    // Empty placeholder
     const icons = {portraits:'📸',digital:'🎨',video:'🎬',branding:'✨',lifestyle:'🌆'};
     mediaHtml += `<div class="pf-panel-empty">
       <div class="pf-panel-empty-icon">${icons[section]||'🌌'}</div>
@@ -1655,7 +1606,6 @@ function buildPanel(panelMeta, items) {
     </div>`;
   }
 
-  // Permanent gradient + label
   mediaHtml += `<div class="pf-panel-grad"></div>`;
   mediaHtml += `<div class="pf-panel-label">
     <div class="pf-panel-cat">${_esc(cat)}</div>
@@ -1666,11 +1616,9 @@ function buildPanel(panelMeta, items) {
 }
 
 function initPanelHovers() {
-  // Photo rotation
   document.querySelectorAll('.pf-panel').forEach(panel => {
     const img = panel.querySelector('.pf-panel-img');
     if (!img || !img.dataset.photos) return;
-
     let photos;
     try { photos = JSON.parse(img.dataset.photos); } catch(e){ return; }
     if (photos.length <= 1) return;
@@ -1696,7 +1644,6 @@ function initPanelHovers() {
     });
   });
 
-  // Video hover play
   document.querySelectorAll('.pf-panel').forEach(panel => {
     const video = panel.querySelector('.pf-panel-video');
     if (!video) return;
@@ -1849,18 +1796,14 @@ function setSolColor(name){
 }
 
 // ═══════════════════════════════════════════════
-//  MISC UI
+//  MISC UI / FORMS / MUSIC / AUTH
 // ═══════════════════════════════════════════════
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000);}
 function pM(b,m){document.querySelectorAll('.mb2').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('emailField').style.display=m==='email'?'block':'none';document.getElementById('phoneField').style.display=m==='phone'?'block':'none';}
 
-// Music
+// Music (simple simulated progress)
 let ct=-1,ti={},tp=[0,0,0,0,0];const ds=[222,258,175,186,162];
 function pT(i){const tks=document.querySelectorAll('.tk');if(ct===i){clearInterval(ti[i]);tks[i].classList.remove('pl');tks[i].querySelector('.tpb').textContent='▶';ct=-1;return;}if(ct>=0){clearInterval(ti[ct]);tks[ct].classList.remove('pl');tks[ct].querySelector('.tpb').textContent='▶';}ct=i;tks[i].classList.add('pl');tks[i].querySelector('.tpb').textContent='⏸';ti[i]=setInterval(()=>{tp[i]++;if(tp[i]>=ds[i]){clearInterval(ti[i]);tks[i].classList.remove('pl');tks[i].querySelector('.tpb').textContent='▶';ct=-1;tp[i]=0;return;}tks[i].querySelector('.tb').style.width=(tp[i]/ds[i]*100)+'%';const m=Math.floor(tp[i]/60),s=tp[i]%60;tks[i].querySelector('.tt').textContent=m+':'+(s<10?'0':'')+s;},1000);}
-
-// Blog
-function lk(b,postId){b.classList.toggle('lk');const s=b.querySelector('span');const n=parseInt(s.textContent)+(b.classList.contains('lk')?1:-1);s.textContent=n;if(postId)db.from('blog_posts').update({likes:n}).eq('id',postId).then(()=>{});}
-function sh(){navigator.share?navigator.share({title:'Oasense',url:location.href}):toast('LINK COPIED!');}
 
 // Booking
 function pS(el,n){document.querySelectorAll('.sv').forEach(s=>s.classList.remove('on'));el.classList.add('on');}
@@ -1868,30 +1811,10 @@ function toggleCsel(){document.getElementById('cselWrap').classList.toggle('open
 function pickSel(label,val){document.getElementById('cselText').textContent=label;document.getElementById('svSel').value=val;document.getElementById('cselWrap').classList.remove('open');}
 document.addEventListener('click',e=>{const w=document.getElementById('cselWrap');if(w&&!w.contains(e.target))w.classList.remove('open');});
 
-// Donation
+// Donation amount + frequency (UI only; donate() is Firebase)
 let sa=10;
 function pA(a,b){document.querySelectorAll('.ab').forEach(x=>x.classList.remove('on'));b.classList.add('on');sa=a;document.getElementById('cw').style.display=a==='other'?'block':'none';}
 function pF(b){document.querySelectorAll('.frb').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
-async function don(){
-  const a=sa==='other'?(parseInt(document.getElementById('ca').value)||0):sa;
-  if(!a){toast('PLEASE ENTER AN AMOUNT');return;}
-  toast(`THANK YOU FOR YOUR $${a} DONATION! ☀️`);
-  try {
-    const { data:cur } = await db.from('site_settings').select('value').eq('key','donation_total').single();
-    const newTotal = (parseFloat(cur?.value||'0')||0) + parseFloat(a);
-    await db.from('site_settings').upsert({key:'donation_total',value:String(newTotal)},{onConflict:'key'});
-    document.getElementById('rn').textContent = newTotal.toLocaleString();
-    const { data:goalRow } = await db.from('site_settings').select('value').eq('key','donation_goal').single();
-    const goal = parseFloat(goalRow?.value||'0')||0;
-    if(goal>0){
-      const pct=Math.min(100,Math.round((newTotal/goal)*100));
-      document.getElementById('donGoalFill').style.width=pct+'%';
-      document.getElementById('donGoalRaisedLbl').textContent=`$${newTotal.toLocaleString()} raised`;
-    }
-  } catch(e) {
-    const el=document.getElementById('rn');el.textContent=(parseFloat(el.textContent.replace(/,/g,''))+parseFloat(a)).toLocaleString();
-  }
-}
 
 // Newsletter
 function jNL(){const v=document.getElementById('nle').value;if(!v||!v.includes('@')){toast('PLEASE ENTER A VALID EMAIL');return;}toast("YOU'RE IN! WELCOME TO THE LIGHT ☀️");document.getElementById('nle').value='';}
@@ -1918,6 +1841,14 @@ function pws(){const v=document.getElementById('pwin').value;let s=0;if(v.length
 // Scroll reveal
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}}));
 document.querySelectorAll('.po,.ri,.tk,.sv').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(18px)';el.style.transition='opacity .5s ease,transform .5s ease';obs.observe(el);});
+
+// INIT
+loadShop();
+loadBlog();
+loadPortfolio();
+db.channel('blog-rt').on('postgres_changes',{event:'*',schema:'public',table:'blog_posts'},loadBlog).subscribe();
+db.channel('portfolio-rt').on('postgres_changes',{event:'*',schema:'public',table:'portfolio_items'},()=>{loadPortfolio();}).subscribe();
 </script>
 </body>
 </html>
+```
