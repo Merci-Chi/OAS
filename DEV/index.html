@@ -167,6 +167,10 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .crm-tabs{display:flex;gap:2px;margin-bottom:24px;flex-wrap:wrap;}
 .crm-tab{padding:11px 28px;background:transparent;border:1px solid rgba(255,204,0,0.2);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
 .crm-tab.active,.crm-tab:hover{border-color:var(--hot);color:var(--hot);background:rgba(255,204,0,0.06);}
+.crm-tab-users.active,.crm-tab-users:hover{border-color:var(--green);color:var(--green);background:rgba(0,255,136,0.04);}
+.crm-tab-admin.active,.crm-tab-admin:hover{border-color:var(--red);color:var(--red);background:rgba(255,59,59,0.05);}
+.crm-entry-admin{border-left:3px solid rgba(255,59,59,0.5);}
+.crm-entry-user{border-left:3px solid rgba(0,255,136,0.3);}
 .crm-list{display:flex;flex-direction:column;gap:3px;}
 .crm-entry{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:18px 20px;transition:border-color .2s;position:relative;}
 .crm-entry:hover{border-color:rgba(255,204,0,0.4);}
@@ -590,7 +594,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="topbar">
     <div>
       <div class="panel-title">CRM <span class="hot">People</span></div>
-      <div class="panel-sub">// Prospects · Clients · Subscribers · Users</div>
+      <div class="panel-sub">// Prospects · Clients · Subscribers · Users · Admin</div>
     </div>
     <div class="topbar-actions">
       <button class="btn btn-sm" onclick="openAddPerson()">+ Add Person</button>
@@ -643,7 +647,8 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       <button class="crm-tab" onclick="switchCRM('prospect',this)">Prospects</button>
       <button class="crm-tab" onclick="switchCRM('client',this)">Clients</button>
       <button class="crm-tab" onclick="switchCRM('subscriber',this)">Subscribers</button>
-      <button class="crm-tab" onclick="switchCRM('user',this)">Users</button>
+      <button class="crm-tab crm-tab-users" onclick="switchCRM('user',this)">👤 Users</button>
+      <button class="crm-tab crm-tab-admin" onclick="switchCRM('admin',this)">🔐 ADMIN</button>
     </div>
     <div class="crm-rating-filter" style="margin-left:auto;">
       <button class="crm-rating-filter-btn" onclick="toggleRatingFilterDD()">
@@ -1246,7 +1251,7 @@ const USER_ACTIONS=[
 function isAdminAction(action){return ADMIN_ACTIONS.includes(action);}
 function isUserAction(action){return USER_ACTIONS.includes(action);}
 
-function saveAuditLog(){localStorage.setItem('oas_audit',JSON.stringify(auditLog));}
+function saveAuditLog(){localStorage.setItem('oas_audit',JSON.stringify(auditLog));updateDbStats();}
 
 function addAuditEntry(actorName,action,ref){
   const badge=getUserBadge(actorName);
@@ -1381,10 +1386,23 @@ function renderAuditLog(){
 
 function updateDbStats(){
   const bar=document.getElementById('dbStatsBar');
-  const totalUsers=appUsers.length;
+  if(!bar)return;
+  // Dedup appUsers same way as renderUsers
+  const seenNames={};
+  appUsers.forEach(u=>{
+    const key=(u.name||'').toLowerCase().trim();
+    if(!seenNames[key]||(u.seenAt||0)>(seenNames[key].seenAt||0))seenNames[key]=u;
+  });
+  const totalUsers=Object.keys(seenNames).length;
   const totalAudit=auditLog.length;
-  const adminEntries=auditLog.filter(e=>e.type==='admin'||isAdminAction(e.action)).length;
-  const userEntries=auditLog.filter(e=>e.type==='user'||isUserAction(e.action)).length;
+  const adminEntries=auditLog.filter(e=>{
+    const b=e.badge||'USER';
+    return e.type==='admin'||isAdminAction(e.action)||['DEV','OWNER','HACKER'].includes(b);
+  }).length;
+  const userEntries=auditLog.filter(e=>{
+    const b=e.badge||'USER';
+    return b==='USER'&&(e.type==='user'||isUserAction(e.action));
+  }).length;
   bar.innerHTML=`
     <div class="db-stat-card"><div class="db-stat-num">${totalUsers}</div><div class="db-stat-label">Registered Users</div></div>
     <div class="db-stat-card"><div class="db-stat-num" style="color:var(--green);">${totalAudit}</div><div class="db-stat-label">Total Log Entries</div></div>
@@ -1577,9 +1595,34 @@ function switchCRM(filter,btn){crmFilter=filter;document.querySelectorAll('.crm-
 function toggleRatingFilterDD(){document.getElementById('ratingFilterDD').classList.toggle('open');}
 function setRatingFilter(val){crmRatingFilter=val;document.getElementById('ratingFilterDD').classList.remove('open');const labels={all:'● All Ratings',green:'🟢 High',yellow:'🟡 Medium',red:'🔴 Low',none:'⚪ Unrated'};document.getElementById('ratingFilterLabel').textContent=labels[val]||'All Ratings';renderCRM();}
 function sortByRating(arr){const order={green:0,yellow:1,red:2,'':3};return[...arr].sort((a,b)=>(order[a.rating||'']??3)-(order[b.rating||'']??3));}
+
+// Admin names — same as USER_BADGES privileged set
+const ADMIN_CRM_NAMES=['kiara','sol','swift agent'];
+function isAdminPerson(p){
+  const lower=(p.name||'').toLowerCase();
+  return ADMIN_CRM_NAMES.some(n=>lower===n||lower.includes(n));
+}
+
 function renderCRM(){
   const list=document.getElementById('crmList'),empty=document.getElementById('crmEmpty');
-  let filtered=crmFilter==='all'?people:people.filter(p=>p.cat===crmFilter);
+  let filtered;
+
+  if(crmFilter==='admin'){
+    // Show only Kiara, Sol, Swift Agent
+    filtered=people.filter(p=>isAdminPerson(p));
+  } else if(crmFilter==='user'){
+    // Show anyone logged on the site (appUsers) who also appears in CRM, OR CRM entries with cat=user that are NOT admin
+    const siteUserNames=new Set(appUsers.map(u=>(u.name||'').toLowerCase()));
+    filtered=people.filter(p=>{
+      if(isAdminPerson(p))return false;
+      return siteUserNames.has((p.name||'').toLowerCase())||p.cat==='user';
+    });
+  } else if(crmFilter==='all'){
+    filtered=people;
+  } else {
+    filtered=people.filter(p=>p.cat===crmFilter&&!isAdminPerson(p));
+  }
+
   if(crmRatingFilter!=='all'){if(crmRatingFilter==='none')filtered=filtered.filter(p=>!p.rating);else filtered=filtered.filter(p=>p.rating===crmRatingFilter);}
   filtered=sortByRating(filtered);
   if(!filtered.length){list.innerHTML='';empty.style.display='block';return;}
@@ -1587,7 +1630,11 @@ function renderCRM(){
   const catL={prospect:'Prospect',client:'Client',subscriber:'Subscriber',user:'User'};
   list.innerHTML=filtered.map(p=>{
     const crmIdDisplay=getPersonCRMIdDisplay(p);
-    return`<div class="crm-entry" id="entry-${p.id}">
+    const adminPerson=isAdminPerson(p);
+    const badge=getUserBadge(p.name);
+    const badgeCls=getBadgeClass(badge);
+    const entryClass=adminPerson?'crm-entry-admin':p.cat==='user'?'crm-entry-user':'';
+    return`<div class="crm-entry ${entryClass}" id="entry-${p.id}">
       <div class="crm-entry-grid">
         <div style="position:relative;padding-top:4px;">
           <div class="rating-dot ${p.rating}" id="dot-${p.id}" onclick="toggleDotMenu(${p.id})" title="Rate"></div>
@@ -1602,7 +1649,10 @@ function renderCRM(){
           <div class="crm-name-row">
             <span class="crm-name">${p.name}</span>
             <span class="crm-id-tag">${crmIdDisplay}</span>
-            <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.6);text-transform:uppercase;">${catL[p.cat]||p.cat}</span>
+            ${adminPerson
+              ? `<span class="badge-chip ${badgeCls}" style="font-size:8px;padding:2px 7px;">${badge}</span>`
+              : `<span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.6);text-transform:uppercase;">${catL[p.cat]||p.cat}</span>`
+            }
             ${p.age?`<span class="crm-age">Age: ${p.age}</span>`:''}
           </div>
           <div class="crm-fields">
@@ -1805,7 +1855,7 @@ function initAIPrompts(){document.getElementById('sol-welcome').value=solConfig.
 // ══ USERS / DATABASE ══
 let appUsers=JSON.parse(localStorage.getItem('oas_users')||'[]');
 
-function saveAppUsers(){localStorage.setItem('oas_users',JSON.stringify(appUsers));updateUsersBadge();}
+function saveAppUsers(){localStorage.setItem('oas_users',JSON.stringify(appUsers));updateUsersBadge();updateDbStats();}
 function updateUsersBadge(){document.getElementById('usersBadge').textContent=appUsers.length;}
 function openAddUser(){document.getElementById('addUserFormWrap').style.display='block';}
 function closeAddUser(){document.getElementById('addUserFormWrap').style.display='none';}
@@ -1833,6 +1883,11 @@ function logUserSession(match){
     const u={id:Date.now(),name:match.name,provider:'SYSTEM',email:'',badge,seenAt:Date.now(),sessionStart:Date.now(),sessionDuration:0,notes:''};
     appUsers.unshift(u);
   }else{existing.seenAt=Date.now();existing.sessionStart=Date.now();}
+  // Auto-add to CRM if not already there
+  if(!people.find(p=>p.name.toLowerCase()===match.name.toLowerCase())){
+    people.unshift({id:Date.now()+2,cat:'user',name:match.name,age:'',phone:'',email:'',ig:'',addr:'',notes:'Auto-added on login.',rating:''});
+    ensureCRMIds();savePeople();renderCRM();
+  }
   saveAppUsers();renderUsers();
 }
 
