@@ -1122,7 +1122,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 <!-- AI ENHANCE POPUP -->
 <div class="ai-popup-overlay" id="aiEnhancePopup">
   <div class="ai-popup-box">
-    <div class="ai-popup-head"><div class="ai-popup-title">AI Enhanced Description</div><button class="ai-popup-close" onclick="closeAIPopup()">×</button></div>
+    <div class="ai-popup-head"><div class="ai-popup-title" id="aiPopupTitle">Sol — AI Draft</div><button class="ai-popup-close" onclick="closeAIPopup()">×</button></div>
     <div class="ai-popup-body">
       <div class="ai-popup-label">Generated for: <span id="aiPopupItemTitle" style="color:var(--hot);"></span></div>
       <div class="ai-popup-text" id="aiPopupText"><span id="aiPopupContent"></span><div class="ai-popup-loading" id="aiPopupLoading" style="display:none;"><div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div><div class="ai-thinking-dot"></div></div></div>
@@ -1329,15 +1329,58 @@ function dedupPeople(){
 }
 
 // ══ BADGE SYSTEM ══
-const USER_BADGES={'Swift Agent':'HACKER','Kiara':'DEV','Sol':'OWNER'};
-function getUserBadge(name){return USER_BADGES[name]||'USER';}
-function getBadgeClass(badge){return{HACKER:'badge-hacker',DEV:'badge-dev',OWNER:'badge-owner',USER:'badge-user'}[badge]||'badge-user';}
+function getPrimaryBadge(name){
+  const lower=(name||'').toLowerCase().trim();
+  if(lower==='sol')return'OWNER';
+  if(lower==='kiara')return'CO-OWNER';
+  if(lower==='swift agent')return'HACKER';
+  return'USER';
+}
+function getSecondaryBadge(p){
+  const lower=(p?.name||'').toLowerCase().trim();
+  if(lower==='sol')return'CREATOR';
+  if(lower==='kiara')return'DEV';
+  if(lower==='swift agent')return'AUDITOR';
+  const adminLabel=getAdminCategoryLabel(p);
+  if(adminLabel)return adminLabel;
+  const catLabels={prospect:'PROSPECT',client:'CLIENT',subscriber:'SUBSCRIBER',user:'USER'};
+  return catLabels[(p?.cat||'').toLowerCase()]||'USER';
+}
+function getUserBadge(name){return getPrimaryBadge(name);}
+function getBadgeClass(badge){
+  const map={
+    HACKER:'badge-hacker',
+    AUDITOR:'badge-hacker',
+    DEV:'badge-dev',
+    CO-OWNER:'badge-owner',
+    OWNER:'badge-owner',
+    CREATOR:'badge-owner',
+    USER:'badge-user',
+    PROSPECT:'badge-user',
+    CLIENT:'badge-user',
+    SUBSCRIBER:'badge-user',
+    ADMIN:'badge-owner'
+  };
+  return map[badge]||'badge-user';
+}
 
 // ══ CRM ROLE → accent class ══
 function getCRMRoleClass(p){
   if(isAdminPerson(p))return'role-admin';
   const catMap={prospect:'role-prospect',client:'role-client',subscriber:'role-subscriber',user:'role-user'};
   return catMap[p.cat]||'role-user';
+}
+
+function getAdminCategoryLabel(p){
+  const ak=getAdminKey(p.name);
+  if(!ak)return null;
+  return ak==='swift agent'?'HACKER':'ADMIN';
+}
+
+function getDisplayCategory(p){
+  const adminLabel=getAdminCategoryLabel(p);
+  if(adminLabel)return'ADMIN';
+  return'USER';
 }
 
 // ══ UNIFIED CRM POPUP (from Bookings "?" button) ══
@@ -1380,11 +1423,12 @@ function openCRMFromUser(name,email){
 
 function openCRMPopupForPerson(p){
   const crmId=getCRMId(p)||p.crmId;
-  const badge=getUserBadge(p.name);
+  const badge=getPrimaryBadge(p.name);
+  const badge2=getSecondaryBadge(p);
   const badgeCls=getBadgeClass(badge);
+  const badge2Cls=getBadgeClass(badge2);
   const ak=getAdminKey(p.name);
-  const catLabels={prospect:'Prospect',client:'Client',subscriber:'Subscriber',user:'User'};
-  const roleLabel=ak?badge:(catLabels[p.cat]||p.cat);
+  const roleLabel=ak?getAdminCategoryLabel(p):getDisplayCategory(p);
   const ratingColors={green:'var(--green)',yellow:'var(--yellow)',red:'var(--red)','':'rgba(255,204,0,0.4)'};
   const ratingLabels={green:'High Potential',yellow:'Medium Potential',red:'Low Potential','':'Unrated'};
 
@@ -1392,6 +1436,7 @@ function openCRMPopupForPerson(p){
   document.getElementById('crmPopupMeta').innerHTML=`
     ${crmId?`<span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;background:rgba(255,204,0,0.08);border:1px solid rgba(255,204,0,0.3);color:var(--hot);padding:2px 8px;">${formatCRMId(crmId)}</span>`:''}
     <span class="badge-chip ${badgeCls}">${badge}</span>
+    <span class="badge-chip ${badge2Cls}">${badge2}</span>
     <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);text-transform:uppercase;">${roleLabel}</span>
     ${p.rating?`<span style="display:inline-flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:${ratingColors[p.rating]};text-transform:uppercase;"><span style="width:8px;height:8px;border-radius:50%;background:${ratingColors[p.rating]};display:inline-block;"></span>${ratingLabels[p.rating]}</span>`:''}
   `;
@@ -1401,7 +1446,7 @@ function openCRMPopupForPerson(p){
     {icon:'📷',lbl:'IG',      val:p.ig||''},
     {icon:'📍',lbl:'Address', val:p.addr||''},
     {icon:'🎂',lbl:'Age',     val:p.age?String(p.age):''},
-    {icon:'📁',lbl:'Category',val:catLabels[p.cat]||p.cat||''},
+    {icon:'📁',lbl:'Category',val:getDisplayCategory(p)},
     {icon:'📝',lbl:'Notes',   val:p.notes||''},
   ];
   document.getElementById('crmPopupBody').innerHTML=fields.map((f,i)=>`
@@ -1722,12 +1767,14 @@ function renderCRM(){
   // ── UNIFIED CARD — same layout for everyone ──
   list.innerHTML=filtered.map(p=>{
     const crmIdDisplay=getPersonCRMIdDisplay(p);
-    const badge=getUserBadge(p.name);
+    const badge=getPrimaryBadge(p.name);
+    const badge2=getSecondaryBadge(p);
     const badgeCls=getBadgeClass(badge);
+    const badge2Cls=getBadgeClass(badge2);
     const roleClass=getCRMRoleClass(p);
     const ak=getAdminKey(p.name);
     // Role label: admins show badge, others show category
-    const roleLabel=ak?badge:(catL[p.cat]||p.cat||'User');
+    const roleLabel=ak?getAdminCategoryLabel(p):getDisplayCategory(p);
     return`<div class="crm-entry ${roleClass}" id="entry-${p.id}">
       <div class="crm-entry-grid">
         <div style="position:relative;padding-top:4px;">
@@ -1739,6 +1786,7 @@ function renderCRM(){
             <span class="crm-name">${p.name}</span>
             <span class="crm-id-tag">${crmIdDisplay}</span>
             <span class="badge-chip ${badgeCls}" style="font-size:8px;padding:2px 7px;">${badge}</span>
+            <span class="badge-chip ${badge2Cls}" style="font-size:8px;padding:2px 7px;">${badge2}</span>
             <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:rgba(255,204,0,0.6);text-transform:uppercase;">${roleLabel}</span>
             ${p.age?`<span class="crm-age">Age: ${p.age}</span>`:''}
           </div>
@@ -1841,16 +1889,23 @@ async function callClaude(prompt,maxTokens=300){
   return(data.content?.map(c=>c.text||'').join('')||'').trim();
 }
 
-let _aiPopupText='';
-function openAIPopup(){document.getElementById('aiEnhancePopup').classList.add('open');}
+let _aiPopupText='',_aiPopupTarget='desc';
+function openAIPopup(title,label){
+  if(title)document.getElementById('aiPopupTitle').textContent=title;
+  if(label!==undefined)document.getElementById('aiPopupItemTitle').textContent=label;
+  document.getElementById('aiEnhancePopup').classList.add('open');
+}
 function closeAIPopup(){document.getElementById('aiEnhancePopup').classList.remove('open');}
 function setAIPopupLoading(on){const loading=document.getElementById('aiPopupLoading');const content=document.getElementById('aiPopupContent');const refreshBtn=document.getElementById('aiPopupRefreshBtn');const copyBtn=document.getElementById('aiPopupCopyBtn');loading.style.display=on?'flex':'none';content.style.opacity=on?'0':'1';refreshBtn.disabled=on;copyBtn.disabled=on;}
 async function runAIEnhance(){
+  _aiPopupTarget='desc';
   const title=document.getElementById('it-title').value.trim();const existing=document.getElementById('it-desc').value.trim();
   if(!title){alert('Add an item title first.');return false;}
-  document.getElementById('aiPopupItemTitle').textContent=title;document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
+  openAIPopup('Sol — Enhanced Description', title);
+  document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
   try{
-    const prompt=existing?`You are a luxury creative copywriter for OASENSE — an artistic studio in Las Vegas. Rewrite and dramatically enhance this product description for "${title}". Make it evocative, poetic, and sensory — 2-4 sentences, no clichés, no em-dashes. Original: "${existing}"`:`You are a luxury creative copywriter for OASENSE — an artistic studio in Las Vegas. Write a rich, evocative product description for "${title}". 2-4 sentences. Make it feel alive, sensory, and aspirational. No em-dashes.`;
+    const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
+    const prompt=existing?`${solRules}\n\nRewrite and dramatically enhance this product description for "${title}". Make it evocative, poetic, and sensory — 2-4 sentences, no clichés, no em-dashes. Original: "${existing}"`:`${solRules}\n\nWrite a rich, evocative product description for "${title}". 2-4 sentences. Make it feel alive, sensory, and aspirational. No em-dashes.`;
     const text=await callClaude(prompt,300);
     if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
   }catch(err){
@@ -1860,9 +1915,17 @@ async function runAIEnhance(){
   }
   setAIPopupLoading(false);return true;
 }
-async function enhanceDescAI(){const title=document.getElementById('it-title').value.trim();if(!title){alert('Add an item title first.');return;}openAIPopup();await runAIEnhance();}
-async function refreshAIDesc(){setAIPopupLoading(true);await runAIEnhance();}
-function copyAIDesc(){if(!_aiPopupText)return;document.getElementById('it-desc').value=_aiPopupText;const btn=document.getElementById('aiPopupCopyBtn');btn.classList.add('copied');btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy to Description`;closeAIPopup();},1400);}
+async function enhanceDescAI(){const title=document.getElementById('it-title').value.trim();if(!title){alert('Add an item title first.');return;}await runAIEnhance();}
+async function refreshAIDesc(){setAIPopupLoading(true);if(_aiPopupTarget==='blog'){await runAIBlogEnhance();}else{await runAIEnhance();}}
+function copyAIDesc(){
+  if(!_aiPopupText)return;
+  if(_aiPopupTarget==='blog'){document.getElementById('blog-content').value=_aiPopupText;}
+  else{document.getElementById('it-desc').value=_aiPopupText;}
+  const btn=document.getElementById('aiPopupCopyBtn');
+  btn.classList.add('copied');
+  btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+  setTimeout(()=>{btn.classList.remove('copied');btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy to ${_aiPopupTarget==='blog'?'Post':'Description'}`;closeAIPopup();},1400);
+}
 
 async function saveItem(){
   const title=document.getElementById('it-title').value.trim(),desc=document.getElementById('it-desc').value.trim(),priceRaw=parseFloat(document.getElementById('it-price').value),discSel=document.getElementById('it-discount').value;
@@ -2193,28 +2256,30 @@ async function enhanceBlogAI(){
     alert('Add a title first.');
     return;
   }
+  await runAIBlogEnhance();
+}
 
-  const btn = document.getElementById('aiBlogBtn');
-  btn.classList.add('loading');
-  btn.textContent = 'Thinking…';
-
-  try {
+async function runAIBlogEnhance(){
+  _aiPopupTarget='blog';
+  const title=document.getElementById('blog-title').value.trim();
+  const body=document.getElementById('blog-content').value.trim();
+  if(!title){alert('Add a title first.');return false;}
+  openAIPopup('Sol — Blog Draft', title);
+  document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
+  try{
+    const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
     const prompt = body
-      ? `You are Sol, the voice of OASENSE — edgy, cinematic, poetic. Rewrite and enhance this blog post titled "${title}". Keep 3–6 short paragraphs. Make it vivid, but not cringe. Original:\n\n${body}`
-      : `You are Sol, the voice of OASENSE — edgy, cinematic, poetic. Write a 3–6 paragraph blog post titled "${title}" for a creative studio in Las Vegas.`;
-
+      ? `${solRules}\n\nRewrite and enhance this blog post titled "${title}". Keep 3–6 short paragraphs. Make it vivid, but not cringe. Original:\n\n${body}`
+      : `${solRules}\n\nWrite a 3–6 paragraph blog post titled "${title}" for a creative studio in Las Vegas.`;
     const text = await callClaude(prompt, 800);
-    if (text) document.getElementById('blog-content').value = text;
-  } catch (err) {
-    if (err.message === 'NO_KEY') {
-      alert('No Anthropic API key set. Add it under AI Prompts → Anthropic API Key.');
-    } else {
-      alert('Error: ' + err.message);
-    }
-  } finally {
-    btn.classList.remove('loading');
-    btn.textContent = '✦ Write with AI';
+    if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;}
+    else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
+  }catch(err){
+    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No API key set. Go to AI Prompts → API Key and add your Anthropic key.';}
+    else if(err.message.includes('401')||err.message.includes('invalid_api_key')){document.getElementById('aiPopupContent').textContent='❌ Invalid API key. Check your key in AI Prompts → API Key.';}
+    else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
   }
+  setAIPopupLoading(false);return true;
 }
 
 async function saveBlogPost(){
