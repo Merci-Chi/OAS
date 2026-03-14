@@ -185,7 +185,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 #appWrap{filter:blur(12px);pointer-events:none;transition:filter .5s;}
 #appWrap.unlocked{filter:none;pointer-events:all;}
 
-#sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:rgba(0,0,8,0.98);border-right:1px solid var(--border);z-index:500;display:flex;flex-direction:column;padding:0 0 20px 0;backdrop-filter:blur(20px);}
+#sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:rgba(0,0,8,0.98);border-right:1px solid var(--border);z-index:500;display:flex;flex-direction:column;padding:0 0 20px 0;backdrop-filter:blur(20px);overflow-y:auto;}
 .sb-logo-wrap{display:flex;align-items:center;gap:10px;padding:18px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .2s;}
 .sb-logo-wrap:hover{background:rgba(255,204,0,0.04);}
 .sb-avatar{width:32px;height:32px;border-radius:50%;border:2px solid var(--hot);background:rgba(255,204,0,0.1);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;position:relative;}
@@ -740,11 +740,15 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <a class="sb-link" onclick="showSection('crm',this)"><span class="sb-icon">👥</span><span>CRM</span><span class="sb-badge" id="crmBadge">0</span></a>
   <a class="sb-link" onclick="showSection('shop',this)"><span class="sb-icon">🛍️</span><span>Shop</span></a>
   <a class="sb-link" onclick="showSection('orders',this)"><span class="sb-icon">🧾</span><span>Orders</span><span class="sb-badge" id="orderBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('donations',this)"><span class="sb-icon">💝</span><span>Donations</span></a>
   <a class="sb-link" onclick="showSection('invoices',this)"><span class="sb-icon">💳</span><span>Invoices</span><span class="sb-badge" id="invBadge">0</span></a>
   <div class="sb-section">Content</div>
-  <a class="sb-link" onclick="showSection('testimonials',this)"><span class="sb-icon">⭐</span><span>Testimonials</span><span class="sb-badge" id="testBadge">0</span></a>
   <a class="sb-link" onclick="showSection('blog',this)"><span class="sb-icon">✍️</span><span>Blog</span><span class="sb-badge" id="blogBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('music',this)"><span class="sb-icon">🎵</span><span>Music</span></a>
+  <a class="sb-link" onclick="showSection('portfolio',this)"><span class="sb-icon">🧷</span><span>Portfolio</span></a>
   <a class="sb-link" onclick="showSection('about',this)"><span class="sb-icon">🖼️</span><span>About Us</span></a>
+  <a class="sb-link" onclick="showSection('newsletter',this)"><span class="sb-icon">📬</span><span>Newsletter</span></a>
+  <a class="sb-link" onclick="showSection('testimonials',this)"><span class="sb-icon">⭐</span><span>Testimonials</span><span class="sb-badge" id="testBadge">0</span></a>
   <div class="sb-section">System</div>
   <a class="sb-link" onclick="showSection('aiprompts',this)"><span class="sb-icon">🤖</span><span>AI Prompts</span></a>
   <a class="sb-link" onclick="showSection('database',this)"><span class="sb-icon">🗄️</span><span>Database</span><span class="sb-badge" id="usersBadge">0</span></a>
@@ -934,6 +938,29 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="empty-state" id="orderEmpty">No orders yet — add one above ☀️</div>
 </div>
 
+<!-- DONATIONS -->
+<div class="dev-section" id="sec-donations">
+  <div class="topbar"><div><div class="panel-title">Dona<span class="hot">tions</span></div><div class="panel-sub">// Donors · Points · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openNewDonationForm()">+ Log Donation</button></div></div>
+  <div class="vhs-line"></div>
+  <div class="db-header-stats" id="donationStatsBar"></div>
+  <div id="donationForm" class="card" style="margin-bottom:22px;display:none;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">LOG DONATION</div>
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Donor Name</label><div class="crm-picker-wrap"><input class="fi" id="dn-name" placeholder="Type or pick from CRM…" autocomplete="off" oninput="donorPickFilter()" onfocus="donorPickFilter()"/><div class="crm-picker-dd" id="donorPickDD"></div></div></div>
+      <div class="fg"><label class="fl">Amount ($)</label><input class="fi" id="dn-amount" type="number" min="0" step="0.01" placeholder="0.00"/></div>
+    </div>
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Points</label><input class="fi" id="dn-points" type="number" min="0" step="1" placeholder="0"/></div>
+      <div class="fg"><label class="fl">Anonymous</label><select class="fi fse" id="dn-anon"><option value="no">No</option><option value="yes">Yes</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">Comment</label><textarea class="fta" id="dn-comment" placeholder="Optional note…"></textarea></div>
+    <input type="hidden" id="dn-crm-person-id" value=""/>
+    <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="saveDonation()">Save Donation</button><button class="btn btn-ghost btn-sm" onclick="closeNewDonationForm()">Cancel</button></div>
+  </div>
+  <div id="donationList"></div>
+  <div class="empty-state" id="donationEmpty">No donations yet — add one above ☀️</div>
+</div>
+
 <!-- INVOICES -->
 <div class="dev-section" id="sec-invoices">
   <div class="topbar"><div><div class="panel-title">Invo<span class="hot">ices</span></div><div class="panel-sub">// Charge · Receipt · Send · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openNewInvoice()">+ New Invoice</button></div></div>
@@ -964,7 +991,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 
 <!-- TESTIMONIALS -->
 <div class="dev-section" id="sec-testimonials">
-  <div class="topbar"><div><div class="panel-title">Testi<span class="hot">monials</span></div><div class="panel-sub">// Reviews · Ratings · Live Publishing · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openAddTestimonial()">+ Add Testimonial</button></div></div>
+  <div class="topbar"><div><div class="panel-title">Testi<span class="hot">monials</span></div><div class="panel-sub">// User Submissions · Ratings · Live Publishing · 🔥 Firebase Synced</div></div></div>
   <div class="vhs-line"></div>
   <div class="test-add-form" id="testAddForm">
     <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">ADD TESTIMONIAL</div>
@@ -990,15 +1017,52 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="vhs-line"></div>
   <div id="blogForm" class="card" style="margin-bottom:22px;display:none;">
     <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">NEW BLOG POST</div>
-    <div class="fg"><label class="fl">Author</label><div class="author-pick"><button class="author-btn sol" id="blogAuthorSol" onclick="selectBlogAuthor('sol')">🤖 Sol</button><button class="author-btn kiara" id="blogAuthorKiara" onclick="selectBlogAuthor('kiara')">💕 Kiara</button></div><input type="hidden" id="blog-author" value="sol"/></div>
+    <div class="fg"><label class="fl">Author</label><div class="author-pick"><button class="author-btn sol" id="blogAuthorSol" onclick="selectBlogAuthor('sol')">✨ Sol</button><button class="author-btn kiara" id="blogAuthorKiara" onclick="selectBlogAuthor('kiara')">💕 Kiara</button></div><input type="hidden" id="blog-author" value="sol"/></div>
     <div class="fg"><label class="fl">Title</label><input class="fi" id="blog-title" placeholder="Post title…"/></div>
-    <div class="fg"><label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Content</span><button class="btn-ai" id="aiBlogBtn" onclick="enhanceBlogAI()">✦ Write with AI</button></label><textarea class="fta" id="blog-content" style="min-height:150px;" placeholder="Write your post…"></textarea></div>
+    <div class="fg"><label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Content</span><button class="btn-ai" id="aiBlogBtn" onclick="enhanceBlogAI()">✦ Write with AI</button></label>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="formatBlog('bold')"><b>B</b></button>
+        <button class="btn btn-ghost btn-sm" onclick="formatBlog('italic')"><i>I</i></button>
+        <button class="btn btn-ghost btn-sm" onclick="formatBlog('underline')"><u>U</u></button>
+        <button class="btn btn-ghost btn-sm" onclick="formatBlog('insertUnorderedList')">• List</button>
+        <button class="btn btn-ghost btn-sm" onclick="formatBlog('insertOrderedList')">1. List</button>
+        <select class="fi fse" style="max-width:140px;" onchange="formatBlogSize(this.value)">
+          <option value="">Text Size</option>
+          <option value="1">Small</option>
+          <option value="3">Normal</option>
+          <option value="5">Large</option>
+          <option value="7">XL</option>
+        </select>
+      </div>
+      <div class="fta" id="blog-content-editor" contenteditable="true" style="min-height:150px;"></div>
+      <textarea id="blog-content" style="display:none;"></textarea>
+    </div>
     <div class="fg"><label class="fl">Cover Image</label><div class="image-upload-area"><input type="file" accept="image/*" id="blog-image" onchange="previewImage(event,'blogImgPreview','blogImgPlaceholder')"/><img class="upload-preview" id="blogImgPreview"/><div id="blogImgPlaceholder"><span class="upload-icon">🖼️</span><div class="upload-label">Click to upload cover</div></div></div></div>
     <input type="hidden" id="blog-edit-id" value=""/>
-    <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill btn-sm" onclick="saveBlogPost()">Save Post</button><button class="btn btn-ghost btn-sm" onclick="closeBlogForm()">Cancel</button></div>
+    <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill btn-sm" onclick="saveBlogPost()">Save Draft</button><button class="btn btn-ghost btn-sm" onclick="closeBlogForm()">Cancel</button></div>
   </div>
   <div id="blogList"></div>
   <div class="empty-state" id="blogEmpty">No posts yet — write one above ✍️</div>
+</div>
+
+<!-- MUSIC DEMOS -->
+<div class="dev-section" id="sec-music">
+  <div class="topbar"><div><div class="panel-title">Music <span class="hot">Demos</span></div><div class="panel-sub">// Songs · Stats · Comments · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openNewMusic()">+ New Track</button></div></div>
+  <div class="vhs-line"></div>
+  <div id="musicForm" class="card" style="margin-bottom:22px;display:none;">
+    <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">NEW TRACK</div>
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Song Name</label><input class="fi" id="md-title" placeholder="Song title"/></div>
+      <div class="fg"><label class="fl">Creator</label><input class="fi" id="md-creator" placeholder="Creator / Artist"/></div>
+    </div>
+    <div class="row row-2">
+      <div class="fg"><label class="fl">Timeframe</label><input class="fi" id="md-timeframe" placeholder="e.g. 2024 — 2025"/></div>
+      <div class="fg"><label class="fl">Audio URL</label><input class="fi" id="md-audio" placeholder="https://..."/></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill btn-sm" onclick="saveMusicDemo()">Save Track</button><button class="btn btn-ghost btn-sm" onclick="closeMusicForm()">Cancel</button></div>
+  </div>
+  <div id="musicList"></div>
+  <div class="empty-state" id="musicEmpty">No tracks yet — add one above ☀️</div>
 </div>
 
 <!-- AI PROMPTS -->
@@ -1085,7 +1149,24 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   </div>
 </div>
 
-<!-- ABOUT / PORTFOLIO CONTENT -->
+<!-- PORTFOLIO CONTENT -->
+<div class="dev-section" id="sec-portfolio">
+  <div class="topbar">
+    <div>
+      <div class="panel-title">Portfo<span class="hot">lio</span></div>
+      <div class="panel-sub">// Cinematic · Digital · Video · Branding · Lifestyle · 🔥 Firebase Synced</div>
+    </div>
+    <div class="topbar-actions"><button class="btn btn-fill btn-sm" onclick="saveSiteContent()">💾 Save Content</button></div>
+  </div>
+  <div class="vhs-line"></div>
+  <div class="content-card">
+    <div class="content-title">Portfolio Media</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.45);margin-bottom:12px;">Add photos or videos per section. Videos autoplay muted on hover in the dev site. Images rotate on hover when there are multiple.</div>
+    <div id="portfolioSections"></div>
+  </div>
+</div>
+
+<!-- ABOUT CONTENT -->
 <div class="dev-section" id="sec-about">
   <div class="topbar">
     <div>
@@ -1118,12 +1199,37 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       </div>
     </div>
   </div>
+</div>
 
+<!-- NEWSLETTER -->
+<div class="dev-section" id="sec-newsletter">
+  <div class="topbar">
+    <div>
+      <div class="panel-title">News<span class="hot">letter</span></div>
+      <div class="panel-sub">// AI Draft · Subscribers · 🔥 Firebase Synced</div>
+    </div>
+  </div>
+  <div class="vhs-line"></div>
   <div class="content-card">
-    <div class="content-title">Portfolio Media</div>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.45);margin-bottom:12px;">Add photos or videos per section. Videos autoplay muted on hover in the dev site. Images rotate on hover when there are multiple.</div>
-
-    <div id="portfolioSections"></div>
+    <div class="content-title">AI Email Draft</div>
+    <div class="fg"><label class="fl">Subject</label><input class="fi" id="nl-subject" placeholder="Subject"/></div>
+    <div class="fg"><label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Content</span><button class="btn-ai" onclick="enhanceNewsletterAI()">✦ Draft with Sol</button></label><textarea class="fta" id="nl-content" style="min-height:120px;" placeholder="Write the newsletter…"></textarea></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" onclick="copyNewsletterSubject()">Copy Subject</button>
+      <button class="btn btn-ghost btn-sm" onclick="copyNewsletterContent()">Copy Content</button>
+    </div>
+  </div>
+  <div class="content-card">
+    <div class="content-title">Subscribers</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+      <button class="btn btn-ghost btn-sm" id="nlModeAll" onclick="setNewsletterMode('all')">All Subscribers</button>
+      <button class="btn btn-ghost btn-sm" id="nlModeSelect" onclick="setNewsletterMode('select')">Select Subscribers</button>
+      <button class="btn btn-ghost btn-sm" onclick="selectAllSubscribers()">Select All</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearAllSubscribers()">Clear</button>
+      <button class="btn btn-fill btn-sm" onclick="copySubscriberEmails()">Copy Emails</button>
+    </div>
+    <div id="newsletterList"></div>
+    <div class="empty-state" id="newsletterEmpty">No subscribers in CRM ☀️</div>
   </div>
 </div>
 
@@ -1238,12 +1344,18 @@ function showSync(state, msg) {
 }
 
 // ── LOCAL DATA ──
-let bookings=[],people=[],shopItems=[],orders=[],invoices=[],testimonials=[],blogPosts=[],appUsers=[],auditLogData=[];
+let bookings=[],people=[],shopItems=[],orders=[],donations=[],invoices=[],testimonials=[],blogPosts=[],musicDemos=[],appUsers=[],auditLogData=[];
 let solConfig={
-  welcome:"Hey! I'm Sol, your OASENSE guide 🌟 — Ask me anything, make a booking, or explore the site!",
-  rules:"You are Sol, the AI assistant for OASENSE — an artistic creative studio by photographer and musician Angel Alvarez based in Las Vegas, NV.\nRules:\n- Be warm, cool, and creative — match the OASENSE aesthetic\n- Help users navigate the site, book sessions, and explore services\n- Never be rude or dismissive\n- Keep responses concise and on-brand\n- Always offer to connect users with a real human if needed",
-  commands:[{id:1,label:'Go to Booking Page',type:'link',value:'#booking'},{id:2,label:'Scroll to Contact Us',type:'scroll',value:'#contact'},{id:3,label:'Open Shop',type:'link',value:'#shop'},{id:4,label:'See Portfolio',type:'link',value:'#portfolio'}],
-  userPrompts:['CONTACT US','MAKE A BOOKING','VIEW PORTFOLIO','SEE PRICING','MEET THE TEAM']
+  welcome:"Welcome to OASENSE — I’m Sol, your creative guide. Tell me what you’re dreaming up and I’ll point you to the right place, fast.",
+  rules:"You are Sol, the AI companion for OASENSE — an artistic creative studio in Las Vegas.\nGuidance:\n- Be warm, confident, and cinematic in tone.\n- Ask one helpful clarifying question when the user is vague.\n- Give short, high-signal answers first, then offer a button to go deeper.\n- When the user mentions booking, scheduling, photoshoots, or appointments, show a clear booking button.\n- When they mention contacting, support, or speaking with someone, show a “Take me there” scroll button.\n- When they mention Instagram, show an “Instagram” button.\n- Never use hashtags (#) in command targets.\n- Keep it on-brand, concise, and reassuring.",
+  commands:[
+    {id:1,label:'Make an Appointment',type:'link',value:'https://merci-chi.github.io/OAS/'},
+    {id:2,label:'Instagram',type:'link',value:'https://instagram.com/'},
+    {id:3,label:'Take me there',type:'scroll',value:'contact'},
+    {id:4,label:'View Portfolio',type:'scroll',value:'portfolio'},
+    {id:5,label:'Open Shop',type:'link',value:'https://merci-chi.github.io/OAS/shop'}
+  ],
+  userPrompts:['BOOK A PHOTOSHOOT','CONTACT OASENSE','VIEW PORTFOLIO','OPEN SHOP','SEE PRICING']
 };
 let siteContent={
   about:{title:'',quote:'',message:'',photo:''},
@@ -1263,9 +1375,11 @@ function startFirebaseListeners(){
   fsListen('crm',        people,       ()=>{ensureCRMIds();dedupPeople();renderCRM();updateCRMBadge();});
   fsListen('shopItems',  shopItems,    ()=>{renderShop();});
   fsListen('orders',     orders,       ()=>{renderOrders();updateOrderBadge();});
+  fsListen('donations',  donations,    ()=>{renderDonations();});
   fsListen('invoices',   invoices,     ()=>{renderInvoices();updateInvBadge();});
   fsListen('testimonials',testimonials,()=>{renderTestimonials();updateTestBadge();});
   fsListen('blogPosts',  blogPosts,    ()=>{renderBlog();updateBlogBadge();});
+  fsListen('musicDemos', musicDemos,   ()=>{renderMusic();});
   fsListen('appUsers',   appUsers,     ()=>{renderUsers();updateUsersBadge();});
   fsAuditListen(entries=>{
     auditLogData.length=0;entries.forEach(x=>auditLogData.push(x));
@@ -1299,6 +1413,10 @@ function saveTestimonialFS(item) {return fsSet('testimonials',item,testimonials,
 function deleteTestimonialFS(id) {return fsDelete('testimonials',id,testimonials,()=>{renderTestimonials();updateTestBadge();});}
 function saveBlogPostFS(item)    {return fsSet('blogPosts',item,blogPosts,()=>{renderBlog();updateBlogBadge();});}
 function deleteBlogPostFS(id)    {return fsDelete('blogPosts',id,blogPosts,()=>{renderBlog();updateBlogBadge();});}
+function saveMusicDemoFS(item)   {return fsSet('musicDemos',item,musicDemos,()=>{renderMusic();});}
+function deleteMusicDemoFS(id)   {return fsDelete('musicDemos',id,musicDemos,()=>{renderMusic();});}
+function saveDonationFS(item)    {return fsSet('donations',item,donations,()=>{renderDonations();});}
+function deleteDonationFS(id)    {return fsDelete('donations',id,donations,()=>{renderDonations();});}
 function saveAppUserFS(item)     {return fsSet('appUsers',item,appUsers,()=>{renderUsers();updateUsersBadge();});}
 function deleteAppUserFS(id)     {return fsDelete('appUsers',id,appUsers,()=>{renderUsers();updateUsersBadge();});}
 
@@ -1994,7 +2112,7 @@ async function enhanceDescAI(){const title=document.getElementById('it-title').v
 async function refreshAIDesc(){setAIPopupLoading(true);if(_aiPopupTarget==='blog'){await runAIBlogEnhance();}else{await runAIEnhance();}}
 function copyAIDesc(){
   if(!_aiPopupText)return;
-  if(_aiPopupTarget==='blog'){document.getElementById('blog-content').value=_aiPopupText;}
+  if(_aiPopupTarget==='blog'){setBlogEditorContent(_aiPopupText);}
   else{document.getElementById('it-desc').value=_aiPopupText;}
   const btn=document.getElementById('aiPopupCopyBtn');
   btn.classList.add('copied');
@@ -2333,7 +2451,7 @@ function openNewBlogPost(){
   _blogEditingId = null;
   document.getElementById('blogForm').style.display = 'block';
   document.getElementById('blog-title').value = '';
-  document.getElementById('blog-content').value = '';
+  setBlogEditorContent('');
   document.getElementById('blog-author').value = 'sol';
   selectBlogAuthor('sol');
   document.getElementById('blog-image').value = '';
@@ -2354,9 +2472,30 @@ function selectBlogAuthor(a){
   document.getElementById('blogAuthorKiara').classList.toggle('active', a === 'kiara');
 }
 
+function formatBlog(cmd){
+  document.execCommand(cmd,false,null);
+  document.getElementById('blog-content-editor').focus();
+}
+function formatBlogSize(size){
+  if(!size)return;
+  document.execCommand('fontSize',false,size);
+  document.getElementById('blog-content-editor').focus();
+}
+function getBlogContentHtml(){
+  return document.getElementById('blog-content-editor').innerHTML;
+}
+function getBlogPlainText(){
+  return document.getElementById('blog-content-editor').innerText;
+}
+function setBlogEditorContent(html){
+  const ed=document.getElementById('blog-content-editor');
+  ed.innerHTML=html||'';
+  document.getElementById('blog-content').value=ed.innerHTML;
+}
+
 async function enhanceBlogAI(){
   const title = document.getElementById('blog-title').value.trim();
-  const body  = document.getElementById('blog-content').value.trim();
+  const body  = getBlogPlainText().trim();
   if (!title) {
     alert('Add a title first.');
     return;
@@ -2367,7 +2506,7 @@ async function enhanceBlogAI(){
 async function runAIBlogEnhance(){
   _aiPopupTarget='blog';
   const title=document.getElementById('blog-title').value.trim();
-  const body=document.getElementById('blog-content').value.trim();
+  const body=getBlogPlainText().trim();
   if(!title){alert('Add a title first.');return false;}
   openAIPopup('Sol — Blog Draft', title);
   document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
@@ -2389,10 +2528,11 @@ async function runAIBlogEnhance(){
 
 async function saveBlogPost(){
   const title   = document.getElementById('blog-title').value.trim();
-  const content = document.getElementById('blog-content').value.trim();
+  const contentHtml = getBlogContentHtml().trim();
+  const contentText = getBlogPlainText().trim();
   const author  = document.getElementById('blog-author').value || 'sol';
 
-  if (!title || !content) {
+  if (!title || !contentText) {
     alert('Title and content are required.');
     return;
   }
@@ -2409,7 +2549,8 @@ async function saveBlogPost(){
     await saveBlogPostFS({
       ...existing,
       title,
-      content,
+      content: contentText,
+      contentHtml,
       author,
       cover: coverData || existing.cover || ''
     });
@@ -2418,7 +2559,8 @@ async function saveBlogPost(){
     await saveBlogPostFS({
       id,
       title,
-      content,
+      content: contentText,
+      contentHtml,
       author,
       cover: coverData,
       live: false,
@@ -2437,6 +2579,356 @@ async function toggleBlogLive(id){
   await saveBlogPostFS({ ...post, live });
 }
 
+function stripHtml(html){
+  return (html||'').replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim();
+}
+
+function toggleBlogStats(id){
+  const el=document.getElementById('blogStats-'+id);
+  if(!el)return;
+  el.style.display=el.style.display==='none'?'block':'none';
+}
+
+async function addBlogEngagement(id,type){
+  const post=blogPosts.find(p=>String(p.id)===String(id));
+  if(!post)return;
+  const name=document.getElementById('blogStatName-'+id).value.trim()||'Anonymous';
+  const email=document.getElementById('blogStatEmail-'+id).value.trim()||'';
+  const stats=post.stats||{likes:0,shares:0};
+  if(type==='like')stats.likes=(stats.likes||0)+1;
+  if(type==='share')stats.shares=(stats.shares||0)+1;
+  await saveBlogPostFS({...post,stats});
+  const delta=type==='like'?1:2;
+  await applySolPointsFromEngagement(name,email,delta,`Blog ${type}`);
+  if(currentUser)addAuditEntry(currentUser.name,`Blog ${type}`,'REF #'+id);
+  renderBlog();
+}
+
+async function addBlogComment(id){
+  const post=blogPosts.find(p=>String(p.id)===String(id));
+  if(!post)return;
+  const name=document.getElementById('blogStatName-'+id).value.trim()||'Anonymous';
+  const email=document.getElementById('blogStatEmail-'+id).value.trim()||'';
+  const body=document.getElementById('blogCommentBody-'+id).value.trim();
+  if(!body)return;
+  const comments=(post.comments||[]).slice();
+  comments.unshift({id:newId(),name,email,body,ts:Date.now()});
+  document.getElementById('blogCommentBody-'+id).value='';
+  await saveBlogPostFS({...post,comments});
+  if(currentUser)addAuditEntry(currentUser.name,'Blog Comment','REF #'+id);
+  renderBlog();
+}
+
+async function deleteBlogComment(id,idx){
+  const post=blogPosts.find(p=>String(p.id)===String(id));
+  if(!post)return;
+  const comments=(post.comments||[]).slice();
+  comments.splice(idx,1);
+  await saveBlogPostFS({...post,comments});
+  renderBlog();
+}
+
+async function applySolPointsFromEngagement(name,email,delta,reason){
+  const person=people.find(p=>(email&&p.email&&p.email.toLowerCase()===email.toLowerCase())||(p.name||'').toLowerCase()===name.toLowerCase());
+  if(!person)return;
+  const cur=parseInt(person.points||0)||0;
+  const hist=(person.pointsHistory||[]).slice();
+  hist.unshift({ts:Date.now(),delta,reason,actor:currentUser?currentUser.name:'SYSTEM'});
+  await savePersonFS({...person,points:cur+delta,pointsHistory:hist});
+}
+
+/* ═════════════ MUSIC DEMOS ═════════════ */
+let _musicEditingId=null;
+
+function openNewMusic(){
+  _musicEditingId=null;
+  document.getElementById('musicForm').style.display='block';
+  document.getElementById('md-title').value='';
+  document.getElementById('md-creator').value='';
+  document.getElementById('md-timeframe').value='';
+  document.getElementById('md-audio').value='';
+}
+function closeMusicForm(){document.getElementById('musicForm').style.display='none';}
+
+async function saveMusicDemo(){
+  const title=document.getElementById('md-title').value.trim();
+  const creator=document.getElementById('md-creator').value.trim();
+  const timeframe=document.getElementById('md-timeframe').value.trim();
+  const audioUrl=document.getElementById('md-audio').value.trim();
+  if(!title||!audioUrl){alert('Song name and audio URL are required.');return;}
+  const base={title,creator,timeframe,audioUrl,stats:{likes:0,shares:0},comments:[]};
+  if(_musicEditingId){
+    const existing=musicDemos.find(m=>String(m.id)===String(_musicEditingId));
+    if(!existing)return;
+    await saveMusicDemoFS({...existing,...base});
+  }else{
+    const id=Math.floor(Date.now());
+    await saveMusicDemoFS({id,createdAt:Date.now(),...base});
+  }
+  closeMusicForm();
+}
+
+async function deleteMusicDemo(id){showConfirm('Delete this track?',async()=>{await deleteMusicDemoFS(id);});}
+
+function renderMusic(){
+  const list=document.getElementById('musicList');
+  const empty=document.getElementById('musicEmpty');
+  if(!musicDemos.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=musicDemos.slice().sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).map(m=>{
+    const stats=m.stats||{likes:0,shares:0};
+    const comments=m.comments||[];
+    return `
+      <div class="inv-card">
+        <div class="inv-card-header">
+          <div>
+            <div style="font-family:'Black Ops One',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;">
+              ${esc(m.title)}
+            </div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);margin-top:2px;">
+              ${esc(m.creator||'—')}${m.timeframe?` · ${esc(m.timeframe)}`:''}
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="btn btn-ghost btn-sm" onclick="toggleMusicStats(${m.id})">Stats</button>
+            <button class="btn btn-red btn-sm" onclick="deleteMusicDemo(${m.id})">✕</button>
+          </div>
+        </div>
+        <audio controls style="width:100%;margin-top:6px;">
+          <source src="${esc(m.audioUrl)}" />
+        </audio>
+        <div id="musicStats-${m.id}" style="display:none;margin-top:12px;border-top:1px solid rgba(255,204,0,0.15);padding-top:12px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+            <span class="badge-chip badge-owner">LIKES ${stats.likes||0}</span>
+            <span class="badge-chip badge-owner">SHARES ${stats.shares||0}</span>
+            <span class="badge-chip badge-user">COMMENTS ${comments.length}</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <input class="fi" id="musicStatName-${m.id}" placeholder="Name" style="max-width:180px;"/>
+            <input class="fi" id="musicStatEmail-${m.id}" placeholder="Email (optional)" style="max-width:220px;"/>
+            <button class="btn btn-ghost btn-sm" onclick="addMusicEngagement(${m.id},'like')">+ Like</button>
+            <button class="btn btn-ghost btn-sm" onclick="addMusicEngagement(${m.id},'share')">+ Share</button>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <input class="fi" id="musicCommentBody-${m.id}" placeholder="Comment…" style="flex:1;min-width:220px;"/>
+            <button class="btn btn-ghost btn-sm" onclick="addMusicComment(${m.id})">Add Comment</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            ${comments.length?comments.map((c,i)=>`
+              <div style="border:1px solid rgba(255,204,0,0.15);padding:8px 10px;background:rgba(255,204,0,0.02);display:flex;gap:8px;align-items:center;">
+                <div style="flex:1;">
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#fff;">${esc(c.body||'')}</div>
+                  <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.45);letter-spacing:1px;">${esc(c.name||'Anonymous')}${c.email?' · '+esc(c.email):''} · ${c.ts?fmtTs(c.ts):'—'}</div>
+                </div>
+                <button class="btn btn-red btn-sm" onclick="deleteMusicComment(${m.id},${i})">✕</button>
+              </div>
+            `).join(''):`<div class="empty-state" style="padding:16px 10px;">No comments yet</div>`}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ═════════════ DONATIONS ═════════════ */
+function openNewDonationForm(){
+  document.getElementById('donationForm').style.display='block';
+  document.getElementById('dn-name').value='';
+  document.getElementById('dn-amount').value='';
+  document.getElementById('dn-points').value='';
+  document.getElementById('dn-anon').value='no';
+  document.getElementById('dn-comment').value='';
+  document.getElementById('dn-crm-person-id').value='';
+}
+function closeNewDonationForm(){document.getElementById('donationForm').style.display='none';}
+function donorPickFilter(){
+  const q=document.getElementById('dn-name').value.toLowerCase().trim();
+  const dd=document.getElementById('donorPickDD');
+  const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);
+  if(!hits.length){dd.classList.remove('open');return;}
+  dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickDonor(${p.id})"><div>${p.name}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}</div></div>`).join('');
+  dd.classList.add('open');
+}
+function pickDonor(id){
+  const p=people.find(x=>String(x.id)===String(id));
+  if(!p)return;
+  document.getElementById('dn-name').value=p.name;
+  document.getElementById('dn-crm-person-id').value=id;
+  document.getElementById('donorPickDD').classList.remove('open');
+}
+async function saveDonation(){
+  const name=document.getElementById('dn-name').value.trim();
+  const amount=parseFloat(document.getElementById('dn-amount').value)||0;
+  const points=parseInt(document.getElementById('dn-points').value)||Math.floor(amount);
+  const anon=document.getElementById('dn-anon').value==='yes';
+  const comment=document.getElementById('dn-comment').value.trim();
+  if(!name||amount<=0){alert('Donor name and amount are required.');return;}
+  const crmPersonId=document.getElementById('dn-crm-person-id').value||null;
+  const id=Math.floor(Date.now());
+  await saveDonationFS({id,name,amount,points,anon,comment,crmPersonId,ts:Date.now()});
+  if(crmPersonId){
+    const person=people.find(p=>String(p.id)===String(crmPersonId));
+    if(person){
+      const cur=parseInt(person.points||0)||0;
+      const hist=(person.pointsHistory||[]).slice();
+      hist.unshift({ts:Date.now(),delta:points,reason:'Donation',actor:currentUser?currentUser.name:'SYSTEM'});
+      await savePersonFS({...person,points:cur+points,pointsHistory:hist});
+    }
+  }
+  if(currentUser)addAuditEntry(currentUser.name,'Logged Donation','REF #'+id);
+  closeNewDonationForm();
+}
+async function deleteDonation(id){showConfirm('Delete this donation?',async()=>{await deleteDonationFS(id);});}
+function renderDonations(){
+  const list=document.getElementById('donationList');
+  const empty=document.getElementById('donationEmpty');
+  const stats=document.getElementById('donationStatsBar');
+  if(!donations.length){
+    list.innerHTML='';
+    empty.style.display='block';
+  } else {
+    empty.style.display='none';
+    list.innerHTML=donations.slice().sort((a,b)=>(b.ts||0)-(a.ts||0)).map(d=>{
+      const donor=d.anon?'Anonymous':d.name;
+      return `
+      <div class="inv-card">
+        <div class="inv-card-header">
+          <div>
+            <div style="font-family:'Black Ops One',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;">${esc(donor)}</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);margin-top:2px;">${d.ts?fmtTs(d.ts):''}${d.comment?` · ${esc(d.comment)}`:''}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <button class="bc-crm-btn" onclick="openCRMPopupByClientName('${esc(d.name)}')"><span class="bc-dot"></span> CRM</button>
+            <button class="btn btn-red btn-sm" onclick="deleteDonation(${d.id})">✕</button>
+          </div>
+        </div>
+        <div class="order-totals" style="margin-top:4px;">
+          <div class="order-total-row"><span class="ot-lbl">Amount</span><span class="ot-val">$${d.amount.toFixed(2)}</span></div>
+          <div class="order-total-row"><span class="ot-lbl">Points</span><span class="ot-val">${d.points||0}</span></div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  const totalRaised=donations.reduce((s,d)=>s+(d.amount||0),0);
+  const donors=new Set(donations.map(d=>(d.name||'').toLowerCase().trim())).size;
+  const pts=donations.reduce((s,d)=>s+(d.points||0),0);
+  stats.innerHTML=`<div class="db-stat-card"><div class="db-stat-num">$${totalRaised.toFixed(2)}</div><div class="db-stat-label">Total Raised</div></div><div class="db-stat-card"><div class="db-stat-num">${donors}</div><div class="db-stat-label">Donors</div></div><div class="db-stat-card"><div class="db-stat-num" style="color:var(--hot);">${pts}</div><div class="db-stat-label">Points</div></div>`;
+}
+
+/* ═════════════ NEWSLETTER ═════════════ */
+let newsletterMode='all';
+let newsletterSelected=new Set();
+
+function setNewsletterMode(mode){
+  newsletterMode=mode;
+  document.getElementById('nlModeAll').classList.toggle('active',mode==='all');
+  document.getElementById('nlModeSelect').classList.toggle('active',mode==='select');
+  renderNewsletter();
+}
+function selectAllSubscribers(){
+  newsletterSelected=new Set((people.filter(p=>(p.cat||'').toLowerCase()==='subscriber')).map(p=>String(p.id)));
+  renderNewsletter();
+}
+function clearAllSubscribers(){newsletterSelected=new Set();renderNewsletter();}
+
+function renderNewsletter(){
+  const list=document.getElementById('newsletterList');
+  const empty=document.getElementById('newsletterEmpty');
+  const subs=people.filter(p=>(p.cat||'').toLowerCase()==='subscriber');
+  if(!subs.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=subs.map(p=>{
+    const checked=newsletterSelected.has(String(p.id));
+    return `
+      <div class="crm-entry ${getCRMRoleClass(p)}" style="padding:12px 16px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          ${newsletterMode==='select'?`<input type="checkbox" ${checked?'checked':''} onclick="toggleSubscriber('${p.id}',this.checked)"/>`:''}
+          <div style="flex:1;">
+            <div class="crm-name">${p.name}</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;">${p.email||'—'}</div>
+          </div>
+          <button class="bc-crm-btn" onclick="openCRMPopupForPerson(people.find(x=>String(x.id)===String(${p.id})))"><span class="bc-dot"></span> CRM</button>
+          ${p.email?`<button class="btn btn-ghost btn-sm" onclick="copyFieldValue('${p.email.replace(/'/g,\"&#39;\")}', 'nlcopy-${p.id}')">Copy Email</button>`:''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+function toggleSubscriber(id,checked){
+  if(checked)newsletterSelected.add(String(id));
+  else newsletterSelected.delete(String(id));
+}
+function copySubscriberEmails(){
+  const subs=people.filter(p=>(p.cat||'').toLowerCase()==='subscriber');
+  const list=(newsletterMode==='select'?subs.filter(p=>newsletterSelected.has(String(p.id))):subs).map(p=>p.email).filter(Boolean);
+  const text=list.join(', ');
+  navigator.clipboard.writeText(text||'').then(()=>{});
+}
+function copyNewsletterSubject(){navigator.clipboard.writeText(document.getElementById('nl-subject').value||'').then(()=>{});}
+function copyNewsletterContent(){navigator.clipboard.writeText(document.getElementById('nl-content').value||'').then(()=>{});}
+async function enhanceNewsletterAI(){
+  const subject=document.getElementById('nl-subject').value.trim();
+  const content=document.getElementById('nl-content').value.trim();
+  openAIPopup('Sol — Newsletter Draft', subject||'Newsletter');
+  document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
+  try{
+    const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
+    const prompt=`${solRules}\n\nWrite a compelling email newsletter for OASENSE.\nSubject: ${subject||'(create one)'}\nBody draft: ${content||'(create a full email)'}\nReturn the subject on the first line starting with \"Subject:\" and the email body after.`;
+    const text=await callClaude(prompt,600);
+    if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;const lines=text.split('\\n');const subjLine=lines.find(l=>l.toLowerCase().startsWith('subject:'));if(subjLine){document.getElementById('nl-subject').value=subjLine.replace(/subject:\\s*/i,'').trim();}const body=text.replace(/^Subject:.*\\n?/i,'').trim();if(body)document.getElementById('nl-content').value=body;}
+    else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
+  }catch(err){
+    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No API key set. Go to AI Prompts → API Key and add your Anthropic key.';}
+    else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
+  }
+  setAIPopupLoading(false);
+}
+
+function toggleMusicStats(id){
+  const el=document.getElementById('musicStats-'+id);
+  if(!el)return;
+  el.style.display=el.style.display==='none'?'block':'none';
+}
+
+async function addMusicEngagement(id,type){
+  const track=musicDemos.find(m=>String(m.id)===String(id));
+  if(!track)return;
+  const name=document.getElementById('musicStatName-'+id).value.trim()||'Anonymous';
+  const email=document.getElementById('musicStatEmail-'+id).value.trim()||'';
+  const stats=track.stats||{likes:0,shares:0};
+  if(type==='like')stats.likes=(stats.likes||0)+1;
+  if(type==='share')stats.shares=(stats.shares||0)+1;
+  await saveMusicDemoFS({...track,stats});
+  const delta=type==='like'?1:2;
+  await applySolPointsFromEngagement(name,email,delta,`Music ${type}`);
+  if(currentUser)addAuditEntry(currentUser.name,`Music ${type}`,'REF #'+id);
+  renderMusic();
+}
+
+async function addMusicComment(id){
+  const track=musicDemos.find(m=>String(m.id)===String(id));
+  if(!track)return;
+  const name=document.getElementById('musicStatName-'+id).value.trim()||'Anonymous';
+  const email=document.getElementById('musicStatEmail-'+id).value.trim()||'';
+  const body=document.getElementById('musicCommentBody-'+id).value.trim();
+  if(!body)return;
+  const comments=(track.comments||[]).slice();
+  comments.unshift({id:newId(),name,email,body,ts:Date.now()});
+  document.getElementById('musicCommentBody-'+id).value='';
+  await saveMusicDemoFS({...track,comments});
+  if(currentUser)addAuditEntry(currentUser.name,'Music Comment','REF #'+id);
+  renderMusic();
+}
+
+async function deleteMusicComment(id,idx){
+  const track=musicDemos.find(m=>String(m.id)===String(id));
+  if(!track)return;
+  const comments=(track.comments||[]).slice();
+  comments.splice(idx,1);
+  await saveMusicDemoFS({...track,comments});
+  renderMusic();
+}
+
 async function deleteBlogPost(id){
   if (!confirm('Delete this blog post?')) return;
   await deleteBlogPostFS(id);
@@ -2449,7 +2941,7 @@ function editBlogPost(id){
 
   document.getElementById('blogForm').style.display = 'block';
   document.getElementById('blog-title').value = post.title || '';
-  document.getElementById('blog-content').value = post.content || '';
+  setBlogEditorContent(post.contentHtml || post.content || '');
   document.getElementById('blog-author').value  = post.author || 'sol';
   selectBlogAuthor(post.author || 'sol');
   document.getElementById('blog-edit-id').value = id;
@@ -2489,6 +2981,9 @@ function renderBlog(){
       const live = !!p.live;
       const authorClass = (p.author || 'sol') === 'kiara' ? 'kiara' : 'sol';
       const authorLabel = (p.author || 'sol') === 'kiara' ? 'Kiara' : 'Sol';
+      const stats = p.stats || {likes:0,shares:0};
+      const comments = p.comments || [];
+      const excerpt = stripHtml(p.contentHtml || p.content || '').slice(0,220);
 
       return `
       <div class="blog-post-card">
@@ -2509,13 +3004,42 @@ function renderBlog(){
           <button class="btn-edit-white" onclick="editBlogPost(${p.id})">Edit</button>
         </div>
         <div class="blog-excerpt">
-          ${esc(p.content.slice(0,220))}${p.content.length > 220 ? '…' : ''}
+          ${esc(excerpt)}${excerpt.length > 220 ? '…' : ''}
         </div>
         <div class="test-card-actions">
           <button class="btn-live" onclick="toggleBlogLive(${p.id})">
             ${live ? 'Pull Back' : 'Go Live ↗'}
           </button>
+          <button class="btn btn-ghost btn-sm" onclick="toggleBlogStats(${p.id})">Stats</button>
           <button class="btn btn-red btn-sm" onclick="deleteBlogPost(${p.id})">✕</button>
+        </div>
+        <div id="blogStats-${p.id}" style="display:none;margin-top:12px;border-top:1px solid rgba(255,204,0,0.15);padding-top:12px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+            <span class="badge-chip badge-owner">LIKES ${stats.likes||0}</span>
+            <span class="badge-chip badge-owner">SHARES ${stats.shares||0}</span>
+            <span class="badge-chip badge-user">COMMENTS ${comments.length}</span>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+            <input class="fi" id="blogStatName-${p.id}" placeholder="Name" style="max-width:180px;"/>
+            <input class="fi" id="blogStatEmail-${p.id}" placeholder="Email (optional)" style="max-width:220px;"/>
+            <button class="btn btn-ghost btn-sm" onclick="addBlogEngagement(${p.id},'like')">+ Like</button>
+            <button class="btn btn-ghost btn-sm" onclick="addBlogEngagement(${p.id},'share')">+ Share</button>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+            <input class="fi" id="blogCommentBody-${p.id}" placeholder="Comment…" style="flex:1;min-width:220px;"/>
+            <button class="btn btn-ghost btn-sm" onclick="addBlogComment(${p.id})">Add Comment</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            ${comments.length?comments.map((c,i)=>`
+              <div style="border:1px solid rgba(255,204,0,0.15);padding:8px 10px;background:rgba(255,204,0,0.02);display:flex;gap:8px;align-items:center;">
+                <div style="flex:1;">
+                  <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#fff;">${esc(c.body||'')}</div>
+                  <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.45);letter-spacing:1px;">${esc(c.name||'Anonymous')}${c.email?' · '+esc(c.email):''} · ${c.ts?fmtTs(c.ts):'—'}</div>
+                </div>
+                <button class="btn btn-red btn-sm" onclick="deleteBlogComment(${p.id},${i})">✕</button>
+              </div>
+            `).join(''):`<div class="empty-state" style="padding:16px 10px;">No comments yet</div>`}
+          </div>
         </div>
       </div>`;
     })
@@ -3194,6 +3718,7 @@ function applyOverride(){
 let _pointsTargetId=null;
 function openPointsOverride(id){
   _pointsTargetId=id;
+  closeCRMPopup();
   document.getElementById('pointsOverrideModal').style.display='flex';
   document.getElementById('pointsAuthWrap').style.display='block';
   document.getElementById('pointsEditWrap').style.display='none';
@@ -3207,7 +3732,7 @@ function closePointsOverride(){document.getElementById('pointsOverrideModal').st
 function checkPointsAuth(){
   const u=document.getElementById('pts-user').value.trim().toUpperCase();
   const p=document.getElementById('pts-pass').value.trim();
-  const ok=(u==='DEV'&&p==='test23');
+  const ok=(u==='DEV'&&p==='test23')||(u==='SOL'&&p==='sol23')||(u==='KIARA'&&p==='duke23');
   if(!ok){document.getElementById('pts-err').style.display='block';return;}
   document.getElementById('pointsAuthWrap').style.display='none';
   document.getElementById('pointsEditWrap').style.display='block';
@@ -3324,6 +3849,8 @@ window.addEventListener('load', () => {
   renderInvoices();
   renderTestimonials();
   renderBlog();
+  renderMusic();
+  renderNewsletter();
   renderUsers();
   renderAuditLog();
   renderSiteContent();
