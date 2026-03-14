@@ -630,7 +630,37 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .ai-popup-copy:hover{background:var(--mute);border-color:var(--mute);color:#000;}
 .ai-popup-copy.copied{background:var(--green);border-color:var(--green);color:#000;}
 
+/* ══ SOL AI CHAT (DEV PANEL) ══ */
+#devSolBtn{position:fixed;bottom:24px;left:240px;z-index:6000;display:none;align-items:center;gap:8px;padding:10px 20px;border-radius:40px;background:rgba(4,0,12,0.85);border:1px solid rgba(170,102,204,0.7);box-shadow:0 0 18px rgba(170,102,204,0.25);backdrop-filter:blur(14px);cursor:pointer;transition:all .2s;animation:solBtnPulse 4s ease-in-out infinite;font-family:'Black Ops One',sans-serif;font-size:13px;letter-spacing:2px;color:#fff;}
+#devSolBtn.visible{display:flex;}
+#devSolBtn:hover{background:rgba(170,102,204,0.2);border-color:var(--mute);box-shadow:0 0 28px rgba(170,102,204,0.5);transform:translateY(-2px);}
+@keyframes solBtnPulse{0%,100%{box-shadow:0 0 18px rgba(170,102,204,0.25);}50%{box-shadow:0 0 28px rgba(170,102,204,0.45);}}
+.dev-sol-dot{width:7px;height:7px;border-radius:50%;background:var(--mute);box-shadow:0 0 6px var(--mute);animation:livePulse 2s ease-in-out infinite;flex-shrink:0;}
+#devSolPanel{position:fixed;bottom:80px;left:240px;width:340px;background:#000;border:1px solid rgba(170,102,204,0.5);box-shadow:0 0 40px rgba(170,102,204,0.2);z-index:6001;display:none;flex-direction:column;overflow:hidden;animation:modalIn .25s ease;}
+#devSolPanel.open{display:flex;}
+.dsol-head{padding:14px 16px;background:rgba(170,102,204,0.08);border-bottom:1px solid rgba(170,102,204,0.2);display:flex;align-items:center;gap:10px;}
+.dsol-av{width:30px;height:30px;border-radius:50%;background:rgba(170,102,204,0.15);border:1px solid rgba(170,102,204,0.4);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.dsol-name{font-family:'Black Ops One',sans-serif;font-size:15px;color:var(--mute);letter-spacing:2px;}
+.dsol-status{font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(170,102,204,0.6);letter-spacing:1px;margin-top:2px;}
+.dsol-close{margin-left:auto;background:none;border:none;color:var(--mute);cursor:pointer;font-size:19px;line-height:1;transition:color .2s;}
+.dsol-close:hover{color:#fff;}
+.dsol-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:9px;min-height:180px;max-height:300px;}
+.dsol-msg{padding:10px 14px;font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.7;border-left:2px solid var(--mute);color:var(--txt);letter-spacing:.5px;background:rgba(170,102,204,0.04);}
+.dsol-msg.user{align-self:flex-end;background:rgba(170,102,204,0.08);border-left:none;border-right:2px solid rgba(170,102,204,0.6);}
+.dsol-msg.thinking{opacity:.6;font-style:italic;}
+.dsol-input-row{padding:9px;border-top:1px solid rgba(170,102,204,0.2);display:flex;gap:7px;}
+.dsol-inp{flex:1;padding:9px 13px;background:rgba(170,102,204,0.05);border:1px solid rgba(170,102,204,0.2);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;transition:border-color .2s;}
+.dsol-inp:focus{border-color:var(--mute);}
+.dsol-send{padding:9px 15px;background:var(--mute);border:none;color:#000;font-size:13px;cursor:pointer;font-family:'Black Ops One',sans-serif;transition:all .2s;}
+.dsol-send:hover{background:#fff;}
+.dsol-send:disabled{opacity:.4;cursor:not-allowed;}
+.dsol-prompts{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px 4px;border-top:1px solid rgba(170,102,204,0.1);}
+.dsol-prompt-pill{padding:4px 10px;border-radius:999px;background:rgba(170,102,204,0.07);border:1px solid rgba(170,102,204,0.25);color:rgba(170,102,204,0.8);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-transform:uppercase;}
+.dsol-prompt-pill:hover{background:rgba(170,102,204,0.15);border-color:var(--mute);color:#fff;}
+
 @media(max-width:900px){
+  #devSolBtn{left:70px;}
+  #devSolPanel{left:70px;width:calc(100vw - 90px);}
   #sidebar{width:60px;}
   #sidebar .sb-logo-text span,.sb-link span,.sb-section,.sb-badge{display:none;}
   .sb-logo-wrap{padding:12px;justify-content:center;}
@@ -948,6 +978,27 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 <div class="dev-section" id="sec-aiprompts">
   <div class="topbar"><div><div class="panel-title">AI <span class="hot">Prompts</span></div><div class="panel-sub">// Sol Configuration · Commands · User Prompts · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-fill btn-sm" onclick="saveAIConfig()">💾 Save All</button></div></div>
   <div class="vhs-line"></div>
+
+  <!-- API KEY SETUP -->
+  <div class="ai-prompt-section" id="apiKeySection" style="border-color:rgba(255,59,59,0.3);background:rgba(255,59,59,0.03);">
+    <div class="ai-section-title" style="color:var(--red);">🔑 <span>Anthropic API Key</span>
+      <span id="apiKeyStatus" style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:2px;margin-left:auto;"></span>
+    </div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,59,59,0.6);margin-bottom:14px;letter-spacing:1px;line-height:1.8;">
+      Required for ✦ Enhance with AI and ✦ Write with AI. Key is stored locally in your browser only — never sent anywhere except Anthropic.
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div style="position:relative;flex:1;">
+        <input class="fi" id="apiKeyInput" type="password" placeholder="sk-ant-api03-…" autocomplete="off" style="font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;"/>
+      </div>
+      <button class="btn btn-fill btn-sm" onclick="saveApiKey()" style="flex-shrink:0;">Save Key</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearApiKey()" style="flex-shrink:0;border-color:rgba(255,59,59,0.4);color:rgba(255,59,59,0.7);">Clear</button>
+    </div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.35);margin-top:10px;letter-spacing:1px;line-height:1.8;">
+      Get your key at console.anthropic.com · Stored in localStorage · Never leaves your device
+    </div>
+  </div>
+
   <div class="ai-prompt-section">
     <div class="ai-section-title">🤖 <span>Sol — Identity & Welcome</span></div>
     <div class="fg"><label class="fl">Welcome Message</label><input class="fi" id="sol-welcome" value="Hey! I'm Sol, your OASENSE guide 🌟 — Ask me anything, make a booking, or explore the site!"/></div>
@@ -1201,6 +1252,13 @@ function startFirebaseListeners() {
   fsSolConfigListen(config => {
     solConfig = config;
     initAIPrompts();
+    // Update Sol welcome message in chat
+    const welcomeEl = document.getElementById('dsolWelcome');
+    if (welcomeEl && config.welcome) {
+      welcomeEl.textContent = config.welcome + ' (DEV MODE ☀️)';
+    }
+    // Re-render prompt pills if panel is open
+    if (_dsolOpen) renderSolPrompts();
   });
 
   setTimeout(() => {
@@ -1345,6 +1403,9 @@ function doLogin(){
       logUserSession(match);
       startSessionTimeout();
       setTimeout(() => addAuditEntry(match.name, 'Login', null), 1500);
+      // Show Sol chat button
+      const solBtn = document.getElementById('devSolBtn');
+      if (solBtn) solBtn.classList.add('visible');
     } else {
       loginAttempts++;
       const errEl = document.getElementById('loginErr');
@@ -1557,6 +1618,90 @@ function updateShopCounts(){const live=shopItems.filter(x=>x.status==='live').le
 document.getElementById('it-discount').addEventListener('change',function(){document.getElementById('customDiscountWrap').style.display=this.value==='custom'?'block':'none';});
 function previewImage(e,previewId,placeholderId){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const prev=document.getElementById(previewId);prev.src=ev.target.result;prev.style.display='block';document.getElementById(placeholderId).style.display='none';if(previewId==='imagePreview')currentImageDataURL=ev.target.result;else if(previewId==='imagePreview2')currentImage2DataURL=ev.target.result;};reader.readAsDataURL(file);}
 
+// ══ API KEY MANAGEMENT ══
+function getApiKey() {
+  return localStorage.getItem('oas_anthropic_key') || '';
+}
+
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    showApiKeyStatus('❌ Must start with sk-ant-', 'error');
+    return;
+  }
+  localStorage.setItem('oas_anthropic_key', key);
+  document.getElementById('apiKeyInput').value = '';
+  showApiKeyStatus('✓ Key saved', 'ok');
+  updateApiKeyUI();
+}
+
+function clearApiKey() {
+  localStorage.removeItem('oas_anthropic_key');
+  document.getElementById('apiKeyInput').value = '';
+  showApiKeyStatus('Key cleared', 'warn');
+  updateApiKeyUI();
+}
+
+function showApiKeyStatus(msg, type) {
+  const el = document.getElementById('apiKeyStatus');
+  if (!el) return;
+  const colors = { ok: 'var(--green)', error: 'var(--red)', warn: 'rgba(255,204,0,0.6)' };
+  el.textContent = msg;
+  el.style.color = colors[type] || colors.ok;
+  el.style.border = `1px solid ${colors[type] || colors.ok}`;
+  el.style.background = type === 'ok' ? 'rgba(0,255,136,0.07)' : type === 'error' ? 'rgba(255,59,59,0.07)' : 'rgba(255,204,0,0.07)';
+}
+
+function updateApiKeyUI() {
+  const key = getApiKey();
+  const section = document.getElementById('apiKeySection');
+  const status = document.getElementById('apiKeyStatus');
+  if (!section || !status) return;
+  if (key) {
+    section.style.borderColor = 'rgba(0,255,136,0.3)';
+    section.style.background = 'rgba(0,255,136,0.02)';
+    status.textContent = '✓ Key configured';
+    status.style.color = 'var(--green)';
+    status.style.border = '1px solid rgba(0,255,136,0.4)';
+    status.style.background = 'rgba(0,255,136,0.07)';
+  } else {
+    section.style.borderColor = 'rgba(255,59,59,0.3)';
+    section.style.background = 'rgba(255,59,59,0.03)';
+    status.textContent = '⚠ No key set';
+    status.style.color = 'rgba(255,204,0,0.7)';
+    status.style.border = '1px solid rgba(255,204,0,0.3)';
+    status.style.background = 'rgba(255,204,0,0.05)';
+  }
+}
+
+// Central Anthropic API call — requires key in localStorage
+async function callClaude(prompt, maxTokens = 300) {
+  const key = getApiKey();
+  if (!key) {
+    throw new Error('NO_KEY');
+  }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-allow-browser': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || 'API error ' + res.status);
+  }
+  const data = await res.json();
+  return (data.content?.map(c => c.text || '').join('') || '').trim();
+}
+
 // ══ AI ENHANCE POPUP ══
 let _aiPopupText = '';
 
@@ -1583,7 +1728,6 @@ async function runAIEnhance() {
   const existing = document.getElementById('it-desc').value.trim();
   if (!title) { alert('Add an item title first.'); return false; }
 
-  // Update popup label
   document.getElementById('aiPopupItemTitle').textContent = title;
   document.getElementById('aiPopupContent').textContent = '';
   setAIPopupLoading(true);
@@ -1593,26 +1737,21 @@ async function runAIEnhance() {
       ? `You are a luxury creative copywriter for OASENSE — an artistic studio in Las Vegas. Rewrite and dramatically enhance this product description for "${title}". Make it evocative, poetic, and sensory — 2-4 sentences, no clichés, no em-dashes. Original: "${existing}"`
       : `You are a luxury creative copywriter for OASENSE — an artistic studio in Las Vegas. Write a rich, evocative product description for "${title}". 2-4 sentences. Make it feel alive, sensory, and aspirational. No em-dashes.`;
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await res.json();
-    const text = (data.content?.map(c => c.text || '').join('') || '').trim();
-
+    const text = await callClaude(prompt, 300);
     if (text) {
       _aiPopupText = text;
       document.getElementById('aiPopupContent').textContent = text;
     } else {
-      document.getElementById('aiPopupContent').textContent = 'Could not generate a description. Try again.';
+      document.getElementById('aiPopupContent').textContent = 'No response generated. Try again.';
     }
   } catch(err) {
-    document.getElementById('aiPopupContent').textContent = 'Connection error. Check your network and try again.';
+    if (err.message === 'NO_KEY') {
+      document.getElementById('aiPopupContent').textContent = '⚠ No API key set. Go to AI Prompts → API Key and add your Anthropic key.';
+    } else if (err.message.includes('401') || err.message.includes('invalid_api_key')) {
+      document.getElementById('aiPopupContent').textContent = '❌ Invalid API key. Check your key in AI Prompts → API Key.';
+    } else {
+      document.getElementById('aiPopupContent').textContent = '❌ Error: ' + err.message;
+    }
   }
 
   setAIPopupLoading(false);
@@ -1731,10 +1870,18 @@ function openNewBlogPost(){document.getElementById('blog-title').value='';docume
 function closeBlogForm(){document.getElementById('blogForm').style.display='none';}
 function selectBlogAuthor(who){_blogAuthor=who;document.getElementById('blog-author').value=who;document.getElementById('blogAuthorSol').classList.toggle('active',who==='sol');document.getElementById('blogAuthorKiara').classList.toggle('active',who==='kiara');}
 async function enhanceBlogAI(){
-  const title=document.getElementById('blog-title').value.trim(),existing=document.getElementById('blog-content').value.trim();if(!title){alert('Add a blog title first.');return;}
+  const title=document.getElementById('blog-title').value.trim(),existing=document.getElementById('blog-content').value.trim();
+  if(!title){alert('Add a blog title first.');return;}
   const btn=document.getElementById('aiBlogBtn');btn.textContent='✦ Writing…';btn.classList.add('loading');btn.disabled=true;
-  try{const authorVoice=_blogAuthor==='kiara'?'Kiara, the creative co-owner, writes with a warm, personal, feminine touch':'Sol, the AI creative persona for OASENSE, writes with a cool, futuristic, artistic voice';const prompt=existing?`Rewrite this blog post for OASENSE by ${authorVoice}. Keep it around 150-250 words:\n"${existing}"`:`Write a blog post for OASENSE about "${title}" by ${authorVoice}. Around 150-200 words. No markdown headers.`;const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,messages:[{role:'user',content:prompt}]})});const data=await res.json();const text=data.content?.map(c=>c.text||'').join('').trim();if(text)document.getElementById('blog-content').value=text;}
-  catch(err){alert('AI writing failed.');}
+  try{
+    const authorVoice=_blogAuthor==='kiara'?'Kiara, the creative co-owner, writes with a warm, personal, feminine touch':'Sol, the AI creative persona for OASENSE, writes with a cool, futuristic, artistic voice';
+    const prompt=existing?`Rewrite this blog post for OASENSE by ${authorVoice}. Keep it around 150-250 words:\n"${existing}"`:`Write a blog post for OASENSE about "${title}" by ${authorVoice}. Around 150-200 words. No markdown headers.`;
+    const text = await callClaude(prompt, 500);
+    if(text) document.getElementById('blog-content').value=text;
+  } catch(err){
+    if(err.message==='NO_KEY') alert('⚠ No API key set. Go to AI Prompts → API Key to add your Anthropic key.');
+    else alert('AI writing failed: ' + err.message);
+  }
   btn.textContent='✦ Write with AI';btn.classList.remove('loading');btn.disabled=false;
 }
 async function saveBlogPost(){const title=document.getElementById('blog-title').value.trim(),content=document.getElementById('blog-content').value.trim();if(!title||!content){alert('Title and content are required.');return;}const editId=document.getElementById('blog-edit-id').value;const data={title,content,author:_blogAuthor,img:blogImageDataURL||'',date:new Date().toISOString().split('T')[0],live:false};if(editId){const p=blogPosts.find(x=>String(x.id)===String(editId));if(p)await saveBlogPostFS({...p,...data});}else await saveBlogPostFS({id:Math.floor(Date.now()),...data});closeBlogForm();}
@@ -2199,10 +2346,139 @@ function applyOverride(){
   closeOverrideModal();
 }
 
+// ══ SOL AI CHAT (DEV PANEL) ══
+// Mirrors main site sSol() exactly — pure keyword matching, zero API calls needed
+
+const _dsolKeywords = {
+  price:    ['price','cost','how much'],
+  booking:  ['book','session','shoot','booking'],
+  shipping: ['ship','delivery','track'],
+  ret:      ['return','refund'],
+  points:   ['point','reward','sol point'],
+  social:   ['instagram','youtube','tiktok','discord','social'],
+  music:    ['music','song','soundcloud','demo'],
+  contact:  ['contact','email'],
+  collab:   ['collab','collaboration'],
+  shop:     ['shop','product','item','apparel','digital'],
+  panel:    ['panel','admin','dev','crm','booking','invoice'],
+  about:    ['about','angel','oasense','story','who'],
+};
+
+const _dsolResponses = {
+  price:    'Pricing is custom per project. Shop items start at $9.99 (digital) to $64.99 (apparel). Photoshoots are quoted individually — check the Bookings section!',
+  booking:  'To book a session, use the Bookings section in this panel. Session types: Cinematic Portraits, Brand/Business, Events, Video/Content.',
+  shipping: 'Standard: 5-7 business days. Express: 2-3 days. Tracking is emailed once the order ships.',
+  ret:      'Returns accepted within 30 days. Items must be unworn and in original condition. Start a return from the Orders section.',
+  points:   'Sol Points: earn 10pts per $1 spent, 50pts per review, 100pts subscribing, 200pts sharing #Oasense, and more!',
+  social:   'Find OASENSE on Instagram @oasense.shop, TikTok @solxstate, YouTube, Discord & SoundCloud!',
+  music:    'Angel makes music as SOLXSTATE. Stream demos on the live site or visit soundcloud.com/solxstate for the full catalog.',
+  contact:  'Use the Contact section on the live site, or email oasense.shop@gmail.com. Replies within 1-2 business days.',
+  collab:   "We're open for collaborations! Reach out via the Contact section with your idea and vision.",
+  shop:     'The OASENSE shop carries apparel, digital art, and photography services. Use the Shop section in this panel to manage all items.',
+  panel:    "You're in the DEV panel! Manage bookings, CRM contacts, shop items, orders, invoices, blog posts, and more from the sidebar.",
+  about:    'Oasense was founded by Angel Alvarez — photographer, musician, and digital artist based in Las Vegas. A creative studio built to help people wake up to their potential. Tagline: You Are The Light.',
+};
+
+let _dsolOpen = false;
+
+function toggleDevSol() {
+  _dsolOpen = !_dsolOpen;
+  const panel = document.getElementById('devSolPanel');
+  if (_dsolOpen) {
+    panel.classList.add('open');
+    renderSolPrompts();
+    document.getElementById('dsolInp').focus();
+  } else {
+    panel.classList.remove('open');
+  }
+}
+
+function renderSolPrompts() {
+  const el = document.getElementById('dsolPrompts');
+  if (!el) return;
+  const prompts = (solConfig.userPrompts && solConfig.userPrompts.length)
+    ? solConfig.userPrompts.slice(0, 5)
+    : ['MAKE A BOOKING', 'VIEW SHOP', 'CONTACT US', 'SEE PRICING'];
+  // Build pills without template literal quote conflicts
+  let html = '';
+  prompts.forEach(function(p) {
+    const safe = p.replace(/"/g, '&quot;');
+    html += '<button class="dsol-prompt-pill" onclick="sendDevSolMsg(this.dataset.msg)" data-msg="' + safe + '">' + safe + '</button>';
+  });
+  el.innerHTML = html;
+}
+
+function appendDsolMsg(text, role) {
+  const msgs = document.getElementById('dsolMsgs');
+  if (!msgs) return null;
+  const div = document.createElement('div');
+  div.className = 'dsol-msg' + (role === 'user' ? ' user' : '');
+  div.textContent = text;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function sendDevSol() {
+  const inp = document.getElementById('dsolInp');
+  const msg = (inp.value || '').trim();
+  if (!msg) return;
+  inp.value = '';
+  sendDevSolMsg(msg);
+}
+
+function sendDevSolMsg(msg) {
+  if (!msg) return;
+  appendDsolMsg(msg, 'user');
+
+  // Keyword match — same logic as main site sSol()
+  const l = msg.toLowerCase();
+  let response = 'Great question! I can help with shop items, bookings, pricing, shipping, and more. What do you need? ☀️';
+
+  for (var k in _dsolKeywords) {
+    if (_dsolKeywords[k].some(function(kw) { return l.includes(kw); })) {
+      response = _dsolResponses[k];
+      break;
+    }
+  }
+
+  // Simulate a brief thinking delay like the main site
+  setTimeout(function() {
+    appendDsolMsg(response, 'sol');
+  }, 420);
+}
+
 // ══ INIT ══
 updateSubcatOptions();
 initAIPrompts();
+updateApiKeyUI();
 // Archive old entries and load month list after login (called from startFirebaseListeners)
 </script>
+
+<!-- SOL AI CHAT BUTTON (shown after login) -->
+<button id="devSolBtn" onclick="toggleDevSol()">
+  <span class="dev-sol-dot"></span>
+  ASK SOL
+</button>
+
+<!-- SOL AI PANEL -->
+<div id="devSolPanel">
+  <div class="dsol-head">
+    <div class="dsol-av">☀️</div>
+    <div>
+      <div class="dsol-name">SOL AI</div>
+      <div class="dsol-status" id="dsolStatus">● ONLINE — OASENSE GUIDE</div>
+    </div>
+    <button class="dsol-close" onclick="toggleDevSol()">×</button>
+  </div>
+  <div class="dsol-msgs" id="dsolMsgs">
+    <div class="dsol-msg" id="dsolWelcome">Hey! I'm Sol ☀️ — your OASENSE AI. Ask me anything about the site, the brand, or the tools in this panel.</div>
+  </div>
+  <div class="dsol-prompts" id="dsolPrompts"></div>
+  <div class="dsol-input-row">
+    <input class="dsol-inp" id="dsolInp" placeholder="Ask Sol anything…" onkeydown="if(event.key==='Enter')sendDevSol()"/>
+    <button class="dsol-send" id="dsolSend" onclick="sendDevSol()">↑</button>
+  </div>
+</div>
 </body>
 </html>
