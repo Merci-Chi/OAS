@@ -2559,10 +2559,6 @@ function renderUsers(){
       ? `<span class="crm-bubble" onclick="openCRMPopupForPerson(people.find(p=>p.id==${crm.id}))">
           <span class="crm-dot"></span> CRM #${(getCRMId(crm)||crm.crmId||'—')}
         </span>`
-      <input type="hidden" id="ord-crm-person-id" value=""/>
-      document.getElementById('ord-crm-person-id').value = id;
-      document.getElementById('ord-crm-person-id').value = '';
-      crmPersonId: document.getElementById('ord-crm-person-id')?.value || null in the object you pass to saveOrderFS.
       : '';
 
     return `
