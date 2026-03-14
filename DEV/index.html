@@ -591,6 +591,45 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .crm-bubble:hover{background:rgba(0,255,136,0.14);border-color:var(--green);color:var(--green);}
 .crm-bubble .crm-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green);}
 
+/* CRM SORT CONTROLS */
+.crm-sort-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.crm-sort-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.45);text-transform:uppercase;flex-shrink:0;margin-right:4px;}
+.crm-sort-btn{padding:6px 14px;background:transparent;border:1px solid rgba(255,204,0,0.18);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .18s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+.crm-sort-btn:hover{border-color:var(--hot);color:var(--hot);background:rgba(255,204,0,0.05);}
+.crm-sort-btn.active{border-color:var(--hot);color:var(--hot);background:rgba(255,204,0,0.08);}
+.crm-sort-btn .sort-arrow{font-size:11px;opacity:.7;}
+.crm-sort-sep{width:1px;height:20px;background:rgba(255,204,0,0.15);margin:0 4px;}
+
+/* AI ENHANCE POPUP */
+.ai-popup-overlay{position:fixed;inset:0;background:rgba(0,0,5,0.85);z-index:9500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(16px);padding:20px;}
+.ai-popup-overlay.open{display:flex;}
+.ai-popup-box{background:#000;border:1px solid rgba(170,102,204,0.5);width:100%;max-width:520px;position:relative;box-shadow:0 0 60px rgba(170,102,204,0.2),0 0 120px rgba(170,102,204,0.06);animation:aiPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes aiPopIn{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ai-popup-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid rgba(170,102,204,0.2);}
+.ai-popup-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:3px;color:var(--mute);text-transform:uppercase;display:flex;align-items:center;gap:10px;}
+.ai-popup-title::before{content:'✦';color:var(--mute);font-size:14px;animation:aiSpin 4s linear infinite;}
+@keyframes aiSpin{0%,100%{opacity:1;}50%{opacity:.3;}}
+.ai-popup-close{background:none;border:none;color:var(--mute);cursor:pointer;font-size:22px;line-height:1;transition:color .2s;padding:2px 6px;}
+.ai-popup-close:hover{color:#fff;}
+.ai-popup-body{padding:24px 22px;}
+.ai-popup-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(170,102,204,0.6);text-transform:uppercase;margin-bottom:12px;}
+.ai-popup-text{font-family:'Barlow Condensed',sans-serif;font-size:18px;color:#fff;line-height:1.7;letter-spacing:.5px;padding:16px;background:rgba(170,102,204,0.05);border:1px solid rgba(170,102,204,0.18);min-height:80px;position:relative;}
+.ai-popup-text.loading-text{color:transparent;}
+.ai-popup-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;}
+.ai-thinking-dot{width:8px;height:8px;border-radius:50%;background:var(--mute);animation:aiThink 1.2s ease-in-out infinite;}
+.ai-thinking-dot:nth-child(2){animation-delay:.2s;}
+.ai-thinking-dot:nth-child(3){animation-delay:.4s;}
+@keyframes aiThink{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1.2);}}
+.ai-popup-foot{display:flex;gap:8px;padding:16px 22px 20px;border-top:1px solid rgba(170,102,204,0.15);}
+.ai-popup-refresh{display:flex;align-items:center;gap:7px;padding:10px 20px;background:transparent;border:1px solid rgba(170,102,204,0.4);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;flex:1;}
+.ai-popup-refresh:hover{border-color:var(--mute);color:#fff;background:rgba(170,102,204,0.1);}
+.ai-popup-refresh:disabled{opacity:.4;cursor:not-allowed;}
+.ai-popup-refresh svg{flex-shrink:0;transition:transform .5s;}
+.ai-popup-refresh:hover:not(:disabled) svg{transform:rotate(180deg);}
+.ai-popup-copy{display:flex;align-items:center;gap:7px;padding:10px 24px;background:rgba(170,102,204,0.15);border:1px solid rgba(170,102,204,0.5);color:#fff;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;flex:1;}
+.ai-popup-copy:hover{background:var(--mute);border-color:var(--mute);color:#000;}
+.ai-popup-copy.copied{background:var(--green);border-color:var(--green);color:#000;}
+
 @media(max-width:900px){
   #sidebar{width:60px;}
   #sidebar .sb-logo-text span,.sb-link span,.sb-section,.sb-badge{display:none;}
@@ -731,6 +770,27 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
     <div class="fg"><label class="fl">Notes</label><textarea class="fta" id="ap-notes" style="min-height:60px;" placeholder="Internal notes…"></textarea></div>
     <div style="display:flex;gap:8px;"><button class="btn btn-fill btn-sm" onclick="savePerson()">Add Person</button><button class="btn btn-ghost btn-sm" onclick="closeAddPerson()">Cancel</button></div>
   </div>
+  <!-- CRM SORT CONTROLS -->
+  <div class="crm-sort-row">
+    <span class="crm-sort-label">Sort within groups:</span>
+    <button class="crm-sort-btn active" id="crmSortBtn_alpha-asc" onclick="setCRMSort('alpha-asc')">
+      <span>A → Z</span><span class="sort-arrow">↑</span>
+    </button>
+    <button class="crm-sort-btn" id="crmSortBtn_alpha-desc" onclick="setCRMSort('alpha-desc')">
+      <span>Z → A</span><span class="sort-arrow">↓</span>
+    </button>
+    <div class="crm-sort-sep"></div>
+    <button class="crm-sort-btn" id="crmSortBtn_id-asc" onclick="setCRMSort('id-asc')">
+      <span>#</span><span class="sort-arrow">↑</span><span style="font-size:9px;opacity:.6;">ID Low→High</span>
+    </button>
+    <button class="crm-sort-btn" id="crmSortBtn_id-desc" onclick="setCRMSort('id-desc')">
+      <span>#</span><span class="sort-arrow">↓</span><span style="font-size:9px;opacity:.6;">ID High→Low</span>
+    </button>
+    <div style="margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.35);">
+      Rating order fixed: 🟢 HIGH → 🟡 MED → 🔴 LOW → ⚪ UNRATED
+    </div>
+  </div>
+
   <div class="crm-filter-row">
     <div class="crm-tabs" style="margin-bottom:0;">
       <button class="crm-tab active" onclick="switchCRM('all',this)">All</button>
@@ -759,7 +819,6 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 <div class="dev-section" id="sec-shop">
   <div class="topbar"><div><div class="panel-title">Shop <span class="hot">Items</span></div><div class="panel-sub">// Inventory · Discounts · Badges · Live Toggle · 🔥 Firebase Synced</div></div></div>
   <div class="vhs-line"></div>
-  <button class="btn btn-sm" onclick="exportShopDatabase()" style="border-color:var(--green);color:var(--green);margin-bottom:16px;">↓ Export JSON</button>
   <div class="shop-layout">
     <div class="item-form" id="itemForm">
       <div class="item-form-title" id="itemFormTitle">Add New Item</div>
@@ -1008,6 +1067,37 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 </div><!-- /main -->
 </div><!-- /appWrap -->
 
+<!-- AI ENHANCE POPUP -->
+<div class="ai-popup-overlay" id="aiEnhancePopup">
+  <div class="ai-popup-box">
+    <div class="ai-popup-head">
+      <div class="ai-popup-title">AI Enhanced Description</div>
+      <button class="ai-popup-close" onclick="closeAIPopup()">×</button>
+    </div>
+    <div class="ai-popup-body">
+      <div class="ai-popup-label">Generated for: <span id="aiPopupItemTitle" style="color:var(--hot);"></span></div>
+      <div class="ai-popup-text" id="aiPopupText">
+        <span id="aiPopupContent"></span>
+        <div class="ai-popup-loading" id="aiPopupLoading" style="display:none;">
+          <div class="ai-thinking-dot"></div>
+          <div class="ai-thinking-dot"></div>
+          <div class="ai-thinking-dot"></div>
+        </div>
+      </div>
+    </div>
+    <div class="ai-popup-foot">
+      <button class="ai-popup-refresh" id="aiPopupRefreshBtn" onclick="refreshAIDesc()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Regenerate
+      </button>
+      <button class="ai-popup-copy" id="aiPopupCopyBtn" onclick="copyAIDesc()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy to Description
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- PERSON MODAL -->
 <div class="modal-overlay" id="personModal"><div class="modal" style="max-width:400px;"><button class="modal-close" onclick="closePersonModal()">×</button><div class="modal-title" id="personModalName">Client Info</div><div id="personModalContent"></div></div></div>
 
@@ -1161,7 +1251,7 @@ function ensureCRMIds(){
 function getPersonCRMIdDisplay(person){ return formatCRMId(getCRMId(person)||person.crmId); }
 
 // ══ BADGE SYSTEM ══
-const USER_BADGES = { 'Swift Agent':'HACKER', 'Kiara':'DEV', 'Sol':'OWNER' };
+const USER_BADGES = { 'Swift Agent':'HACKER', 'Kiara':'OWNER', 'Sol':'OWNER' };
 function getUserBadge(name){ return USER_BADGES[name]||'USER'; }
 function getBadgeClass(badge){ return{HACKER:'badge-hacker',DEV:'badge-dev',OWNER:'badge-owner',USER:'badge-user'}[badge]||'badge-user'; }
 function renderBadgeChip(name){ const badge=getUserBadge(name); return`<span class="badge-chip ${getBadgeClass(badge)}">${badge}</span>`; }
@@ -1211,9 +1301,9 @@ function updateDbStats(){
 
 // ══ LOGIN ══
 const USERS = {
-  dev:{user:'DEV',code:'test23',name:'Swift Agent',role:'DEV',welcome:'Welcome, Swift Agent',toastClass:'',emoji:'🕶️'},
-  kiara:{user:'KIARA',code:'duke23',name:'Kiara',role:'OWNER',welcome:'💕 Hey gurlllll! ✨',toastClass:'kiara',emoji:'💕'},
-  sol:{user:'SOL',code:'sol23',name:'Sol',role:'AUDIT',welcome:'Welcome in 😎',toastClass:'sol',emoji:'🌞'}
+  dev:{user:'DEV',code:'test23',name:'Swift Agent',role:'HACKER / AUDITOR',welcome:'Welcome, Swift Agent',toastClass:'',emoji:'🕶️'},
+  kiara:{user:'KIARA',code:'duke23',name:'Kiara',role:'OWNER / DEVELOPER',welcome:'💕 Hey gurlllll! ✨',toastClass:'kiara',emoji:'💕'},
+  sol:{user:'SOL',code:'sol23',name:'Sol',role:'OWNER / CREATOR',welcome:'Welcome in 😎',toastClass:'sol',emoji:'🌞'}
 };
 
 function doLogin(){
@@ -1286,7 +1376,7 @@ function startSessionTimeout(){resetSessionTimer();['click','keydown','mousemove
 function resetSessionTimer(){clearTimeout(_sessionTimer);_sessionTimer=setTimeout(()=>{if(currentUser)addAuditEntry(currentUser.name,'Logout',null);document.getElementById('timeoutOverlay').classList.add('show');},SESSION_TIMEOUT);}
 
 // ══ ACCOUNT MODAL ══
-function openAccountModal(){if(!currentUser)return;document.getElementById('acctUserName').textContent=currentUser.name;document.getElementById('acctUserRole').textContent=getUserBadge(currentUser.name)+' / '+currentUser.role;document.getElementById('acctAvatarEmoji').textContent=currentUser.emoji;const saved=localStorage.getItem('oas_photo_'+currentUser._key);const imgEl=document.getElementById('acctAvatarImg'),emoji=document.getElementById('acctAvatarEmoji');if(saved){imgEl.src=saved;imgEl.style.display='block';emoji.style.display='none';}else{imgEl.style.display='none';emoji.style.display='block';}document.getElementById('accountModal').classList.add('open');}
+function openAccountModal(){if(!currentUser)return;document.getElementById('acctUserName').textContent=currentUser.name;document.getElementById('acctUserRole').textContent=currentUser.role;document.getElementById('acctAvatarEmoji').textContent=currentUser.emoji;const saved=localStorage.getItem('oas_photo_'+currentUser._key);const imgEl=document.getElementById('acctAvatarImg'),emoji=document.getElementById('acctAvatarEmoji');if(saved){imgEl.src=saved;imgEl.style.display='block';emoji.style.display='none';}else{imgEl.style.display='none';emoji.style.display='block';}document.getElementById('accountModal').classList.add('open');}
 function closeAccountModal(){document.getElementById('accountModal').classList.remove('open');}
 function uploadAccountPhoto(e){const file=e.target.files[0];if(!file||!currentUser)return;const reader=new FileReader();reader.onload=function(ev){const data=ev.target.result;localStorage.setItem('oas_photo_'+currentUser._key,data);const sb=document.getElementById('sbAvatar');sb.innerHTML='';const img=document.createElement('img');img.src=data;img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%;';sb.appendChild(img);document.getElementById('acctAvatarImg').src=data;document.getElementById('acctAvatarImg').style.display='block';document.getElementById('acctAvatarEmoji').style.display='none';};reader.readAsDataURL(file);}
 function doLogout(){if(currentUser)addAuditEntry(currentUser.name,'Logout',null);unsubscribeAll();closeAccountModal();location.reload();}
@@ -1354,6 +1444,24 @@ function pickCRMPerson(id){const p=people.find(x=>String(x.id)===String(id));if(
 
 // ══ CRM ══
 let crmFilter='all',crmRatingFilter='all';
+let crmSortMode='alpha-asc'; // 'alpha-asc' | 'alpha-desc' | 'id-asc' | 'id-desc'
+
+function crmSortWithin(a, b) {
+  if (crmSortMode === 'alpha-asc')  return (a.name||'').localeCompare(b.name||'');
+  if (crmSortMode === 'alpha-desc') return (b.name||'').localeCompare(a.name||'');
+  if (crmSortMode === 'id-asc')     return parseInt(a.crmId||0) - parseInt(b.crmId||0);
+  if (crmSortMode === 'id-desc')    return parseInt(b.crmId||0) - parseInt(a.crmId||0);
+  return (a.name||'').localeCompare(b.name||'');
+}
+
+function setCRMSort(mode) {
+  crmSortMode = mode;
+  // Update active button styling
+  document.querySelectorAll('.crm-sort-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('crmSortBtn_' + mode);
+  if (btn) btn.classList.add('active');
+  renderCRM();
+}
 function updateCRMBadge(){document.getElementById('crmBadge').textContent=people.length;}
 function openAddPerson(){const f=document.getElementById('addPersonForm');f.style.display='block';f.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeAddPerson(){document.getElementById('addPersonForm').style.display='none';}
@@ -1361,7 +1469,15 @@ function closeAddPerson(){document.getElementById('addPersonForm').style.display
 async function switchCRM(filter,btn){crmFilter=filter;document.querySelectorAll('.crm-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderCRM();}
 function toggleRatingFilterDD(){document.getElementById('ratingFilterDD').classList.toggle('open');}
 function setRatingFilter(val){crmRatingFilter=val;document.getElementById('ratingFilterDD').classList.remove('open');const labels={all:'● All Ratings',green:'🟢 High',yellow:'🟡 Medium',red:'🔴 Low',none:'⚪ Unrated'};document.getElementById('ratingFilterLabel').textContent=labels[val]||'All Ratings';renderCRM();}
-function sortByRating(arr){const order={green:0,yellow:1,red:2,'':3};return[...arr].sort((a,b)=>(order[a.rating||'']??3)-(order[b.rating||'']??3));}
+function sortByRating(arr){
+  const order={green:0,yellow:1,red:2,'':3};
+  return[...arr].sort((a,b)=>{
+    const rDiff=(order[a.rating||'']??3)-(order[b.rating||'']??3);
+    if(rDiff!==0)return rDiff;
+    // Within same rating group: sort by current CRM sort mode
+    return crmSortWithin(a,b);
+  });
+}
 const ADMIN_CRM_NAMES=['kiara','sol','swift agent'];
 function isAdminPerson(p){const lower=(p.name||'').toLowerCase();return ADMIN_CRM_NAMES.some(n=>lower===n||lower.includes(n));}
 
@@ -1441,13 +1557,93 @@ function updateShopCounts(){const live=shopItems.filter(x=>x.status==='live').le
 document.getElementById('it-discount').addEventListener('change',function(){document.getElementById('customDiscountWrap').style.display=this.value==='custom'?'block':'none';});
 function previewImage(e,previewId,placeholderId){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const prev=document.getElementById(previewId);prev.src=ev.target.result;prev.style.display='block';document.getElementById(placeholderId).style.display='none';if(previewId==='imagePreview')currentImageDataURL=ev.target.result;else if(previewId==='imagePreview2')currentImage2DataURL=ev.target.result;};reader.readAsDataURL(file);}
 
-async function enhanceDescAI(){
-  const title=document.getElementById('it-title').value.trim(),existing=document.getElementById('it-desc').value.trim();
-  if(!title){alert('Add an item title first.');return;}
-  const btn=document.getElementById('aiDescBtn');btn.textContent='✦ Thinking…';btn.classList.add('loading');btn.disabled=true;
-  try{const prompt=existing?`Rewrite and enhance this product description for "${title}" sold by OASENSE. Keep it under 2 sentences, evocative:\n"${existing}"`:`Write a short 1-2 sentence product description for "${title}" sold by OASENSE, an artistic creative studio. Make it evocative.`;const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:prompt}]})});const data=await res.json();const text=data.content?.map(c=>c.text||'').join('').trim();if(text)document.getElementById('it-desc').value=text;}
-  catch(err){alert('AI enhancement failed.');}
-  btn.textContent='✦ Enhance with AI';btn.classList.remove('loading');btn.disabled=false;
+// ══ AI ENHANCE POPUP ══
+let _aiPopupText = '';
+
+function openAIPopup() {
+  document.getElementById('aiEnhancePopup').classList.add('open');
+}
+function closeAIPopup() {
+  document.getElementById('aiEnhancePopup').classList.remove('open');
+}
+
+function setAIPopupLoading(on) {
+  const loading = document.getElementById('aiPopupLoading');
+  const content = document.getElementById('aiPopupContent');
+  const refreshBtn = document.getElementById('aiPopupRefreshBtn');
+  const copyBtn = document.getElementById('aiPopupCopyBtn');
+  loading.style.display = on ? 'flex' : 'none';
+  content.style.opacity = on ? '0' : '1';
+  refreshBtn.disabled = on;
+  copyBtn.disabled = on;
+}
+
+async function runAIEnhance() {
+  const title = document.getElementById('it-title').value.trim();
+  const existing = document.getElementById('it-desc').value.trim();
+  if (!title) { alert('Add an item title first.'); return false; }
+
+  // Update popup label
+  document.getElementById('aiPopupItemTitle').textContent = title;
+  document.getElementById('aiPopupContent').textContent = '';
+  setAIPopupLoading(true);
+
+  try {
+    const prompt = existing
+      ? `You are a luxury creative copywriter for OASENSE — an artistic studio in Las Vegas. Rewrite and dramatically enhance this product description for "${title}". Make it evocative, poetic, and sensory — 2-4 sentences, no clichés, no em-dashes. Original: "${existing}"`
+      : `You are a luxury creative copywriter for OASENSE — an artistic studio in Las Vegas. Write a rich, evocative product description for "${title}". 2-4 sentences. Make it feel alive, sensory, and aspirational. No em-dashes.`;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = (data.content?.map(c => c.text || '').join('') || '').trim();
+
+    if (text) {
+      _aiPopupText = text;
+      document.getElementById('aiPopupContent').textContent = text;
+    } else {
+      document.getElementById('aiPopupContent').textContent = 'Could not generate a description. Try again.';
+    }
+  } catch(err) {
+    document.getElementById('aiPopupContent').textContent = 'Connection error. Check your network and try again.';
+  }
+
+  setAIPopupLoading(false);
+  return true;
+}
+
+async function enhanceDescAI() {
+  const title = document.getElementById('it-title').value.trim();
+  if (!title) { alert('Add an item title first.'); return; }
+  openAIPopup();
+  await runAIEnhance();
+}
+
+async function refreshAIDesc() {
+  setAIPopupLoading(true);
+  await runAIEnhance();
+}
+
+function copyAIDesc() {
+  if (!_aiPopupText) return;
+  // Copy to the description field
+  document.getElementById('it-desc').value = _aiPopupText;
+  // Button feedback
+  const btn = document.getElementById('aiPopupCopyBtn');
+  btn.classList.add('copied');
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
+  setTimeout(() => {
+    btn.classList.remove('copied');
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy to Description`;
+    closeAIPopup();
+  }, 1400);
 }
 
 async function saveItem(){
@@ -1610,6 +1806,7 @@ document.addEventListener('click',e=>{
   if(!e.target.closest('.crm-rating-filter'))document.getElementById('ratingFilterDD').classList.remove('open');
   if(!e.target.closest('.action-filter-wrap'))document.getElementById('actionFilterDD').classList.remove('open');
   if(e.target===document.getElementById('personModal'))closePersonModal();
+  if(e.target===document.getElementById('aiEnhancePopup'))closeAIPopup();
   if(e.target===document.getElementById('overrideModal'))closeOverrideModal();
   if(e.target===document.getElementById('accountModal'))closeAccountModal();
   if(e.target===document.getElementById('confirmModal'))closeConfirmModal();
