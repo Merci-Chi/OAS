@@ -875,6 +875,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       <div class="fg"><label class="fl">Client Name</label><div class="crm-picker-wrap"><input class="fi" id="ord-name" placeholder="Type name or pick from CRM…" autocomplete="off" oninput="ordPickFilter()" onfocus="ordPickFilter()"/><div class="crm-picker-dd" id="ordPickDD"></div></div></div>
       <div class="fg"><label class="fl">Phone</label><input class="fi" id="ord-phone" placeholder="+1 (000) 000-0000" oninput="fmtPhone(this)"/></div>
     </div>
+    <input type="hidden" id="ord-crm-person-id" value=""/>
     <div class="fg"><label class="fl">Order Date</label><input type="date" class="fi" id="ord-date"/></div>
     <div class="form-sec">Items Purchased</div>
     <div style="display:grid;grid-template-columns:1fr 80px 60px 28px;gap:8px;margin-bottom:6px;"><div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.45);text-transform:uppercase;">Item Name</div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.45);text-transform:uppercase;">Price ($)</div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.45);text-transform:uppercase;">Disc %</div><div></div></div>
@@ -1374,6 +1375,42 @@ function openCRMPopupForPerson(p){
   document.getElementById('crmPopup').classList.add('open');
 }
 
+function openCRMPopupNoProfile(clientName){
+  const name=String(clientName||'').trim()||'—';
+  const overlay=document.getElementById('crmPopup');
+  const nameEl=document.getElementById('crmPopupName');
+  const metaEl=document.getElementById('crmPopupMeta');
+  const bodyEl=document.getElementById('crmPopupBody');
+  nameEl.textContent=name;
+  metaEl.innerHTML=`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.4);text-transform:uppercase;">NO CRM LINK</span>`;
+  bodyEl.innerHTML=`
+    <div class="crm-no-profile">
+      <div class="crm-no-profile-icon">👤</div>
+      <div class="crm-no-profile-msg">No Matching CRM Profile Found</div>
+      <div class="crm-no-profile-sub">"${name}" isn't linked to a CRM profile yet.<br/>Add or link them from the CRM section.</div>
+    </div>`;
+  overlay.classList.add('open');
+}
+
+function openCRMPopupByOrderId(orderId){
+  const o=orders.find(x=>String(x.id)===String(orderId));
+  if(!o){openCRMPopupNoProfile('—');return;}
+  let p=null;
+  if(o.crmPersonId){p=people.find(x=>String(x.id)===String(o.crmPersonId));}
+  if(!p){
+    p=people.find(x=>(x.name||'').toLowerCase().trim()===(o.name||'').toLowerCase().trim());
+  }
+  if(p)openCRMPopupForPerson(p);
+  else openCRMPopupNoProfile(o.name);
+}
+
+function openCRMPopupByClientName(clientName){
+  const name=String(clientName||'').trim();
+  const p=people.find(x=>(x.name||'').toLowerCase().trim()===name.toLowerCase());
+  if(p)openCRMPopupForPerson(p);
+  else openCRMPopupNoProfile(name);
+}
+
 // ══ AUDIT ══
 let auditTabFilter='all',auditActionFilter=null;
 const ADMIN_ACTIONS=['Added Booking','Added New Item to Store','Updated Item Price','Updated Item Description','Removed Item from Store','Approved Refund','Applied Discount to Item','Deactivated User Account','Reactivated User Account','Reset User Password','Updated Store Settings','Added Admin / Staff Account','Removed Admin / Staff Account','Modified Inventory Quantity','Archived Item'];
@@ -1730,13 +1767,13 @@ function renderShop(){const grid=document.getElementById('shopItemsGrid'),empty=
 
 // ══ ORDER HISTORY — No CRM "?" button ══
 function updateOrderBadge(){document.getElementById('orderBadge').textContent=orders.length;}
-function openNewOrderForm(){document.getElementById('ord-name').value='';document.getElementById('ord-phone').value='';document.getElementById('ord-date').value=new Date().toISOString().split('T')[0];document.getElementById('ordItemsWrap').innerHTML='';addOrdItem();document.getElementById('newOrderForm').style.display='block';document.getElementById('newOrderForm').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function openNewOrderForm(){document.getElementById('ord-name').value='';document.getElementById('ord-phone').value='';document.getElementById('ord-crm-person-id').value='';document.getElementById('ord-date').value=new Date().toISOString().split('T')[0];document.getElementById('ordItemsWrap').innerHTML='';addOrdItem();document.getElementById('newOrderForm').style.display='block';document.getElementById('newOrderForm').scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeNewOrderForm(){document.getElementById('newOrderForm').style.display='none';}
 function addOrdItem(){const id='oi'+Date.now();const shopOpts=shopItems.map(s=>`<option value="${esc(s.title)}" data-price="${s.price}" data-discount="${s.discount}"/>`).join('');const wrap=document.getElementById('ordItemsWrap');const div=document.createElement('div');div.className='ord-item-row';div.id='ordrow-'+id;div.innerHTML=`<div style="position:relative;"><input class="fi" list="shoplist-${id}" id="oname-${id}" placeholder="Item name" oninput="autoFillOrdPrice('${id}')"/><datalist id="shoplist-${id}">${shopOpts}</datalist></div><input class="fi" id="oprice-${id}" type="number" min="0" step="0.01" placeholder="Price"/><input class="fi" id="odisc-${id}" type="number" min="0" max="100" placeholder="Disc%"/><button onclick="document.getElementById('ordrow-${id}').remove()" style="background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:0;line-height:1;">×</button>`;wrap.appendChild(div);}
 function autoFillOrdPrice(id){const name=document.getElementById('oname-'+id).value.trim().toLowerCase();const item=shopItems.find(s=>s.title.toLowerCase()===name);if(item){document.getElementById('oprice-'+id).value=item.price;if(item.discount&&item.discount!=='-')document.getElementById('odisc-'+id).value=item.discount;}}
 function ordPickFilter(){const q=document.getElementById('ord-name').value.toLowerCase().trim();const dd=document.getElementById('ordPickDD');const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);if(!hits.length){dd.classList.remove('open');return;}dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickOrdPerson(${p.id})"><div>${p.name}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}${p.email?' · '+p.email:''}</div></div>`).join('');dd.classList.add('open');}
-function pickOrdPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('ord-name').value=p.name;document.getElementById('ord-phone').value=p.phone||'';document.getElementById('ordPickDD').classList.remove('open');}
-async function saveOrder(){const name=document.getElementById('ord-name').value.trim(),phone=document.getElementById('ord-phone').value.trim(),date=document.getElementById('ord-date').value;if(!name){alert('Client name required.');return;}const rows=document.querySelectorAll('#ordItemsWrap .ord-item-row');const items=[];rows.forEach(row=>{const rid=row.id.replace('ordrow-','');const iname=document.getElementById('oname-'+rid)?.value.trim();const price=parseFloat(document.getElementById('oprice-'+rid)?.value)||0;const disc=parseFloat(document.getElementById('odisc-'+rid)?.value)||0;if(iname)items.push({name:iname,price,disc});});if(!items.length){alert('Add at least one item.');return;}const newId=Math.floor(Date.now());await saveOrderFS({id:newId,name,phone,date,items});closeNewOrderForm();if(currentUser)addAuditEntry(currentUser.name,'Made Purchase','REF #'+newId);}
+function pickOrdPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('ord-name').value=p.name;document.getElementById('ord-phone').value=p.phone||'';document.getElementById('ord-crm-person-id').value=id;document.getElementById('ordPickDD').classList.remove('open');}
+async function saveOrder(){const name=document.getElementById('ord-name').value.trim(),phone=document.getElementById('ord-phone').value.trim(),date=document.getElementById('ord-date').value;if(!name){alert('Client name required.');return;}const rows=document.querySelectorAll('#ordItemsWrap .ord-item-row');const items=[];rows.forEach(row=>{const rid=row.id.replace('ordrow-','');const iname=document.getElementById('oname-'+rid)?.value.trim();const price=parseFloat(document.getElementById('oprice-'+rid)?.value)||0;const disc=parseFloat(document.getElementById('odisc-'+rid)?.value)||0;if(iname)items.push({name:iname,price,disc});});if(!items.length){alert('Add at least one item.');return;}const newId=Math.floor(Date.now());const crmPersonId=document.getElementById('ord-crm-person-id')?.value||null;await saveOrderFS({id:newId,name,phone,date,items,crmPersonId});closeNewOrderForm();if(currentUser)addAuditEntry(currentUser.name,'Made Purchase','REF #'+newId);}
 async function deleteOrder(id){if(!confirm('Delete this order?'))return;await deleteOrderFS(id);}
 
 // ORDER RENDER — No "?" button, clean layout
@@ -1754,6 +1791,7 @@ function renderOrders(){
       <div class="order-header">
         <div class="order-client-row">
           <div class="order-client-name">${o.name}</div>
+          <button class="bc-crm-btn" onclick="openCRMPopupByOrderId(${o.id})" style="margin-left:8px;"><span class="bc-dot"></span> CRM</button>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="order-date">${o.date?formatDate(o.date):''}</div>
@@ -2392,6 +2430,10 @@ function renderUsers(){
       ? `<span class="crm-bubble" onclick="openCRMPopupForPerson(people.find(p=>p.id==${crm.id}))">
           <span class="crm-dot"></span> CRM #${(getCRMId(crm)||crm.crmId||'—')}
         </span>`
+      <input type="hidden" id="ord-crm-person-id" value=""/>
+      document.getElementById('ord-crm-person-id').value = id;
+      document.getElementById('ord-crm-person-id').value = '';
+      crmPersonId: document.getElementById('ord-crm-person-id')?.value || null in the object you pass to saveOrderFS.
       : '';
 
     return `
