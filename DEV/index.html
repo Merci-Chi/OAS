@@ -2848,7 +2848,7 @@ function renderNewsletter(){
             <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;">${p.email||'—'}</div>
           </div>
           <button class="bc-crm-btn" onclick="openCRMPopupForPerson(people.find(x=>String(x.id)===String(${p.id})))"><span class="bc-dot"></span> CRM</button>
-          ${p.email?`<button class="btn btn-ghost btn-sm" onclick="copyFieldValue('${p.email.replace(/'/g,\"&#39;\")}', 'nlcopy-${p.id}')">Copy Email</button>`:''}
+          ${p.email?`<button class="btn btn-ghost btn-sm" onclick="copyFieldValue('${p.email.replace(/'/g,"&#39;")}','nlcopy-${p.id}')">Copy Email</button>`:''}
         </div>
       </div>
     `;
