@@ -534,6 +534,7 @@ section{padding:100px 40px;}
 .abod{font-size:18px;color:var(--mute);line-height:1.9;}
 .abod p+p{margin-top:16px;}
 .socr{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px;}
+.sot{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-top:18px;}
 .slnk{padding:12px 20px;border:1px solid rgba(255,0,200,0.25);color:rgba(255,255,255,0.65);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;transition:all .2s;}
 .slnk:hover{border-color:var(--hot);color:var(--hot);}
 /* About photo overlay edit hint (shows if user is admin — add class 'is-admin' to body via JS) */
@@ -578,6 +579,9 @@ section{padding:100px 40px;}
 .don-goal-label{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:2px;margin-bottom:8px;}
 .don-goal-track{height:4px;background:rgba(255,0,200,0.15);border-radius:2px;}
 .don-goal-fill{height:100%;background:linear-gradient(to right,var(--hot),var(--mag));border-radius:2px;transition:width 1s ease;box-shadow:0 0 8px var(--hot);}
+
+/* ── CONTACT SOCIALS ── */
+.csoc{margin-top:34px;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start;}
 
 /* ── NEWSLETTER ── */
 #newsletter{padding:90px 40px;background:linear-gradient(135deg,rgba(255,0,200,0.07) 0%,rgba(20,0,30,0.98) 45%,rgba(123,0,255,0.07) 100%);border-top:1px solid rgba(255,0,200,0.2);border-bottom:1px solid rgba(255,0,200,0.2);text-align:center;position:relative;z-index:10;}
@@ -734,6 +738,22 @@ section{padding:100px 40px;}
 .rpbtns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
 .rpbtn{padding:10px 14px;border:1px solid rgba(255,0,200,0.3);background:rgba(255,0,200,0.05);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
 .rpbtn:hover{border-color:var(--hot);color:var(--hot);}
+
+/* ── WISHLIST POPUP ── */
+.wl-ov{position:fixed;inset:0;background:rgba(0,0,8,.85);z-index:8250;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px);}
+.wl-ov.open{display:flex;}
+.wl-card{background:#000;border:1px solid var(--hot);width:100%;max-width:520px;padding:26px;position:relative;box-shadow:0 0 40px rgba(255,0,200,.3);}
+.wl-close{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:18px;}
+.wl-close:hover{color:var(--hot);}
+.wl-title{font-family:'Black Ops One',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;text-transform:uppercase;}
+.wl-list{margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:340px;overflow:auto;padding-right:4px;}
+.wl-item{display:flex;align-items:center;gap:12px;border:1px solid rgba(255,0,200,0.2);background:rgba(255,0,200,0.04);padding:10px;}
+.wl-thumb{width:52px;height:52px;border:1px solid rgba(255,0,200,0.25);background:rgba(10,0,20,0.7);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.wl-thumb img{width:100%;height:100%;object-fit:cover;}
+.wl-info{flex:1;}
+.wl-name{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;text-transform:uppercase;}
+.wl-link{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--hot);text-decoration:none;}
+.wl-share{margin-top:16px;display:flex;justify-content:flex-end;}
 
 /* ── FOOTER ── */
 footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px 36px;position:relative;z-index:10;}
@@ -1003,27 +1023,20 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
       </div>
       <div class="fm">
         <div class="fg"><label class="fl">Your Name</label><input class="fi" placeholder="Full name"/></div>
-        <div class="fg" style="margin-bottom:14px;">
-          <label class="fl">Preferred Response Method</label>
-          <div class="mp">
-            <button class="mb2 on" onclick="pMB(this,'email')">📧 Email</button>
-            <button class="mb2" onclick="pMB(this,'phone')">📱 Phone</button>
-          </div>
-        </div>
-        <div class="fg" id="bookingEmailField"><label class="fl">Email Address</label><input type="email" class="fi" placeholder="you@example.com"/></div>
-        <div class="fg" id="bookingPhoneField" style="display:none;"><label class="fl">Phone Number</label><input type="tel" class="fi" placeholder="+1 (555) 000-0000"/></div>
+        <div class="fg"><label class="fl">Email (optional)</label><input type="email" class="fi" placeholder="you@example.com"/></div>
+        <div class="fg"><label class="fl">Phone (optional)</label><input type="tel" class="fi" placeholder="+1 (555) 000-0000"/></div>
         <div class="fg"><label class="fl">Preferred Date</label><input type="date" class="fi" id="bookingDate"/></div>
         <div class="fg"><label class="fl">Session Type</label>
           <div class="csel" id="cselWrap">
             <div class="csel-selected" id="cselDisplay" onclick="toggleCsel()">
-              <span id="cselText">📸 Cinematic Portraits</span><span class="csel-arrow">▾</span>
+              <span id="cselText">Cinematic Portraits</span><span class="csel-arrow">▾</span>
             </div>
             <div class="csel-opts" id="cselOpts">
-              <div class="csel-opt" onclick="pickSel('📸 Cinematic Portraits','Cinematic Portraits')"><strong>📸 CINEMATIC PORTRAITS</strong><span>Personal branding and artful lifestyle portraits.</span></div>
-              <div class="csel-opt" onclick="pickSel('👔 Brand / Business','Brand / Business')"><strong>👔 BRAND / BUSINESS</strong><span>Visual identity for entrepreneurs and creators.</span></div>
-              <div class="csel-opt" onclick="pickSel('🎉 Events','Events')"><strong>🎉 EVENTS</strong><span>Candid and editorial coverage.</span></div>
-              <div class="csel-opt" onclick="pickSel('🎬 Video / Content','Video / Content')"><strong>🎬 VIDEO / CONTENT</strong><span>Short-form, reels, or full production.</span></div>
-              <div class="csel-opt" onclick="pickSel('✨ Other','Other')"><strong>✨ OTHER</strong><span>Have something else in mind? Tell us below.</span></div>
+              <div class="csel-opt" onclick="pickSel('Cinematic Portraits','Cinematic Portraits')"><strong>📸 CINEMATIC PORTRAITS</strong><span>Personal branding and artful lifestyle portraits.</span></div>
+              <div class="csel-opt" onclick="pickSel('Brand / Business','Brand / Business')"><strong>👔 BRAND / BUSINESS</strong><span>Visual identity for entrepreneurs and creators.</span></div>
+              <div class="csel-opt" onclick="pickSel('Events','Events')"><strong>🎉 EVENTS</strong><span>Candid and editorial coverage.</span></div>
+              <div class="csel-opt" onclick="pickSel('Video / Content','Video / Content')"><strong>🎬 VIDEO / CONTENT</strong><span>Short-form, reels, or full production.</span></div>
+              <div class="csel-opt" onclick="pickSel('Other','Other')"><strong>✨ OTHER</strong><span>Have something else in mind? Tell us below.</span></div>
             </div>
           </div>
           <input type="hidden" id="svSel" value="Cinematic Portraits"/>
@@ -1053,6 +1066,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
           <p>Oasense began during one of the most transformative chapters of my life — rebuilding myself, learning to create from truth instead of survival.</p>
           <p>Through spiritual clothing, books, and content, I inspire others to see their own light. <strong style="color:var(--hot);">You are the light. Embrace it.</strong></p>
         </div>
+        <div class="sot">Follow our mission</div>
         <div class="socr">
           <a href="https://www.youtube.com/channel/UCzpmNmYs5r2_8OjG33FNsgA" target="_blank" class="slnk">YouTube</a>
           <a href="https://discord.com/invite/FG57HKHbwz" target="_blank" class="slnk">Discord</a>
@@ -1189,6 +1203,14 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
           <button class="fbtn" onclick="toast('MESSAGE SENT — WE\'LL REPLY WITHIN 1–2 DAYS ✓')">Send Message</button>
         </div>
       </div>
+    </div>
+    <div class="csoc">
+      <a href="https://www.youtube.com/channel/UCzpmNmYs5r2_8OjG33FNsgA" target="_blank" class="slnk">YouTube</a>
+      <a href="https://discord.com/invite/FG57HKHbwz" target="_blank" class="slnk">Discord</a>
+      <a href="https://www.instagram.com/oasense.shop" target="_blank" class="slnk">Instagram</a>
+      <a href="https://www.facebook.com/profile.php?id=61584155414643" target="_blank" class="slnk">Facebook</a>
+      <a href="https://www.tiktok.com/@solxstate" target="_blank" class="slnk">TikTok</a>
+      <a href="https://soundcloud.com/solxstate" target="_blank" class="slnk">SoundCloud</a>
     </div>
   </div>
 </section>
@@ -1348,6 +1370,18 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     <div class="rpbtns">
       <button class="rpbtn" onclick="scrollToRewards()">How to earn points</button>
       <button class="rpbtn" onclick="closeRewards()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- WISHLIST POPUP -->
+<div class="wl-ov" id="wlov" onclick="closeWishlist(event)">
+  <div class="wl-card">
+    <button class="wl-close" onclick="closeWishlist()">×</button>
+    <div class="wl-title">Wishlist</div>
+    <div class="wl-list" id="wlList"></div>
+    <div class="wl-share">
+      <button class="rpbtn" onclick="shareWishlist()">Share Wishlist</button>
     </div>
   </div>
 </div>
@@ -1521,6 +1555,7 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const DEV_BASE = "https://merci-chi.github.io/OAS/DEV/";
 const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const mediaUrl = f => f ? (f.startsWith('http') ? f : DEV_BASE + f) : '';
+const toShopUrl = u => u ? (u.startsWith('http') ? u : `https://merci-chi.github.io/OAS/shop${u.startsWith('/')?'':'/'}${u}`) : 'https://merci-chi.github.io/OAS/shop';
 const toTagList = (val) => {
   if (!val) return [];
   if (Array.isArray(val)) return val.map(v => String(v)).filter(Boolean);
@@ -2220,7 +2255,14 @@ if (player) {
 }
 
 // Booking
-function pS(el,n){document.querySelectorAll('.sv').forEach(s=>s.classList.remove('on'));el.classList.add('on');}
+function pS(el,n){
+  document.querySelectorAll('.sv').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+  const sel = document.getElementById('svSel');
+  if (sel) sel.value = n;
+  const text = document.getElementById('cselText');
+  if (text) text.textContent = n;
+}
 function toggleCsel(){document.getElementById('cselWrap').classList.toggle('open');}
 function pickSel(label,val){document.getElementById('cselText').textContent=label;document.getElementById('svSel').value=val;document.getElementById('cselWrap').classList.remove('open');}
 document.addEventListener('click',e=>{const w=document.getElementById('cselWrap');if(w&&!w.contains(e.target))w.classList.remove('open');});
@@ -2289,7 +2331,64 @@ document.querySelectorAll('.po,.ri,.tk,.sv').forEach(el=>{el.style.opacity='0';e
 function toggleAcctMenu(){document.getElementById('acctMenu').classList.toggle('open');}
 function closeAcctMenu(){document.getElementById('acctMenu').classList.remove('open');}
 function openMyPage(){window.open('https://merci-chi.github.io/OAS/mypage','_blank');}
-function openWishlist(){window.open('https://merci-chi.github.io/OAS/mypage','_blank');}
+let currentUserId = null;
+let wishlistItems = [];
+function openWishlist(){
+  if (!currentUserId) { oA('login'); return; }
+  loadWishlist();
+  document.getElementById('wlov').classList.add('open');
+}
+function closeWishlist(e){if(!e||e.target.id==='wlov')document.getElementById('wlov').classList.remove('open');}
+async function loadWishlist(){
+  const list = document.getElementById('wlList');
+  if (!list || !currentUserId) return;
+  list.innerHTML = '';
+  try{
+    const { data, error } = await db
+      .from('wishlist_items')
+      .select('*')
+      .eq('user_id', currentUserId)
+      .order('created_at',{ascending:false});
+    if (error) throw error;
+    wishlistItems = data || [];
+    if (!wishlistItems.length) {
+      list.innerHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:2px;">NO ITEMS YET</div>`;
+      return;
+    }
+    list.innerHTML = wishlistItems.map(it => {
+      const name = it.title || it.name || 'Item';
+      const img = it.image_url || it.image || it.img || '';
+      const url = toShopUrl(it.product_url || it.shop_url || it.url || '');
+      const imgHtml = img ? `<img src="${_esc(mediaUrl(img))}" alt="${_esc(name)}"/>` : '✨';
+      return `<div class="wl-item">
+        <div class="wl-thumb">${imgHtml}</div>
+        <div class="wl-info">
+          <div class="wl-name">${_esc(name)}</div>
+          <a class="wl-link" href="${_esc(url)}" target="_blank">VIEW ITEM →</a>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error(e);
+    list.innerHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:2px;">UNABLE TO LOAD WISHLIST</div>`;
+  }
+}
+async function shareWishlist(){
+  if (!wishlistItems.length) { toast('WISHLIST EMPTY'); return; }
+  const lines = wishlistItems.map(it => {
+    const name = it.title || it.name || 'Item';
+    const url = toShopUrl(it.product_url || it.shop_url || it.url || '');
+    return `${name}: ${url}`;
+  }).join('\n');
+  if (navigator.share) {
+    try { await navigator.share({ title:'My Oasense Wishlist', text: lines }); return; } catch(e){}
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(lines).then(()=>toast('WISHLIST LINK COPIED')).catch(()=>toast('COPY FAILED'));
+  } else {
+    toast('COPY NOT SUPPORTED');
+  }
+}
 function openRewards(){document.getElementById('rpov').classList.add('open');}
 function closeRewards(e){if(!e||e.target.id==='rpov')document.getElementById('rpov').classList.remove('open');}
 function scrollToRewards(){closeRewards();document.getElementById('rewards').scrollIntoView({behavior:'smooth'});}
@@ -2307,6 +2406,7 @@ async function updateAccountUI(session){
     if (wrap) wrap.style.display = 'none';
     if (loginBtn) loginBtn.style.display = '';
     if (signupBtn) signupBtn.style.display = '';
+    currentUserId = null;
     const rb = document.getElementById('rewardsLoginBtn');
     if (rb) { rb.textContent = 'Log In to Check Points'; rb.onclick = () => oA('login'); }
     return;
@@ -2315,6 +2415,7 @@ async function updateAccountUI(session){
   if (loginBtn) loginBtn.style.display = 'none';
   if (signupBtn) signupBtn.style.display = 'none';
   const user = session.user || {};
+  currentUserId = user.id || null;
   const img = user.user_metadata?.avatar_url || '';
   const name = user.user_metadata?.full_name || user.email || 'ME';
   const initials = name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
