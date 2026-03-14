@@ -31,6 +31,16 @@ nav{position:fixed;top:0;left:0;right:0;z-index:5000;display:flex;justify-conten
 .nav-links a{color:var(--mute);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;transition:all .2s;}
 .nav-links a:hover{color:var(--hot);}
 .nav-btns{display:flex;gap:8px;}
+.acct-wrap{position:relative;display:none;align-items:center;}
+.acct-btn{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,204,0,0.6);background:rgba(4,0,12,0.6);overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(255,204,0,0.2);}
+.acct-btn img{width:100%;height:100%;object-fit:cover;display:block;}
+.acct-initials{font-family:'Black Ops One',sans-serif;font-size:14px;color:var(--hot);}
+.acct-menu{position:absolute;right:0;top:48px;min-width:220px;background:rgba(4,0,12,0.95);border:1px solid rgba(255,204,0,0.4);box-shadow:0 0 30px rgba(255,0,200,0.2);display:none;flex-direction:column;z-index:5200;}
+.acct-menu.open{display:flex;animation:nhPop .3s cubic-bezier(.34,1.56,.64,1);}
+.acct-item{padding:14px 16px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--txt);text-transform:uppercase;border-bottom:1px solid rgba(255,0,200,0.1);cursor:pointer;transition:all .2s;background:transparent;}
+.acct-item:last-child{border-bottom:none;}
+.acct-item:hover{color:var(--hot);padding-left:20px;}
+.acct-item.logout{color:#ff6677;}
 .nbl{padding:8px 22px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;}
 .nbl:hover{background:var(--hot);color:#000;box-shadow:0 0 20px var(--hot);}
 .nbr{padding:8px 22px;background:var(--hot);border:1px solid var(--hot);color:#000;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;font-weight:700;transition:all .2s;}
@@ -153,17 +163,25 @@ section{padding:100px 40px;}
 
 /* ── MUSIC ── */
 #music{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
-.tl{display:flex;flex-direction:column;gap:2px;margin-bottom:32px;}
-.tk{display:grid;grid-template-columns:44px 1fr auto auto;align-items:center;gap:16px;padding:18px 22px;background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.15);transition:all .2s;cursor:pointer;}
+.tl{display:flex;flex-direction:column;gap:8px;margin-bottom:28px;}
+.tk{display:grid;grid-template-columns:120px 1fr 170px;align-items:center;gap:16px;padding:18px 22px;background:rgba(255,0,200,0.03);border:1px solid rgba(255,0,200,0.15);transition:all .2s;}
 .tk:hover{border-color:var(--hot);background:rgba(255,0,200,0.06);}
 .tk.pl{border-color:var(--hot);background:rgba(255,0,200,0.08);box-shadow:0 0 15px rgba(255,0,200,0.1);}
-.tpb{width:44px;height:44px;border-radius:50%;border:1px solid var(--hot);background:transparent;color:var(--hot);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
-.tpb:hover,.tk.pl .tpb{background:var(--hot);color:#000;box-shadow:0 0 15px var(--hot);}
+.tctrls{display:flex;gap:6px;align-items:center;}
+.tpb,.tjb{width:36px;height:36px;border-radius:50%;border:1px solid var(--hot);background:transparent;color:var(--hot);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.tpb:hover,.tjb:hover,.tk.pl .tpb{background:var(--hot);color:#000;box-shadow:0 0 12px var(--hot);}
 .tn{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:1.5px;text-transform:uppercase;}
 .tm{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:2px;margin-top:3px;}
-.tbw{flex:1;height:2px;background:rgba(255,0,200,0.15);min-width:60px;}
-.tb{height:100%;width:0%;background:linear-gradient(to right,var(--hot),var(--mag));box-shadow:0 0 6px var(--hot);}
-.tt{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);min-width:32px;text-align:right;}
+.tprog{display:flex;align-items:center;gap:10px;}
+.tseek{width:100%;-webkit-appearance:none;appearance:none;height:4px;background:rgba(255,0,200,0.18);border-radius:4px;outline:none;cursor:pointer;}
+.tseek::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--hot);border:2px solid #000;box-shadow:0 0 10px var(--hot);}
+.tseek::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--hot);border:2px solid #000;box-shadow:0 0 10px var(--hot);}
+.tt{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);min-width:70px;text-align:right;}
+.m-actions,.b-actions{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap;}
+.actbtn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid rgba(255,0,200,0.25);background:rgba(255,0,200,0.04);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.actbtn:hover{border-color:var(--hot);color:var(--hot);}
+.actbtn.active{border-color:var(--hot);color:var(--hot);box-shadow:0 0 12px rgba(255,0,200,0.2);}
+.actbtn .count{font-family:'Black Ops One',sans-serif;font-size:12px;color:var(--hot);}
 .sc-link{display:inline-flex;align-items:center;gap:10px;padding:14px 30px;border:1px solid rgba(140,0,255,.5);color:#aa44ff;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;text-decoration:none;text-transform:uppercase;transition:all .2s;}
 .sc-link:hover{background:rgba(140,0,255,0.1);box-shadow:0 0 15px rgba(140,0,255,0.3);}
 
@@ -467,6 +485,42 @@ section{padding:100px 40px;}
 
 /* ── ABOUT — updated to OASENSE ── */
 #about{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
+/* ── TESTIMONIALS ── */
+#testimonials{background:linear-gradient(135deg,rgba(255,0,200,0.06) 0%,rgba(0,0,8,1) 55%,rgba(123,0,255,0.06) 100%);border-top:1px solid rgba(255,0,200,0.2);}
+.tg{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;align-items:stretch;}
+.tframe{position:relative;border:1px solid rgba(255,0,200,0.25);background:rgba(4,0,12,0.92);box-shadow:0 0 60px rgba(255,0,200,0.06),inset 0 0 40px rgba(255,0,200,0.02);}
+.tframe::before{content:'';position:absolute;inset:0;border:1px solid rgba(255,204,0,0.18);mix-blend-mode:screen;pointer-events:none;}
+.tstack{position:relative;padding:26px;min-height:360px;overflow:hidden;}
+.tstack::before,.tstack::after{
+  content:'';
+  position:absolute;left:0;right:0;height:54px;z-index:5;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(4,0,12,0.98),rgba(4,0,12,0));
+}
+.tstack::after{top:auto;bottom:0;background:linear-gradient(to top,rgba(4,0,12,0.98),rgba(4,0,12,0));}
+.tcard{position:absolute;left:26px;right:26px;top:26px;border:1px solid rgba(255,204,0,0.2);background:linear-gradient(135deg,rgba(20,0,30,0.95) 0%,rgba(4,0,12,1) 70%);padding:18px 18px 18px 70px;overflow:hidden;transition:opacity .6s ease,transform .6s ease,border-color .25s,box-shadow .25s;opacity:0;transform:translateY(14px);}
+.tcard.active{opacity:1;transform:translateY(0);}
+.tcard::after{content:'';position:absolute;inset:-60% auto auto -60%;width:140%;height:140%;background:radial-gradient(circle,rgba(255,204,0,0.12),transparent 60%);opacity:.5;pointer-events:none;}
+.tcard.active:hover{transform:translateY(-2px);border-color:rgba(255,204,0,0.6);box-shadow:0 0 30px rgba(255,204,0,0.12);}
+.tbadge{position:absolute;left:16px;top:16px;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;background:rgba(255,204,0,0.2);border:1px solid rgba(255,204,0,0.6);color:var(--hot);box-shadow:0 0 16px rgba(255,204,0,0.2);}
+.tq{font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.7;color:rgba(255,214,245,0.85);letter-spacing:.4px;}
+.ta{margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;}
+.trole{display:block;color:var(--mute);letter-spacing:2px;margin-top:4px;font-size:10px;}
+.tpanel{position:relative;overflow:hidden;padding:26px;border:1px solid rgba(255,204,0,0.2);background:linear-gradient(145deg,rgba(10,0,20,0.9) 0%,rgba(0,0,8,1) 60%);}
+.tpanel::before{content:'';position:absolute;inset:-30% -20% auto auto;width:180px;height:180px;background:radial-gradient(circle,rgba(255,0,200,0.25),transparent 70%);opacity:.6;pointer-events:none;}
+.tpanel h3{font-family:'Black Ops One',sans-serif;font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#fff;margin-bottom:16px;}
+.tpanel p{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:rgba(255,214,245,0.75);line-height:1.8;margin-bottom:18px;}
+.tstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;}
+.tstat{border:1px solid rgba(255,204,0,0.25);background:rgba(255,204,0,0.05);padding:14px 12px;text-align:center;}
+.tstat .num{font-family:'Black Ops One',sans-serif;font-size:20px;color:var(--hot);}
+.tstat .lbl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--mute);text-transform:uppercase;margin-top:6px;}
+@media(max-width:900px){
+  .tg{grid-template-columns:1fr;}
+}
+@media(max-width:800px){
+  .tk{grid-template-columns:1fr;gap:12px;}
+  .tprog{width:100%;}
+  .tt{text-align:left;min-width:auto;}
+}
 .ag{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;}
 .av{aspect-ratio:3/4;background:linear-gradient(135deg,rgba(255,0,200,0.08),rgba(123,0,255,0.08));border:1px solid rgba(255,0,200,0.2);display:flex;align-items:center;justify-content:center;font-size:80px;position:relative;overflow:hidden;}
 .av::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 40%,rgba(255,0,200,0.15) 0%,transparent 60%);}
@@ -623,7 +677,7 @@ section{padding:100px 40px;}
 .nh-tab:hover{background:rgba(255,0,200,0.15);border-color:rgba(255,0,200,1);transform:translateY(-1px);}
 .nh-tab-dot{width:7px;height:7px;border-radius:50%;background:var(--hot);animation:nhDot 2s ease-in-out infinite;}
 @keyframes nhDot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.65);}}
-#backToTop{display:none;width:34px;height:34px;border-radius:50%;background:rgba(4,0,12,0.65);border:1px solid rgba(255,255,255,0.3);color:#fff;font-size:16px;cursor:pointer;transition:all .2s;margin-top:6px;align-self:center;}
+#backToTop{display:none;width:34px;height:34px;border-radius:50%;background:rgba(4,0,12,0.65);border:1px solid rgba(255,255,255,0.3);color:#fff;font-size:16px;cursor:pointer;transition:all .2s;margin-top:6px;align-self:flex-end;margin-right:-6px;}
 #backToTop:hover{background:rgba(255,255,255,0.12);border-color:#fff;}
 #needHelp.scrolled-down #backToTop{display:flex;align-items:center;justify-content:center;}
 .nh-popup{position:fixed;right:24px;top:130px;z-index:5600;width:260px;background:rgba(4,0,12,0.85);border:1px solid rgba(255,0,200,0.5);border-radius:16px;box-shadow:0 0 28px rgba(255,0,200,0.2),0 12px 40px rgba(0,0,0,0.75);backdrop-filter:blur(18px);display:none;flex-direction:column;overflow:hidden;}
@@ -666,6 +720,20 @@ section{padding:100px 40px;}
 
 /* ── TOAST ── */
 #toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);background:var(--hot);color:#000;padding:13px 30px;font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:700;letter-spacing:3px;z-index:9000;display:none;white-space:nowrap;box-shadow:0 0 30px var(--hot);}
+
+/* ── REWARDS POPUP ── */
+.rpov{position:fixed;inset:0;background:rgba(0,0,8,.85);z-index:8200;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px);}
+.rpov.open{display:flex;}
+.rpcard{background:#000;border:1px solid var(--hot);width:100%;max-width:420px;padding:30px;position:relative;box-shadow:0 0 40px rgba(255,0,200,.3);}
+.rpclose{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:18px;}
+.rpclose:hover{color:var(--hot);}
+.rptitle{font-family:'Black Ops One',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;text-transform:uppercase;}
+.rppoints{font-family:'Black Ops One',sans-serif;font-size:44px;color:var(--hot);margin:12px 0 6px;}
+.rpsub{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:2px;text-transform:uppercase;}
+.rplist{margin-top:16px;border-top:1px solid rgba(255,0,200,0.2);padding-top:14px;font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.7);line-height:1.9;letter-spacing:1px;}
+.rpbtns{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;}
+.rpbtn{padding:10px 14px;border:1px solid rgba(255,0,200,0.3);background:rgba(255,0,200,0.05);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.rpbtn:hover{border-color:var(--hot);color:var(--hot);}
 
 /* ── FOOTER ── */
 footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px 36px;position:relative;z-index:10;}
@@ -724,6 +792,15 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   <div class="nav-btns">
     <button class="nbl" onclick="oA('login')">Log In</button>
     <button class="nbr" onclick="oA('signup')">Sign Up</button>
+    <div class="acct-wrap" id="acctWrap">
+      <button class="acct-btn" id="acctBtn" onclick="toggleAcctMenu()"><span class="acct-initials" id="acctInitials">ME</span></button>
+      <div class="acct-menu" id="acctMenu">
+        <button class="acct-item" onclick="openMyPage()">My Page</button>
+        <button class="acct-item" onclick="openRewards()">My Rewards</button>
+        <button class="acct-item" onclick="openWishlist()">Wishlist</button>
+        <button class="acct-item logout" onclick="doLogout()">Log Out</button>
+      </div>
+    </div>
     <div class="hbg" onclick="tM()"><span></span><span></span><span></span></div>
   </div>
 </nav>
@@ -788,13 +865,89 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     <div class="vhs-line"></div>
     <p style="font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--mute);margin-bottom:36px;line-height:1.9;letter-spacing:1px;max-width:500px;">Raw sessions from the studio. Angel's sonic world — dark, expansive, honest.</p>
     <div class="tl">
-      <div class="tk" data-i="0"><button class="tpb" onclick="pT(0)">▶</button><div><div class="tn">SOLXSTATE — AWAKEN</div><div class="tm">Demo · 3:42</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">3:42</div></div>
-      <div class="tk" data-i="1"><button class="tpb" onclick="pT(1)">▶</button><div><div class="tn">SOLXSTATE — INNER LIGHT</div><div class="tm">Demo · 4:18</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">4:18</div></div>
-      <div class="tk" data-i="2"><button class="tpb" onclick="pT(2)">▶</button><div><div class="tn">SOLXSTATE — REBUILD</div><div class="tm">Demo · 2:55</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">2:55</div></div>
-      <div class="tk" data-i="3"><button class="tpb" onclick="pT(3)">▶</button><div><div class="tn">SOLXSTATE — WHY (F34)</div><div class="tm">Demo · 3:06</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">3:06</div></div>
-      <div class="tk" data-i="4"><button class="tpb" onclick="pT(4)">▶</button><div><div class="tn">SOLXSTATE — WARRIOR (MASTERED)</div><div class="tm">Demo · 2:42</div></div><div class="tbw"><div class="tb"></div></div><div class="tt">2:42</div></div>
+      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/awaken.mp3">
+        <div class="tctrls">
+          <button class="tjb" data-act="back">-15</button>
+          <button class="tpb" data-act="play">▶</button>
+          <button class="tjb" data-act="fwd">+15</button>
+        </div>
+        <div>
+          <div class="tn">SOLXSTATE — AWAKEN</div>
+          <div class="tm">Demo</div>
+        </div>
+        <div class="tprog">
+          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
+          <div class="tt">0:00 / 0:00</div>
+        </div>
+      </div>
+      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/inner-light.mp3">
+        <div class="tctrls">
+          <button class="tjb" data-act="back">-15</button>
+          <button class="tpb" data-act="play">▶</button>
+          <button class="tjb" data-act="fwd">+15</button>
+        </div>
+        <div>
+          <div class="tn">SOLXSTATE — INNER LIGHT</div>
+          <div class="tm">Demo</div>
+        </div>
+        <div class="tprog">
+          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
+          <div class="tt">0:00 / 0:00</div>
+        </div>
+      </div>
+      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/rebuild.mp3">
+        <div class="tctrls">
+          <button class="tjb" data-act="back">-15</button>
+          <button class="tpb" data-act="play">▶</button>
+          <button class="tjb" data-act="fwd">+15</button>
+        </div>
+        <div>
+          <div class="tn">SOLXSTATE — REBUILD</div>
+          <div class="tm">Demo</div>
+        </div>
+        <div class="tprog">
+          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
+          <div class="tt">0:00 / 0:00</div>
+        </div>
+      </div>
+      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/why-f34.mp3">
+        <div class="tctrls">
+          <button class="tjb" data-act="back">-15</button>
+          <button class="tpb" data-act="play">▶</button>
+          <button class="tjb" data-act="fwd">+15</button>
+        </div>
+        <div>
+          <div class="tn">SOLXSTATE — WHY (F34)</div>
+          <div class="tm">Demo</div>
+        </div>
+        <div class="tprog">
+          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
+          <div class="tt">0:00 / 0:00</div>
+        </div>
+      </div>
+      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/warrior-mastered.mp3">
+        <div class="tctrls">
+          <button class="tjb" data-act="back">-15</button>
+          <button class="tpb" data-act="play">▶</button>
+          <button class="tjb" data-act="fwd">+15</button>
+        </div>
+        <div>
+          <div class="tn">SOLXSTATE — WARRIOR (MASTERED)</div>
+          <div class="tm">Demo</div>
+        </div>
+        <div class="tprog">
+          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
+          <div class="tt">0:00 / 0:00</div>
+        </div>
+      </div>
+    </div>
+    <div class="m-actions">
+      <button class="actbtn" data-act="like" data-target="music"><span>Like</span><span class="count">0</span></button>
+      <button class="actbtn" data-act="comment" data-target="music">Comment</button>
+      <button class="actbtn" data-act="share" data-target="music">Share</button>
     </div>
     <a href="https://soundcloud.com/solxstate" target="_blank" class="sc-link">☁ Full Catalog on SoundCloud</a>
+    <audio id="audioPlayer" preload="metadata"></audio>
   </div>
 </section>
 
@@ -850,8 +1003,16 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
       </div>
       <div class="fm">
         <div class="fg"><label class="fl">Your Name</label><input class="fi" placeholder="Full name"/></div>
-        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="you@example.com"/></div>
-        <div class="fg"><label class="fl">Preferred Date</label><input type="date" class="fi"/></div>
+        <div class="fg" style="margin-bottom:14px;">
+          <label class="fl">Preferred Response Method</label>
+          <div class="mp">
+            <button class="mb2 on" onclick="pMB(this,'email')">📧 Email</button>
+            <button class="mb2" onclick="pMB(this,'phone')">📱 Phone</button>
+          </div>
+        </div>
+        <div class="fg" id="bookingEmailField"><label class="fl">Email Address</label><input type="email" class="fi" placeholder="you@example.com"/></div>
+        <div class="fg" id="bookingPhoneField" style="display:none;"><label class="fl">Phone Number</label><input type="tel" class="fi" placeholder="+1 (555) 000-0000"/></div>
+        <div class="fg"><label class="fl">Preferred Date</label><input type="date" class="fi" id="bookingDate"/></div>
         <div class="fg"><label class="fl">Session Type</label>
           <div class="csel" id="cselWrap">
             <div class="csel-selected" id="cselDisplay" onclick="toggleCsel()">
@@ -905,17 +1066,41 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   </div>
 </section>
 
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="wrap">
+    <p class="sec-tag">// 07 — Voices</p>
+    <h2 class="sec-title">Testi<span class="hot">monials</span></h2>
+    <div class="vhs-line"></div>
+    <div class="tg">
+      <div class="tframe">
+        <div class="tstack" id="tstack"></div>
+      </div>
+      <div class="tpanel">
+        <h3>Real Energy. Real Results.</h3>
+        <p>Each project is built on intention — a blend of story, style, and soul. Oasense doesn’t just deliver media, it helps people see themselves as the light.</p>
+        <a class="btn-hot" href="#booking">Book a Session</a>
+        <div class="tstats">
+          <div class="tstat"><div class="num">4.9★</div><div class="lbl">Avg Rating</div></div>
+          <div class="tstat"><div class="num">120+</div><div class="lbl">Projects</div></div>
+          <div class="tstat"><div class="num">24H</div><div class="lbl">Turnaround</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- REWARDS -->
 <section id="rewards">
   <div class="wrap">
-    <p class="sec-tag">// 07 — Loyalty</p>
+    <p class="sec-tag">// 08 — Loyalty</p>
     <h2 class="sec-title">My <span class="hot">Rewards</span></h2>
     <div class="vhs-line"></div>
     <div class="rtop">
       <div class="rnum">0</div>
       <div class="rlbl">Your Sol Points</div>
       <p style="font-family:'Share Tech Mono',monospace;font-size:14px;color:var(--mute);margin-top:12px;letter-spacing:1px;">Log in to see your balance and redeem rewards</p>
-      <button class="btn-hot" style="margin-top:20px;" onclick="oA('login')">Log In to Check Points</button>
+      <button class="btn-hot" style="margin-top:20px;" id="rewardsLoginBtn" onclick="oA('login')">Log In to Check Points</button>
     </div>
     <h3 style="font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:22px;">HOW TO EARN SOL POINTS</h3>
     <div class="rg">
@@ -935,7 +1120,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
 <!-- DONATION -->
 <section id="donation">
   <div class="wrap">
-    <p class="sec-tag">// 08 — Support the Mission</p>
+    <p class="sec-tag">// 09 — Support the Mission</p>
     <h2 class="sec-title">Fuel <span class="hot">The Light</span></h2>
     <div class="vhs-line"></div>
     <div class="dtop">
@@ -983,7 +1168,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
 <!-- CONTACT -->
 <section id="contact">
   <div class="wrap">
-    <p class="sec-tag">// 09 — Get In Touch</p>
+    <p class="sec-tag">// 10 — Get In Touch</p>
     <h2 class="sec-title">Contact <span class="hot">Us</span></h2>
     <div class="vhs-line"></div>
     <div class="cg">
@@ -1115,11 +1300,15 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     <div id="lv">
       <div class="mt2">Welcome Back</div>
       <div class="ms2">Log in to access your Sol Points, orders, and more.</div>
-      <div class="soa"><button class="sob" onclick="soc('Google')">🔵 Continue with Google</button><button class="sob" onclick="soc('Facebook')">🔷 Continue with Facebook</button><button class="sob" onclick="soc('Apple')">⚫ Continue with Apple</button></div>
+      <div class="soa">
+        <button class="sob" onclick="soc('google')">🔵 Continue with Google</button>
+        <button class="sob" onclick="soc('facebook')">🔷 Continue with Facebook</button>
+        <button class="sob" onclick="soc('apple')">⚫ Continue with Apple</button>
+      </div>
       <div class="ord"><span>or</span></div>
       <div class="fm">
-        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="your@email.com"/></div>
-        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" placeholder="••••••••"/></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="loginEmail" placeholder="your@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" id="loginPass" placeholder="••••••••"/></div>
         <button class="fbtn" onclick="dL()">Log In</button>
       </div>
       <div class="msw">Don't have an account? <a onclick="swA('signup')">Sign Up</a></div>
@@ -1127,12 +1316,16 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     <div id="sv" style="display:none;">
       <div class="mt2">Join Oasense</div>
       <div class="ms2">Create your account to earn Sol Points and join the journey.</div>
-      <div class="soa"><button class="sob" onclick="soc('Google')">🔵 Continue with Google</button><button class="sob" onclick="soc('Facebook')">🔷 Continue with Facebook</button><button class="sob" onclick="soc('Apple')">⚫ Continue with Apple</button></div>
+      <div class="soa">
+        <button class="sob" onclick="soc('google')">🔵 Continue with Google</button>
+        <button class="sob" onclick="soc('facebook')">🔷 Continue with Facebook</button>
+        <button class="sob" onclick="soc('apple')">⚫ Continue with Apple</button>
+      </div>
       <div class="ord"><span>or</span></div>
       <div class="fm">
-        <div class="fg"><label class="fl">Full Name</label><input class="fi" placeholder="Your name"/></div>
-        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" placeholder="your@email.com"/></div>
-        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" id="pwin" placeholder="••••••••" oninput="pws()"/><div class="pwh">Min 8 chars · 1 uppercase · 1 number</div><div class="pwbw"><div class="pwb" id="pwb"></div></div></div>
+        <div class="fg"><label class="fl">Full Name</label><input class="fi" id="signupName" placeholder="Your name"/></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="signupEmail" placeholder="your@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" id="signupPass" placeholder="••••••••" oninput="pws()"/><div class="pwh">Min 8 chars · 1 uppercase · 1 number</div><div class="pwbw"><div class="pwb" id="pwb"></div></div></div>
         <button class="fbtn" onclick="dS()">Create Account</button>
       </div>
       <div class="msw">Already have an account? <a onclick="swA('login')">Log In</a></div>
@@ -1141,6 +1334,23 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
 </div>
 
 <div id="toast"></div>
+
+<!-- REWARDS POPUP -->
+<div class="rpov" id="rpov" onclick="closeRewards(event)">
+  <div class="rpcard">
+    <button class="rpclose" onclick="closeRewards()">×</button>
+    <div class="rptitle">My Rewards</div>
+    <div class="rppoints"><span id="rpPoints">0</span> pts</div>
+    <div class="rpsub">Your Sol Points</div>
+    <div class="rplist" id="rpList">
+      500 pts = $5 off · 1,000 pts = $12 off · 2,500 pts = $35 off + exclusive digital content · 5,000 pts = free product
+    </div>
+    <div class="rpbtns">
+      <button class="rpbtn" onclick="scrollToRewards()">How to earn points</button>
+      <button class="rpbtn" onclick="closeRewards()">Close</button>
+    </div>
+  </div>
+</div>
 
 <!-- FIREBASE: SITE SETTINGS (ABOUT + DONATION) -->
 <script type="module">
@@ -1486,36 +1696,47 @@ function initShopFlip() {
 db.channel('shop-rt').on('postgres_changes',{event:'*',schema:'public',table:'products'},loadShop).subscribe();
 
 // ═══════════════════════════════════════════════
-//  BLOG — OASENSE BLOG 3-CARD GRID
+//  BLOG — OASENSE BLOG 3-CARD GRID (DEV FEED)
 // ═══════════════════════════════════════════════
 const BLOG_BASE = 'https://merci-chi.github.io/OAS/blog';
+async function fetchDevBlog() {
+  const sources = ['blog.json','blogs.json','blog_posts.json','posts.json'];
+  for (const s of sources) {
+    try {
+      const res = await fetch(DEV_BASE + s, { cache: 'no-store' });
+      if (!res.ok) continue;
+      const data = await res.json();
+      const arr = Array.isArray(data) ? data : (data.posts || data.items || data.data || []);
+      if (Array.isArray(arr) && arr.length) return arr;
+    } catch (e) {}
+  }
+  return [];
+}
 async function loadBlog() {
   const el = document.getElementById('blogGrid');
   try {
-    const { data, error } = await db.from('blog_posts').select('*').eq('status','published').order('created_at',{ascending:false}).limit(50);
-    if (error) throw error;
+    const data = await fetchDevBlog();
     if (!data || !data.length) {
       el.innerHTML = renderBlogEmpty(); return;
     }
-    const selectTargets = ['select 3','select3','select-3','selected 3','selected-3','featured 3','featured-3'];
-    const isSelected = (p) => {
-      const sources = [
-        p.select_group, p.selection, p.selected_group, p.featured_group,
-        p.tags, p.tag, p.category, p.group, p.collection
-      ];
-      return sources.some(v => hasTag(v, selectTargets) || String(v||'').toLowerCase().trim() === 'select 3');
-    };
-    const selectedPosts = data.filter(isSelected);
-    const rows = (selectedPosts.length ? selectedPosts : data).slice(0,3);
+    const rows = data
+      .slice()
+      .sort((a,b)=> {
+        const da = new Date(a.date || a.created_at || a.created || a.published_at || 0).getTime();
+        const db = new Date(b.date || b.created_at || b.created || b.published_at || 0).getTime();
+        return db - da;
+      })
+      .slice(0,3);
     const BG = ['linear-gradient(135deg,#1a0020,#2d0040)','linear-gradient(135deg,#18000a,#380018)','linear-gradient(135deg,#000e28,#001840)'];
     el.innerHTML = rows.map((p,i) => {
-      const date = p.date || (p.created_at ? new Date(p.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '');
-      const excerpt = (p.excerpt || p.content || '').substring(0,160);
-      const photo = p.photo_url || p.image_url || p.image || '';
+      const dateRaw = p.date || p.created_at || p.created || p.published_at;
+      const date = dateRaw ? new Date(dateRaw).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      const excerpt = String(p.excerpt || p.summary || p.content || '').substring(0,160);
+      const photo = p.photo_url || p.image_url || p.image || p.cover || p.thumbnail || '';
       const emoji = p.emoji || '✍️';
-      const postUrl = p.slug ? `${BLOG_BASE}/${p.slug}` : `${BLOG_BASE}#post-${p.id}`;
+      const postUrl = BLOG_BASE;
       const photoHtml = photo
-        ? `<img src="${_esc(mediaUrl(photo))}" alt="${_esc(p.title||'')}"/>`
+        ? `<img src="${_esc(mediaUrl(photo))}" alt="${_esc(p.title||p.name||'')}"/>`
         : `<span style="font-size:48px;z-index:1;">${emoji}</span>`;
 
       return `<a class="bc" href="${_esc(postUrl)}" target="_blank" style="text-decoration:none;color:inherit;">
@@ -1526,9 +1747,13 @@ async function loadBlog() {
         </div>
         <div class="bc-body">
           <div class="bc-date">${_esc(date)}</div>
-          <div class="bc-title">${_esc(p.title||'Untitled')}</div>
+          <div class="bc-title">${_esc(p.title||p.name||'Untitled')}</div>
           <div class="bc-excerpt">${_esc(excerpt)}${excerpt.length>=160?'…':''}</div>
-          <span class="bc-more">See more →</span>
+          <div class="b-actions">
+            <span class="actbtn" data-act="like" data-target="blog"><span>Like</span><span class="count">0</span></span>
+            <span class="actbtn" data-act="comment" data-target="blog">Comment</span>
+            <span class="actbtn" data-act="share" data-target="blog">Share</span>
+          </div>
         </div>
       </a>`;
     }).join('');
@@ -1554,7 +1779,11 @@ function renderBlogEmpty() {
         <div class="bc-date">${p.date}</div>
         <div class="bc-title">${p.title}</div>
         <div class="bc-excerpt">Post content will appear here once published</div>
-        <span class="bc-more">See more →</span>
+        <div class="b-actions">
+          <span class="actbtn" data-act="like" data-target="blog"><span>Like</span><span class="count">0</span></span>
+          <span class="actbtn" data-act="comment" data-target="blog">Comment</span>
+          <span class="actbtn" data-act="share" data-target="blog">Share</span>
+        </div>
       </div>
     </a>`).join('');
 }
@@ -1810,7 +2039,18 @@ window.addEventListener('scroll',()=>{const n=document.getElementById('needHelp'
 function dismissNH(){document.getElementById('needHelp').classList.add('dismissed');document.getElementById('nhPopup').classList.remove('open');}
 function openNH(){document.getElementById('nhPopup').classList.add('open');document.getElementById('needHelp').classList.add('hidden-nh');document.getElementById('nhBtns').style.display='flex';document.getElementById('nhThanks').classList.remove('show');}
 function closeNH(){document.getElementById('nhPopup').classList.remove('open');document.getElementById('needHelp').classList.remove('hidden-nh');}
-function nhChoice(t){if(t==='shop'){closeNH();document.getElementById('shop').scrollIntoView({behavior:'smooth'});}else if(t==='contact'){closeNH();document.getElementById('contact').scrollIntoView({behavior:'smooth'});}else if(t==='looking'){document.getElementById('nhBtns').style.display='none';document.getElementById('nhThanks').classList.add('show');}}
+function nhChoice(t){
+  if(t==='shop'){
+    closeNH();
+    window.open('https://merci-chi.github.io/OAS/shop','_blank');
+  }else if(t==='contact'){
+    closeNH();
+    document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+  }else if(t==='looking'){
+    document.getElementById('nhBtns').style.display='none';
+    document.getElementById('nhThanks').classList.add('show');
+  }
+}
 function tM(){document.getElementById('mob').classList.toggle('open');}
 
 const SOL_PALETTES={magenta:{hot:'#FF00C8',mag:'#CC00FF',deep:'#7B00FF',hot2:'#FF3DE8',particle:'255,0,200',core:'radial-gradient(circle,#fff8ff 0%,#ff88ee 25%,#ff00c8 55%,#cc00aa 80%)',coreShadow:'0 0 40px rgba(255,0,200,0.6),0 0 12px rgba(255,200,255,0.9) inset',glow:'rgba(255,0,200,0.35)'},blue:{hot:'#00EEFF',mag:'#0077FF',deep:'#0033CC',hot2:'#44FFFF',particle:'0,200,255',core:'radial-gradient(circle,#ffffff 0%,#88eeff 25%,#00eeff 55%,#0077ff 80%)',coreShadow:'0 0 40px rgba(0,200,255,0.6)',glow:'rgba(0,200,255,0.35)'},green:{hot:'#00FF88',mag:'#00CC55',deep:'#008833',hot2:'#44FFAA',particle:'0,255,120',core:'radial-gradient(circle,#ffffff 0%,#88ffcc 25%,#00ff88 55%,#00cc55 80%)',coreShadow:'0 0 40px rgba(0,255,120,0.6)',glow:'rgba(0,255,120,0.35)'},yellow:{hot:'#FFCC00',mag:'#FF8800',deep:'#CC5500',hot2:'#FFDD44',particle:'255,180,0',core:'radial-gradient(circle,#fffff0 0%,#ffee88 25%,#ffcc00 55%,#ff8800 80%)',coreShadow:'0 0 40px rgba(255,180,0,0.6),0 0 12px rgba(255,240,160,0.9) inset',glow:'rgba(255,180,0,0.35)'},red:{hot:'#FF3300',mag:'#CC1100',deep:'#881100',hot2:'#FF6644',particle:'255,60,0',core:'radial-gradient(circle,#fff0ee 0%,#ff9988 25%,#ff3300 55%,#cc1100 80%)',coreShadow:'0 0 40px rgba(255,60,0,0.6)',glow:'rgba(255,60,0,0.35)'}};
@@ -1833,11 +2073,151 @@ function setSolColor(name){
 //  MISC UI / FORMS / MUSIC / AUTH
 // ═══════════════════════════════════════════════
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000);}
-function pM(b,m){document.querySelectorAll('.mb2').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('emailField').style.display=m==='email'?'block':'none';document.getElementById('phoneField').style.display=m==='phone'?'block':'none';}
+function pM(b,m){
+  const wrap = b.closest('.mp');
+  if (wrap) wrap.querySelectorAll('.mb2').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.getElementById('emailField').style.display=m==='email'?'block':'none';
+  document.getElementById('phoneField').style.display=m==='phone'?'block':'none';
+}
+function pMB(b,m){
+  const wrap = b.closest('.mp');
+  if (wrap) wrap.querySelectorAll('.mb2').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  const em = document.getElementById('bookingEmailField');
+  const ph = document.getElementById('bookingPhoneField');
+  if (em) em.style.display = m==='email' ? 'block' : 'none';
+  if (ph) ph.style.display = m==='phone' ? 'block' : 'none';
+}
+function setBookingDateToday(){
+  const el = document.getElementById('bookingDate');
+  if (!el || el.value) return;
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  el.value = `${y}-${m}-${day}`;
+}
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.actbtn');
+  if (!btn) return;
+  e.preventDefault();
+  e.stopPropagation();
+  const act = btn.getAttribute('data-act');
+  const target = btn.getAttribute('data-target') || '';
+  if (act === 'like') {
+    const countEl = btn.querySelector('.count');
+    const cur = countEl ? Number(countEl.textContent||0) : 0;
+    const on = btn.classList.toggle('active');
+    if (countEl) countEl.textContent = on ? cur + 1 : Math.max(0, cur - 1);
+    toast(on ? 'LIKED' : 'UNLIKED');
+    return;
+  }
+  if (act === 'comment') {
+    if (target === 'blog') window.open(BLOG_BASE,'_blank');
+    else toast('COMMENTS COMING SOON');
+    return;
+  }
+  if (act === 'share') {
+    const link = target === 'blog' ? BLOG_BASE : window.location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(()=>toast('LINK COPIED')).catch(()=>toast('COPY FAILED'));
+    } else {
+      toast('COPY NOT SUPPORTED');
+    }
+    return;
+  }
+});
 
-// Music (simple simulated progress)
-let ct=-1,ti={},tp=[0,0,0,0,0];const ds=[222,258,175,186,162];
-function pT(i){const tks=document.querySelectorAll('.tk');if(ct===i){clearInterval(ti[i]);tks[i].classList.remove('pl');tks[i].querySelector('.tpb').textContent='▶';ct=-1;return;}if(ct>=0){clearInterval(ti[ct]);tks[ct].classList.remove('pl');tks[ct].querySelector('.tpb').textContent='▶';}ct=i;tks[i].classList.add('pl');tks[i].querySelector('.tpb').textContent='⏸';ti[i]=setInterval(()=>{tp[i]++;if(tp[i]>=ds[i]){clearInterval(ti[i]);tks[i].classList.remove('pl');tks[i].querySelector('.tpb').textContent='▶';ct=-1;tp[i]=0;return;}tks[i].querySelector('.tb').style.width=(tp[i]/ds[i]*100)+'%';const m=Math.floor(tp[i]/60),s=tp[i]%60;tks[i].querySelector('.tt').textContent=m+':'+(s<10?'0':'')+s;},1000);}
+// Music (real player)
+const player = document.getElementById('audioPlayer');
+const tracks = Array.from(document.querySelectorAll('.tk'));
+let currentTrack = -1;
+function fmtTime(s){
+  if (!isFinite(s) || s < 0) return '0:00';
+  const m = Math.floor(s/60);
+  const r = Math.floor(s%60);
+  return m+':' + (r<10?'0':'') + r;
+}
+function setTrackUI(i, playing){
+  tracks.forEach((t,idx)=>{
+    t.classList.toggle('pl', idx===i && playing);
+    const btn = t.querySelector('.tpb');
+    if (btn) btn.textContent = (idx===i && playing) ? '⏸' : '▶';
+  });
+}
+function loadTrack(i){
+  const t = tracks[i];
+  if (!t || !player) return;
+  const src = t.getAttribute('data-src');
+  if (!src) { toast('TRACK NOT AVAILABLE'); return; }
+  if (currentTrack !== i) {
+    player.src = src;
+    currentTrack = i;
+  }
+}
+function playTrack(i){
+  loadTrack(i);
+  player.play().then(()=>setTrackUI(i,true)).catch(()=>toast('UNABLE TO PLAY'));
+}
+function pauseTrack(){
+  player.pause();
+  setTrackUI(currentTrack,false);
+}
+tracks.forEach((t,i)=>{
+  const playBtn = t.querySelector('[data-act="play"]');
+  const backBtn = t.querySelector('[data-act="back"]');
+  const fwdBtn = t.querySelector('[data-act="fwd"]');
+  const seek = t.querySelector('[data-act="seek"]');
+  const timeEl = t.querySelector('.tt');
+  if (playBtn) playBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if (currentTrack === i && !player.paused) pauseTrack();
+    else playTrack(i);
+  });
+  if (backBtn) backBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if (currentTrack !== i) loadTrack(i);
+    player.currentTime = Math.max(0, player.currentTime - 15);
+  });
+  if (fwdBtn) fwdBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if (currentTrack !== i) loadTrack(i);
+    const dur = player.duration || 0;
+    player.currentTime = Math.min(dur, player.currentTime + 15);
+  });
+  if (seek) seek.addEventListener('input', (e)=>{
+    e.stopPropagation();
+    if (currentTrack !== i) loadTrack(i);
+    const dur = player.duration || 0;
+    player.currentTime = (e.target.value/100) * dur;
+  });
+  t.addEventListener('click', ()=>playTrack(i));
+});
+if (player) {
+  player.addEventListener('timeupdate', ()=>{
+    const t = tracks[currentTrack];
+    if (!t) return;
+    const seek = t.querySelector('[data-act="seek"]');
+    const timeEl = t.querySelector('.tt');
+    const dur = player.duration || 0;
+    const pct = dur ? (player.currentTime/dur)*100 : 0;
+    if (seek) seek.value = pct.toFixed(2);
+    if (timeEl) timeEl.textContent = `${fmtTime(player.currentTime)} / ${fmtTime(dur)}`;
+  });
+  player.addEventListener('loadedmetadata', ()=>{
+    const t = tracks[currentTrack];
+    if (!t) return;
+    const timeEl = t.querySelector('.tt');
+    const seek = t.querySelector('[data-act="seek"]');
+    if (seek) seek.value = '0';
+    if (timeEl) timeEl.textContent = `0:00 / ${fmtTime(player.duration || 0)}`;
+  });
+  player.addEventListener('ended', ()=>{
+    const next = (currentTrack + 1) % tracks.length;
+    playTrack(next);
+  });
+}
 
 // Booking
 function pS(el,n){document.querySelectorAll('.sv').forEach(s=>s.classList.remove('on'));el.classList.add('on');}
@@ -1867,19 +2247,160 @@ function oA(t){document.getElementById('ov').classList.add('open');swA(t);}
 function cA(){document.getElementById('ov').classList.remove('open');}
 function cAOut(e){if(e.target===document.getElementById('ov'))cA();}
 function swA(t){document.getElementById('lv').style.display=t==='login'?'block':'none';document.getElementById('sv').style.display=t==='signup'?'block':'none';}
-function soc(p){toast('CONNECTING TO '+p.toUpperCase()+'...');setTimeout(()=>{cA();toast('WELCOME TO OASENSE! ☀️');},1200);}
-function dL(){toast('WELCOME BACK! ☀️');cA();}
-function dS(){const p=document.getElementById('pwin').value;if(!p||p.length<8||!/[A-Z]/.test(p)||!/[0-9]/.test(p)){toast('PASSWORD: 8+ CHARS, 1 UPPERCASE, 1 NUMBER');return;}toast('ACCOUNT CREATED! WELCOME ☀️');cA();}
-function pws(){const v=document.getElementById('pwin').value;let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;const c=['#FF00C8','#ff9500','#39e75f'];document.getElementById('pwb').style.width=(s*33.3)+'%';document.getElementById('pwb').style.background=c[s-1]||'';}
+async function soc(p){
+  try{
+    const { error } = await db.auth.signInWithOAuth({
+      provider: p,
+      options: { redirectTo: window.location.href }
+    });
+    if (error) throw error;
+  }catch(e){
+    console.error(e);
+    toast('LOGIN FAILED');
+  }
+}
+async function dL(){
+  const email = (document.getElementById('loginEmail')||{}).value || '';
+  const pass  = (document.getElementById('loginPass')||{}).value || '';
+  if (!email || !pass) { toast('ENTER EMAIL + PASSWORD'); return; }
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  if (error) { toast('LOGIN FAILED'); return; }
+  toast('WELCOME BACK! ☀️'); cA();
+}
+async function dS(){
+  const name  = (document.getElementById('signupName')||{}).value || '';
+  const email = (document.getElementById('signupEmail')||{}).value || '';
+  const pass  = (document.getElementById('signupPass')||{}).value || '';
+  if (!email || !pass) { toast('ENTER EMAIL + PASSWORD'); return; }
+  const { error } = await db.auth.signUp({
+    email, password: pass,
+    options: { data: { full_name: name } }
+  });
+  if (error) { toast('SIGNUP FAILED'); return; }
+  toast('ACCOUNT CREATED! CHECK YOUR EMAIL'); cA();
+}
+function pws(){const v=document.getElementById('signupPass')?.value || '';let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;const c=['#FF00C8','#ff9500','#39e75f'];document.getElementById('pwb').style.width=(s*33.3)+'%';document.getElementById('pwb').style.background=c[s-1]||'';}
 
 // Scroll reveal
 const obs=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}}));
 document.querySelectorAll('.po,.ri,.tk,.sv').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(18px)';el.style.transition='opacity .5s ease,transform .5s ease';obs.observe(el);});
 
+// Account menu + rewards
+function toggleAcctMenu(){document.getElementById('acctMenu').classList.toggle('open');}
+function closeAcctMenu(){document.getElementById('acctMenu').classList.remove('open');}
+function openMyPage(){window.open('https://merci-chi.github.io/OAS/mypage','_blank');}
+function openWishlist(){window.open('https://merci-chi.github.io/OAS/mypage','_blank');}
+function openRewards(){document.getElementById('rpov').classList.add('open');}
+function closeRewards(e){if(!e||e.target.id==='rpov')document.getElementById('rpov').classList.remove('open');}
+function scrollToRewards(){closeRewards();document.getElementById('rewards').scrollIntoView({behavior:'smooth'});}
+document.addEventListener('click', (e)=>{
+  const wrap = document.getElementById('acctWrap');
+  if (wrap && !wrap.contains(e.target)) closeAcctMenu();
+});
+async function doLogout(){await db.auth.signOut();toast('SIGNED OUT');}
+async function updateAccountUI(session){
+  const wrap = document.getElementById('acctWrap');
+  const btns = document.querySelector('.nav-btns');
+  const loginBtn = btns?.querySelector('.nbl');
+  const signupBtn = btns?.querySelector('.nbr');
+  if (!session) {
+    if (wrap) wrap.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = '';
+    if (signupBtn) signupBtn.style.display = '';
+    const rb = document.getElementById('rewardsLoginBtn');
+    if (rb) { rb.textContent = 'Log In to Check Points'; rb.onclick = () => oA('login'); }
+    return;
+  }
+  if (wrap) wrap.style.display = 'flex';
+  if (loginBtn) loginBtn.style.display = 'none';
+  if (signupBtn) signupBtn.style.display = 'none';
+  const user = session.user || {};
+  const img = user.user_metadata?.avatar_url || '';
+  const name = user.user_metadata?.full_name || user.email || 'ME';
+  const initials = name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  const btn = document.getElementById('acctBtn');
+  const init = document.getElementById('acctInitials');
+  if (img) {
+    btn.innerHTML = `<img src="${_esc(img)}" alt="Account"/>`;
+  } else if (init) {
+    init.textContent = initials || 'ME';
+  }
+  // load Sol Points
+  try{
+    const { data, error } = await db.from('profiles').select('sol_points').eq('id', user.id).single();
+    if (!error && data) document.getElementById('rpPoints').textContent = Number(data.sol_points||0).toLocaleString();
+  }catch(e){}
+  const rb = document.getElementById('rewardsLoginBtn');
+  if (rb) { rb.textContent = 'View My Rewards'; rb.onclick = () => openRewards(); }
+}
+
+// ═══════════════════════════════════════════════
+//  TESTIMONIALS — LIVE LOOP
+// ═══════════════════════════════════════════════
+let tmr = null, tIndex = 0, tItems = [];
+function renderTestimonialCard(t, i, active) {
+  const name = t.name || t.client_name || 'Client';
+  const role = t.role || t.type || '';
+  const quote = t.quote || t.message || t.testimonial || '';
+  return `<div class="tcard${active?' active':''}" data-idx="${i}">
+    <div class="tbadge">${String(i+1).padStart(2,'0')}</div>
+    <div class="tq">“${_esc(quote)}”</div>
+    <div class="ta">${_esc(name)}${role?`<span class="trole">${_esc(role)}</span>`:''}</div>
+  </div>`;
+}
+function showTestimonial(idx) {
+  const cards = document.querySelectorAll('#tstack .tcard');
+  if (!cards.length) return;
+  cards.forEach(c => c.classList.remove('active'));
+  const card = cards[idx % cards.length];
+  if (card) card.classList.add('active');
+}
+function startTestimonialLoop() {
+  if (tmr) clearInterval(tmr);
+  if (tItems.length <= 1) return;
+  tmr = setInterval(() => {
+    tIndex = (tIndex + 1) % tItems.length;
+    showTestimonial(tIndex);
+  }, 4200);
+}
+async function loadTestimonials() {
+  const root = document.getElementById('tstack');
+  if (!root) return;
+  try {
+    const { data, error } = await db
+      .from('testimonials')
+      .select('*')
+      .order('sort_order',{ascending:true})
+      .limit(50);
+    if (error) throw error;
+    const liveRows = (data||[]).filter(r => {
+      const st = String(r.status || r.display_status || r.state || '').toLowerCase().trim();
+      const liveFlag = r.is_live === true || r.live === true;
+      return liveFlag || st === 'live' || st === 'displayed' || st === 'shown';
+    });
+    tItems = liveRows;
+    if (!liveRows.length) {
+      root.innerHTML = '';
+      return;
+    }
+    tIndex = 0;
+    root.innerHTML = liveRows.map((t,i) => renderTestimonialCard(t,i,i===0)).join('');
+    showTestimonial(0);
+    startTestimonialLoop();
+  } catch(e) {
+    console.error('Testimonials error:', e);
+  }
+}
+db.channel('testimonials-rt').on('postgres_changes',{event:'*',schema:'public',table:'testimonials'},loadTestimonials).subscribe();
+
 // INIT
 loadShop();
 loadBlog();
 loadPortfolio();
+loadTestimonials();
+setBookingDateToday();
+db.auth.getSession().then(({data})=>updateAccountUI(data.session));
+db.auth.onAuthStateChange((_event, session)=>updateAccountUI(session));
 db.channel('blog-rt').on('postgres_changes',{event:'*',schema:'public',table:'blog_posts'},loadBlog).subscribe();
 db.channel('portfolio-rt').on('postgres_changes',{event:'*',schema:'public',table:'portfolio_items'},()=>{loadPortfolio();}).subscribe();
 </script>
