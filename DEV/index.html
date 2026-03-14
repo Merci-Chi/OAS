@@ -1435,11 +1435,7 @@ function openCRMPopupNoProfile(clientName){
 function openCRMPopupByOrderId(orderId){
   const o=orders.find(x=>String(x.id)===String(orderId));
   if(!o){openCRMPopupNoProfile('—');return;}
-  let p=null;
-  if(o.crmPersonId){p=people.find(x=>String(x.id)===String(o.crmPersonId));}
-  if(!p){
-    p=people.find(x=>(x.name||'').toLowerCase().trim()===(o.name||'').toLowerCase().trim());
-  }
+  const p=resolveCRMForOrder(o);
   if(p)openCRMPopupForPerson(p);
   else openCRMPopupNoProfile(o.name);
 }
@@ -1449,6 +1445,26 @@ function openCRMPopupByClientName(clientName){
   const p=people.find(x=>(x.name||'').toLowerCase().trim()===name.toLowerCase());
   if(p)openCRMPopupForPerson(p);
   else openCRMPopupNoProfile(name);
+}
+
+function resolveCRMForOrder(o){
+  if(!o)return null;
+  let p=null;
+  if(o.crmPersonId){
+    p=people.find(x=>String(x.id)===String(o.crmPersonId));
+  }
+  if(!p && o.name){
+    const ak=getAdminKey(o.name);
+    if(ak){
+      const adminId=ADMIN_CRM[ak].id;
+      p=people.find(x=>getAdminKey(x.name)===ak && String(getCRMId(x)||x.crmId)===String(adminId)) || people.find(x=>getAdminKey(x.name)===ak);
+    }
+  }
+  if(!p && o.name){
+    const norm=(o.name||'').toLowerCase().trim();
+    p=people.find(x=>(x.name||'').toLowerCase().trim()===norm);
+  }
+  return p;
 }
 
 function openCRMPopupByInvoiceId(invoiceId){
@@ -1876,7 +1892,7 @@ function autoFillOrdPrice(id){const name=document.getElementById('oname-'+id).va
 function ordPickFilter(){const q=document.getElementById('ord-name').value.toLowerCase().trim();const dd=document.getElementById('ordPickDD');const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);if(!hits.length){dd.classList.remove('open');return;}dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickOrdPerson(${p.id})"><div>${p.name}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}${p.email?' · '+p.email:''}</div></div>`).join('');dd.classList.add('open');}
 function pickOrdPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('ord-name').value=p.name;document.getElementById('ord-phone').value=p.phone||'';document.getElementById('ord-crm-person-id').value=id;document.getElementById('ordPickDD').classList.remove('open');}
 async function saveOrder(){const name=document.getElementById('ord-name').value.trim(),phone=document.getElementById('ord-phone').value.trim(),date=document.getElementById('ord-date').value;if(!name){alert('Client name required.');return;}const rows=document.querySelectorAll('#ordItemsWrap .ord-item-row');const items=[];rows.forEach(row=>{const rid=row.id.replace('ordrow-','');const iname=document.getElementById('oname-'+rid)?.value.trim();const price=parseFloat(document.getElementById('oprice-'+rid)?.value)||0;const disc=parseFloat(document.getElementById('odisc-'+rid)?.value)||0;if(iname)items.push({name:iname,price,disc});});if(!items.length){alert('Add at least one item.');return;}const newId=Math.floor(Date.now());const crmPersonId=document.getElementById('ord-crm-person-id')?.value||null;await saveOrderFS({id:newId,name,phone,date,items,crmPersonId});closeNewOrderForm();if(currentUser)addAuditEntry(currentUser.name,'Made Purchase','REF #'+newId);}
-async function deleteOrder(id){if(!confirm('Delete this order?'))return;await deleteOrderFS(id);}
+async function deleteOrder(id){showConfirm('Delete this order?',async()=>{await deleteOrderFS(id);});}
 
 // ORDER RENDER — No "?" button, clean layout
 function renderOrders(){
@@ -1885,6 +1901,9 @@ function renderOrders(){
   if(!orders.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
   list.innerHTML=orders.map(o=>{
+    const p=resolveCRMForOrder(o);
+    const crmId=p?(getCRMId(p)||p.crmId):null;
+    const crmTag=p?`CRM ${formatCRMId(crmId||'')}`:'Cannot find CRM user';
     let subTotal=0,totalDisc=0;
     o.items.forEach(it=>{subTotal+=it.price;totalDisc+=it.price*(it.disc/100);});
     const afterDisc=subTotal-totalDisc,taxAmt=afterDisc*NV_TAX,total=afterDisc+taxAmt;
@@ -1894,6 +1913,7 @@ function renderOrders(){
         <div class="order-client-row">
           <div class="order-client-name">${o.name}</div>
           <button class="bc-crm-btn" onclick="openCRMPopupByOrderId(${o.id})" style="margin-left:8px;"><span class="bc-dot"></span> CRM</button>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,204,0,0.3);color:${p?'rgba(255,204,0,0.7)':'rgba(255,59,59,0.7)'};text-transform:uppercase;">${crmTag}</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <div class="order-date">${o.date?formatDate(o.date):''}</div>
