@@ -844,6 +844,9 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       <button class="crm-tab crm-tab-users" onclick="switchCRM('user',this)">👤 Users</button>
       <button class="crm-tab crm-tab-admin" onclick="switchCRM('admin',this)">🔐 ADMIN</button>
     </div>
+    <div style="margin-left:auto;min-width:240px;">
+      <input class="fi" id="crmSearchInput" placeholder="Search CRM…" oninput="renderCRM()" style="width:100%;max-width:280px;"/>
+    </div>
     <div class="crm-rating-filter" style="margin-left:auto;">
       <button class="crm-rating-filter-btn" onclick="toggleRatingFilterDD()"><span id="ratingFilterLabel">● All Ratings</span> ▾</button>
       <div class="crm-rating-filter-dd" id="ratingFilterDD">
@@ -879,10 +882,17 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
         <div class="fg"><label class="fl">Discount</label><select class="fi fse" id="it-discount"><option value="-">- (No Discount)</option><option value="10">10% Off</option><option value="15">15% Off</option><option value="20">20% Off</option><option value="50">50% Off</option><option value="100">100% Off (Free)</option><option value="custom">Custom %</option></select></div>
       </div>
       <div class="fg" id="customDiscountWrap" style="display:none;"><label class="fl">Custom Discount %</label><input class="fi" id="it-custom-discount" type="number" min="1" max="99" placeholder="Enter %"/></div>
+      <div class="fg"><label class="fl">Badge</label>
+        <select class="fi fse" id="it-badge-select">
+          <option value="-">— No Badge</option>
+          <option value="Hot!">HOT!</option>
+          <option value="New!">NEW!</option>
+          <option value="%">-% OFF</option>
+        </select>
+      </div>
       <div class="form-sec">Images</div>
       <div class="fg"><label class="fl">Product Image (Primary)</label><div class="image-upload-area"><input type="file" accept="image/*" id="it-image" onchange="previewImage(event,'imagePreview','uploadPlaceholder')"/><img class="upload-preview" id="imagePreview"/><div id="uploadPlaceholder"><span class="upload-icon">📷</span><div class="upload-label">Click to upload</div></div></div></div>
       <div class="fg"><label class="fl">Product Image 2 <span style="color:var(--mute);font-size:9px;">(Flip side)</span></label><div class="image-upload-area"><input type="file" accept="image/*" id="it-image2" onchange="previewImage(event,'imagePreview2','uploadPlaceholder2')"/><img class="upload-preview" id="imagePreview2"/><div id="uploadPlaceholder2"><span class="upload-icon">🔄</span><div class="upload-label">Click to upload flip side</div></div></div></div>
-      <input type="hidden" id="it-badge" value="-"/>
       <input type="hidden" id="editingItemId" value=""/>
       <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill" onclick="saveItem()" style="flex:1;">Save as Draft</button><button class="btn btn-ghost btn-sm" onclick="resetItemForm()" id="cancelEditBtn" style="display:none;">Cancel</button></div>
       <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.35);margin-top:8px;text-align:center;">Saved as draft — use GO LIVE on the card to publish</div>
@@ -894,6 +904,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
         <div><div class="draft-count-num" id="draftCountNum">0</div><div class="live-count-label"><span style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,204,0,0.4);">Drafts</span></div></div>
         <div style="margin-left:auto;"><a href="https://merci-chi.github.io/OAS/shop" target="_blank" style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--green);text-decoration:none;text-transform:uppercase;border:1px solid rgba(0,255,136,0.3);padding:6px 14px;">View Live Shop ↗</a></div>
       </div>
+      <div class="card" id="promoBar" style="margin-bottom:14px;"></div>
       <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--mute);text-transform:uppercase;margin-bottom:14px;">All Items — <span id="itemCount">0</span> total</div>
       <div class="shop-items-grid" id="shopItemsGrid"></div>
       <div class="empty-state" id="shopEmpty">No items yet — add one to the left ☀️</div>
@@ -1187,6 +1198,31 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   </div>
 </div>
 
+<!-- CRM POINTS OVERRIDE MODAL -->
+<div class="modal-overlay" id="pointsOverrideModal">
+  <div class="modal" style="max-width:380px;">
+    <button class="modal-close" onclick="closePointsOverride()">×</button>
+    <div class="modal-title">⭐ Points Override</div>
+    <div id="pointsAuthWrap">
+      <div class="fg"><label class="fl">Username</label><input class="fi" id="pts-user" autocomplete="off"/></div>
+      <div class="fg"><label class="fl">Access Code</label><input class="fi" type="password" id="pts-pass"/></div>
+      <div id="pts-err" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);margin-bottom:12px;display:none;">❌ Invalid credentials</div>
+      <button class="btn btn-fill btn-sm" onclick="checkPointsAuth()" style="width:100%;">Unlock</button>
+    </div>
+    <div id="pointsEditWrap" style="display:none;">
+      <div class="fg"><label class="fl">Reason / Note</label><input class="fi" id="pts-reason" placeholder="e.g. Referral bonus"/></div>
+      <div class="fg"><label class="fl">Amount</label><input class="fi" id="pts-amount" type="number" step="1" placeholder="0"/></div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="btn btn-fill btn-sm" onclick="applyPointsChange('add')" style="flex:1;">+ Add</button>
+        <button class="btn btn-red btn-sm" onclick="applyPointsChange('remove')" style="flex:1;">− Remove</button>
+      </div>
+      <div style="margin-top:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="applyPointsChange('set')" style="width:100%;">Manual Entry (Set Total)</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══ CONSTANTS ══
 const NV_TAX = 0.08375;
@@ -1440,6 +1476,7 @@ function openCRMPopupForPerson(p){
     <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);text-transform:uppercase;">${roleLabel}</span>
     ${p.rating?`<span style="display:inline-flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:${ratingColors[p.rating]};text-transform:uppercase;"><span style="width:8px;height:8px;border-radius:50%;background:${ratingColors[p.rating]};display:inline-block;"></span>${ratingLabels[p.rating]}</span>`:''}
   `;
+  const pointsVal=typeof p.points==='number'?p.points:parseInt(p.points||0);
   const fields=[
     {icon:'📞',lbl:'Phone',   val:p.phone||''},
     {icon:'📧',lbl:'Email',   val:p.email||''},
@@ -1447,16 +1484,42 @@ function openCRMPopupForPerson(p){
     {icon:'📍',lbl:'Address', val:p.addr||''},
     {icon:'🎂',lbl:'Age',     val:p.age?String(p.age):''},
     {icon:'📁',lbl:'Category',val:getDisplayCategory(p)},
+    {icon:'⭐',lbl:'Sol Points',val:String(pointsVal||0)},
     {icon:'📝',lbl:'Notes',   val:p.notes||''},
   ];
-  document.getElementById('crmPopupBody').innerHTML=fields.map((f,i)=>`
+  const history=(p.pointsHistory||[]).slice().sort((a,b)=>(b.ts||0)-(a.ts||0));
+  const historyHtml=history.length?history.map(h=>{
+    const sign=h.delta>0?'+':'';
+    const reason=esc(h.reason||'Points update');
+    const when=h.ts?fmtTs(h.ts):'—';
+    return `<div class="crm-field-row" style="align-items:flex-start;">
+      <span class="crm-field-icon">•</span>
+      <span class="crm-field-lbl">${when}</span>
+      <span class="crm-field-val">${sign}${h.delta||0} — ${reason}</span>
+    </div>`;
+  }).join(''):`<div class="crm-field-row"><span class="crm-field-icon">•</span><span class="crm-field-lbl">History</span><span class="crm-field-val empty">No points history</span></div>`;
+
+  document.getElementById('crmPopupBody').innerHTML=`
+    ${fields.map((f,i)=>`
     <div class="crm-field-row">
       <span class="crm-field-icon">${f.icon}</span>
       <span class="crm-field-lbl">${f.lbl}</span>
       <span class="crm-field-val${!f.val?' empty':''}">${f.val||'—'}</span>
       ${f.val?`<button class="crm-copy-btn" id="cpbtn-prsn-${i}" onclick="copyFieldValue('${f.val.replace(/'/g,"&#39;")}','cpbtn-prsn-${i}')">Copy</button>`:''}
     </div>
-  `).join('');
+  `).join('')}
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,204,0,0.12);display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.45);text-transform:uppercase;margin-bottom:6px;">Points History</div>
+        ${historyHtml}
+      </div>
+      <div style="min-width:160px;border:1px solid rgba(255,204,0,0.2);padding:10px;background:rgba(255,204,0,0.03);">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.45);text-transform:uppercase;margin-bottom:6px;">Points</div>
+        <div style="font-family:'Black Ops One',sans-serif;font-size:24px;color:var(--hot);text-align:right;">${pointsVal||0}</div>
+        <button class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;" onclick="openPointsOverride(${p.id})">Override Points</button>
+      </div>
+    </div>
+  `;
   document.getElementById('crmPopup').classList.add('open');
 }
 
@@ -1757,6 +1820,13 @@ function renderCRM(){
   else if(crmFilter==='user'){const siteUserNames=new Set(appUsers.map(u=>(u.name||'').toLowerCase()));filtered=people.filter(p=>{if(isAdminPerson(p))return false;return siteUserNames.has((p.name||'').toLowerCase())||p.cat==='user';});}
   else if(crmFilter==='all')filtered=people;
   else filtered=people.filter(p=>p.cat===crmFilter&&!isAdminPerson(p));
+  const q=(document.getElementById('crmSearchInput')?.value||'').toLowerCase().trim();
+  if(q){
+    filtered=filtered.filter(p=>{
+      const hay=[p.name,p.email,p.phone,p.ig,p.addr,p.notes,p.cat].map(v=>(v||'').toLowerCase()).join(' ');
+      return hay.includes(q);
+    });
+  }
   if(crmRatingFilter!=='all'){if(crmRatingFilter==='none')filtered=filtered.filter(p=>!p.rating);else filtered=filtered.filter(p=>p.rating===crmRatingFilter);}
   filtered=sortByRating(filtered);
   if(!filtered.length){list.innerHTML='';empty.style.display='block';return;}
@@ -1775,11 +1845,16 @@ function renderCRM(){
     const ak=getAdminKey(p.name);
     // Role label: admins show badge, others show category
     const roleLabel=ak?getAdminCategoryLabel(p):getDisplayCategory(p);
-    return`<div class="crm-entry ${roleClass}" id="entry-${p.id}">
+    return`<div class="crm-entry ${roleClass}" id="entry-${p.id}" onclick="openCRMPopupForPerson(people.find(x=>String(x.id)===String(${p.id})))">
       <div class="crm-entry-grid">
         <div style="position:relative;padding-top:4px;">
-          <div class="rating-dot ${p.rating||''}" id="dot-${p.id}" onclick="toggleDotMenu(${p.id})" title="Rate"></div>
-          <div class="dot-menu" id="dotmenu-${p.id}"><div class="dot-opt r" onclick="setRating(${p.id},'red')"></div><div class="dot-opt y" onclick="setRating(${p.id},'yellow')"></div><div class="dot-opt g" onclick="setRating(${p.id},'green')"></div><div class="dot-opt c" onclick="setRating(${p.id},'')"></div></div>
+          <div class="rating-dot ${p.rating||''}" id="dot-${p.id}" onclick="event.stopPropagation();toggleDotMenu(${p.id})" title="Rate"></div>
+          <div class="dot-menu" id="dotmenu-${p.id}">
+            <div class="dot-opt r" onclick="event.stopPropagation();setRating(${p.id},'red')"></div>
+            <div class="dot-opt y" onclick="event.stopPropagation();setRating(${p.id},'yellow')"></div>
+            <div class="dot-opt g" onclick="event.stopPropagation();setRating(${p.id},'green')"></div>
+            <div class="dot-opt c" onclick="event.stopPropagation();setRating(${p.id},'')"></div>
+          </div>
         </div>
         <div>
           <div class="crm-name-row">
@@ -1797,7 +1872,7 @@ function renderCRM(){
             <div class="crm-field"><strong>Address:</strong> ${p.addr||'—'}</div>
           </div>
           ${p.notes?`<div style="margin-top:8px;padding:8px 12px;background:rgba(255,204,0,0.03);border-left:2px solid rgba(255,204,0,0.25);font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);letter-spacing:1px;line-height:1.7;">📝 ${p.notes}</div>`:''}
-          <div class="crm-edit-form" id="editform-${p.id}">
+          <div class="crm-edit-form" id="editform-${p.id}" onclick="event.stopPropagation();">
             <div class="row row-3" style="margin-bottom:10px;">
               <div class="fg"><label class="fl">Name</label><input class="fi" id="ef-name-${p.id}" value="${esc(p.name)}"/></div>
               <div class="fg"><label class="fl">Age</label><input type="number" class="fi" id="ef-age-${p.id}" value="${p.age||''}" placeholder="Age"/></div>
@@ -1819,7 +1894,7 @@ function renderCRM(){
             </div>
           </div>
         </div>
-        <div><button class="btn-edit-white" onclick="toggleEditForm(${p.id})">Edit</button></div>
+        <div><button class="btn-edit-white" onclick="event.stopPropagation();toggleEditForm(${p.id})">Edit</button></div>
       </div>
     </div>`;
   }).join('');
@@ -1930,7 +2005,7 @@ function copyAIDesc(){
 async function saveItem(){
   const title=document.getElementById('it-title').value.trim(),desc=document.getElementById('it-desc').value.trim(),priceRaw=parseFloat(document.getElementById('it-price').value),discSel=document.getElementById('it-discount').value;
   let discount=discSel==='custom'?(parseInt(document.getElementById('it-custom-discount').value)||0):(discSel==='-'?'-':parseInt(discSel));
-  const badge=document.getElementById('it-badge').value,img=currentImageDataURL||'',img2=currentImage2DataURL||'',category=document.getElementById('it-category').value,subcategory=document.getElementById('it-subcategory').value;
+  const badge=document.getElementById('it-badge-select').value,img=currentImageDataURL||'',img2=currentImage2DataURL||'',category=document.getElementById('it-category').value,subcategory=document.getElementById('it-subcategory').value;
   if(!title){alert('Item title is required.');return;}
   const price=isNaN(priceRaw)?'0.00':priceRaw.toFixed(2);
   if(editingItemId){const item=shopItems.find(x=>String(x.id)===String(editingItemId));if(!item)return;await saveShopItemFS({...item,title,desc,price,discount,badge,img,img2,category,subcategory});if(currentUser)addAuditEntry(currentUser.name,'Updated Item Description','REF #'+editingItemId);}
@@ -1938,13 +2013,43 @@ async function saveItem(){
   resetItemForm();
 }
 async function toggleItemLive(id){const item=shopItems.find(x=>String(x.id)===String(id));if(!item)return;if(item.status==='live'){await saveShopItemFS({...item,status:'draft'});if(currentUser)addAuditEntry(currentUser.name,'Archived Item','REF #'+id);}else{showConfirm(`Publish "${item.title}" to the live shop?`,async()=>{await saveShopItemFS({...item,status:'live'});if(currentUser)addAuditEntry(currentUser.name,'Added New Item to Store','REF #'+id);});}}
-function resetItemForm(){document.getElementById('it-title').value='';document.getElementById('it-desc').value='';document.getElementById('it-price').value='';document.getElementById('it-discount').value='-';document.getElementById('it-custom-discount').value='';document.getElementById('it-badge').value='-';document.getElementById('customDiscountWrap').style.display='none';['imagePreview','imagePreview2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});['uploadPlaceholder','uploadPlaceholder2'].forEach(id=>document.getElementById(id).style.display='block');document.getElementById('itemFormTitle').textContent='Add New Item';document.getElementById('cancelEditBtn').style.display='none';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Save as Draft';currentImageDataURL=null;currentImage2DataURL=null;editingItemId=null;document.getElementById('it-category').value='apparel';updateSubcatOptions();}
-function editItem(id){const item=shopItems.find(x=>String(x.id)===String(id));if(!item)return;editingItemId=id;document.getElementById('it-title').value=item.title;document.getElementById('it-desc').value=item.desc;document.getElementById('it-price').value=item.price;const d=item.discount,sel=document.getElementById('it-discount');if(['-','10','15','20','50','100'].includes(String(d))){sel.value=String(d);document.getElementById('customDiscountWrap').style.display='none';}else{sel.value='custom';document.getElementById('it-custom-discount').value=d;document.getElementById('customDiscountWrap').style.display='block';}document.getElementById('it-badge').value=item.badge||'-';document.getElementById('it-category').value=item.category||'apparel';updateSubcatOptions();setTimeout(()=>{const subSel=document.getElementById('it-subcategory');if(item.subcategory){for(let i=0;i<subSel.options.length;i++){if(subSel.options[i].value===item.subcategory){subSel.selectedIndex=i;break;}}}},10);if(item.img){currentImageDataURL=item.img;const p=document.getElementById('imagePreview');p.src=item.img;p.style.display='block';document.getElementById('uploadPlaceholder').style.display='none';}if(item.img2){currentImage2DataURL=item.img2;const p=document.getElementById('imagePreview2');p.src=item.img2;p.style.display='block';document.getElementById('uploadPlaceholder2').style.display='none';}document.getElementById('itemFormTitle').textContent='Editing: '+item.title;document.getElementById('cancelEditBtn').style.display='inline-block';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Update Item';document.getElementById('itemForm').scrollIntoView({behavior:'smooth',block:'start'});}
+function resetItemForm(){document.getElementById('it-title').value='';document.getElementById('it-desc').value='';document.getElementById('it-price').value='';document.getElementById('it-discount').value='-';document.getElementById('it-custom-discount').value='';document.getElementById('it-badge-select').value='-';document.getElementById('customDiscountWrap').style.display='none';['imagePreview','imagePreview2'].forEach(id=>{const el=document.getElementById(id);el.style.display='none';el.src='';});['uploadPlaceholder','uploadPlaceholder2'].forEach(id=>document.getElementById(id).style.display='block');document.getElementById('itemFormTitle').textContent='Add New Item';document.getElementById('cancelEditBtn').style.display='none';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Save as Draft';currentImageDataURL=null;currentImage2DataURL=null;editingItemId=null;document.getElementById('it-category').value='apparel';updateSubcatOptions();}
+function editItem(id){const item=shopItems.find(x=>String(x.id)===String(id));if(!item)return;editingItemId=id;document.getElementById('it-title').value=item.title;document.getElementById('it-desc').value=item.desc;document.getElementById('it-price').value=item.price;const d=item.discount,sel=document.getElementById('it-discount');if(['-','10','15','20','50','100'].includes(String(d))){sel.value=String(d);document.getElementById('customDiscountWrap').style.display='none';}else{sel.value='custom';document.getElementById('it-custom-discount').value=d;document.getElementById('customDiscountWrap').style.display='block';}document.getElementById('it-badge-select').value=item.badge||'-';document.getElementById('it-category').value=item.category||'apparel';updateSubcatOptions();setTimeout(()=>{const subSel=document.getElementById('it-subcategory');if(item.subcategory){for(let i=0;i<subSel.options.length;i++){if(subSel.options[i].value===item.subcategory){subSel.selectedIndex=i;break;}}}},10);if(item.img){currentImageDataURL=item.img;const p=document.getElementById('imagePreview');p.src=item.img;p.style.display='block';document.getElementById('uploadPlaceholder').style.display='none';}if(item.img2){currentImage2DataURL=item.img2;const p=document.getElementById('imagePreview2');p.src=item.img2;p.style.display='block';document.getElementById('uploadPlaceholder2').style.display='none';}document.getElementById('itemFormTitle').textContent='Editing: '+item.title;document.getElementById('cancelEditBtn').style.display='inline-block';document.querySelector('.btn.btn-fill[onclick="saveItem()"]').textContent='Update Item';document.getElementById('itemForm').scrollIntoView({behavior:'smooth',block:'start'});}
 async function deleteItem(id){if(!confirm('Delete this item?'))return;await deleteShopItemFS(id);if(currentUser)addAuditEntry(currentUser.name,'Removed Item from Store','REF #'+id);}
-function openBadgePicker(id,el){document.querySelectorAll('.badge-opts.open').forEach(x=>{if(!x.closest(`[data-item-id="${id}"]`))x.classList.remove('open');});el.closest('.badge-dropdown').querySelector('.badge-opts').classList.toggle('open');}
-async function setBadgeOnCard(id,val,el){const item=shopItems.find(x=>String(x.id)===String(id));if(item){await saveShopItemFS({...item,badge:val});}el.closest('.badge-opts').classList.remove('open');}
+// badge selection now lives in the editor (not on cards)
 function badgeHTML(badge,discount){if(!badge||badge==='-')return'';if(badge==='New!')return`<div class="item-badge badge-new">NEW!</div>`;if(badge==='Hot!')return`<div class="item-badge badge-hot">HOT!</div>`;if(badge==='%'&&discount!=='-')return`<div class="item-badge badge-pct">${discount}%<br/>OFF</div>`;return'';}
-function renderShop(){const grid=document.getElementById('shopItemsGrid'),empty=document.getElementById('shopEmpty');updateShopCounts();if(!shopItems.length){grid.innerHTML='';empty.style.display='block';return;}empty.style.display='none';grid.innerHTML=shopItems.map(item=>{const isLive=item.status==='live';const dp=item.discount!=='-'?(parseFloat(item.price)*(1-parseInt(item.discount)/100)).toFixed(2):null;const catLabel=(item.category||'').toUpperCase();const subLabel=item.subcategory?` · ${item.subcategory}`:'';return`<div class="item-card${isLive?' is-live':''}"><div class="item-card-img">${item.img?`<img src="${item.img}" alt="${item.title}"/>`:'🎁'}${badgeHTML(item.badge,item.discount)}${isLive?`<div style="position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,rgba(0,255,136,0.18),transparent);height:40px;pointer-events:none;"></div>`:''}<div class="item-card-badge-btn"><div class="badge-dropdown" data-item-id="${item.id}"><div class="badge-trigger"></div><div class="badge-opts"><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'-',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:transparent;border:2px solid rgba(255,255,255,0.6);box-shadow:0 6px 10px rgba(0,0,0,0.35);"></span>No badge</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'New!',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#00e5ff,#0050ff);"></span>NEW!</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'Hot!',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#ff6600,#cc0000);"></span>HOT!</div><div class="badge-opt" onclick="setBadgeOnCard(${item.id},'%',this)"><span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,#00ff88,#007744);"></span>-% OFF</div></div></div></div><button class="item-card-edit" onclick="editItem(${item.id})">Edit</button></div><div class="item-card-body"><div class="item-card-cat">${catLabel}${subLabel}</div><div class="item-card-name">${item.title}</div><div class="item-card-desc">${item.desc||'—'}</div><div class="item-card-footer"><div><div class="item-card-price">${item.category==='photography'?'Contact Us':(dp?`<span style="font-size:13px;color:var(--mute);text-decoration:line-through;margin-right:6px;">$${item.price}</span>$${dp}`:`$${item.price}`)}</div>${item.discount!=='-'?`<div class="item-card-discount">${item.discount}% OFF</div>`:''}</div><button class="btn btn-red btn-sm" onclick="deleteItem(${item.id})">✕</button></div></div><div class="item-status-bar">${isLive?`<span class="item-live-badge">Live</span><button class="btn-pull-back" onclick="toggleItemLive(${item.id})">Pull Back</button>`:`<span class="item-draft-badge">Draft</span><button class="btn-go-live" onclick="toggleItemLive(${item.id})">Go Live ↗</button>`}</div></div>`;}).join('');}
+function renderPromoBar(){
+  const el=document.getElementById('promoBar');
+  if(!el)return;
+  const promos=shopItems.filter(i=>i.promo);
+  const slots=4;
+  const cells=Array.from({length:slots}).map((_,i)=>{
+    const item=promos[i];
+    if(!item)return `<div style="border:1px dashed rgba(255,204,0,0.2);padding:10px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,204,0,0.3);text-transform:uppercase;text-align:center;">Empty</div>`;
+    return `<div style="border:1px solid rgba(255,204,0,0.2);padding:10px;display:flex;gap:10px;align-items:center;">
+      <div style="width:36px;height:36px;border-radius:6px;overflow:hidden;background:rgba(255,204,0,0.06);border:1px solid rgba(255,204,0,0.2);">${item.img?`<img src="${item.img}" alt="" style="width:100%;height:100%;object-fit:cover;"/>`:'🎁'}</div>
+      <div style="flex:1;">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#fff;letter-spacing:1px;">${item.title}</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.5);letter-spacing:2px;text-transform:uppercase;">Promo Slot ${i+1}</div>
+      </div>
+      <button class="btn btn-red btn-sm" onclick="togglePromoItem(${item.id})">✕</button>
+    </div>`;
+  }).join('');
+  el.innerHTML=`
+    <div style="font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:3px;color:var(--hot);margin-bottom:10px;">PROMO (4 ITEMS)</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;">${cells}</div>
+    <div style="margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.4);text-transform:uppercase;">These 4 items will show on the main site</div>
+  `;
+}
+
+async function togglePromoItem(id){
+  const item=shopItems.find(x=>String(x.id)===String(id));
+  if(!item)return;
+  const promos=shopItems.filter(i=>i.promo);
+  if(!item.promo && promos.length>=4){alert('Promo is limited to 4 items. Remove one first.');return;}
+  await saveShopItemFS({...item,promo:!item.promo});
+}
+function renderShop(){const grid=document.getElementById('shopItemsGrid'),empty=document.getElementById('shopEmpty');updateShopCounts();renderPromoBar();if(!shopItems.length){grid.innerHTML='';empty.style.display='block';return;}empty.style.display='none';grid.innerHTML=shopItems.map(item=>{const isLive=item.status==='live';const dp=item.discount!=='-'?(parseFloat(item.price)*(1-parseInt(item.discount)/100)).toFixed(2):null;const catLabel=(item.category||'').toUpperCase();const subLabel=item.subcategory?` · ${item.subcategory}`:'';const isPromo=!!item.promo;return`<div class="item-card${isLive?' is-live':''}"><div class="item-card-img">${item.img?`<img src="${item.img}" alt="${item.title}"/>`:'🎁'}${badgeHTML(item.badge,item.discount)}${isLive?`<div style="position:absolute;top:0;left:0;right:0;background:linear-gradient(to bottom,rgba(0,255,136,0.18),transparent);height:40px;pointer-events:none;"></div>`:''}<button class="item-card-edit" onclick="editItem(${item.id})">Edit</button></div><div class="item-card-body"><div class="item-card-cat">${catLabel}${subLabel}</div><div class="item-card-name">${item.title}</div><div class="item-card-desc">${item.desc||'—'}</div><div class="item-card-footer"><div><div class="item-card-price">${item.category==='photography'?'Contact Us':(dp?`<span style="font-size:13px;color:var(--mute);text-decoration:line-through;margin-right:6px;">$${item.price}</span>$${dp}`:`$${item.price}`)}</div>${item.discount!=='-'?`<div class="item-card-discount">${item.discount}% OFF</div>`:''}</div><div style="display:flex;gap:6px;align-items:center;"><button class="btn btn-sm btn-ghost" onclick="togglePromoItem(${item.id})" style="border-color:rgba(255,204,0,0.3);color:rgba(255,204,0,0.8);">${isPromo?'★ Promo':'☆ Promo'}</button><button class="btn btn-red btn-sm" onclick="deleteItem(${item.id})">✕</button></div></div></div><div class="item-status-bar">${isLive?`<span class="item-live-badge">Live</span><button class="btn-pull-back" onclick="toggleItemLive(${item.id})">Pull Back</button>`:`<span class="item-draft-badge">Draft</span><button class="btn-go-live" onclick="toggleItemLive(${item.id})">Go Live ↗</button>`}</div></div>`;}).join('');}
 
 // ══ ORDER HISTORY — No CRM "?" button ══
 function updateOrderBadge(){document.getElementById('orderBadge').textContent=orders.length;}
@@ -3084,6 +3189,46 @@ function applyOverride(){
 }
 
 /* ═════════════ DEV SOL CHAT (LIGHT STUB) ═════════════ */
+
+/* ═════════════ CRM POINTS OVERRIDE ═════════════ */
+let _pointsTargetId=null;
+function openPointsOverride(id){
+  _pointsTargetId=id;
+  document.getElementById('pointsOverrideModal').style.display='flex';
+  document.getElementById('pointsAuthWrap').style.display='block';
+  document.getElementById('pointsEditWrap').style.display='none';
+  document.getElementById('pts-user').value='';
+  document.getElementById('pts-pass').value='';
+  document.getElementById('pts-err').style.display='none';
+  document.getElementById('pts-reason').value='';
+  document.getElementById('pts-amount').value='';
+}
+function closePointsOverride(){document.getElementById('pointsOverrideModal').style.display='none';}
+function checkPointsAuth(){
+  const u=document.getElementById('pts-user').value.trim().toUpperCase();
+  const p=document.getElementById('pts-pass').value.trim();
+  const ok=(u==='DEV'&&p==='test23');
+  if(!ok){document.getElementById('pts-err').style.display='block';return;}
+  document.getElementById('pointsAuthWrap').style.display='none';
+  document.getElementById('pointsEditWrap').style.display='block';
+}
+async function applyPointsChange(mode){
+  if(_pointsTargetId===null)return;
+  const p=people.find(x=>String(x.id)===String(_pointsTargetId));
+  if(!p)return;
+  const amt=parseInt(document.getElementById('pts-amount').value)||0;
+  const reason=document.getElementById('pts-reason').value.trim()||'Manual adjustment';
+  const cur=parseInt(p.points||0)||0;
+  let newTotal=cur,delta=0;
+  if(mode==='add'){delta=Math.abs(amt);newTotal=cur+delta;}
+  else if(mode==='remove'){delta=-Math.abs(amt);newTotal=cur+delta;}
+  else if(mode==='set'){newTotal=amt;delta=newTotal-cur;}
+  const hist=(p.pointsHistory||[]).slice();
+  hist.unshift({ts:Date.now(),delta,reason,actor:'DEV'});
+  await savePersonFS({...p,points:newTotal,pointsHistory:hist});
+  closePointsOverride();
+  openCRMPopupForPerson(people.find(x=>String(x.id)===String(_pointsTargetId)));
+}
 
 let _dsolOpen = false;
 
