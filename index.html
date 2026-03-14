@@ -735,6 +735,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       <div class="fg"><label class="fl">Client Name <span style="color:var(--red)">*</span></label><div class="crm-picker-wrap"><input class="fi" id="nb-name" placeholder="Type or pick from CRM…" autocomplete="off" oninput="crmPickFilter()" onfocus="crmPickFilter()"/><div class="crm-picker-dd" id="crmPickDD"></div></div></div>
       <div class="fg"><label class="fl">Session Type</label><select class="fi fse" id="nb-type"><option>📸 Cinematic Portraits</option><option>👔 Brand / Business</option><option>🎉 Events</option><option>🎬 Video / Content</option><option>✨ Other</option></select></div>
     </div>
+    <input type="hidden" id="nb-crm-person-id" value=""/>
     <div class="form-sec">Booking Details</div>
     <div class="row row-3">
       <div class="fg"><label class="fl">Date <span style="color:var(--red)">*</span></label><input type="date" class="fi" id="nb-date"/></div>
@@ -897,6 +898,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       <div class="fg"><label class="fl">Client Name</label><div class="crm-picker-wrap"><input class="fi" id="inv-client" placeholder="Type or pick from CRM…" autocomplete="off" oninput="invCrmPickFilter()" onfocus="invCrmPickFilter()"/><div class="crm-picker-dd" id="invCrmPickDD"></div></div></div>
       <div class="fg"><label class="fl">Invoice Date</label><input type="date" class="fi" id="inv-date"/></div>
     </div>
+    <input type="hidden" id="inv-crm-person-id" value=""/>
     <div class="fg"><label class="fl">Product</label><div class="inv-product-row"><input class="fi" id="inv-product" placeholder="Select or type product…" autocomplete="off" oninput="invProductFilter()" onfocus="invProductFilter()"/><div class="inv-product-dd" id="invProductDD"></div></div></div>
     <div class="inv-price-box">
       <div><div style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:rgba(255,204,0,0.5);margin-bottom:4px;">PRICE</div><div style="font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--hot);" id="invPriceDisplay">—</div></div>
@@ -1176,7 +1178,7 @@ function deleteAppUserFS(id)     {return fsDelete('appUsers',id,appUsers,()=>{re
 // ══ CRM ID SYSTEM ══
 // RESERVED: Kiara=001, Sol=002, Swift Agent=003. Exactly 3 admins.
 const ADMIN_CRM = {
-  'kiara':       {id:'001', badge:'OWNER'},
+  'kiara':       {id:'001', badge:'DEV'},
   'sol':         {id:'002', badge:'OWNER'},
   'swift agent': {id:'003', badge:'HACKER'}
 };
@@ -1236,7 +1238,7 @@ function dedupPeople(){
 }
 
 // ══ BADGE SYSTEM ══
-const USER_BADGES={'Swift Agent':'HACKER','Kiara':'OWNER','Sol':'OWNER'};
+const USER_BADGES={'Swift Agent':'HACKER','Kiara':'DEV','Sol':'OWNER'};
 function getUserBadge(name){return USER_BADGES[name]||'USER';}
 function getBadgeClass(badge){return{HACKER:'badge-hacker',DEV:'badge-dev',OWNER:'badge-owner',USER:'badge-user'}[badge]||'badge-user';}
 
@@ -1250,67 +1252,14 @@ function getCRMRoleClass(p){
 // ══ UNIFIED CRM POPUP (from Bookings "?" button) ══
 function openCRMPopup(bookingId){
   const b=bookings.find(x=>String(x.id)===String(bookingId));
-  if(!b)return;
-  // Find person in CRM by name match
-  const p=people.find(x=>x.name.toLowerCase()===b.name.toLowerCase());
-  const overlay=document.getElementById('crmPopup');
-  const nameEl=document.getElementById('crmPopupName');
-  const metaEl=document.getElementById('crmPopupMeta');
-  const bodyEl=document.getElementById('crmPopupBody');
-
+  if(!b){openCRMPopupNoProfile('—');return;}
+  let p=null;
+  if(b.crmPersonId){p=people.find(x=>String(x.id)===String(b.crmPersonId));}
   if(!p){
-    // No CRM profile found — show not-found state
-    nameEl.textContent=b.name;
-    metaEl.innerHTML=`<span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,204,0,0.4);text-transform:uppercase;">NOT IN CRM</span>`;
-    bodyEl.innerHTML=`
-      <div class="crm-no-profile">
-        <div class="crm-no-profile-icon">👤</div>
-        <div class="crm-no-profile-msg">No CRM Profile Found</div>
-        <div class="crm-no-profile-sub">"${b.name}" isn't in the CRM database yet.<br/>Add them from the CRM section.</div>
-      </div>`;
-    overlay.classList.add('open');
-    return;
+    p=people.find(x=>(x.name||'').toLowerCase().trim()===(b.name||'').toLowerCase().trim());
   }
-
-  // Build unified CRM popup — same format regardless of admin/user/etc.
-  const crmId=getCRMId(p)||p.crmId;
-  const badge=getUserBadge(p.name);
-  const badgeCls=getBadgeClass(badge);
-  const ak=getAdminKey(p.name);
-  const catLabels={prospect:'Prospect',client:'Client',subscriber:'Subscriber',user:'User'};
-  const roleLabel=ak?badge:(catLabels[p.cat]||p.cat);
-  const ratingColors={green:'var(--green)',yellow:'var(--yellow)',red:'var(--red)','':'rgba(255,204,0,0.4)'};
-  const ratingLabels={green:'High Potential',yellow:'Medium Potential',red:'Low Potential','':'Unrated'};
-
-  nameEl.textContent=p.name;
-  metaEl.innerHTML=`
-    ${crmId?`<span style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;background:rgba(255,204,0,0.08);border:1px solid rgba(255,204,0,0.3);color:var(--hot);padding:2px 8px;">${formatCRMId(crmId)}</span>`:''}
-    <span class="badge-chip ${badgeCls}">${badge}</span>
-    <span style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);text-transform:uppercase;">${roleLabel}</span>
-    ${p.rating?`<span style="display:inline-flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:${ratingColors[p.rating]};text-transform:uppercase;"><span style="width:8px;height:8px;border-radius:50%;background:${ratingColors[p.rating]};display:inline-block;"></span>${ratingLabels[p.rating]}</span>`:''}
-  `;
-
-  // Build field rows — all copyable
-  const fields=[
-    {icon:'📞',lbl:'Phone',   val:p.phone||''},
-    {icon:'📧',lbl:'Email',   val:p.email||''},
-    {icon:'📷',lbl:'IG',      val:p.ig||''},
-    {icon:'📍',lbl:'Address', val:p.addr||''},
-    {icon:'🎂',lbl:'Age',     val:p.age?String(p.age):''},
-    {icon:'📁',lbl:'Category',val:catLabels[p.cat]||p.cat||''},
-    {icon:'📝',lbl:'Notes',   val:p.notes||''},
-  ];
-
-  bodyEl.innerHTML=fields.map((f,i)=>`
-    <div class="crm-field-row">
-      <span class="crm-field-icon">${f.icon}</span>
-      <span class="crm-field-lbl">${f.lbl}</span>
-      <span class="crm-field-val${!f.val?' empty':''}">${f.val||'—'}</span>
-      ${f.val?`<button class="crm-copy-btn" id="cpbtn-popup-${i}" onclick="copyFieldValue('${f.val.replace(/'/g,"&#39;")}','cpbtn-popup-${i}')">Copy</button>`:''}
-    </div>
-  `).join('');
-
-  overlay.classList.add('open');
+  if(p)openCRMPopupForPerson(p);
+  else openCRMPopupNoProfile(b.name);
 }
 
 function closeCRMPopup(){document.getElementById('crmPopup').classList.remove('open');}
@@ -1409,6 +1358,18 @@ function openCRMPopupByClientName(clientName){
   const p=people.find(x=>(x.name||'').toLowerCase().trim()===name.toLowerCase());
   if(p)openCRMPopupForPerson(p);
   else openCRMPopupNoProfile(name);
+}
+
+function openCRMPopupByInvoiceId(invoiceId){
+  const inv=invoices.find(x=>String(x.id)===String(invoiceId));
+  if(!inv){openCRMPopupNoProfile('—');return;}
+  let p=null;
+  if(inv.crmPersonId){p=people.find(x=>String(x.id)===String(inv.crmPersonId));}
+  if(!p){
+    p=people.find(x=>(x.name||'').toLowerCase().trim()===(inv.client||'').toLowerCase().trim());
+  }
+  if(p)openCRMPopupForPerson(p);
+  else openCRMPopupNoProfile(inv.client);
 }
 
 // ══ AUDIT ══
@@ -1513,7 +1474,7 @@ function formatDate(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US'
 // ══ BOOKINGS ══
 function toggleNewBooking(){const f=document.getElementById('bookingForm');if(f.style.display==='block'){closeBookingForm();return;}document.getElementById('nb-edit-id').value='';document.getElementById('bookingFormTitle').textContent='NEW BOOKING';clearBookingForm();document.getElementById('nb-date').value=new Date().toISOString().split('T')[0];const tInp=document.getElementById('nb-time');tInp.value='12:30 PM';tInp._val24='12:30';f.style.display='block';f.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeBookingForm(){document.getElementById('bookingForm').style.display='none';document.getElementById('nb-edit-id').value='';document.getElementById('timePickerDrop').style.display='none';}
-function clearBookingForm(){['nb-name','nb-phone','nb-email','nb-ig','nb-loc','nb-notes'].forEach(id=>document.getElementById(id).value='');const ti=document.getElementById('nb-time');ti.value='';if(ti)ti._val24='';document.getElementById('nb-dur').value='60';document.getElementById('durManualWrap').style.display='none';document.getElementById('nb-dur-manual').value='';document.getElementById('nb-type').selectedIndex=0;}
+function clearBookingForm(){['nb-name','nb-phone','nb-email','nb-ig','nb-loc','nb-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('nb-crm-person-id').value='';const ti=document.getElementById('nb-time');ti.value='';if(ti)ti._val24='';document.getElementById('nb-dur').value='60';document.getElementById('durManualWrap').style.display='none';document.getElementById('nb-dur-manual').value='';document.getElementById('nb-type').selectedIndex=0;}
 function durChanged(){document.getElementById('durManualWrap').style.display=document.getElementById('nb-dur').value==='manual'?'block':'none';}
 function getDurMinutes(){const v=document.getElementById('nb-dur').value;if(v==='manual'){const raw=document.getElementById('nb-dur-manual').value.trim();if(!raw)return 60;const p=raw.split('.');return(parseInt(p[0])||0)*60+(parseInt(p[1])||0);}return parseInt(v)||60;}
 function getDurLabel(){const v=document.getElementById('nb-dur').value;if(v==='manual'){const raw=document.getElementById('nb-dur-manual').value.trim();return raw?raw+' hrs':'Custom';}return{30:'30 min',60:'1 hour',120:'2 hours'}[v]||v+' min';}
@@ -1521,7 +1482,8 @@ function getDurLabel(){const v=document.getElementById('nb-dur').value;if(v==='m
 async function saveBooking(){
   const name=document.getElementById('nb-name').value.trim(),date=document.getElementById('nb-date').value,timeInp=document.getElementById('nb-time'),time24=getTime24(timeInp),timeDisplay=timeInp.value.trim();
   if(!name){alert('Client name is required.');return;}if(!date){alert('Date is required.');return;}if(!timeDisplay){alert('Time is required.');return;}
-  const data={name,type:document.getElementById('nb-type').value,date,time:time24,timeDisplay,durMin:getDurMinutes(),durLabel:getDurLabel(),phone:document.getElementById('nb-phone').value.trim(),email:document.getElementById('nb-email').value.trim(),ig:document.getElementById('nb-ig').value.trim(),loc:document.getElementById('nb-loc').value.trim(),notes:document.getElementById('nb-notes').value.trim()};
+  const crmPersonId=document.getElementById('nb-crm-person-id')?.value||null;
+  const data={name,type:document.getElementById('nb-type').value,date,time:time24,timeDisplay,durMin:getDurMinutes(),durLabel:getDurLabel(),phone:document.getElementById('nb-phone').value.trim(),email:document.getElementById('nb-email').value.trim(),ig:document.getElementById('nb-ig').value.trim(),loc:document.getElementById('nb-loc').value.trim(),notes:document.getElementById('nb-notes').value.trim(),crmPersonId};
   const editId=document.getElementById('nb-edit-id').value;
   const id=editId?parseInt(editId):Math.floor(Date.now());
   const existing=editId?bookings.find(x=>String(x.id)===String(editId)):null;
@@ -1563,7 +1525,7 @@ function renderBookings(){
 }
 
 function crmPickFilter(){const q=document.getElementById('nb-name').value.toLowerCase().trim();const dd=document.getElementById('crmPickDD');const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);if(!hits.length){dd.classList.remove('open');return;}dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickCRMPerson(${p.id})"><div>${p.name}${p.age?' <span style="color:var(--mute);font-size:13px;">· Age '+p.age+'</span>':''}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}${p.email?' · '+p.email:''}</div></div>`).join('');dd.classList.add('open');}
-function pickCRMPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('nb-name').value=p.name;document.getElementById('nb-phone').value=p.phone||'';document.getElementById('nb-email').value=p.email||'';document.getElementById('nb-ig').value=p.ig||'';document.getElementById('nb-loc').value=p.addr||'';document.getElementById('crmPickDD').classList.remove('open');}
+function pickCRMPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('nb-name').value=p.name;document.getElementById('nb-phone').value=p.phone||'';document.getElementById('nb-email').value=p.email||'';document.getElementById('nb-ig').value=p.ig||'';document.getElementById('nb-loc').value=p.addr||'';document.getElementById('nb-crm-person-id').value=id;document.getElementById('crmPickDD').classList.remove('open');}
 
 // ══ CRM ══
 let crmFilter='all',crmRatingFilter='all',crmSortMode='alpha-asc';
@@ -1812,15 +1774,15 @@ function renderOrders(){
 // ══ INVOICES ══
 let _invPrice=0,_invDisc='-';
 function updateInvBadge(){document.getElementById('invBadge').textContent=invoices.length;}
-function openNewInvoice(){document.getElementById('inv-client').value='';document.getElementById('inv-product').value='';document.getElementById('inv-date').value=new Date().toISOString().split('T')[0];document.getElementById('invPriceDisplay').textContent='—';document.getElementById('invDiscDisplay').textContent='—';document.getElementById('inv-receipt-type').value='none';document.getElementById('inv-receipt-input-wrap').style.display='none';document.getElementById('inv-receipt-val').value='';_invPrice=0;_invDisc='-';document.getElementById('newInvoiceForm').style.display='block';document.getElementById('newInvoiceForm').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function openNewInvoice(){document.getElementById('inv-client').value='';document.getElementById('inv-crm-person-id').value='';document.getElementById('inv-product').value='';document.getElementById('inv-date').value=new Date().toISOString().split('T')[0];document.getElementById('invPriceDisplay').textContent='—';document.getElementById('invDiscDisplay').textContent='—';document.getElementById('inv-receipt-type').value='none';document.getElementById('inv-receipt-input-wrap').style.display='none';document.getElementById('inv-receipt-val').value='';_invPrice=0;_invDisc='-';document.getElementById('newInvoiceForm').style.display='block';document.getElementById('newInvoiceForm').scrollIntoView({behavior:'smooth',block:'nearest'});}
 function closeNewInvoice(){document.getElementById('newInvoiceForm').style.display='none';}
 function invCrmPickFilter(){const q=document.getElementById('inv-client').value.toLowerCase().trim();const dd=document.getElementById('invCrmPickDD');const hits=people.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8);if(!hits.length){dd.classList.remove('open');return;}dd.innerHTML=hits.map(p=>`<div class="crm-picker-opt" onclick="pickInvPerson(${p.id})"><div>${p.name}</div><div class="cpd">${p.cat}${p.phone?' · '+p.phone:''}</div></div>`).join('');dd.classList.add('open');}
-function pickInvPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('inv-client').value=p.name;document.getElementById('invCrmPickDD').classList.remove('open');}
+function pickInvPerson(id){const p=people.find(x=>String(x.id)===String(id));if(!p)return;document.getElementById('inv-client').value=p.name;document.getElementById('inv-crm-person-id').value=id;document.getElementById('invCrmPickDD').classList.remove('open');}
 let _invProductOpts=[];
 function invProductFilter(){const q=document.getElementById('inv-product').value.toLowerCase().trim();const dd=document.getElementById('invProductDD');const allOpts=[{title:'📸 Photoshoot',price:'',discount:'-'},...shopItems];_invProductOpts=allOpts.filter(s=>s.title.toLowerCase().includes(q)||q==='').slice(0,12);if(!_invProductOpts.length){dd.classList.remove('open');return;}dd.innerHTML=_invProductOpts.map((s,i)=>{const dp=s.discount&&s.discount!=='-'?(parseFloat(s.price||0)*(1-parseInt(s.discount)/100)).toFixed(2):null;const priceLabel=s.price?`<span class="iprice">${dp?`$${dp}`:`$${s.price}`}</span>`:'';return`<div class="inv-product-opt" onclick="selectInvProduct(${i})"><span>${s.title}</span>${priceLabel}</div>`;}).join('');dd.classList.add('open');}
 function selectInvProduct(idx){const s=_invProductOpts[idx];if(!s)return;document.getElementById('inv-product').value=s.title;document.getElementById('invProductDD').classList.remove('open');_invPrice=parseFloat(s.price)||0;_invDisc=s.discount||'-';const dp=s.discount&&s.discount!=='-'?(_invPrice*(1-parseInt(s.discount)/100)).toFixed(2):null;document.getElementById('invPriceDisplay').textContent=s.price?(dp?`$${dp}`:`$${s.price}`):'—';document.getElementById('invDiscDisplay').textContent=s.discount&&s.discount!=='-'?s.discount+'%':'—';}
 function receiptTypeChanged(){const t=document.getElementById('inv-receipt-type').value;const wrap=document.getElementById('inv-receipt-input-wrap');const inp=document.getElementById('inv-receipt-val');if(t==='none'){wrap.style.display='none';inp.value='';return;}wrap.style.display='block';inp.value='';inp.placeholder=t==='text'?'+1 (000) 000-0000':'example@gmail.com';}
-async function saveInvoice(){const client=document.getElementById('inv-client').value.trim(),product=document.getElementById('inv-product').value.trim(),date=document.getElementById('inv-date').value;if(!client||!product){alert('Client and product are required.');return;}const receiptType=document.getElementById('inv-receipt-type').value,receiptVal=document.getElementById('inv-receipt-val').value.trim();const disc=_invDisc,discAmt=disc!=='-'?_invPrice*(parseInt(disc)/100):0,afterDisc=_invPrice-discAmt,tax=afterDisc*NV_TAX,total=afterDisc+tax;const newId=Math.floor(Date.now());await saveInvoiceFS({id:newId,client,product,price:_invPrice,disc,date,receiptType,receiptVal,status:'unpaid',total});closeNewInvoice();}
+async function saveInvoice(){const client=document.getElementById('inv-client').value.trim(),product=document.getElementById('inv-product').value.trim(),date=document.getElementById('inv-date').value;if(!client||!product){alert('Client and product are required.');return;}const receiptType=document.getElementById('inv-receipt-type').value,receiptVal=document.getElementById('inv-receipt-val').value.trim();const disc=_invDisc,discAmt=disc!=='-'?_invPrice*(parseInt(disc)/100):0,afterDisc=_invPrice-discAmt,tax=afterDisc*NV_TAX,total=afterDisc+tax;const crmPersonId=document.getElementById('inv-crm-person-id')?.value||null;const newId=Math.floor(Date.now());await saveInvoiceFS({id:newId,client,product,price:_invPrice,disc,date,receiptType,receiptVal,status:'unpaid',total,crmPersonId});closeNewInvoice();}
 async function cycleInvStatus(id){const inv=invoices.find(x=>String(x.id)===String(id));if(!inv)return;const s=['unpaid','paid','cancelled'];await saveInvoiceFS({...inv,status:s[(s.indexOf(inv.status||'unpaid')+1)%s.length]});}
 async function deleteInvoice(id){if(!confirm('Delete this invoice?'))return;await deleteInvoiceFS(id);}
 function renderInvoices(){
@@ -1851,8 +1813,9 @@ function renderInvoices(){
       <div class="inv-card">
         <div class="inv-card-header">
           <div>
-            <div style="font-family:'Black Ops One',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;">
-              ${inv.client}
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="font-family:'Black Ops One',sans-serif;font-size:18px;color:#fff;letter-spacing:2px;">${inv.client}</span>
+              <button class="bc-crm-btn" onclick="openCRMPopupByInvoiceId(${inv.id})"><span class="bc-dot"></span> CRM</button>
             </div>
             <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);margin-top:2px;">
               ${inv.product} · ${inv.date ? formatDate(inv.date) : ''}
@@ -2005,7 +1968,10 @@ function renderTestimonials(){
       <div class="test-card">
         <div class="test-card-header">
           <div>
-            <div class="test-author">${t.author}</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span class="test-author">${t.author}</span>
+              <button class="bc-crm-btn" data-name="${esc(t.author)}" onclick="openCRMPopupByClientName(this.dataset.name)"><span class="bc-dot"></span> CRM</button>
+            </div>
             <div class="test-date">${t.date ? formatDate(t.date) : ''}</div>
           </div>
           <div class="test-stars">${starsHtml}</div>
