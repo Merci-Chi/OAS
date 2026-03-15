@@ -6,80 +6,78 @@
 <title>OASENSE OFFICIAL WEBSITE</title>
 
 <style>
-
 body{
-background:linear-gradient(45deg, red, yellow, lime, cyan, magenta);
-font-family:"Comic Sans MS",Papyrus,cursive;
-text-align:center;
-animation:hue 6s linear infinite;
-overflow-x:hidden;
+    background:linear-gradient(45deg, red, yellow, lime, cyan, magenta);
+    font-family:"Comic Sans MS",Papyrus,cursive;
+    text-align:center;
+    animation:hue 6s linear infinite;
+    overflow-x:hidden;
 }
-
 @keyframes hue{
-0%{filter:hue-rotate(0deg);}
-100%{filter:hue-rotate(360deg);}
+    0%{filter:hue-rotate(0deg);}
+    100%{filter:hue-rotate(360deg);}
 }
-
 h1{
-font-size:60px;
-color:white;
-text-shadow:5px 5px black;
-animation:blink 1s infinite;
+    font-size:60px;
+    color:white;
+    text-shadow:5px 5px black;
+    animation:blink 1s infinite;
 }
-
 @keyframes blink{
-50%{opacity:0;}
+    50%{opacity:0;}
 }
-
 .logo{
-font-size:90px;
-animation:spin 3s linear infinite;
+    font-size:90px;
+    animation:spin 3s linear infinite;
 }
-
 @keyframes spin{
-0%{transform:rotate(0deg)}
-100%{transform:rotate(360deg)}
+    0%{transform:rotate(0deg)}
+    100%{transform:rotate(360deg)}
 }
-
 .section{
-background:white;
-border:10px ridge purple;
-margin:20px;
-padding:20px;
+    background:white;
+    border:10px ridge purple;
+    margin:20px;
+    padding:20px;
 }
-
 button{
-background:hotpink;
-border:6px dashed yellow;
-font-size:20px;
-padding:15px;
-cursor:pointer;
+    background:hotpink;
+    border:6px dashed yellow;
+    font-size:20px;
+    padding:15px;
+    cursor:pointer;
 }
-
 .popupAd{
-position:fixed;
-background:yellow;
-border:5px solid red;
-padding:20px;
-font-size:20px;
-z-index:999;
-animation:shake .5s infinite;
+    position:fixed;
+    background:yellow;
+    border:5px solid red;
+    padding:20px;
+    font-size:20px;
+    z-index:999;
+    animation:shake .5s infinite;
 }
-
 @keyframes shake{
-0%{transform:translate(0)}
-25%{transform:translate(5px)}
-50%{transform:translate(-5px)}
-75%{transform:translate(5px)}
-100%{transform:translate(0)}
+    0%{transform:translate(0)}
+    25%{transform:translate(5px)}
+    50%{transform:translate(-5px)}
+    75%{transform:translate(5px)}
+    100%{transform:translate(0)}
 }
-
 .star{
-position:absolute;
-font-size:20px;
-pointer-events:none;
+    position:absolute;
+    font-size:20px;
+    pointer-events:none;
 }
-
+.fakeMalware{
+    background:red;
+    color:white;
+    border:10px solid yellow;
+    font-size:25px;
+    padding:20px;
+    margin:30px;
+    cursor:pointer;
+    animation:blink 0.5s infinite;
+}
 </style>
 </head>
 
@@ -111,73 +109,79 @@ The world's FIRST AI-powered smell streaming platform powered by quantum aroma n
 
 <button onclick="reveal()">SECRET OASENSE BUTTON</button>
 
-<script>
+<!-- FAKE MALWARE ALERT BUTTON -->
+<button class="fakeMalware" onclick="malwareClick()">⚠️ CLICK FOR WARNING ⚠️</button>
 
+<script>
 let count=14239
 setInterval(()=>{
-count++
-document.getElementById("counter").innerText=count
+    count++
+    document.getElementById("counter").innerText=count
 },200)
 
 setTimeout(()=>{
-spawnAds()
-spawnPopups()
+    spawnAds()
+    spawnPopups()
 },5000)
 
 function spawnAds(){
-
-for(let i=0;i<6;i++){
-
-let ad=document.createElement("div")
-ad.className="popupAd"
-ad.style.top=Math.random()*80+"%"
-ad.style.left=Math.random()*80+"%"
-ad.innerText="🔥 BUY OASENSE PREMIUM 🔥"
-document.body.appendChild(ad)
-
-}
-
+    for(let i=0;i<6;i++){
+        let ad=document.createElement("div")
+        ad.className="popupAd"
+        ad.style.top=Math.random()*80+"%"
+        ad.style.left=Math.random()*80+"%"
+        ad.innerText="🔥 BUY OASENSE PREMIUM 🔥"
+        document.body.appendChild(ad)
+    }
 }
 
 function spawnPopups(){
-
-for(let i=0;i<5;i++){
-
-window.open(
-"",
-"",
-"width=300,height=200"
-).document.write("<h1 style='font-family:Comic Sans MS'>JOIN OASENSE</h1><p>CLICK OK NOW!!!</p>")
-
-}
-
-alert("CONGRATULATIONS!!! YOU ARE THE 1,000,000th VISITOR")
-
+    for(let i=0;i<5;i++){
+        window.open(
+            "",
+            "",
+            "width=300,height=200"
+        ).document.write("<h1 style='font-family:Comic Sans MS'>JOIN OASENSE</h1><p>CLICK OK NOW!!!</p>")
+    }
+    alert("CONGRATULATIONS!!! YOU ARE THE 1,000,000th VISITOR")
 }
 
 function reveal(){
-
-document.body.innerHTML=`
-<h1 style="font-family:sans-serif">WAIT...</h1>
-<h2>Did you really think this was the real OASENSE website?</h2>
-<h3>😏</h3>
-<p>The real one loads next.</p>
-`
-
+    document.body.innerHTML=`
+    <h1 style="font-family:sans-serif">WAIT...</h1>
+    <h2>Did you really think this was the real OASENSE website?</h2>
+    <h3>😏</h3>
+    <p>The real one loads next.</p>
+    `
 }
 
+// CURSOR TRAIL
 document.addEventListener("mousemove",e=>{
-let star=document.createElement("div")
-star.className="star"
-star.innerText="✨"
-star.style.left=e.pageX+"px"
-star.style.top=e.pageY+"px"
-document.body.appendChild(star)
-
-setTimeout(()=>star.remove(),600)
-
+    let star=document.createElement("div")
+    star.className="star"
+    star.innerText="✨"
+    star.style.left=e.pageX+"px"
+    star.style.top=e.pageY+"px"
+    document.body.appendChild(star)
+    setTimeout(()=>star.remove(),600)
 })
 
+// FAKE MALWARE BUTTON ACTION WITH CRASH EFFECT
+function malwareClick(){
+    alert("⚠️ WARNING! Your system is infected with OASENSE Virus! ⚠️")
+    let flashes = 0;
+    const crashInterval = setInterval(()=>{
+        document.body.style.background = flashes%2===0 ? "red" : "white";
+        document.body.innerHTML = `<h1 style="font-family:monospace; color:black; margin-top:200px;">💀 SYSTEM CRASH 💀</h1>
+        <h2 style="font-family:monospace;">Critical Error: OASENSE Malware Detected</h2>
+        <h3 style="font-family:monospace;">Memory Corrupted...</h3>`;
+        flashes++;
+        if(flashes>6){
+            clearInterval(crashInterval);
+            window.location.href="https://merci-chi.github.io/OAS/";
+        }
+    },500);
+}
 </script>
 
 </body>
