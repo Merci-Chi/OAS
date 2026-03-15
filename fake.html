@@ -1,299 +1,139 @@
-<!-- /oasense-prank.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>OASENSE</title>
+<title>OASENSE | Embrace Your Light</title>
+
 <style>
-/* GENERAL STYLES */
-body, html {
-    margin:0; padding:0;
-    font-family: Arial, sans-serif;
-    background-color:#000;
-    color:#0f0;
-    overflow-x:hidden;
-}
-button {
-    padding:15px 30px;
-    font-size:18px;
-    cursor:pointer;
-    background:#0f0;
-    border:none;
-    border-radius:5px;
-    font-weight:bold;
-}
-button:hover {background:#0ff;}
-header, main, footer {
-    max-width:900px; margin:auto;
-}
-header {
-    text-align:center;
-    padding:50px 0;
-    background:linear-gradient(90deg, #0000ff, #00ff00);
-    color:#fff;
-}
-h1, h2, h3 {margin:10px 0;}
-nav {
-    background:#111; padding:15px;
-    text-align:center;
-}
-nav a {
-    color:#0ff; margin:0 15px;
-    text-decoration:none; font-weight:bold;
-}
-nav a:hover {color:#0f0;}
-.section {margin:20px 0; padding:20px; border:2px solid #0f0; border-radius:8px; background:#111;}
-.card {
-    display:inline-block; width:250px; margin:10px;
-    padding:15px; text-align:center;
-    background:#111; border:2px solid #0ff; border-radius:8px;
-    transition: transform 0.3s, border-color 0.3s;
-}
-.card:hover {transform:scale(1.05); border-color:#0f0;}
-.card img {width:100%; border-radius:5px;}
-.button {display:inline-block; margin-top:10px; background:#0f0; color:#000; text-decoration:none; padding:10px 15px; border-radius:5px;}
-.button:hover {background:#0ff;}
-footer {text-align:center; padding:20px; border-top:2px solid #0f0; background:#111;}
-.popup {
-    position:absolute;
-    background:red;
-    color:white;
-    padding:15px;
-    border:3px solid yellow;
-    font-weight:bold;
-    cursor:pointer;
-    border-radius:5px;
-    z-index:999;
-    display:none;
-    animation:fadeIn 0.5s;
-}
-@keyframes fadeIn {from{opacity:0}to{opacity:1}}
-.star{position:absolute; font-size:20px; pointer-events:none;}
-.welcome-screen {
-    position:fixed; top:0; left:0; width:100%; height:100%;
-    background:#000; color:#0f0;
-    display:flex; flex-direction:column;
-    justify-content:center; align-items:center;
-    font-family:monospace; font-size:40px;
-    z-index:1000;
-}
-</style>
-</head>
-<body>
 
-<!-- WELCOME SCREEN -->
-<div class="welcome-screen" id="welcomeScreen">
-    <div>WELCOME TO TEH OASENSE</div>
-    <button id="enterBtn">ENTER</button>
-</div>
-
-<!-- MAIN SITE -->
-<header>
-    <h1>OASENSE</h1>
-    <p>YOU ARE THE LIGHT. EMBRACE IT.</p>
-</header>
-
-<nav>
-    <a href="#story">My Story</a>
-    <a href="#shop">Shop</a>
-    <a href="#services">Services</a>
-    <a href="#contact">Contact</a>
-</nav>
-
-<main id="mainContent" style="opacity:0; transition:opacity 1s;">
-<section id="story" class="section">
-<h2>My Story</h2>
-<p>At Oasense.shop, I’m Angel—a dreamer navigating life with hope. I realized I am the light myself—and that we all are the light. That truth inspired me to create Oasense.Shop—a space dedicated to helping humanity heal and rise. YOU ARE THE LIGHT. EMBRACE IT.</p>
-<p>Oasense represents my journey of growth, creativity, and transformation.</p>
-</section>
-
-<section id="shop" class="section">
-<h2>Shop</h2>
-<div class="card">
-<img src="https://via.placeholder.com/250x150.png?text=Spiritual+T-Shirt">
-<h3>Spiritual T-Shirt</h3>
-<p>Wear your light.</p>
-<a class="button" href="#">Buy Now</a>
-</div>
-<div class="card">
-<img src="https://via.placeholder.com/250x150.png?text=Healing+Book">
-<h3>Healing Book</h3>
-<p>Empower your journey.</p>
-<a class="button" href="#">Buy Now</a>
-</div>
-<div class="card">
-<img src="https://via.placeholder.com/250x150.png?text=Digital+Art">
-<h3>Digital Art Prints</h3>
-<p>Decorate your space with inspiration.</p>
-<a class="button" href="#">Buy Now</a>
-</div>
-</section>
-
-<section id="services" class="section">
-<h2>Services</h2>
-<div class="card"><h3>Photography</h3><p>Cinematic portraits, lifestyle, branding.</p></div>
-<div class="card"><h3>Digital Art & Design</h3><p>Creative pieces for personal growth.</p></div>
-<div class="card"><h3>Video & Content Creation</h3><p>Storytelling through visual media.</p></div>
-</section>
-
-<section id="contact" class="section">
-<h2>Contact</h2>
-<p>Reach out to be part of this journey of light and creativity.</p>
-<a class="button" href="#">Contact Me</a>
-</section>
-</main>
-
-<footer>
-<p>© 2026 OASENSE | Designed by Angel Alvarez</p>
-</footer>
-
-<!-- POPUPS -->
-<div id="popup1" class="popup">⚠️ Your system has been hacked! Click to save it!</div>
-<div id="popup2" class="popup">⚠️ Critical Error Detected! Click to fix!</div>
-<div id="popup3" class="popup">⚠️ Virus Detected! Click to protect your files!</div>
-
-<script>
-// ENTER BUTTON FUNCTION
-document.getElementById("enterBtn").onclick = function() {
-    const welcome = document.getElementById("welcomeScreen");
-    welcome.innerHTML = "<p>Loading OASENSE...</p>";
-    setTimeout(()=>{
-        welcome.style.display="none";
-        document.getElementById("mainContent").style.opacity = 1;
-        triggerPopups();
-    },5000);
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:#000;
+color:#00ffcc;
 }
 
-// CURSOR TRAIL
-document.addEventListener("mousemove",e=>{
-    let star=document.createElement("div");
-    star.className="star";
-    star.innerText="✨";
-    star.style.left=e.pageX+"px";
-    star.style.top=e.pageY+"px";
-    document.body.appendChild(star);
-    setTimeout(()=>star.remove(),600);
-});
-
-// RANDOM POPUPS SEQUENCE
-function triggerPopups(){
-    setTimeout(()=>showPopup("popup1"),20000);
-    setTimeout(()=>showPopup("popup2"),23000);
-    setTimeout(()=>showPopup("popup3"),28000);
+header{
+background:linear-gradient(90deg,#0011ff,#00ff99);
+padding:40px;
+text-align:center;
+color:white;
 }
 
-function showPopup(id){
-    const popup = document.getElementById(id);
-    popup.style.left = Math.random()*(window.innerWidth-200)+"px";
-    popup.style.top = Math.random()*(window.innerHeight-100)+"px";
-    popup.style.display="block";
+header h1{
+margin:0;
+font-size:50px;
 }
 
-// MALWARE FAKE CRASH
-const popups = ["popup1","popup2","popup3"];
-popups.forEach(pid=>{
-    document.getElementById(pid).onclick = function(){
-        fakeCrash();
-    }
-})
-
-function fakeCrash(){
-    let flashes=0;
-    const crashInterval = setInterval(()=>{
-        document.body.style.background = flashes%2===0 ? "red" : "white";
-        document.body.innerHTML = `<h1 style="font-family:monospace; color:black; margin-top:200px;">💀 SYSTEM CRASH 💀</h1>
-        <h2 style="font-family:monospace;">Critical Error: OASENSE Malware Detected</h2>
-        <h3 style="font-family:monospace;">Memory Corrupted...</h3>`;
-        flashes++;
-        if(flashes>6){
-            clearInterval(crashInterval);
-            window.location.href="https://merci-chi.github.io/OAS/";
-        }
-    },500);
+nav{
+background:#111;
+text-align:center;
+padding:12px;
 }
-</script>
 
-</body>
-</html>nav a:hover{color:#00ff99;}
+nav a{
+color:#00ffff;
+margin:0 20px;
+text-decoration:none;
+font-weight:bold;
+}
+
+nav a:hover{
+color:#00ff99;
+}
 
 main{
-max-width:900px;
-margin:20px auto;
-padding:20px;
-background:#0a0a0a;
-border:2px solid #00ff99;
-border-radius:10px;
+max-width:1000px;
+margin:auto;
+padding:30px;
+}
+
+section{
+margin-bottom:50px;
+}
+
+.cards{
+display:flex;
+flex-wrap:wrap;
+gap:20px;
 }
 
 .card{
-background:#111;
-border:2px solid #0ff;
-border-radius:8px;
-width:250px;
-margin:10px;
-padding:15px;
-display:inline-block;
-text-align:center;
+flex:1;
+min-width:250px;
+background:#0a0a0a;
+border:2px solid #00ff99;
+border-radius:10px;
+padding:20px;
+transition:0.3s;
+}
+
+.card:hover{
+transform:scale(1.05);
+border-color:#00ffff;
 }
 
 .button{
 display:inline-block;
-margin-top:10px;
 padding:10px 20px;
 background:#00ff99;
 color:black;
+font-weight:bold;
 text-decoration:none;
 border-radius:5px;
+margin-top:10px;
 }
 
 footer{
+background:#111;
 text-align:center;
 padding:20px;
-background:#111;
-margin-top:40px;
-border-top:2px solid #00ff99;
+color:#0ff;
 }
 
-/* WINDOWS ALERT POPUPS */
+/* ALERT POPUPS */
 
-.winPopup{
+.alertPopup{
 position:fixed;
-width:280px;
-background:#c0c0c0;
-border:2px solid black;
-display:none;
-z-index:9999;
-font-family:Segoe UI;
-}
-
-.titleBar{
-background:#000080;
+background:red;
 color:white;
-padding:4px;
-font-size:14px;
+padding:15px;
+font-weight:bold;
+border:4px solid yellow;
+border-radius:6px;
+z-index:9999;
+width:250px;
+display:none;
+animation:shake .5s infinite;
+cursor:pointer;
 }
 
-.popupContent{
-padding:10px;
-color:black;
+@keyframes shake{
+0%{transform:translate(0)}
+25%{transform:translate(2px,2px)}
+50%{transform:translate(-2px,-2px)}
+75%{transform:translate(2px,-2px)}
+100%{transform:translate(0)}
 }
 
-.popupContent button{
-margin-top:10px;
-padding:5px 10px;
+/* TERMINAL */
+
+.terminal{
+background:black;
+color:#00ff00;
+font-family:monospace;
+padding:30px;
+height:100vh;
 }
 
-/* corruption effect */
+/* BLUE SCREEN */
 
-.corrupt{
-animation:glitch 0.1s infinite;
-filter:contrast(200%) hue-rotate(180deg);
-}
-
-@keyframes glitch{
-0%{transform:translate(2px,-2px)}
-50%{transform:translate(-2px,2px)}
-100%{transform:translate(2px,2px)}
+.bluescreen{
+background:#0000aa;
+color:white;
+font-family:monospace;
+height:100vh;
+padding:40px;
 }
 
 </style>
@@ -307,41 +147,52 @@ filter:contrast(200%) hue-rotate(180deg);
 </header>
 
 <nav>
-<a href="#">My Story</a>
-<a href="#">Shop</a>
-<a href="#">Services</a>
-<a href="#">Contact</a>
+<a href="#">MY STORY</a>
+<a href="#">SHOP</a>
+<a href="#">SERVICES</a>
+<a href="#">CONTACT</a>
 </nav>
 
 <main>
 
-<h2>My Story</h2>
+<section>
+<h2>MY STORY</h2>
 
 <p>
-At Oasense.shop, I’m Angel—a dreamer navigating life with hope.
-I realized I am the light myself—and that we all are the light.
-That truth inspired me to create Oasense.Shop.
+Oasense began as a vision during one of the most transformative chapters of my life.
+Through creativity, storytelling, and discipline I created a brand dedicated
+to helping others rediscover their inner light.
 </p>
 
-<h2>Shop</h2>
+</section>
+
+<section>
+
+<h2>SHOP</h2>
+
+<div class="cards">
 
 <div class="card">
-<h3>Spiritual T-Shirt</h3>
-<p>Wear your light.</p>
-<a class="button">Buy Now</a>
+<h3>SPIRITUAL T‑SHIRT</h3>
+<p>Wear your light proudly.</p>
+<a class="button">BUY NOW</a>
 </div>
 
 <div class="card">
-<h3>Healing Book</h3>
-<p>Discover your journey.</p>
-<a class="button">Buy Now</a>
+<h3>HEALING BOOK</h3>
+<p>Discover tools for personal growth.</p>
+<a class="button">BUY NOW</a>
 </div>
 
 <div class="card">
-<h3>Digital Art</h3>
-<p>Creative inspiration.</p>
-<a class="button">Buy Now</a>
+<h3>DIGITAL ART</h3>
+<p>Creative pieces inspired by transformation.</p>
+<a class="button">BUY NOW</a>
 </div>
+
+</div>
+
+</section>
 
 </main>
 
@@ -350,91 +201,124 @@ That truth inspired me to create Oasense.Shop.
 </footer>
 
 
-<!-- POPUPS -->
+<!-- ALERT POPUPS -->
 
-<div id="p1" class="winPopup">
-<div class="titleBar">Windows Security</div>
-<div class="popupContent">
-⚠ Your system has been hacked.<br>
-Click OK to protect your files.
-<br><button onclick="corruptSystem()">OK</button>
-</div>
+<div id="p1" class="alertPopup">
+⚠️ WARNING! YOUR SYSTEM HAS BEEN HACKED!<br>
+CLICK HERE TO SAVE YOUR FILES!
 </div>
 
-<div id="p2" class="winPopup">
-<div class="titleBar">System Warning</div>
-<div class="popupContent">
-⚠ Malware detected.<br>
-Immediate action required.
-<br><button onclick="corruptSystem()">OK</button>
-</div>
+<div id="p2" class="alertPopup">
+⚠️ CRITICAL VIRUS DETECTED!<br>
+IMMEDIATE ACTION REQUIRED!
 </div>
 
-<div id="p3" class="winPopup">
-<div class="titleBar">Critical Alert</div>
-<div class="popupContent">
-⚠ Security breach detected.
-<br><button onclick="corruptSystem()">OK</button>
-</div>
+<div id="p3" class="alertPopup">
+⚠️ SECURITY BREACH DETECTED!<br>
+CLICK HERE TO PROTECT YOUR DEVICE!
 </div>
 
-<audio id="warn" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+<audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
 
-/* popup sequence */
+/* popup timing */
 
 function showPopup(id){
-let p=document.getElementById(id)
 
-p.style.display="block"
+let popup=document.getElementById(id)
 
-p.style.left=Math.random()*(window.innerWidth-300)+"px"
-p.style.top=Math.random()*(window.innerHeight-200)+"px"
+popup.style.display="block"
 
-document.getElementById("warn").play()
+popup.style.left=Math.random()*(window.innerWidth-260)+"px"
+popup.style.top=Math.random()*(window.innerHeight-150)+"px"
+
+document.getElementById("beep").play()
+
 }
 
-setTimeout(()=>showPopup("p1"),20000)
-setTimeout(()=>showPopup("p2"),25000)
-setTimeout(()=>showPopup("p3"),28000)
+setTimeout(()=>showPopup("p1"),5000)
+setTimeout(()=>showPopup("p2"),10000)
+setTimeout(()=>showPopup("p3"),15000)
 
 
-/* corruption effect */
+/* clicking popup triggers corruption */
+
+document.querySelectorAll(".alertPopup").forEach(p=>{
+p.onclick=corruptSystem
+})
+
 
 function corruptSystem(){
 
-let audio=document.getElementById("warn")
+document.title="SYSTEM FAILURE"
 
-document.body.classList.add("corrupt")
+document.body.style.cursor="none"
 
-let glitch=setInterval(()=>{
-
-document.body.style.background=
-Math.random()>0.5?"red":"white"
-
-audio.play()
-
+let flicker=setInterval(()=>{
+document.body.style.background=Math.random()>0.5?"red":"black"
 },120)
-
 
 setTimeout(()=>{
 
-clearInterval(glitch)
+clearInterval(flicker)
+
+launchTerminal()
+
+},1500)
+
+}
+
+
+function launchTerminal(){
+
+document.body.innerHTML=`<div class="terminal" id="terminal"></div>`
+
+let lines=[
+"INITIALIZING EXPLOIT...",
+"BYPASSING FIREWALL...",
+"ACCESSING SYSTEM MEMORY...",
+"DELETING USER FILES...",
+"CORRUPTING SYSTEM KERNEL...",
+"SYSTEM FAILURE IMMINENT..."
+]
+
+let t=document.getElementById("terminal")
+
+let i=0
+
+let interval=setInterval(()=>{
+
+t.innerHTML+=lines[i]+"<br>"
+
+i++
+
+if(i>=lines.length){
+
+clearInterval(interval)
+
+setTimeout(blueScreen,1500)
+
+}
+
+},400)
+
+}
+
+
+function blueScreen(){
 
 document.body.innerHTML=`
 
-<h1 style="font-family:monospace;text-align:center;margin-top:200px;color:black;">
-SYSTEM MEMORY CORRUPTED
-</h1>
+<div class="bluescreen">
 
-<h2 style="font-family:monospace;text-align:center;color:black;">
-OASENSE SECURITY FAILURE
-</h2>
+A PROBLEM HAS BEEN DETECTED AND WINDOWS HAS BEEN SHUT DOWN TO PREVENT DAMAGE.
 
-<h3 style="font-family:monospace;text-align:center;color:black;">
-Rebuilding system...
-</h3>
+SYSTEM_MEMORY_CORRUPTION
+
+BEGINNING DUMP OF PHYSICAL MEMORY...
+
+</div>
 
 `
 
@@ -442,9 +326,7 @@ setTimeout(()=>{
 
 window.location.href="https://merci-chi.github.io/OAS/"
 
-},3000)
-
-},2500)
+},3500)
 
 }
 
