@@ -174,8 +174,8 @@ color:#7ffff1;
 
 .alertPopup{
 position:fixed;
-background:red;
-color:white;
+background:white; /* first 3 popups white */
+color:black;
 padding:15px;
 font-weight:bold;
 border:4px solid yellow;
@@ -183,7 +183,7 @@ border-radius:6px;
 z-index:9999;
 width:260px;
 display:none;
-animation:shake .4s infinite;
+/* animation removed for first 3 */
 cursor:pointer;
 }
 
@@ -434,6 +434,7 @@ startPopupSequence()
 }
 
 let popupDelay=2000
+let popupIndex=0
 
 function spawnPopup(){
 
@@ -446,6 +447,13 @@ clone.style.display="block"
 clone.style.left=Math.random()*(window.innerWidth-300)+"px"
 clone.style.top=Math.random()*(window.innerHeight-200)+"px"
 
+// Only apply shake for popups after first 3
+if(popupIndex>=3){
+clone.style.animation="shake .4s infinite"
+clone.style.background="red"
+clone.style.color="white"
+}
+
 document.body.appendChild(clone)
 
 clone.querySelector(".closeBtn").onclick=(e)=>{
@@ -455,32 +463,21 @@ clone.remove()
 
 clone.onclick=corruptSystem
 
+popupIndex++
+
 if(popupDelay>80){
 popupDelay*=0.85
 }
 
 setTimeout(spawnPopup,popupDelay)
-
 }
 
 function startPopupSequence(){
-
-setTimeout(()=>{
-spawnPopup()
-
-setTimeout(()=>{
-spawnPopup()
-
-setTimeout(()=>{
-spawnPopup()
-},5000)
-
-},10000)
-
-},20000)
-
+setTimeout(()=>{spawnPopup()},20000) // popup 1
+setTimeout(()=>{spawnPopup()},30000) // popup 2
+setTimeout(()=>{spawnPopup()},35000) // popup 3
+setTimeout(()=>{spawnPopup()},40000) // popup 4
 setTimeout(showBigPopup,25000)
-
 }
 
 function showBigPopup(){
