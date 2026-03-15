@@ -8,27 +8,27 @@
 
 body{
 margin:0;
-font-family:Arial, sans-serif;
+font-family:Arial;
 background:#000;
 color:#00ffcc;
 }
 
 header{
-background:linear-gradient(90deg,#0011ff,#00ff99);
-padding:40px;
+background:linear-gradient(90deg,#0015ff,#00ff99);
+padding:50px;
 text-align:center;
 color:white;
 }
 
 header h1{
 margin:0;
-font-size:50px;
+font-size:48px;
 }
 
 nav{
 background:#111;
 text-align:center;
-padding:12px;
+padding:15px;
 }
 
 nav a{
@@ -38,18 +38,14 @@ text-decoration:none;
 font-weight:bold;
 }
 
-nav a:hover{
-color:#00ff99;
-}
-
 main{
-max-width:1000px;
+max-width:1100px;
 margin:auto;
 padding:30px;
 }
 
 section{
-margin-bottom:50px;
+margin-bottom:60px;
 }
 
 .cards{
@@ -65,12 +61,26 @@ background:#0a0a0a;
 border:2px solid #00ff99;
 border-radius:10px;
 padding:20px;
-transition:0.3s;
 }
 
 .card:hover{
-transform:scale(1.05);
 border-color:#00ffff;
+transform:scale(1.05);
+transition:0.3s;
+}
+
+.review{
+background:#0a0a0a;
+border-left:4px solid #00ff99;
+padding:15px;
+margin:10px 0;
+}
+
+.blog{
+background:#111;
+padding:15px;
+border:1px solid #00ff99;
+margin-bottom:15px;
 }
 
 .button{
@@ -79,19 +89,19 @@ padding:10px 20px;
 background:#00ff99;
 color:black;
 font-weight:bold;
-text-decoration:none;
 border-radius:5px;
+text-decoration:none;
 margin-top:10px;
 }
 
 footer{
 background:#111;
 text-align:center;
-padding:20px;
+padding:30px;
 color:#0ff;
 }
 
-/* ALERT POPUPS */
+/* POPUPS */
 
 .alertPopup{
 position:fixed;
@@ -102,21 +112,37 @@ font-weight:bold;
 border:4px solid yellow;
 border-radius:6px;
 z-index:9999;
-width:250px;
+width:260px;
 display:none;
-animation:shake .5s infinite;
+animation:shake .4s infinite;
+cursor:pointer;
+}
+
+.bigPopup{
+position:fixed;
+background:red;
+color:white;
+padding:25px;
+font-size:20px;
+font-weight:bold;
+border:6px solid yellow;
+width:380px;
+z-index:9999;
+display:none;
+text-align:center;
+animation:shake .3s infinite;
 cursor:pointer;
 }
 
 @keyframes shake{
 0%{transform:translate(0)}
-25%{transform:translate(2px,2px)}
-50%{transform:translate(-2px,-2px)}
-75%{transform:translate(2px,-2px)}
+25%{transform:translate(3px,3px)}
+50%{transform:translate(-3px,-3px)}
+75%{transform:translate(3px,-3px)}
 100%{transform:translate(0)}
 }
 
-/* TERMINAL */
+/* terminal */
 
 .terminal{
 background:black;
@@ -126,7 +152,7 @@ padding:30px;
 height:100vh;
 }
 
-/* BLUE SCREEN */
+/* bluescreen */
 
 .bluescreen{
 background:#0000aa;
@@ -147,24 +173,28 @@ padding:40px;
 </header>
 
 <nav>
-<a href="#">MY STORY</a>
-<a href="#">SHOP</a>
-<a href="#">SERVICES</a>
-<a href="#">CONTACT</a>
+<a>HOME</a>
+<a>SHOP</a>
+<a>BLOG</a>
+<a>SERVICES</a>
+<a>CONTACT</a>
 </nav>
 
 <main>
 
 <section>
-<h2>MY STORY</h2>
+
+<h2>ABOUT OASENSE</h2>
 
 <p>
-Oasense began as a vision during one of the most transformative chapters of my life.
-Through creativity, storytelling, and discipline I created a brand dedicated
-to helping others rediscover their inner light.
+Oasense is a creative platform dedicated to growth, transformation,
+and artistic expression. Through photography, design, storytelling,
+and thoughtful merch, the goal is to help others reconnect with their
+inner light.
 </p>
 
 </section>
+
 
 <section>
 
@@ -175,21 +205,62 @@ to helping others rediscover their inner light.
 <div class="card">
 <h3>SPIRITUAL T‑SHIRT</h3>
 <p>Wear your light proudly.</p>
-<a class="button">BUY NOW</a>
+<a class="button">BUY</a>
 </div>
 
 <div class="card">
 <h3>HEALING BOOK</h3>
-<p>Discover tools for personal growth.</p>
-<a class="button">BUY NOW</a>
+<p>Tools for transformation.</p>
+<a class="button">BUY</a>
 </div>
 
 <div class="card">
 <h3>DIGITAL ART</h3>
-<p>Creative pieces inspired by transformation.</p>
-<a class="button">BUY NOW</a>
+<p>Creative inspiration.</p>
+<a class="button">BUY</a>
 </div>
 
+</div>
+
+</section>
+
+
+<section>
+
+<h2>LATEST BLOG POSTS</h2>
+
+<div class="blog">
+<h3>Finding Your Inner Light</h3>
+<p>Discover how creativity and discipline can help unlock your full potential.</p>
+</div>
+
+<div class="blog">
+<h3>Photography as Self‑Expression</h3>
+<p>Capturing the real essence of people and moments.</p>
+</div>
+
+<div class="blog">
+<h3>The Power of Reinvention</h3>
+<p>How starting from zero can lead to powerful transformation.</p>
+</div>
+
+</section>
+
+
+<section>
+
+<h2>COMMUNITY REVIEWS</h2>
+
+<div class="review">
+★★★★★ "Oasense helped me reconnect with my creativity." – Maya
+</div>
+
+<div class="review">
+★★★★★ "Amazing photography and inspiring message." – Jordan
+</div>
+
+<div class="review">
+★★★★★ "The merch and books are incredible." – Alex
 </div>
 
 </section>
@@ -201,63 +272,94 @@ to helping others rediscover their inner light.
 </footer>
 
 
-<!-- ALERT POPUPS -->
+<!-- POPUPS -->
 
 <div id="p1" class="alertPopup">
-⚠️ WARNING! YOUR SYSTEM HAS BEEN HACKED!<br>
-CLICK HERE TO SAVE YOUR FILES!
+⚠️ WARNING! YOUR SYSTEM HAS BEEN HACKED!
 </div>
 
 <div id="p2" class="alertPopup">
-⚠️ CRITICAL VIRUS DETECTED!<br>
-IMMEDIATE ACTION REQUIRED!
+⚠️ CRITICAL VIRUS DETECTED!
 </div>
 
 <div id="p3" class="alertPopup">
-⚠️ SECURITY BREACH DETECTED!<br>
-CLICK HERE TO PROTECT YOUR DEVICE!
+⚠️ SECURITY BREACH DETECTED!
+</div>
+
+<div id="big" class="bigPopup">
+⚠️ FILES ENCRYPTING <span id="count">0%</span><br><br>
+CLICK NOW BEFORE YOUR FILE IS GONE!!!
 </div>
 
 <audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
 
 <script>
 
-/* popup timing */
+/* show popup */
 
 function showPopup(id){
 
-let popup=document.getElementById(id)
+let p=document.getElementById(id)
 
-popup.style.display="block"
+p.style.display="block"
 
-popup.style.left=Math.random()*(window.innerWidth-260)+"px"
-popup.style.top=Math.random()*(window.innerHeight-150)+"px"
+p.style.left=Math.random()*(window.innerWidth-300)+"px"
+p.style.top=Math.random()*(window.innerHeight-200)+"px"
 
 document.getElementById("beep").play()
 
 }
 
-setTimeout(()=>showPopup("p1"),5000)
-setTimeout(()=>showPopup("p2"),10000)
-setTimeout(()=>showPopup("p3"),15000)
+/* popup timing */
 
+setTimeout(()=>showPopup("p1"),15000)
+setTimeout(()=>showPopup("p2"),17000)
+setTimeout(()=>showPopup("p3"),20000)
+
+setTimeout(()=>{
+
+let p=document.getElementById("big")
+
+p.style.display="block"
+p.style.left="50%"
+p.style.top="30%"
+p.style.transform="translateX(-50%)"
+
+encryptCounter()
+
+},22000)
+
+/* encryption counter */
+
+function encryptCounter(){
+
+let i=0
+
+let counter=setInterval(()=>{
+
+i+=5
+
+document.getElementById("count").innerText=i+"%"
+
+if(i>=100) clearInterval(counter)
+
+},70)
+
+}
 
 /* clicking popup triggers corruption */
 
-document.querySelectorAll(".alertPopup").forEach(p=>{
+document.querySelectorAll(".alertPopup,.bigPopup").forEach(p=>{
 p.onclick=corruptSystem
 })
-
 
 function corruptSystem(){
 
 document.title="SYSTEM FAILURE"
 
-document.body.style.cursor="none"
-
 let flicker=setInterval(()=>{
 document.body.style.background=Math.random()>0.5?"red":"black"
-},120)
+},100)
 
 setTimeout(()=>{
 
@@ -269,10 +371,11 @@ launchTerminal()
 
 }
 
+/* terminal */
 
 function launchTerminal(){
 
-document.body.innerHTML=`<div class="terminal" id="terminal"></div>`
+document.body.innerHTML=`<div class="terminal" id="term"></div>`
 
 let lines=[
 "INITIALIZING EXPLOIT...",
@@ -283,49 +386,39 @@ let lines=[
 "SYSTEM FAILURE IMMINENT..."
 ]
 
-let t=document.getElementById("terminal")
-
+let t=document.getElementById("term")
 let i=0
 
 let interval=setInterval(()=>{
 
 t.innerHTML+=lines[i]+"<br>"
-
 i++
 
 if(i>=lines.length){
-
 clearInterval(interval)
-
 setTimeout(blueScreen,1500)
-
 }
 
 },400)
 
 }
 
+/* blue screen */
 
 function blueScreen(){
 
 document.body.innerHTML=`
-
 <div class="bluescreen">
-
 A PROBLEM HAS BEEN DETECTED AND WINDOWS HAS BEEN SHUT DOWN TO PREVENT DAMAGE.
 
 SYSTEM_MEMORY_CORRUPTION
 
 BEGINNING DUMP OF PHYSICAL MEMORY...
-
 </div>
-
 `
 
 setTimeout(()=>{
-
 window.location.href="https://merci-chi.github.io/OAS/"
-
 },3500)
 
 }
