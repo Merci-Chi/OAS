@@ -1,0 +1,184 @@
+<!-- /index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>OASENSE OFFICIAL WEBSITE</title>
+
+<style>
+
+body{
+background:linear-gradient(45deg, red, yellow, lime, cyan, magenta);
+font-family:"Comic Sans MS",Papyrus,cursive;
+text-align:center;
+animation:hue 6s linear infinite;
+overflow-x:hidden;
+}
+
+@keyframes hue{
+0%{filter:hue-rotate(0deg);}
+100%{filter:hue-rotate(360deg);}
+}
+
+h1{
+font-size:60px;
+color:white;
+text-shadow:5px 5px black;
+animation:blink 1s infinite;
+}
+
+@keyframes blink{
+50%{opacity:0;}
+}
+
+.logo{
+font-size:90px;
+animation:spin 3s linear infinite;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg)}
+100%{transform:rotate(360deg)}
+}
+
+.section{
+background:white;
+border:10px ridge purple;
+margin:20px;
+padding:20px;
+}
+
+button{
+background:hotpink;
+border:6px dashed yellow;
+font-size:20px;
+padding:15px;
+cursor:pointer;
+}
+
+.popupAd{
+position:fixed;
+background:yellow;
+border:5px solid red;
+padding:20px;
+font-size:20px;
+z-index:999;
+animation:shake .5s infinite;
+}
+
+@keyframes shake{
+0%{transform:translate(0)}
+25%{transform:translate(5px)}
+50%{transform:translate(-5px)}
+75%{transform:translate(5px)}
+100%{transform:translate(0)}
+}
+
+.star{
+position:absolute;
+font-size:20px;
+pointer-events:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<audio autoplay loop>
+<source src="https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav">
+</audio>
+
+<h1>WELCOME TO OASENSE™</h1>
+
+<div class="logo">👃💨</div>
+
+<marquee scrollamount="20">
+🔥 AI SMELL CLOUD 🔥 WEB4 ODOR BLOCKCHAIN 🔥 FUTURE AROMA PLATFORM 🔥
+</marquee>
+
+<div class="section">
+<h2>ABOUT OASENSE</h2>
+<p>
+The world's FIRST AI-powered smell streaming platform powered by quantum aroma neural blockchain cloud infrastructure.
+</p>
+</div>
+
+<div class="section">
+<h2>VISITORS</h2>
+<div id="counter">000000</div>
+</div>
+
+<button onclick="reveal()">SECRET OASENSE BUTTON</button>
+
+<script>
+
+let count=14239
+setInterval(()=>{
+count++
+document.getElementById("counter").innerText=count
+},200)
+
+setTimeout(()=>{
+spawnAds()
+spawnPopups()
+},5000)
+
+function spawnAds(){
+
+for(let i=0;i<6;i++){
+
+let ad=document.createElement("div")
+ad.className="popupAd"
+ad.style.top=Math.random()*80+"%"
+ad.style.left=Math.random()*80+"%"
+ad.innerText="🔥 BUY OASENSE PREMIUM 🔥"
+document.body.appendChild(ad)
+
+}
+
+}
+
+function spawnPopups(){
+
+for(let i=0;i<5;i++){
+
+window.open(
+"",
+"",
+"width=300,height=200"
+).document.write("<h1 style='font-family:Comic Sans MS'>JOIN OASENSE</h1><p>CLICK OK NOW!!!</p>")
+
+}
+
+alert("CONGRATULATIONS!!! YOU ARE THE 1,000,000th VISITOR")
+
+}
+
+function reveal(){
+
+document.body.innerHTML=`
+<h1 style="font-family:sans-serif">WAIT...</h1>
+<h2>Did you really think this was the real OASENSE website?</h2>
+<h3>😏</h3>
+<p>The real one loads next.</p>
+`
+
+}
+
+document.addEventListener("mousemove",e=>{
+let star=document.createElement("div")
+star.className="star"
+star.innerText="✨"
+star.style.left=e.pageX+"px"
+star.style.top=e.pageY+"px"
+document.body.appendChild(star)
+
+setTimeout(()=>star.remove(),600)
+
+})
+
+</script>
+
+</body>
+</html>
