@@ -1,109 +1,93 @@
-<!-- /oasense-fake-shop.html -->
+<!-- /oasense-prank.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>OASENSE | Embrace Your Light</title>
+<title>OASENSE</title>
 <style>
-/* General Colors & Layout */
-body {
-    margin:0;
-    font-family: 'Arial', sans-serif;
+/* GENERAL STYLES */
+body, html {
+    margin:0; padding:0;
+    font-family: Arial, sans-serif;
     background-color:#000;
-    color:#00ff99;
-    line-height:1.6;
+    color:#0f0;
+    overflow-x:hidden;
+}
+button {
+    padding:15px 30px;
+    font-size:18px;
+    cursor:pointer;
+    background:#0f0;
+    border:none;
+    border-radius:5px;
+    font-weight:bold;
+}
+button:hover {background:#0ff;}
+header, main, footer {
+    max-width:900px; margin:auto;
 }
 header {
-    background:linear-gradient(90deg, #0000ff, #00ff00);
-    padding:30px 0;
     text-align:center;
+    padding:50px 0;
+    background:linear-gradient(90deg, #0000ff, #00ff00);
     color:#fff;
 }
-header h1 {
-    font-size:50px;
-    margin:0;
-    text-shadow: 2px 2px #000;
-}
+h1, h2, h3 {margin:10px 0;}
 nav {
-    background:#111;
-    padding:10px 0;
+    background:#111; padding:15px;
     text-align:center;
 }
 nav a {
-    color:#0ff;
-    margin:0 20px;
-    text-decoration:none;
-    font-weight:bold;
-    font-size:18px;
+    color:#0ff; margin:0 15px;
+    text-decoration:none; font-weight:bold;
 }
-nav a:hover {
-    color:#00ff99;
-}
-main {
-    max-width:900px;
-    margin:20px auto;
-    padding:20px;
-    background:#0a0a0a;
-    border:2px solid #00ff99;
-    border-radius:10px;
-}
-h2 {
-    color:#00ff99;
-    margin-top:30px;
-}
-p {
-    color:#0ff;
-    margin-bottom:15px;
-}
-.shop-section, .services-section {
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:space-around;
-    margin-top:20px;
-}
+nav a:hover {color:#0f0;}
+.section {margin:20px 0; padding:20px; border:2px solid #0f0; border-radius:8px; background:#111;}
 .card {
-    background:#111;
-    border:2px solid #0ff;
-    border-radius:8px;
-    width:250px;
-    margin:10px;
+    display:inline-block; width:250px; margin:10px;
+    padding:15px; text-align:center;
+    background:#111; border:2px solid #0ff; border-radius:8px;
+    transition: transform 0.3s, border-color 0.3s;
+}
+.card:hover {transform:scale(1.05); border-color:#0f0;}
+.card img {width:100%; border-radius:5px;}
+.button {display:inline-block; margin-top:10px; background:#0f0; color:#000; text-decoration:none; padding:10px 15px; border-radius:5px;}
+.button:hover {background:#0ff;}
+footer {text-align:center; padding:20px; border-top:2px solid #0f0; background:#111;}
+.popup {
+    position:absolute;
+    background:red;
+    color:white;
     padding:15px;
-    text-align:center;
-    transition: transform 0.2s;
-}
-.card:hover {
-    transform: scale(1.05);
-    border-color:#00ff99;
-}
-.card img {
-    width:100%;
-    border-radius:5px;
-}
-.button {
-    display:inline-block;
-    margin-top:10px;
-    padding:10px 20px;
-    background:#00ff99;
-    color:#000;
+    border:3px solid yellow;
     font-weight:bold;
-    text-decoration:none;
+    cursor:pointer;
     border-radius:5px;
+    z-index:999;
+    display:none;
+    animation:fadeIn 0.5s;
 }
-.button:hover {
-    background:#0ff;
-}
-footer {
-    text-align:center;
-    padding:20px;
-    background:#111;
-    color:#0ff;
-    margin-top:40px;
-    border-top:2px solid #00ff99;
+@keyframes fadeIn {from{opacity:0}to{opacity:1}}
+.star{position:absolute; font-size:20px; pointer-events:none;}
+.welcome-screen {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:#000; color:#0f0;
+    display:flex; flex-direction:column;
+    justify-content:center; align-items:center;
+    font-family:monospace; font-size:40px;
+    z-index:1000;
 }
 </style>
 </head>
 <body>
 
+<!-- WELCOME SCREEN -->
+<div class="welcome-screen" id="welcomeScreen">
+    <div>WELCOME TO TEH OASENSE</div>
+    <button id="enterBtn">ENTER</button>
+</div>
+
+<!-- MAIN SITE -->
 <header>
     <h1>OASENSE</h1>
     <p>YOU ARE THE LIGHT. EMBRACE IT.</p>
@@ -116,68 +100,118 @@ footer {
     <a href="#contact">Contact</a>
 </nav>
 
-<main>
-
-<section id="story">
+<main id="mainContent" style="opacity:0; transition:opacity 1s;">
+<section id="story" class="section">
 <h2>My Story</h2>
-<p>At Oasense.shop, I’m Angel—a dreamer navigating life with hope. I realized I am the light myself—and that we all are the light. That truth inspired me to create Oasense.Shop—a space dedicated to helping humanity heal and rise. Through spiritual clothing, books, and content, I inspire others to see their own light. YOU ARE THE LIGHT. EMBRACE IT.</p>
-<p>Oasense began as a vision during one of the most transformative chapters of my life. I’m Angel Alvarez: photographer, musician, digital artist, and storyteller. Creativity is my tool for self-mastery and growth.</p>
+<p>At Oasense.shop, I’m Angel—a dreamer navigating life with hope. I realized I am the light myself—and that we all are the light. That truth inspired me to create Oasense.Shop—a space dedicated to helping humanity heal and rise. YOU ARE THE LIGHT. EMBRACE IT.</p>
+<p>Oasense represents my journey of growth, creativity, and transformation.</p>
 </section>
 
-<section id="shop">
+<section id="shop" class="section">
 <h2>Shop</h2>
-<div class="shop-section">
 <div class="card">
-<img src="https://via.placeholder.com/250x150.png?text=Spiritual+T-Shirt" alt="Spiritual T-Shirt">
+<img src="https://via.placeholder.com/250x150.png?text=Spiritual+T-Shirt">
 <h3>Spiritual T-Shirt</h3>
-<p>Wear your light. Comfortable & inspirational.</p>
+<p>Wear your light.</p>
 <a class="button" href="#">Buy Now</a>
 </div>
 <div class="card">
-<img src="https://via.placeholder.com/250x150.png?text=Healing+Book" alt="Healing Book">
+<img src="https://via.placeholder.com/250x150.png?text=Healing+Book">
 <h3>Healing Book</h3>
-<p>Discover tools to empower your journey.</p>
+<p>Empower your journey.</p>
 <a class="button" href="#">Buy Now</a>
 </div>
 <div class="card">
-<img src="https://via.placeholder.com/250x150.png?text=Digital+Art" alt="Digital Art">
+<img src="https://via.placeholder.com/250x150.png?text=Digital+Art">
 <h3>Digital Art Prints</h3>
-<p>Decorate your space with light and inspiration.</p>
+<p>Decorate your space with inspiration.</p>
 <a class="button" href="#">Buy Now</a>
 </div>
-</div>
 </section>
 
-<section id="services" class="services-section">
+<section id="services" class="section">
 <h2>Services</h2>
-<div class="card">
-<h3>Photography</h3>
-<p>Cinematic portraits, lifestyle, branding, events.</p>
-<a class="button" href="#">Learn More</a>
-</div>
-<div class="card">
-<h3>Digital Art & Design</h3>
-<p>Creative pieces for personal growth and expression.</p>
-<a class="button" href="#">Learn More</a>
-</div>
-<div class="card">
-<h3>Video & Content Creation</h3>
-<p>Storytelling through visual media to inspire others.</p>
-<a class="button" href="#">Learn More</a>
-</div>
+<div class="card"><h3>Photography</h3><p>Cinematic portraits, lifestyle, branding.</p></div>
+<div class="card"><h3>Digital Art & Design</h3><p>Creative pieces for personal growth.</p></div>
+<div class="card"><h3>Video & Content Creation</h3><p>Storytelling through visual media.</p></div>
 </section>
 
-<section id="contact">
+<section id="contact" class="section">
 <h2>Contact</h2>
-<p>Interested in working with me? Reach out and be part of this journey of light and creativity.</p>
+<p>Reach out to be part of this journey of light and creativity.</p>
 <a class="button" href="#">Contact Me</a>
 </section>
-
 </main>
 
 <footer>
 <p>© 2026 OASENSE | Designed by Angel Alvarez</p>
 </footer>
+
+<!-- POPUPS -->
+<div id="popup1" class="popup">⚠️ Your system has been hacked! Click to save it!</div>
+<div id="popup2" class="popup">⚠️ Critical Error Detected! Click to fix!</div>
+<div id="popup3" class="popup">⚠️ Virus Detected! Click to protect your files!</div>
+
+<script>
+// ENTER BUTTON FUNCTION
+document.getElementById("enterBtn").onclick = function() {
+    const welcome = document.getElementById("welcomeScreen");
+    welcome.innerHTML = "<p>Loading OASENSE...</p>";
+    setTimeout(()=>{
+        welcome.style.display="none";
+        document.getElementById("mainContent").style.opacity = 1;
+        triggerPopups();
+    },5000);
+}
+
+// CURSOR TRAIL
+document.addEventListener("mousemove",e=>{
+    let star=document.createElement("div");
+    star.className="star";
+    star.innerText="✨";
+    star.style.left=e.pageX+"px";
+    star.style.top=e.pageY+"px";
+    document.body.appendChild(star);
+    setTimeout(()=>star.remove(),600);
+});
+
+// RANDOM POPUPS SEQUENCE
+function triggerPopups(){
+    setTimeout(()=>showPopup("popup1"),5000);
+    setTimeout(()=>showPopup("popup2"),10000);
+    setTimeout(()=>showPopup("popup3"),15000);
+}
+
+function showPopup(id){
+    const popup = document.getElementById(id);
+    popup.style.left = Math.random()*(window.innerWidth-200)+"px";
+    popup.style.top = Math.random()*(window.innerHeight-100)+"px";
+    popup.style.display="block";
+}
+
+// MALWARE FAKE CRASH
+const popups = ["popup1","popup2","popup3"];
+popups.forEach(pid=>{
+    document.getElementById(pid).onclick = function(){
+        fakeCrash();
+    }
+})
+
+function fakeCrash(){
+    let flashes=0;
+    const crashInterval = setInterval(()=>{
+        document.body.style.background = flashes%2===0 ? "red" : "white";
+        document.body.innerHTML = `<h1 style="font-family:monospace; color:black; margin-top:200px;">💀 SYSTEM CRASH 💀</h1>
+        <h2 style="font-family:monospace;">Critical Error: OASENSE Malware Detected</h2>
+        <h3 style="font-family:monospace;">Memory Corrupted...</h3>`;
+        flashes++;
+        if(flashes>6){
+            clearInterval(crashInterval);
+            window.location.href="https://merci-chi.github.io/OAS/";
+        }
+    },500);
+}
+</script>
 
 </body>
 </html>
