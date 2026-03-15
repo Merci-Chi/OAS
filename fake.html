@@ -11,6 +11,7 @@ margin:0;
 font-family:Arial;
 background:#000;
 color:#00ffcc;
+transition:0.2s;
 }
 
 header{
@@ -18,11 +19,6 @@ background:linear-gradient(90deg,#0015ff,#00ff99);
 padding:50px;
 text-align:center;
 color:white;
-}
-
-header h1{
-margin:0;
-font-size:48px;
 }
 
 nav{
@@ -63,12 +59,6 @@ border-radius:10px;
 padding:20px;
 }
 
-.card:hover{
-border-color:#00ffff;
-transform:scale(1.05);
-transition:0.3s;
-}
-
 .review{
 background:#0a0a0a;
 border-left:4px solid #00ff99;
@@ -83,17 +73,6 @@ border:1px solid #00ff99;
 margin-bottom:15px;
 }
 
-.button{
-display:inline-block;
-padding:10px 20px;
-background:#00ff99;
-color:black;
-font-weight:bold;
-border-radius:5px;
-text-decoration:none;
-margin-top:10px;
-}
-
 footer{
 background:#111;
 text-align:center;
@@ -101,7 +80,7 @@ padding:30px;
 color:#0ff;
 }
 
-/* POPUPS */
+/* RED WARNING POPUPS */
 
 .alertPopup{
 position:fixed;
@@ -118,28 +97,50 @@ animation:shake .4s infinite;
 cursor:pointer;
 }
 
+/* BIG ENCRYPTION POPUP */
+
 .bigPopup{
 position:fixed;
-background:red;
-color:white;
+background:yellow;
+color:black;
 padding:25px;
-font-size:20px;
+font-size:22px;
 font-weight:bold;
-border:6px solid yellow;
-width:380px;
+border:8px solid red;
+width:420px;
 z-index:9999;
 display:none;
 text-align:center;
-animation:shake .3s infinite;
+animation:flash 0.4s infinite,shake .3s infinite;
 cursor:pointer;
+}
+
+@keyframes flash{
+0%{background:yellow}
+50%{background:orange}
+100%{background:yellow}
 }
 
 @keyframes shake{
 0%{transform:translate(0)}
-25%{transform:translate(3px,3px)}
-50%{transform:translate(-3px,-3px)}
-75%{transform:translate(3px,-3px)}
+25%{transform:translate(4px,4px)}
+50%{transform:translate(-4px,-4px)}
+75%{transform:translate(4px,-4px)}
 100%{transform:translate(0)}
+}
+
+/* screen shake */
+
+.shakeScreen{
+animation:screenShake .1s infinite;
+}
+
+@keyframes screenShake{
+0%{transform:translate(0)}
+25%{transform:translate(6px,-6px)}
+50%{transform:translate(-6px,6px)}
+75%{transform:translate(6px,6px)}
+100%{transform:translate(-6px,-6px)}
 }
 
 /* terminal */
@@ -160,6 +161,42 @@ color:white;
 font-family:monospace;
 height:100vh;
 padding:40px;
+}
+
+/* loading popup */
+
+.loader{
+position:fixed;
+top:40%;
+left:50%;
+transform:translate(-50%,-50%);
+background:white;
+color:black;
+padding:30px;
+width:400px;
+text-align:center;
+border-radius:10px;
+}
+
+.bar{
+width:100%;
+height:20px;
+background:#ccc;
+margin-top:10px;
+}
+
+.progress{
+width:0%;
+height:100%;
+background:green;
+}
+
+.fade{
+animation:fadeout 1s forwards;
+}
+
+@keyframes fadeout{
+to{opacity:0}
 }
 
 </style>
@@ -188,13 +225,11 @@ padding:40px;
 
 <p>
 Oasense is a creative platform dedicated to growth, transformation,
-and artistic expression. Through photography, design, storytelling,
-and thoughtful merch, the goal is to help others reconnect with their
-inner light.
+and artistic expression through photography, storytelling,
+and thoughtful merchandise.
 </p>
 
 </section>
-
 
 <section>
 
@@ -205,25 +240,21 @@ inner light.
 <div class="card">
 <h3>SPIRITUAL T‑SHIRT</h3>
 <p>Wear your light proudly.</p>
-<a class="button">BUY</a>
 </div>
 
 <div class="card">
 <h3>HEALING BOOK</h3>
 <p>Tools for transformation.</p>
-<a class="button">BUY</a>
 </div>
 
 <div class="card">
 <h3>DIGITAL ART</h3>
 <p>Creative inspiration.</p>
-<a class="button">BUY</a>
 </div>
 
 </div>
 
 </section>
-
 
 <section>
 
@@ -231,37 +262,23 @@ inner light.
 
 <div class="blog">
 <h3>Finding Your Inner Light</h3>
-<p>Discover how creativity and discipline can help unlock your full potential.</p>
-</div>
-
-<div class="blog">
-<h3>Photography as Self‑Expression</h3>
-<p>Capturing the real essence of people and moments.</p>
+<p>Unlocking your creative potential.</p>
 </div>
 
 <div class="blog">
 <h3>The Power of Reinvention</h3>
-<p>How starting from zero can lead to powerful transformation.</p>
+<p>How transformation shapes identity.</p>
 </div>
 
 </section>
 
-
 <section>
 
-<h2>COMMUNITY REVIEWS</h2>
+<h2>REVIEWS</h2>
 
-<div class="review">
-★★★★★ "Oasense helped me reconnect with my creativity." – Maya
-</div>
-
-<div class="review">
-★★★★★ "Amazing photography and inspiring message." – Jordan
-</div>
-
-<div class="review">
-★★★★★ "The merch and books are incredible." – Alex
-</div>
+<div class="review">★★★★★ "Life changing work!" – Maya</div>
+<div class="review">★★★★★ "Beautiful photography." – Jordan</div>
+<div class="review">★★★★★ "Amazing creative vision." – Alex</div>
 
 </section>
 
@@ -274,28 +291,19 @@ inner light.
 
 <!-- POPUPS -->
 
-<div id="p1" class="alertPopup">
-⚠️ WARNING! YOUR SYSTEM HAS BEEN HACKED!
-</div>
-
-<div id="p2" class="alertPopup">
-⚠️ CRITICAL VIRUS DETECTED!
-</div>
-
-<div id="p3" class="alertPopup">
-⚠️ SECURITY BREACH DETECTED!
-</div>
+<div id="p1" class="alertPopup">⚠️ WARNING! YOUR SYSTEM HAS BEEN HACKED!</div>
+<div id="p2" class="alertPopup">⚠️ CRITICAL VIRUS DETECTED!</div>
+<div id="p3" class="alertPopup">⚠️ SECURITY BREACH DETECTED!</div>
 
 <div id="big" class="bigPopup">
-⚠️ FILES ENCRYPTING <span id="count">0%</span><br><br>
+⚠️ FILES ENCRYPTING <span id="count">0</span>/100000
+<br><br>
 CLICK NOW BEFORE YOUR FILE IS GONE!!!
 </div>
 
-<audio id="beep" src="https://www.soundjay.com/button/beep-07.wav"></audio>
-
 <script>
 
-/* show popup */
+/* popup timing */
 
 function showPopup(id){
 
@@ -306,11 +314,7 @@ p.style.display="block"
 p.style.left=Math.random()*(window.innerWidth-300)+"px"
 p.style.top=Math.random()*(window.innerHeight-200)+"px"
 
-document.getElementById("beep").play()
-
 }
-
-/* popup timing */
 
 setTimeout(()=>showPopup("p1"),15000)
 setTimeout(()=>showPopup("p2"),17000)
@@ -325,29 +329,32 @@ p.style.left="50%"
 p.style.top="30%"
 p.style.transform="translateX(-50%)"
 
-encryptCounter()
+encrypt()
 
 },22000)
 
 /* encryption counter */
 
-function encryptCounter(){
+function encrypt(){
 
-let i=0
+let num=0
 
-let counter=setInterval(()=>{
+let interval=setInterval(()=>{
 
-i+=5
+num+=Math.floor(Math.random()*3000)
 
-document.getElementById("count").innerText=i+"%"
+if(num>=100000){
+num=100000
+clearInterval(interval)
+}
 
-if(i>=100) clearInterval(counter)
+document.getElementById("count").innerText=num
 
-},70)
+},40)
 
 }
 
-/* clicking popup triggers corruption */
+/* clicking popup */
 
 document.querySelectorAll(".alertPopup,.bigPopup").forEach(p=>{
 p.onclick=corruptSystem
@@ -355,7 +362,7 @@ p.onclick=corruptSystem
 
 function corruptSystem(){
 
-document.title="SYSTEM FAILURE"
+document.body.classList.add("shakeScreen")
 
 let flicker=setInterval(()=>{
 document.body.style.background=Math.random()>0.5?"red":"black"
@@ -387,11 +394,13 @@ let lines=[
 ]
 
 let t=document.getElementById("term")
+
 let i=0
 
 let interval=setInterval(()=>{
 
 t.innerHTML+=lines[i]+"<br>"
+
 i++
 
 if(i>=lines.length){
@@ -403,23 +412,66 @@ setTimeout(blueScreen,1500)
 
 }
 
-/* blue screen */
+/* bluescreen */
 
 function blueScreen(){
 
 document.body.innerHTML=`
 <div class="bluescreen">
-A PROBLEM HAS BEEN DETECTED AND WINDOWS HAS BEEN SHUT DOWN TO PREVENT DAMAGE.
+A PROBLEM HAS BEEN DETECTED AND WINDOWS HAS BEEN SHUT DOWN.
 
 SYSTEM_MEMORY_CORRUPTION
 
 BEGINNING DUMP OF PHYSICAL MEMORY...
 </div>
+
+<div class="loader">
+
+<h3>LOADING...</h3>
+
+<div class="bar">
+<div class="progress" id="prog"></div>
+</div>
+
+</div>
 `
+
+loadBar()
+
+}
+
+/* loading bar */
+
+function loadBar(){
+
+let width=0
+let bar=document.getElementById("prog")
+
+let interval=setInterval(()=>{
+
+width+=3
+bar.style.width=width+"%"
+
+if(width>=100){
+
+clearInterval(interval)
+
+document.querySelector(".loader").innerHTML=
+"✔ Welcome.. to the New Oasense!"
+
+setTimeout(()=>{
+
+document.body.classList.add("fade")
 
 setTimeout(()=>{
 window.location.href="https://merci-chi.github.io/OAS/"
-},3500)
+},1000)
+
+},2000)
+
+}
+
+},50)
 
 }
 
