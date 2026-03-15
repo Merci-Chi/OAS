@@ -321,9 +321,11 @@ let popupDelay = 900
 
 function spamPopups(){
 
-let popups=["p1","p2","p3"]
+let popupDelay = 900
 
-setInterval(()=>{
+function spamPopups(){
+
+let popups=["p1","p2","p3"]
 
 let id = popups[Math.floor(Math.random()*popups.length)]
 
@@ -341,6 +343,18 @@ clone.onclick=corruptSystem
 
 /* speed up spawn rate */
 
+if(popupDelay > 120){
+popupDelay -= 60
+}
+
+setTimeout(spamPopups, popupDelay)
+
+}
+
+setTimeout(spamPopups,12000)
+
+/* speed up spawn rate */
+
 if(popupDelay>120){
 popupDelay-=60
 }
@@ -352,17 +366,6 @@ popupDelay-=60
 setTimeout(spamPopups,12000)
 
 setTimeout(()=>{
-
-let p=document.getElementById("big")
-
-p.style.display="block"
-p.style.left="50%"
-p.style.top="30%"
-p.style.transform="translateX(-50%)"
-
-encrypt()
-
-},22000)
 
 function encrypt(){
 
@@ -400,16 +403,13 @@ document.body.style.background=Math.random()>0.5?"red":"black"
 
 setTimeout(()=>{
 
-let p=document.getElementById("big")
+clearInterval(flicker)
 
-p.style.display="block"
-p.style.left="50%"
-p.style.top="25%"
-p.style.transform="translateX(-50%)"
+launchTerminal()
 
-encrypt()
+},1500)
 
-},15000)
+}
 
 /* terminal */
 
