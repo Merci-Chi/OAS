@@ -5,227 +5,205 @@
 <title>OASENSE | Embrace Your Light</title>
 
 <style>
-
 body{
-margin:0;
-font-family:Arial;
-background:#000;
-color:#00ffcc;
-transition:0.2s;
+  margin:0;
+  font-family:Arial;
+  background:#000;
+  color:#00ffcc;
+  transition:0.2s;
 }
 
 header{
-background:linear-gradient(90deg,#0015ff,#00ff99);
-padding:50px;
-text-align:center;
-color:white;
+  background:linear-gradient(90deg,#0015ff,#00ff99);
+  padding:50px;
+  text-align:center;
+  color:white;
 }
 
 nav{
-background:#111;
-text-align:center;
-padding:15px;
+  background:#111;
+  text-align:center;
+  padding:15px;
 }
 
 nav a{
-color:#00ffff;
-margin:0 20px;
-text-decoration:none;
-font-weight:bold;
+  color:#00ffff;
+  margin:0 20px;
+  text-decoration:none;
+  font-weight:bold;
 }
 
 main{
-max-width:1100px;
-margin:auto;
-padding:30px;
+  max-width:1100px;
+  margin:auto;
+  padding:30px;
 }
 
 section{
-margin-bottom:60px;
+  margin-bottom:60px;
 }
 
 .cards{
-display:flex;
-flex-wrap:wrap;
-gap:20px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:20px;
 }
 
 .card{
-flex:1;
-min-width:250px;
-background:#0a0a0a;
-border:2px solid #00ff99;
-border-radius:10px;
-padding:20px;
+  flex:1;
+  min-width:250px;
+  background:#0a0a0a;
+  border:2px solid #00ff99;
+  border-radius:10px;
+  padding:20px;
 }
 
 .review{
-background:#0a0a0a;
-border-left:4px solid #00ff99;
-padding:15px;
-margin:10px 0;
+  background:#0a0a0a;
+  border-left:4px solid #00ff99;
+  padding:15px;
+  margin:10px 0;
 }
 
 .blog{
-background:#111;
-padding:15px;
-border:1px solid #00ff99;
-margin-bottom:15px;
+  background:#111;
+  padding:15px;
+  border:1px solid #00ff99;
+  margin-bottom:15px;
 }
 
 footer{
-background:#111;
-text-align:center;
-padding:30px;
-color:#0ff;
+  background:#111;
+  text-align:center;
+  padding:30px;
+  color:#0ff;
 }
 
-/* RED WARNING POPUPS */
-
+/* POPUPS */
 .alertPopup{
-position:fixed;
-background:red;
-color:white;
-padding:15px;
-font-weight:bold;
-border:4px solid yellow;
-border-radius:6px;
-z-index:9999;
-width:260px;
-display:none;
-animation:shake .4s infinite;
-cursor:pointer;
+  position:fixed;
+  background:red;
+  color:white;
+  padding:15px;
+  font-weight:bold;
+  border:4px solid yellow;
+  border-radius:6px;
+  z-index:9999;
+  width:260px;
+  display:none;
+  animation:shake .4s infinite;
+  cursor:pointer;
 }
-
-/* BIG ENCRYPTION POPUP */
 
 .bigPopup{
-position:fixed;
-background:yellow;
-color:black;
-padding:25px;
-font-size:22px;
-font-weight:bold;
-border:8px solid red;
-width:420px;
-z-index:999999; /* ALWAYS ON TOP */
-display:none;
-text-align:center;
-animation:flash 0.4s infinite,shake .3s infinite;
-cursor:pointer;
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  background:yellow;
+  color:black;
+  padding:25px;
+  font-size:22px;
+  font-weight:bold;
+  border:8px solid red;
+  width:420px;
+  z-index:9999999;
+  display:none;
+  text-align:center;
+  animation:flash .5s infinite,shake .3s infinite;
 }
-  
+
+/* animations */
 @keyframes flash{
-0%{background:yellow}
-50%{background:orange}
-100%{background:yellow}
+  0%{background:yellow}
+  50%{background:orange}
+  100%{background:yellow}
 }
 
 @keyframes shake{
-0%{transform:translate(0)}
-25%{transform:translate(4px,4px)}
-50%{transform:translate(-4px,-4px)}
-75%{transform:translate(4px,-4px)}
-100%{transform:translate(0)}
+  0%{transform:translate(0)}
+  25%{transform:translate(4px,4px)}
+  50%{transform:translate(-4px,-4px)}
+  75%{transform:translate(4px,-4px)}
+  100%{transform:translate(0)}
 }
 
-/* screen shake */
-
 .shakeScreen{
-animation:screenShake .1s infinite;
+  animation:screenShake .1s infinite;
 }
 
 @keyframes screenShake{
-0%{transform:translate(0)}
-25%{transform:translate(6px,-6px)}
-50%{transform:translate(-6px,6px)}
-75%{transform:translate(6px,6px)}
-100%{transform:translate(-6px,-6px)}
+  0%{transform:translate(0)}
+  25%{transform:translate(6px,-6px)}
+  50%{transform:translate(-6px,6px)}
+  75%{transform:translate(6px,6px)}
+  100%{transform:translate(-6px,-6px)}
 }
 
 /* terminal */
-
 .terminal{
-background:black;
-color:#00ff00;
-font-family:monospace;
-padding:30px;
-height:100vh;
+  background:black;
+  color:#00ff00;
+  font-family:monospace;
+  padding:30px;
+  height:100vh;
 }
 
 /* bluescreen */
-
 .bluescreen{
-background:#0000aa;
-color:white;
-font-family:monospace;
-height:100vh;
-padding:40px;
+  background:#0000aa;
+  color:white;
+  font-family:monospace;
+  height:100vh;
+  padding:40px;
 }
 
 /* loading popup */
-
 .loader{
-position:fixed;
-top:40%;
-left:50%;
-transform:translate(-50%,-50%);
-background:white;
-color:black;
-padding:30px;
-width:400px;
-text-align:center;
-border-radius:10px;
+  position:fixed;
+  top:40%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:white;
+  color:black;
+  padding:30px;
+  width:400px;
+  text-align:center;
+  border-radius:10px;
 }
 
 .bar{
-width:100%;
-height:20px;
-background:#ccc;
-margin-top:10px;
+  width:100%;
+  height:20px;
+  background:#ccc;
+  margin-top:10px;
 }
 
 .progress{
-width:0%;
-height:100%;
-background:green;
+  width:0%;
+  height:100%;
+  background:green;
 }
 
 .fade{
-animation:fadeout 1s forwards;
+  animation:fadeout 1s forwards;
 }
 
 @keyframes fadeout{
-to{opacity:0}
-}
-.closeBtn{
-position:absolute;
-top:5px;
-right:8px;
-background:black;
-color:white;
-border:none;
-font-weight:bold;
-cursor:pointer;
-padding:2px 6px;
+  to{opacity:0}
 }
 
-.bigPopup{
-position:fixed;
-top:10px;
-left:50%;
-transform:translateX(-50%);
-background:yellow;
-color:black;
-padding:25px;
-font-size:22px;
-font-weight:bold;
-border:8px solid red;
-width:420px;
-z-index:9999999;
-display:none;
-text-align:center;
-animation:flash 0.5s infinite,shake .3s infinite;
+/* close button */
+.closeBtn{
+  position:absolute;
+  top:5px;
+  right:8px;
+  background:black;
+  color:white;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+  padding:2px 6px;
 }
 </style>
 </head>
@@ -248,66 +226,49 @@ animation:flash 0.5s infinite,shake .3s infinite;
 <main>
 
 <section>
-
 <h2>ABOUT OASENSE</h2>
-
 <p>
 Oasense is a creative platform dedicated to growth, transformation,
 and artistic expression through photography, storytelling,
 and thoughtful merchandise.
 </p>
-
 </section>
 
 <section>
-
 <h2>SHOP</h2>
-
 <div class="cards">
-
 <div class="card">
 <h3>SPIRITUAL T‑SHIRT</h3>
 <p>Wear your light proudly.</p>
 </div>
-
 <div class="card">
 <h3>HEALING BOOK</h3>
 <p>Tools for transformation.</p>
 </div>
-
 <div class="card">
 <h3>DIGITAL ART</h3>
 <p>Creative inspiration.</p>
 </div>
-
 </div>
-
 </section>
 
 <section>
-
 <h2>LATEST BLOG POSTS</h2>
-
 <div class="blog">
 <h3>Finding Your Inner Light</h3>
 <p>Unlocking your creative potential.</p>
 </div>
-
 <div class="blog">
 <h3>The Power of Reinvention</h3>
 <p>How transformation shapes identity.</p>
 </div>
-
 </section>
 
 <section>
-
 <h2>REVIEWS</h2>
-
 <div class="review">★★★★★ "Life changing work!" – Maya</div>
 <div class="review">★★★★★ "Beautiful photography." – Jordan</div>
 <div class="review">★★★★★ "Amazing creative vision." – Alex</div>
-
 </section>
 
 </main>
@@ -316,7 +277,7 @@ and thoughtful merchandise.
 © 2026 OASENSE
 </footer>
 
-
+<!-- Popups -->
 <div id="p1" class="alertPopup">
 <button class="closeBtn">X</button>
 ⚠️ WARNING! YOUR SYSTEM HAS BEEN HACKED!
@@ -339,181 +300,129 @@ and thoughtful merchandise.
 <span id="count">0</span> / 100000
 </div>
 
-<div id="big" class="bigPopup">
-⚠️ FILES ENCRYPTING <span id="count">0</span>/100000
-<br><br>
-CLICK NOW BEFORE YOUR FILE IS GONE!!!
-</div>
-
 <script>
+let popupDelay = 900;
 
-let popupDelay = 900
-
+// Spam popups
 function spamPopups(){
+  let popups=["p1","p2","p3"];
+  let id = popups[Math.floor(Math.random()*popups.length)];
+  let p=document.getElementById(id);
+  let clone=p.cloneNode(true);
+  clone.style.display="block";
+  clone.style.left=Math.random()*(window.innerWidth-300)+"px";
+  clone.style.top=Math.random()*(window.innerHeight-200)+"px";
+  document.body.appendChild(clone);
 
-let popups=["p1","p2","p3"]
+  clone.querySelector(".closeBtn").onclick=(e)=>{
+    e.stopPropagation();
+    clone.remove();
+  }
 
-let id = popups[Math.floor(Math.random()*popups.length)]
+  clone.onclick=corruptSystem;
 
-let p=document.getElementById(id)
-
-let clone=p.cloneNode(true)
-
-clone.style.display="block"
-
-clone.style.left=Math.random()*(window.innerWidth-300)+"px"
-clone.style.top=Math.random()*(window.innerHeight-200)+"px"
-
-document.body.appendChild(clone)
-
-clone.querySelector(".closeBtn").onclick=(e)=>{
-e.stopPropagation()
-clone.remove()
+  if(popupDelay>120){popupDelay-=60;}
+  setTimeout(spamPopups,popupDelay);
 }
+setTimeout(spamPopups,12000);
 
-clone.onclick=corruptSystem
-
-if(popupDelay>120){
-popupDelay-=60
-}
-
-setTimeout(spamPopups,popupDelay)
-
-}
-
-setTimeout(spamPopups,12000)
-
+// Corrupt system sequence
 function corruptSystem(){
-
-document.body.classList.add("shakeScreen")
-
-let flicker=setInterval(()=>{
-document.body.style.background=Math.random()>0.5?"red":"black"
-},100)
-
-setTimeout(()=>{
-clearInterval(flicker)
-launchTerminal()
-},1500)
-
+  document.body.classList.add("shakeScreen");
+  let flicker=setInterval(()=>{
+    document.body.style.background=Math.random()>0.5?"red":"black";
+  },100);
+  setTimeout(()=>{
+    clearInterval(flicker);
+    launchTerminal();
+  },1500);
 }
 
+// Fake terminal
 function launchTerminal(){
-
-document.body.innerHTML=`<div class="terminal" id="term"></div>`
-
-let lines=[
-"INITIALIZING EXPLOIT...",
-"BYPASSING FIREWALL...",
-"ACCESSING SYSTEM MEMORY...",
-"DELETING USER FILES...",
-"CORRUPTING SYSTEM KERNEL...",
-"SYSTEM FAILURE IMMINENT..."
-]
-
-let t=document.getElementById("term")
-
-let i=0
-
-let interval=setInterval(()=>{
-
-t.innerHTML+=lines[i]+"<br>"
-
-i++
-
-if(i>=lines.length){
-clearInterval(interval)
-setTimeout(blueScreen,1500)
+  document.body.innerHTML=`<div class="terminal" id="term"></div>`;
+  let lines=[
+    "INITIALIZING EXPLOIT...",
+    "BYPASSING FIREWALL...",
+    "ACCESSING SYSTEM MEMORY...",
+    "DELETING USER FILES...",
+    "CORRUPTING SYSTEM KERNEL...",
+    "SYSTEM FAILURE IMMINENT..."
+  ];
+  let t=document.getElementById("term");
+  let i=0;
+  let interval=setInterval(()=>{
+    t.innerHTML+=lines[i]+"<br>";
+    i++;
+    if(i>=lines.length){
+      clearInterval(interval);
+      setTimeout(blueScreen,1500);
+    }
+  },400);
 }
 
-},400)
-
-}
-
+// Fake bluescreen
 function blueScreen(){
-
-document.body.innerHTML=`
-<div class="bluescreen">
-A PROBLEM HAS BEEN DETECTED AND WINDOWS HAS BEEN SHUT DOWN.
-
-SYSTEM_MEMORY_CORRUPTION
-
-BEGINNING DUMP OF PHYSICAL MEMORY...
-</div>
-
-<div class="loader">
-
-<h3>LOADING...</h3>
-
-<div class="bar">
-<div class="progress" id="prog"></div>
-</div>
-
-</div>
-`
-
-loadBar()
-
+  document.body.innerHTML=`
+    <div class="bluescreen">
+      A PROBLEM HAS BEEN DETECTED AND WINDOWS HAS BEEN SHUT DOWN.
+      <br><br>
+      SYSTEM_MEMORY_CORRUPTION
+      <br><br>
+      BEGINNING DUMP OF PHYSICAL MEMORY...
+    </div>
+    <div class="loader">
+      <h3>LOADING...</h3>
+      <div class="bar">
+        <div class="progress" id="prog"></div>
+      </div>
+    </div>`;
+  loadBar();
 }
 
+// Loading bar
 function loadBar(){
-
-let width=0
-let bar=document.getElementById("prog")
-
-let interval=setInterval(()=>{
-
-width+=3
-bar.style.width=width+"%"
-
-if(width>=100){
-
-clearInterval(interval)
-
-document.querySelector(".loader").innerHTML=
-"✔ Welcome.. to the New Oasense!"
-
-setTimeout(()=>{
-
-document.body.classList.add("fade")
-
-setTimeout(()=>{
-window.location.href="https://merci-chi.github.io/OAS/"
-},1000)
-
-},2000)
-
+  let width=0;
+  let bar=document.getElementById("prog");
+  let interval=setInterval(()=>{
+    width+=3;
+    bar.style.width=width+"%";
+    if(width>=100){
+      clearInterval(interval);
+      document.querySelector(".loader").innerHTML="✔ Welcome.. to the New Oasense!";
+      setTimeout(()=>{
+        document.body.classList.add("fade");
+        setTimeout(()=>{
+          window.location.href="https://merci-chi.github.io/OAS/";
+        },1000);
+      },2000);
+    }
+  },50);
 }
 
-},50)
+// Big yellow encryption popup
+function showBigPopup(){
+  let big=document.getElementById("big");
+  big.style.display="block";
 
+  // Close button
+  big.querySelector(".closeBtn").onclick=(e)=>{
+    e.stopPropagation();
+    big.style.display="none";
+  }
+
+  let num=0;
+  let max=100000;
+  let interval=setInterval(()=>{
+    num += Math.floor(Math.random()*4000)+2000;
+    if(num>=max){
+      num=max;
+      clearInterval(interval);
+    }
+    document.getElementById("count").innerText=num;
+  },30);
 }
-  function showBigPopup(){
-
-let big=document.getElementById("big")
-
-big.style.display="block"
-
-let num=0
-let max=100000
-
-let interval=setInterval(()=>{
-
-num += Math.floor(Math.random()*4000)+2000
-
-if(num>=max){
-num=max
-clearInterval(interval)
-}
-
-document.getElementById("count").innerText=num
-
-},30)
-
-}
-
-setTimeout(showBigPopup,15000)
-
+setTimeout(showBigPopup,15000);
 </script>
 
 </body>
