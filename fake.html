@@ -301,50 +301,40 @@ and thoughtful merchandise.
 </div>
 
 <script>
-let popupDelay = 900
-let startTime = Date.now()
+let popupDelay = 900;
+let startTime = Date.now();
 
+// Spam popups with slow->fast escalation
 function spamPopups(){
+  let popups=["p1","p2","p3"];
+  let id = popups[Math.floor(Math.random()*popups.length)];
+  let p=document.getElementById(id);
+  let clone=p.cloneNode(true);
+  clone.style.display="block";
+  clone.style.left=Math.random()*(window.innerWidth-300)+"px";
+  clone.style.top=Math.random()*(window.innerHeight-200)+"px";
+  document.body.appendChild(clone);
 
-let popups=["p1","p2","p3"]
+  clone.querySelector(".closeBtn").onclick=(e)=>{
+    e.stopPropagation();
+    clone.remove();
+  }
 
-let id = popups[Math.floor(Math.random()*popups.length)]
+  clone.onclick=corruptSystem;
 
-let p=document.getElementById(id)
+  // Determine elapsed time
+  let elapsed = Date.now() - startTime;
 
-let clone=p.cloneNode(true)
+  // After 10s, gradually decrease delay
+  if(elapsed > 10000 && popupDelay > 80){
+    popupDelay -= 40;
+  }
 
-clone.style.display="block"
-
-clone.style.left=Math.random()*(window.innerWidth-300)+"px"
-clone.style.top=Math.random()*(window.innerHeight-200)+"px"
-
-document.body.appendChild(clone)
-
-clone.querySelector(".closeBtn").onclick=(e)=>{
-e.stopPropagation()
-clone.remove()
+  setTimeout(spamPopups, popupDelay);
 }
 
-clone.onclick=corruptSystem
-
-let elapsed = Date.now() - startTime
-
-/* first 10 seconds slow */
-
-if(elapsed > 10000){
-
-if(popupDelay > 80){
-popupDelay -= 40
-}
-
-}
-
-setTimeout(spamPopups, popupDelay)
-
-}
-
-setTimeout(spamPopups,1500)
+// Start popup system after 1.5s
+setTimeout(spamPopups,1500);
 
 // Corrupt system sequence
 function corruptSystem(){
@@ -442,6 +432,8 @@ function showBigPopup(){
     document.getElementById("count").innerText=num;
   },30);
 }
+
+// Start big popup after 15s
 setTimeout(showBigPopup,15000);
 </script>
 
