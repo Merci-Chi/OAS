@@ -1,188 +1,183 @@
-<!-- /index.html -->
+<!-- /oasense-fake-shop.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>OASENSE OFFICIAL WEBSITE</title>
-
+<title>OASENSE | Embrace Your Light</title>
 <style>
-body{
-    background:linear-gradient(45deg, red, yellow, lime, cyan, magenta);
-    font-family:"Comic Sans MS",Papyrus,cursive;
+/* General Colors & Layout */
+body {
+    margin:0;
+    font-family: 'Arial', sans-serif;
+    background-color:#000;
+    color:#00ff99;
+    line-height:1.6;
+}
+header {
+    background:linear-gradient(90deg, #0000ff, #00ff00);
+    padding:30px 0;
     text-align:center;
-    animation:hue 6s linear infinite;
-    overflow-x:hidden;
+    color:#fff;
 }
-@keyframes hue{
-    0%{filter:hue-rotate(0deg);}
-    100%{filter:hue-rotate(360deg);}
+header h1 {
+    font-size:50px;
+    margin:0;
+    text-shadow: 2px 2px #000;
 }
-h1{
-    font-size:60px;
-    color:white;
-    text-shadow:5px 5px black;
-    animation:blink 1s infinite;
+nav {
+    background:#111;
+    padding:10px 0;
+    text-align:center;
 }
-@keyframes blink{
-    50%{opacity:0;}
+nav a {
+    color:#0ff;
+    margin:0 20px;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:18px;
 }
-.logo{
-    font-size:90px;
-    animation:spin 3s linear infinite;
+nav a:hover {
+    color:#00ff99;
 }
-@keyframes spin{
-    0%{transform:rotate(0deg)}
-    100%{transform:rotate(360deg)}
-}
-.section{
-    background:white;
-    border:10px ridge purple;
-    margin:20px;
+main {
+    max-width:900px;
+    margin:20px auto;
     padding:20px;
+    background:#0a0a0a;
+    border:2px solid #00ff99;
+    border-radius:10px;
 }
-button{
-    background:hotpink;
-    border:6px dashed yellow;
-    font-size:20px;
+h2 {
+    color:#00ff99;
+    margin-top:30px;
+}
+p {
+    color:#0ff;
+    margin-bottom:15px;
+}
+.shop-section, .services-section {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-around;
+    margin-top:20px;
+}
+.card {
+    background:#111;
+    border:2px solid #0ff;
+    border-radius:8px;
+    width:250px;
+    margin:10px;
     padding:15px;
-    cursor:pointer;
+    text-align:center;
+    transition: transform 0.2s;
 }
-.popupAd{
-    position:fixed;
-    background:yellow;
-    border:5px solid red;
+.card:hover {
+    transform: scale(1.05);
+    border-color:#00ff99;
+}
+.card img {
+    width:100%;
+    border-radius:5px;
+}
+.button {
+    display:inline-block;
+    margin-top:10px;
+    padding:10px 20px;
+    background:#00ff99;
+    color:#000;
+    font-weight:bold;
+    text-decoration:none;
+    border-radius:5px;
+}
+.button:hover {
+    background:#0ff;
+}
+footer {
+    text-align:center;
     padding:20px;
-    font-size:20px;
-    z-index:999;
-    animation:shake .5s infinite;
-}
-@keyframes shake{
-    0%{transform:translate(0)}
-    25%{transform:translate(5px)}
-    50%{transform:translate(-5px)}
-    75%{transform:translate(5px)}
-    100%{transform:translate(0)}
-}
-.star{
-    position:absolute;
-    font-size:20px;
-    pointer-events:none;
-}
-.fakeMalware{
-    background:red;
-    color:white;
-    border:10px solid yellow;
-    font-size:25px;
-    padding:20px;
-    margin:30px;
-    cursor:pointer;
-    animation:blink 0.5s infinite;
+    background:#111;
+    color:#0ff;
+    margin-top:40px;
+    border-top:2px solid #00ff99;
 }
 </style>
 </head>
-
 <body>
 
-<audio autoplay loop>
-<source src="https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav">
-</audio>
+<header>
+    <h1>OASENSE</h1>
+    <p>YOU ARE THE LIGHT. EMBRACE IT.</p>
+</header>
 
-<h1>WELCOME TO OASENSE™</h1>
+<nav>
+    <a href="#story">My Story</a>
+    <a href="#shop">Shop</a>
+    <a href="#services">Services</a>
+    <a href="#contact">Contact</a>
+</nav>
 
-<div class="logo">👃💨</div>
+<main>
 
-<marquee scrollamount="20">
-🔥 AI SMELL CLOUD 🔥 WEB4 ODOR BLOCKCHAIN 🔥 FUTURE AROMA PLATFORM 🔥
-</marquee>
+<section id="story">
+<h2>My Story</h2>
+<p>At Oasense.shop, I’m Angel—a dreamer navigating life with hope. I realized I am the light myself—and that we all are the light. That truth inspired me to create Oasense.Shop—a space dedicated to helping humanity heal and rise. Through spiritual clothing, books, and content, I inspire others to see their own light. YOU ARE THE LIGHT. EMBRACE IT.</p>
+<p>Oasense began as a vision during one of the most transformative chapters of my life. I’m Angel Alvarez: photographer, musician, digital artist, and storyteller. Creativity is my tool for self-mastery and growth.</p>
+</section>
 
-<div class="section">
-<h2>ABOUT OASENSE</h2>
-<p>
-The world's FIRST AI-powered smell streaming platform powered by quantum aroma neural blockchain cloud infrastructure.
-</p>
+<section id="shop">
+<h2>Shop</h2>
+<div class="shop-section">
+<div class="card">
+<img src="https://via.placeholder.com/250x150.png?text=Spiritual+T-Shirt" alt="Spiritual T-Shirt">
+<h3>Spiritual T-Shirt</h3>
+<p>Wear your light. Comfortable & inspirational.</p>
+<a class="button" href="#">Buy Now</a>
 </div>
-
-<div class="section">
-<h2>VISITORS</h2>
-<div id="counter">000000</div>
+<div class="card">
+<img src="https://via.placeholder.com/250x150.png?text=Healing+Book" alt="Healing Book">
+<h3>Healing Book</h3>
+<p>Discover tools to empower your journey.</p>
+<a class="button" href="#">Buy Now</a>
 </div>
+<div class="card">
+<img src="https://via.placeholder.com/250x150.png?text=Digital+Art" alt="Digital Art">
+<h3>Digital Art Prints</h3>
+<p>Decorate your space with light and inspiration.</p>
+<a class="button" href="#">Buy Now</a>
+</div>
+</div>
+</section>
 
-<button onclick="reveal()">SECRET OASENSE BUTTON</button>
+<section id="services" class="services-section">
+<h2>Services</h2>
+<div class="card">
+<h3>Photography</h3>
+<p>Cinematic portraits, lifestyle, branding, events.</p>
+<a class="button" href="#">Learn More</a>
+</div>
+<div class="card">
+<h3>Digital Art & Design</h3>
+<p>Creative pieces for personal growth and expression.</p>
+<a class="button" href="#">Learn More</a>
+</div>
+<div class="card">
+<h3>Video & Content Creation</h3>
+<p>Storytelling through visual media to inspire others.</p>
+<a class="button" href="#">Learn More</a>
+</div>
+</section>
 
-<!-- FAKE MALWARE ALERT BUTTON -->
-<button class="fakeMalware" onclick="malwareClick()">⚠️ CLICK FOR WARNING ⚠️</button>
+<section id="contact">
+<h2>Contact</h2>
+<p>Interested in working with me? Reach out and be part of this journey of light and creativity.</p>
+<a class="button" href="#">Contact Me</a>
+</section>
 
-<script>
-let count=14239
-setInterval(()=>{
-    count++
-    document.getElementById("counter").innerText=count
-},200)
+</main>
 
-setTimeout(()=>{
-    spawnAds()
-    spawnPopups()
-},5000)
-
-function spawnAds(){
-    for(let i=0;i<6;i++){
-        let ad=document.createElement("div")
-        ad.className="popupAd"
-        ad.style.top=Math.random()*80+"%"
-        ad.style.left=Math.random()*80+"%"
-        ad.innerText="🔥 BUY OASENSE PREMIUM 🔥"
-        document.body.appendChild(ad)
-    }
-}
-
-function spawnPopups(){
-    for(let i=0;i<5;i++){
-        window.open(
-            "",
-            "",
-            "width=300,height=200"
-        ).document.write("<h1 style='font-family:Comic Sans MS'>JOIN OASENSE</h1><p>CLICK OK NOW!!!</p>")
-    }
-    alert("CONGRATULATIONS!!! YOU ARE THE 1,000,000th VISITOR")
-}
-
-function reveal(){
-    document.body.innerHTML=`
-    <h1 style="font-family:sans-serif">WAIT...</h1>
-    <h2>Did you really think this was the real OASENSE website?</h2>
-    <h3>😏</h3>
-    <p>The real one loads next.</p>
-    `
-}
-
-// CURSOR TRAIL
-document.addEventListener("mousemove",e=>{
-    let star=document.createElement("div")
-    star.className="star"
-    star.innerText="✨"
-    star.style.left=e.pageX+"px"
-    star.style.top=e.pageY+"px"
-    document.body.appendChild(star)
-    setTimeout(()=>star.remove(),600)
-})
-
-// FAKE MALWARE BUTTON ACTION WITH CRASH EFFECT
-function malwareClick(){
-    alert("⚠️ WARNING! Your system is infected with OASENSE Virus! ⚠️")
-    let flashes = 0;
-    const crashInterval = setInterval(()=>{
-        document.body.style.background = flashes%2===0 ? "red" : "white";
-        document.body.innerHTML = `<h1 style="font-family:monospace; color:black; margin-top:200px;">💀 SYSTEM CRASH 💀</h1>
-        <h2 style="font-family:monospace;">Critical Error: OASENSE Malware Detected</h2>
-        <h3 style="font-family:monospace;">Memory Corrupted...</h3>`;
-        flashes++;
-        if(flashes>6){
-            clearInterval(crashInterval);
-            window.location.href="https://merci-chi.github.io/OAS/";
-        }
-    },500);
-}
-</script>
+<footer>
+<p>© 2026 OASENSE | Designed by Angel Alvarez</p>
+</footer>
 
 </body>
 </html>
