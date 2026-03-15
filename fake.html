@@ -2,25 +2,22 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>OASENSE | Embrace Your Light</title>
+<title>OASENSE | Creative Platform</title>
 
 <style>
 
 body{
 margin:0;
-font-family:Arial;
-background:#000;
-color:#00ffcc;
-transition:0.2s;
+font-family:Arial,Helvetica,sans-serif;
+background:#050505;
+color:#eaffff;
 overflow-x:hidden;
 }
 
-/* ---------- WELCOME GATE ---------- */
+/* WELCOME SCREEN */
 
 #welcomeScreen{
 position:fixed;
-top:0;
-left:0;
 width:100%;
 height:100%;
 background:black;
@@ -29,105 +26,151 @@ flex-direction:column;
 align-items:center;
 justify-content:center;
 z-index:999999;
-text-align:center;
 }
 
 #welcomeScreen h1{
 font-size:60px;
-color:#00ffcc;
-margin-bottom:30px;
-letter-spacing:3px;
+letter-spacing:4px;
+color:#00ffe1;
+text-shadow:0 0 25px #00ffff;
 }
 
 #enterBtn{
+margin-top:30px;
 padding:20px 50px;
 font-size:24px;
 border:none;
-background:#00ff99;
+background:#00ffc8;
 color:black;
-cursor:pointer;
 font-weight:bold;
 border-radius:10px;
+cursor:pointer;
 }
 
-#enterBtn:hover{
-background:#00ffcc;
-}
+/* HERO */
 
-/* ---------- SITE ---------- */
-
-#site{
-display:none;
-}
-
-header{
-background:linear-gradient(90deg,#0015ff,#00ff99);
-padding:50px;
+.hero{
+height:70vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
 text-align:center;
-color:white;
+background:radial-gradient(circle at center,#001aff,#000);
 }
+
+.hero h1{
+font-size:70px;
+margin:0;
+letter-spacing:4px;
+text-shadow:0 0 20px #00ffff;
+}
+
+.hero p{
+font-size:22px;
+opacity:.8;
+}
+
+/* NAV */
 
 nav{
-background:#111;
+background:#0b0b0b;
+padding:18px;
 text-align:center;
-padding:15px;
+border-bottom:1px solid #00ffaa33;
+position:sticky;
+top:0;
+z-index:999;
 }
 
 nav a{
-color:#00ffff;
 margin:0 20px;
+color:#00ffe1;
 text-decoration:none;
 font-weight:bold;
-cursor:pointer;
 }
 
+/* MAIN */
+
 main{
-max-width:1100px;
+max-width:1200px;
 margin:auto;
-padding:30px;
+padding:60px 20px;
 }
 
 section{
-margin-bottom:60px;
+margin-bottom:80px;
 }
 
-.cards{
-display:flex;
-flex-wrap:wrap;
-gap:20px;
+section h2{
+font-size:32px;
+margin-bottom:25px;
+color:#00ffc8;
 }
+
+/* GRID */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+/* CARDS */
 
 .card{
-flex:1;
-min-width:250px;
-background:#0a0a0a;
-border:2px solid #00ff99;
-border-radius:10px;
-padding:20px;
+background:#0b0b0b;
+padding:25px;
+border-radius:12px;
+border:1px solid #00ffaa33;
+transition:.3s;
 }
 
-.review{
-background:#0a0a0a;
-border-left:4px solid #00ff99;
-padding:15px;
-margin:10px 0;
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 0 20px #00ffaa44;
 }
+
+.buy{
+margin-top:15px;
+padding:10px 20px;
+background:#00ffc8;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+/* BLOG */
 
 .blog{
-background:#111;
-padding:15px;
-border:1px solid #00ff99;
+background:#0c0c0c;
+padding:20px;
+border-radius:10px;
+border:1px solid #00ffaa22;
+}
+
+/* REVIEWS */
+
+.review{
+background:#0c0c0c;
+padding:20px;
+border-radius:8px;
+border-left:4px solid #00ffc8;
 margin-bottom:15px;
 }
 
+/* FOOTER */
+
 footer{
-background:#111;
+background:#0a0a0a;
+padding:40px;
 text-align:center;
-padding:30px;
-color:#0ff;
+border-top:1px solid #00ffaa22;
+color:#7ffff1;
 }
 
-/* ---------- POPUPS ---------- */
+/* POPUPS */
 
 .alertPopup{
 position:fixed;
@@ -185,10 +228,9 @@ color:white;
 border:none;
 font-weight:bold;
 cursor:pointer;
-padding:2px 6px;
 }
 
-/* ---------- CHAOS ---------- */
+/* CHAOS */
 
 .shakeScreen{
 animation:screenShake .1s infinite;
@@ -252,29 +294,24 @@ animation:fadeout 1s forwards;
 to{opacity:0}
 }
 
+#site{display:none;}
+
 </style>
 </head>
 
 <body>
 
-<!-- WELCOME GATE -->
-
 <div id="welcomeScreen">
-
 <h1>WELCOME TO TEH OASENSE</h1>
-
 <button id="enterBtn">ENTER</button>
-
 </div>
-
-<!-- MAIN SITE -->
 
 <div id="site">
 
-<header>
+<div class="hero">
 <h1>OASENSE</h1>
-<p>YOU ARE THE LIGHT. EMBRACE IT.</p>
-</header>
+<p>Creative energy. Digital expression. Modern art.</p>
+</div>
 
 <nav>
 <a>HOME</a>
@@ -282,108 +319,78 @@ to{opacity:0}
 <a>BLOG</a>
 <a>REVIEWS</a>
 <a>SERVICES</a>
-<a>CONTACT</a>
 </nav>
 
 <main>
 
 <section>
-<h2>ABOUT OASENSE</h2>
-<p>
-Oasense is a creative platform dedicated to growth, transformation,
-and artistic expression through photography, storytelling,
-and thoughtful merchandise.
-</p>
+<h2>Featured Products</h2>
+<div class="grid">
+
+<div class="card">
+<h3>Spirit T‑Shirt</h3>
+<p>Minimalist design inspired by digital art.</p>
+<button class="buy">Buy Now</button>
+</div>
+
+<div class="card">
+<h3>Healing Journal</h3>
+<p>Write ideas and dreams.</p>
+<button class="buy">Buy Now</button>
+</div>
+
+<div class="card">
+<h3>Digital Art Pack</h3>
+<p>High‑resolution artwork for creators.</p>
+<button class="buy">Buy Now</button>
+</div>
+
+<div class="card">
+<h3>Meditation Audio</h3>
+<p>Focus and clarity sessions.</p>
+<button class="buy">Buy Now</button>
+</div>
+
+</div>
 </section>
 
 <section>
-<h2>SHOP</h2>
+<h2>Latest Blog Posts</h2>
 
-<div class="cards">
-
-<div class="card">
-<h3>SPIRITUAL T‑SHIRT</h3>
-<p>Wear your light proudly.</p>
-</div>
-
-<div class="card">
-<h3>HEALING BOOK</h3>
-<p>Tools for transformation.</p>
-</div>
-
-<div class="card">
-<h3>DIGITAL ART PACK</h3>
-<p>Creative inspiration.</p>
-</div>
-
-<div class="card">
-<h3>MEDITATION AUDIO</h3>
-<p>Deep focus sessions.</p>
-</div>
-
-</div>
-
-</section>
-
-<section>
-<h2>BLOG</h2>
+<div class="grid">
 
 <div class="blog">
-<h3>Finding Creativity in Chaos</h3>
-<p>How artists grow when life becomes unpredictable.</p>
+<h3>Why Creativity Matters</h3>
+<p>Exploring how art shapes perspective.</p>
 </div>
 
 <div class="blog">
-<h3>The Future of Digital Art</h3>
-<p>Why digital creativity is reshaping modern culture.</p>
+<h3>Digital Artists Rising</h3>
+<p>The future of online art communities.</p>
 </div>
 
 <div class="blog">
-<h3>Building a Personal Brand</h3>
-<p>How to grow an authentic creative identity.</p>
+<h3>Building a Creative Brand</h3>
+<p>How creators grow audiences.</p>
+</div>
+
 </div>
 
 </section>
 
 <section>
-
-<h2>REVIEWS</h2>
-
-<div class="review">
-★★★★★ “The art pack changed my entire workflow.” – Alex
-</div>
+<h2>Community Reviews</h2>
 
 <div class="review">
-★★★★★ “Oasense merch is incredible quality.” – Jordan
+★★★★★ “Amazing designs and energy.” — Alex
 </div>
 
 <div class="review">
-★★★★☆ “Really inspiring creative platform.” – Riley
+★★★★★ “Great creative platform.” — Jordan
 </div>
 
-</section>
-
-<section>
-
-<h2>SERVICES</h2>
-
-<div class="cards">
-
-<div class="card">
-<h3>Photography</h3>
-<p>Professional creative photography sessions.</p>
-</div>
-
-<div class="card">
-<h3>Design</h3>
-<p>Custom artwork and visual identity.</p>
-</div>
-
-<div class="card">
-<h3>Consulting</h3>
-<p>Creative growth and brand direction.</p>
-</div>
-
+<div class="review">
+★★★★☆ “Very inspiring brand.” — Riley
 </div>
 
 </section>
@@ -395,8 +402,6 @@ and thoughtful merchandise.
 </footer>
 
 </div>
-
-<!-- POPUPS -->
 
 <div id="p1" class="alertPopup">
 <button class="closeBtn">X</button>
@@ -422,33 +427,22 @@ and thoughtful merchandise.
 
 <script>
 
-/* ENTER BUTTON */
-
 document.getElementById("enterBtn").onclick=()=>{
-
 document.getElementById("welcomeScreen").style.display="none"
 document.getElementById("site").style.display="block"
-
 startPopupSequence()
-
 }
-
-/* POPUP ENGINE */
 
 let popupDelay=2000
 
 function spawnPopup(){
 
 let popups=["p1","p2","p3"]
-
 let id=popups[Math.floor(Math.random()*popups.length)]
-
 let p=document.getElementById(id)
-
 let clone=p.cloneNode(true)
 
 clone.style.display="block"
-
 clone.style.left=Math.random()*(window.innerWidth-300)+"px"
 clone.style.top=Math.random()*(window.innerHeight-200)+"px"
 
@@ -469,22 +463,16 @@ setTimeout(spawnPopup,popupDelay)
 
 }
 
-/* TIMED START */
-
 function startPopupSequence(){
 
 setTimeout(()=>{
-
-spawnPopup() // first popup
-
-setTimeout(()=>{
-
-spawnPopup() // second popup
+spawnPopup()
 
 setTimeout(()=>{
+spawnPopup()
 
-spawnPopup() // third popup
-
+setTimeout(()=>{
+spawnPopup()
 },5000)
 
 },10000)
@@ -495,12 +483,9 @@ setTimeout(showBigPopup,25000)
 
 }
 
-/* BIG POPUP */
-
 function showBigPopup(){
 
 let big=document.getElementById("big")
-
 big.style.display="block"
 
 big.querySelector(".closeBtn").onclick=(e)=>{
@@ -525,8 +510,6 @@ document.getElementById("count").innerText=num
 },30)
 
 }
-
-/* CORRUPTION */
 
 function corruptSystem(){
 
@@ -557,13 +540,11 @@ let lines=[
 ]
 
 let t=document.getElementById("term")
-
 let i=0
 
 let interval=setInterval(()=>{
 
 t.innerHTML+=lines[i]+"<br>"
-
 i++
 
 if(i>=lines.length){
