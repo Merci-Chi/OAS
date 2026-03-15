@@ -1,1 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OASENSE — My Page</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --hot:#FFCC00;--mag:#FF8800;--deep:#CC5500;
+  --hot2:#FFDD44;--smoke:rgba(255,180,0,0.15);
+  --void:#000005;--txt:#FFD6F5;--mute:#AA66CC;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;overflow-y:scroll;}
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:rgba(255,0,200,0.04);}
+::-webkit-scrollbar-thumb{background:var(--hot);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--mag);}
+#bgCanvas{position:fixed;inset:0;z-index:0;opacity:.7;}
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:8999;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,0,200,0.015) 2px,rgba(255,0,200,0.015) 4px);animation:scanlines 8s linear infinite;}
+@keyframes scanlines{0%{background-position:0 0;}100%{background-position:0 100px;}}
 
+/* NAV (matching mainsite) */
+nav{position:fixed;top:0;left:0;right:0;z-index:5000;display:flex;justify-content:space-between;align-items:center;padding:0 32px;height:60px;background:rgba(0,0,5,0.85);border-bottom:1px solid rgba(255,0,200,0.3);backdrop-filter:blur(10px);} 
+.logo{font-family:'Black Ops One',sans-serif;font-size:26px;letter-spacing:5px;color:var(--hot);text-decoration:none;text-shadow:0 0 8px rgba(255,0,200,0.4);} 
+.nav-links{display:flex;gap:20px;list-style:none;}
+.nav-links a{color:var(--mute);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;transition:all .2s;}
+.nav-links a:hover{color:var(--hot);} 
+.nav-btns{display:flex;gap:8px;align-items:center;}
+.acct-wrap{position:relative;display:none;align-items:center;}
+.acct-btn{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,204,0,0.6);background:rgba(4,0,12,0.6);overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(255,204,0,0.2);} 
+.acct-btn img{width:100%;height:100%;object-fit:cover;display:block;}
+.acct-initials{font-family:'Black Ops One',sans-serif;font-size:14px;color:var(--hot);} 
+.acct-menu{position:absolute;right:0;top:48px;min-width:220px;background:rgba(4,0,12,0.95);border:1px solid rgba(255,204,0,0.4);box-shadow:0 0 30px rgba(255,0,200,0.2);display:none;flex-direction:column;z-index:5200;} 
+.acct-menu.open{display:flex;animation:nhPop .3s cubic-bezier(.34,1.56,.64,1);} 
+.acct-item{padding:14px 16px;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--txt);text-transform:uppercase;border-bottom:1px solid rgba(255,0,200,0.1);cursor:pointer;transition:all .2s;background:transparent;} 
+.acct-item:last-child{border-bottom:none;} 
+.acct-item:hover{color:var(--hot);padding-left:20px;} 
+.acct-item.logout{color:#ff6677;} 
+.nbl{padding:8px 22px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;} 
+.nbl:hover{background:var(--hot);color:#000;box-shadow:0 0 20px var(--hot);} 
+.nbr{padding:8px 22px;background:var(--hot);border:1px solid var(--hot);color:#000;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;font-weight:700;transition:all .2s;} 
+.nbr:hover{background:transparent;color:var(--hot);} 
+
+.wrap{max-width:1100px;margin:0 auto;position:relative;z-index:10;}
+section{padding:100px 40px;}
+.sec-tag{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:5px;color:var(--hot);text-transform:uppercase;margin-bottom:14px;}
+.sec-title{font-family:'Black Ops One',sans-serif;font-size:clamp(52px,8vw,110px);text-transform:uppercase;line-height:.9;color:#fff;margin-bottom:36px;}
+.vhs-line{height:1px;background:linear-gradient(to right,transparent,rgba(255,0,200,0.45),rgba(204,0,255,0.35),transparent);margin-bottom:32px;}
+
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.card{background:rgba(4,0,12,0.95);border:1px solid rgba(255,0,200,0.2);box-shadow:0 0 40px rgba(255,0,200,0.08);padding:26px;}
+.card-title{font-family:'Black Ops One',sans-serif;font-size:20px;letter-spacing:2px;color:#fff;text-transform:uppercase;margin-bottom:14px;}
+
+.profile{display:grid;grid-template-columns:140px 1fr;gap:20px;align-items:center;}
+.avatar{width:140px;height:180px;border:1px solid rgba(255,0,200,0.25);background:linear-gradient(135deg,rgba(255,0,200,0.08),rgba(123,0,255,0.08));position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.avatar img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.avatar .av-initials{font-family:'Black Ops One',sans-serif;font-size:32px;color:var(--hot);} 
+.av-edit{position:absolute;bottom:0;left:0;right:0;padding:10px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--hot);background:rgba(0,0,8,.78);} 
+
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.fl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;text-shadow:0 0 6px rgba(255,0,200,0.5);} 
+.fi,.fta,.fse{background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);color:var(--txt);padding:12px 14px;font-family:'Barlow Condensed',sans-serif;font-size:16px;outline:none;transition:border-color .2s;width:100%;}
+.fi:focus,.fta:focus,.fse:focus{border-color:var(--hot);box-shadow:0 0 10px rgba(255,0,200,0.2);} 
+.fi[disabled]{opacity:.6;cursor:not-allowed;} 
+.fta{height:96px;resize:vertical;}
+
+.btn{padding:12px 22px;background:transparent;border:1px solid var(--hot);color:var(--hot);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;} 
+.btn:hover{background:var(--hot);color:#000;box-shadow:0 0 16px var(--hot);} 
+
+.rewards-top{text-align:center;padding:28px 22px;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.2);margin-bottom:18px;position:relative;overflow:hidden;} 
+.rewards-top::before{content:'SOL';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Black Ops One',sans-serif;font-size:140px;color:rgba(255,0,200,0.03);pointer-events:none;white-space:nowrap;} 
+.rnum{font-family:'Black Ops One',sans-serif;font-size:clamp(50px,9vw,100px);color:var(--hot);text-shadow:0 0 30px var(--hot),0 0 60px rgba(255,0,200,0.4);} 
+.rlbl{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:5px;color:var(--mute);text-transform:uppercase;margin-top:8px;} 
+
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:3px;} 
+.ri{padding:22px 16px;background:rgba(255,0,200,0.04);border:1px solid rgba(255,0,200,0.15);text-align:center;transition:all .2s;} 
+.ri:hover{border-color:var(--hot);} 
+.ricon{font-size:28px;margin-bottom:10px;} 
+.rp{font-family:'Black Ops One',sans-serif;font-size:24px;color:var(--hot);} 
+.rw{font-family:'Share Tech Mono',monospace;font-size:12px;color:rgba(255,255,255,0.65);margin-top:6px;line-height:1.6;letter-spacing:1px;} 
+
+.list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow:auto;padding-right:4px;} 
+.list-item{display:flex;gap:12px;align-items:center;border:1px solid rgba(255,0,200,0.2);background:rgba(255,0,200,0.04);padding:10px;} 
+.list-thumb{width:52px;height:52px;border:1px solid rgba(255,0,200,0.25);background:rgba(10,0,20,0.7);flex-shrink:0;display:flex;align-items:center;justify-content:center;overflow:hidden;} 
+.list-thumb img{width:100%;height:100%;object-fit:cover;} 
+.list-info{flex:1;} 
+.list-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:1px;color:#fff;text-transform:uppercase;} 
+.list-sub{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--mute);} 
+.list-right{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--hot);letter-spacing:2px;white-space:nowrap;} 
+
+.notice{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--mute);letter-spacing:2px;line-height:1.8;} 
+
+.ov{position:fixed;inset:0;background:rgba(0,0,5,.9);z-index:8000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(10px);padding:20px;} 
+.ov.open{display:flex;} 
+.mo{background:#000;border:1px solid var(--hot);width:100%;max-width:390px;padding:38px;position:relative;box-shadow:0 0 40px rgba(255,0,200,.3);animation:mi .3s ease;} 
+@keyframes mi{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}} 
+.mx{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:19px;} 
+.mx:hover{color:var(--hot);} 
+.mt2{font-family:'Black Ops One',sans-serif;font-size:28px;color:#fff;text-transform:uppercase;margin-bottom:5px;letter-spacing:2px;} 
+.ms2{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);margin-bottom:22px;letter-spacing:1px;line-height:1.7;} 
+.soa{display:flex;flex-direction:column;gap:7px;margin-bottom:18px;} 
+.sob{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid rgba(255,0,200,.2);background:rgba(255,0,200,.03);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;transition:all .2s;letter-spacing:1px;} 
+.sob:hover{border-color:var(--hot);} 
+.ord{display:flex;align-items:center;gap:10px;margin-bottom:16px;} 
+.ord::before,.ord::after{content:'';flex:1;height:1px;background:rgba(255,0,200,.2);} 
+.ord span{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--mute);letter-spacing:3px;text-transform:uppercase;} 
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--hot);color:#000;padding:12px 26px;font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;letter-spacing:3px;z-index:9000;display:none;white-space:nowrap;box-shadow:0 0 30px var(--hot);} 
+
+@media(max-width:1000px){
+  .grid{grid-template-columns:1fr;}
+  .grid-3{grid-template-columns:1fr;}
+  .profile{grid-template-columns:1fr;}
+  nav{padding:0 16px;}
+}
+@media(max-width:600px){
+  section{padding:80px 20px;}
+  .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+
+<nav>
+  <a href="https://merci-chi.github.io/OAS" class="logo">OASENSE</a>
+  <ul class="nav-links">
+    <li><a href="https://merci-chi.github.io/OAS/shop" target="_blank">Shop</a></li>
+    <li><a href="https://merci-chi.github.io/OAS/blog" target="_blank">Blog</a></li>
+    <li><a href="https://merci-chi.github.io/OAS/portfolio" target="_blank">Portfolio</a></li>
+    <li><a href="https://merci-chi.github.io/OAS" target="_blank">Home</a></li>
+  </ul>
+  <div class="nav-btns">
+    <button class="nbl" onclick="oA('login')">Log In</button>
+    <button class="nbr" onclick="oA('signup')">Sign Up</button>
+    <div class="acct-wrap" id="acctWrap">
+      <button class="acct-btn" id="acctBtn" onclick="toggleAcctMenu()"><span class="acct-initials" id="acctInitials">ME</span></button>
+      <div class="acct-menu" id="acctMenu">
+        <button class="acct-item" onclick="window.location.href='https://merci-chi.github.io/OAS/mypage'">My Page</button>
+        <button class="acct-item" onclick="window.open('https://merci-chi.github.io/OAS/shop','_blank')">Shop</button>
+        <button class="acct-item logout" onclick="doLogout()">Log Out</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section id="profile" style="padding-top:110px;">
+  <div class="wrap">
+    <p class="sec-tag">// My Space</p>
+    <h1 class="sec-title">My <span style="color:var(--hot);">Page</span></h1>
+    <div class="vhs-line"></div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Profile</div>
+        <div class="profile">
+          <div class="avatar" id="avatarBox">
+            <div class="av-initials" id="avatarInitials">ME</div>
+            <div class="av-edit">EDIT PHOTO</div>
+          </div>
+          <div>
+            <div class="fg">
+              <label class="fl">Full Name (locked)</label>
+              <input class="fi" id="fullName" disabled/>
+            </div>
+            <div class="fg">
+              <label class="fl">Birthday (locked)</label>
+              <input class="fi" id="birthday" disabled placeholder="MM/DD/YYYY"/>
+            </div>
+            <div class="fg">
+              <label class="fl">Phone Number</label>
+              <input class="fi" id="phone" placeholder="+1 (555) 000-0000"/>
+            </div>
+            <button class="btn" id="saveBtn">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">My Rewards</div>
+        <div class="rewards-top">
+          <div class="rnum" id="solPoints">0</div>
+          <div class="rlbl">Your Sol Points</div>
+          <p class="notice" id="rewardsNote" style="margin-top:10px;">Log in to see your balance and redeem rewards</p>
+          <button class="btn" id="rewardsLoginBtn" style="margin-top:16px;">Log In to Check Points</button>
+        </div>
+        <div class="rg">
+          <div class="ri"><div class="ricon">🛍️</div><div class="rp">10 pts</div><div class="rw">Per $1 spent in the shop</div></div>
+          <div class="ri"><div class="ricon">💬</div><div class="rp">50 pts</div><div class="rw">Leave a product review</div></div>
+          <div class="ri"><div class="ricon">📧</div><div class="rp">100 pts</div><div class="rw">Subscribe to newsletter</div></div>
+          <div class="ri"><div class="ricon">📷</div><div class="rp">200 pts</div><div class="rw">Share with #Oasense</div></div>
+          <div class="ri"><div class="ricon">❤️</div><div class="rp">5 pts</div><div class="rw">Like a blog post</div></div>
+          <div class="ri"><div class="ricon">🔗</div><div class="rp">150 pts</div><div class="rw">Refer a friend</div></div>
+          <div class="ri"><div class="ricon">🎂</div><div class="rp">500 pts</div><div class="rw">Birthday bonus</div></div>
+          <div class="ri"><div class="ricon">💸</div><div class="rp">250 pts</div><div class="rw">Make a donation</div></div>
+        </div>
+        <div style="margin-top:16px;" class="notice">Redeem: 500 pts = $5 off · 1,000 pts = $12 off · 2,500 pts = $35 off + exclusive digital content · 5,000 pts = free product</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="activity">
+  <div class="wrap">
+    <p class="sec-tag">// My Activity</p>
+    <h2 class="sec-title">Orders · Cart · <span style="color:var(--hot);">Wishlist</span></h2>
+    <div class="vhs-line"></div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">Order History</div>
+        <div class="list" id="ordersList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">My Cart</div>
+        <div class="list" id="cartList"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">My Wishlist</div>
+        <div class="list" id="wishlistList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="review">
+  <div class="wrap">
+    <p class="sec-tag">// Your Voice</p>
+    <h2 class="sec-title">Leave a <span style="color:var(--hot);">Review</span></h2>
+    <div class="vhs-line"></div>
+
+    <div class="card">
+      <div class="fg">
+        <label class="fl">Rating</label>
+        <select class="fse" id="reviewRating">
+          <option value="5">5 — Excellent</option>
+          <option value="4">4 — Great</option>
+          <option value="3">3 — Good</option>
+          <option value="2">2 — Okay</option>
+          <option value="1">1 — Needs work</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Your Review</label>
+        <textarea class="fta" id="reviewText" placeholder="Share your experience..."></textarea>
+      </div>
+      <button class="btn" id="reviewBtn">Submit Review</button>
+      <div class="notice" style="margin-top:12px;">Reviews are tied to your account and may be approved before appearing publicly.</div>
+      <div class="notice" style="margin-top:16px;">Your Reviews</div>
+      <div class="list" id="reviewList" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</section>
+
+<div id="toast"></div>
+
+<!-- AUTH MODAL -->
+<div class="ov" id="ov" onclick="cAOut(event)">
+  <div class="mo">
+    <button class="mx" onclick="cA()">×</button>
+    <div id="lv">
+      <div class="mt2">Welcome Back</div>
+      <div class="ms2">Log in to access your points, orders, and more.</div>
+      <div class="soa">
+        <button class="sob" onclick="soc('google')">🔵 Continue with Google</button>
+        <button class="sob" onclick="soc('apple')">⚫ Continue with Apple</button>
+      </div>
+      <div class="ord"><span>or</span></div>
+      <div class="fm">
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="loginEmail" placeholder="your@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" id="loginPass" placeholder="••••••••"/></div>
+        <button class="btn" onclick="dL()">Log In</button>
+      </div>
+      <div class="ms2" style="margin-top:16px;">Don't have an account? <a style="color:var(--hot);cursor:pointer;" onclick="swA('signup')">Sign Up</a></div>
+    </div>
+    <div id="sv" style="display:none;">
+      <div class="mt2">Join Oasense</div>
+      <div class="ms2">Create your account to earn Sol Points.</div>
+      <div class="soa">
+        <button class="sob" onclick="soc('google')">🔵 Continue with Google</button>
+        <button class="sob" onclick="soc('apple')">⚫ Continue with Apple</button>
+      </div>
+      <div class="ord"><span>or</span></div>
+      <div class="fm">
+        <div class="fg"><label class="fl">Full Name</label><input class="fi" id="signupName" placeholder="Your name"/></div>
+        <div class="fg"><label class="fl">Email</label><input type="email" class="fi" id="signupEmail" placeholder="your@email.com"/></div>
+        <div class="fg"><label class="fl">Password</label><input type="password" class="fi" id="signupPass" placeholder="••••••••"/></div>
+        <button class="btn" onclick="dS()">Create Account</button>
+      </div>
+      <div class="ms2" style="margin-top:16px;">Already have an account? <a style="color:var(--hot);cursor:pointer;" onclick="swA('login')">Log In</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Canvas BG
+const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');
+let W,H,t=0;
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+resize();window.addEventListener('resize',resize);
+const smokeParts=[];
+for(let i=0;i<80;i++)smokeParts.push({x:Math.random()*1000,y:Math.random()*1000,vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,r:Math.random()*180+80,a:Math.random()*.08+.01,phase:Math.random()*Math.PI*2,hue:Math.random()*60+300});
+const dotParts=[];
+for(let i=0;i<120;i++)dotParts.push({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.5+.3,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,a:Math.random()*.45+.08,phase:Math.random()*Math.PI*2,hue:Math.random()<.7?310+Math.random()*40:260+Math.random()*30});
+function drawBG(){
+  ctx.clearRect(0,0,W,H);
+  const g=ctx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,W*.8);
+  g.addColorStop(0,'rgba(10,0,20,1)');g.addColorStop(1,'rgba(0,0,5,1)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  t+=.004;
+  smokeParts.forEach(p=>{
+    p.x+=p.vx+Math.sin(t+p.phase)*.3;p.y+=p.vy+Math.cos(t+p.phase)*.2;
+    if(p.x<-p.r)p.x=W+p.r;if(p.x>W+p.r)p.x=-p.r;
+    if(p.y<-p.r)p.y=H+p.r;if(p.y>H+p.r)p.y=-p.r;
+    const g2=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+    g2.addColorStop(0,`hsla(${p.hue},100%,60%,${p.a})`);g2.addColorStop(1,'hsla(0,0%,0%,0)');
+    ctx.fillStyle=g2;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+  });
+  const GRID=60;ctx.save();ctx.strokeStyle='rgba(255,0,200,.045)';ctx.lineWidth=.5;
+  for(let x=0;x<W;x+=GRID){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=GRID){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.fillStyle='rgba(255,0,200,.07)';
+  for(let x=0;x<W;x+=GRID)for(let y=0;y<H;y+=GRID){ctx.beginPath();ctx.arc(x,y,1,0,Math.PI*2);ctx.fill();}
+  ctx.restore();
+  dotParts.forEach(p=>{
+    p.x+=p.vx+Math.sin(t*.6+p.phase)*.15;p.y+=p.vy+Math.cos(t*.6+p.phase)*.12;
+    if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    const pulse=p.a*(.6+.4*Math.sin(t*1.5+p.phase));
+    ctx.save();ctx.globalAlpha=pulse;
+    const dg=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*3);
+    dg.addColorStop(0,`hsla(${p.hue},100%,80%,1)`);dg.addColorStop(1,`hsla(${p.hue},100%,60%,0)`);
+    ctx.fillStyle=dg;ctx.beginPath();ctx.arc(p.x,p.y,p.r*3,0,Math.PI*2);ctx.fill();ctx.restore();
+  });
+  if(Math.random()>.97){ctx.fillStyle=`rgba(255,0,200,${Math.random()*.04})`;ctx.fillRect(0,Math.random()*H,W,Math.random()*3+1);} 
+  requestAnimationFrame(drawBG);
+}
+drawBG();
+
+// Supabase
+const SUPABASE_URL = "https://smlfppydhwyqrudktzzr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_NmZR8KThSmcc-yiOz7kV7Q_Nv0XZK9V";
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const els = {
+  acctWrap: document.getElementById('acctWrap'),
+  acctBtn: document.getElementById('acctBtn'),
+  acctInitials: document.getElementById('acctInitials'),
+  acctMenu: document.getElementById('acctMenu'),
+  fullName: document.getElementById('fullName'),
+  birthday: document.getElementById('birthday'),
+  phone: document.getElementById('phone'),
+  saveBtn: document.getElementById('saveBtn'),
+  rewardsLoginBtn: document.getElementById('rewardsLoginBtn'),
+  rewardsNote: document.getElementById('rewardsNote'),
+  solPoints: document.getElementById('solPoints'),
+  avatarBox: document.getElementById('avatarBox'),
+  ordersList: document.getElementById('ordersList'),
+  cartList: document.getElementById('cartList'),
+  wishlistList: document.getElementById('wishlistList'),
+  reviewList: document.getElementById('reviewList'),
+  reviewText: document.getElementById('reviewText'),
+  reviewRating: document.getElementById('reviewRating'),
+  reviewBtn: document.getElementById('reviewBtn'),
+};
+
+let currentUser = null;
+let wishlistItems = [];
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3000);} 
+
+function toggleAcctMenu(){els.acctMenu.classList.toggle('open');}
+function closeAcctMenu(){els.acctMenu.classList.remove('open');}
+
+function setAvatar(url, name){
+  if (url) {
+    els.avatarBox.innerHTML = `<img src="${url}" alt="Avatar"/><div class="av-edit">EDIT PHOTO</div>`;
+  } else {
+    const initials = (name||'ME').split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase() || 'ME';
+    els.avatarBox.innerHTML = `<div class="av-initials">${initials}</div><div class="av-edit">EDIT PHOTO</div>`;
+  }
+}
+
+async function loadProfile(user){
+  if (!user) return;
+  const meta = user.user_metadata || {};
+  const displayName = meta.full_name || user.email || '';
+  els.fullName.value = displayName;
+
+  const { data } = await db.from('profiles').select('*').eq('id', user.id).single();
+  if (data) {
+    els.birthday.value = data.birthday || '';
+    els.phone.value = data.phone || '';
+    els.solPoints.textContent = Number(data.sol_points || 0).toLocaleString();
+    setAvatar(data.avatar_url || meta.avatar_url || '', displayName);
+  } else {
+    els.solPoints.textContent = '0';
+    setAvatar(meta.avatar_url || '', displayName);
+  }
+}
+
+async function saveProfile(){
+  if (!currentUser) { toast('PLEASE LOG IN'); return; }
+  const payload = {
+    id: currentUser.id,
+    phone: els.phone.value.trim()
+  };
+  const { error } = await db.from('profiles').upsert(payload, { onConflict: 'id' });
+  if (error) { toast('SAVE FAILED'); return; }
+  toast('CHANGES SAVED');
+}
+
+async function loadOrders(){
+  if (!currentUser) { els.ordersList.innerHTML = emptyList('LOG IN TO VIEW'); return; }
+  try{
+    const { data, error } = await db
+      .from('orders')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at',{ascending:false});
+    if (error) throw error;
+    if (!data || !data.length) { els.ordersList.innerHTML = emptyList('NO ORDERS YET'); return; }
+    els.ordersList.innerHTML = data.map(o => {
+      const id = o.order_number || o.id || 'ORDER';
+      const total = o.total || o.amount || o.total_amount || 0;
+      const status = o.status || o.state || 'processing';
+      const date = o.created_at ? new Date(o.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      return `<div class="list-item">
+        <div class="list-info">
+          <div class="list-title">${id}</div>
+          <div class="list-sub">${date} · ${status}</div>
+        </div>
+        <div class="list-right">$${Number(total||0).toFixed(2)}</div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error(e);
+    els.ordersList.innerHTML = emptyList('UNABLE TO LOAD');
+  }
+}
+
+async function loadCart(){
+  if (!currentUser) { els.cartList.innerHTML = emptyList('LOG IN TO VIEW'); return; }
+  try{
+    const { data, error } = await db
+      .from('cart_items')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at',{ascending:false});
+    if (error) throw error;
+    if (!data || !data.length) { els.cartList.innerHTML = emptyList('CART IS EMPTY'); return; }
+    els.cartList.innerHTML = data.map(it => {
+      const name = it.title || it.name || 'Item';
+      const qty = it.qty || it.quantity || 1;
+      const price = Number(it.price || it.unit_price || 0);
+      const img = it.image_url || it.image || it.img || '';
+      const line = price * Number(qty||1);
+      const imgHtml = img ? `<img src="${img}" alt="${name}"/>` : '✨';
+      return `<div class="list-item">
+        <div class="list-thumb">${imgHtml}</div>
+        <div class="list-info">
+          <div class="list-title">${name}</div>
+          <div class="list-sub">Qty ${qty}</div>
+        </div>
+        <div class="list-right">$${line.toFixed(2)}</div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error(e);
+    els.cartList.innerHTML = emptyList('UNABLE TO LOAD');
+  }
+}
+
+async function loadWishlist(){
+  if (!currentUser) { els.wishlistList.innerHTML = emptyList('LOG IN TO VIEW'); return; }
+  try{
+    const { data, error } = await db
+      .from('wishlist_items')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at',{ascending:false});
+    if (error) throw error;
+    wishlistItems = data || [];
+    if (!wishlistItems.length) { els.wishlistList.innerHTML = emptyList('NO ITEMS YET'); return; }
+    els.wishlistList.innerHTML = wishlistItems.map(it => {
+      const name = it.title || it.name || 'Item';
+      const img = it.image_url || it.image || it.img || '';
+      const imgHtml = img ? `<img src="${img}" alt="${name}"/>` : '✨';
+      return `<div class="list-item">
+        <div class="list-thumb">${imgHtml}</div>
+        <div class="list-info">
+          <div class="list-title">${name}</div>
+          <div class="list-sub">Wishlisted</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error(e);
+    els.wishlistList.innerHTML = emptyList('UNABLE TO LOAD');
+  }
+}
+
+async function loadReviews(){
+  if (!currentUser) { els.reviewList.innerHTML = emptyList('LOG IN TO VIEW'); return; }
+  try{
+    const { data, error } = await db
+      .from('testimonials')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('created_at',{ascending:false});
+    if (error) throw error;
+    if (!data || !data.length) { els.reviewList.innerHTML = emptyList('NO REVIEWS YET'); return; }
+    els.reviewList.innerHTML = data.map(r => {
+      const quote = r.quote || r.message || r.testimonial || '';
+      const rating = r.rating || 0;
+      const status = r.status || r.state || 'pending';
+      const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+      return `<div class="list-item">
+        <div class="list-info">
+          <div class="list-title">${rating ? `Rating ${rating}/5` : 'Review'}</div>
+          <div class="list-sub">${date} · ${status}</div>
+          <div class="list-sub" style="margin-top:6px;letter-spacing:1px;">${quote}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error(e);
+    els.reviewList.innerHTML = emptyList('UNABLE TO LOAD');
+  }
+}
+
+function emptyList(msg){
+  return `<div class="notice">${msg}</div>`;
+}
+
+async function submitReview(){
+  if (!currentUser) { toast('PLEASE LOG IN'); return; }
+  const text = els.reviewText.value.trim();
+  if (!text) { toast('WRITE A REVIEW'); return; }
+  const rating = Number(els.reviewRating.value || 5);
+  const name = (currentUser.user_metadata||{}).full_name || currentUser.email || 'Customer';
+  const { error } = await db.from('testimonials').insert({
+    user_id: currentUser.id,
+    name,
+    quote: text,
+    rating,
+    status: 'pending'
+  });
+  if (error) { toast('SUBMIT FAILED'); return; }
+  els.reviewText.value = '';
+  toast('REVIEW SUBMITTED');
+  loadReviews();
+}
+
+// Auth modal
+function oA(t){document.getElementById('ov').classList.add('open');swA(t);} 
+function cA(){document.getElementById('ov').classList.remove('open');} 
+function cAOut(e){if(e.target===document.getElementById('ov'))cA();} 
+function swA(t){document.getElementById('lv').style.display=t==='login'?'block':'none';document.getElementById('sv').style.display=t==='signup'?'block':'none';}
+async function soc(p){
+  try{
+    const { error } = await db.auth.signInWithOAuth({ provider: p, options:{ redirectTo: window.location.href } });
+    if (error) throw error;
+  }catch(e){
+    console.error(e);
+    toast('LOGIN FAILED');
+  }
+}
+async function dL(){
+  const email = (document.getElementById('loginEmail')||{}).value || '';
+  const pass  = (document.getElementById('loginPass')||{}).value || '';
+  if (!email || !pass) { toast('ENTER EMAIL + PASSWORD'); return; }
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  if (error) { toast('LOGIN FAILED'); return; }
+  toast('WELCOME BACK!'); cA();
+}
+async function dS(){
+  const name  = (document.getElementById('signupName')||{}).value || '';
+  const email = (document.getElementById('signupEmail')||{}).value || '';
+  const pass  = (document.getElementById('signupPass')||{}).value || '';
+  if (!email || !pass) { toast('ENTER EMAIL + PASSWORD'); return; }
+  const { error } = await db.auth.signUp({
+    email, password: pass,
+    options: { data: { full_name: name } }
+  });
+  if (error) { toast('SIGNUP FAILED'); return; }
+  toast('ACCOUNT CREATED! CHECK YOUR EMAIL'); cA();
+}
+async function doLogout(){await db.auth.signOut();toast('SIGNED OUT');}
+
+function updateAccountUI(session){
+  const wrap = els.acctWrap;
+  const btns = document.querySelector('.nav-btns');
+  const loginBtn = btns?.querySelector('.nbl');
+  const signupBtn = btns?.querySelector('.nbr');
+  if (!session) {
+    if (wrap) wrap.style.display = 'none';
+    if (loginBtn) loginBtn.style.display = '';
+    if (signupBtn) signupBtn.style.display = '';
+    currentUser = null;
+    els.solPoints.textContent = '0';
+    els.rewardsLoginBtn.textContent = 'Log In to Check Points';
+    els.rewardsLoginBtn.onclick = () => oA('login');
+    els.rewardsNote.textContent = 'Log in to see your balance and redeem rewards';
+    loadOrders(); loadCart(); loadWishlist(); loadReviews();
+    return;
+  }
+  if (wrap) wrap.style.display = 'flex';
+  if (loginBtn) loginBtn.style.display = 'none';
+  if (signupBtn) signupBtn.style.display = 'none';
+  const user = session.user || {};
+  currentUser = user;
+  const img = user.user_metadata?.avatar_url || '';
+  const name = user.user_metadata?.full_name || user.email || 'ME';
+  const initials = name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  if (img) {
+    els.acctBtn.innerHTML = `<img src="${img}" alt="Account"/>`;
+  } else if (els.acctInitials) {
+    els.acctInitials.textContent = initials || 'ME';
+  }
+  els.rewardsLoginBtn.textContent = 'Rewards Ready';
+  els.rewardsLoginBtn.onclick = () => window.scrollTo({top:0,behavior:'smooth'});
+  els.rewardsNote.textContent = 'Balance synced to your account';
+  loadProfile(user);
+  loadOrders();
+  loadCart();
+  loadWishlist();
+  loadReviews();
+}
+
+// Events
+els.saveBtn.addEventListener('click', saveProfile);
+els.reviewBtn.addEventListener('click', submitReview);
+
+// Close menu on outside click
+window.addEventListener('click', (e)=>{
+  if (els.acctWrap && !els.acctWrap.contains(e.target)) closeAcctMenu();
+});
+
+// Init
+(async () => {
+  const { data } = await db.auth.getSession();
+  updateAccountUI(data.session);
+  db.auth.onAuthStateChange((_event, session)=>updateAccountUI(session));
+})();
+</script>
+</body>
+</html>
