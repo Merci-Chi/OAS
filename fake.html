@@ -198,7 +198,35 @@ animation:fadeout 1s forwards;
 @keyframes fadeout{
 to{opacity:0}
 }
+.closeBtn{
+position:absolute;
+top:5px;
+right:8px;
+background:black;
+color:white;
+border:none;
+font-weight:bold;
+cursor:pointer;
+padding:2px 6px;
+}
 
+.bigPopup{
+position:fixed;
+top:10px;
+left:50%;
+transform:translateX(-50%);
+background:yellow;
+color:black;
+padding:25px;
+font-size:22px;
+font-weight:bold;
+border:8px solid red;
+width:420px;
+z-index:9999999;
+display:none;
+text-align:center;
+animation:flash 0.5s infinite,shake .3s infinite;
+}
 </style>
 </head>
 
@@ -289,11 +317,27 @@ and thoughtful merchandise.
 </footer>
 
 
-<!-- POPUPS -->
+<div id="p1" class="alertPopup">
+<button class="closeBtn">X</button>
+⚠️ WARNING! YOUR SYSTEM HAS BEEN HACKED!
+</div>
 
-<div id="p1" class="alertPopup">⚠️ WARNING! YOUR SYSTEM HAS BEEN HACKED!</div>
-<div id="p2" class="alertPopup">⚠️ CRITICAL VIRUS DETECTED!</div>
-<div id="p3" class="alertPopup">⚠️ SECURITY BREACH DETECTED!</div>
+<div id="p2" class="alertPopup">
+<button class="closeBtn">X</button>
+⚠️ CRITICAL VIRUS DETECTED!
+</div>
+
+<div id="p3" class="alertPopup">
+<button class="closeBtn">X</button>
+⚠️ SECURITY BREACH DETECTED!
+</div>
+
+<div id="big" class="bigPopup">
+<button class="closeBtn">X</button>
+⚠️ FILES ENCRYPTING
+<br>
+<span id="count">0</span> / 100000
+</div>
 
 <div id="big" class="bigPopup">
 ⚠️ FILES ENCRYPTING <span id="count">0</span>/100000
@@ -316,10 +360,16 @@ let p=document.getElementById(id)
 let clone=p.cloneNode(true)
 
 clone.style.display="block"
+
 clone.style.left=Math.random()*(window.innerWidth-300)+"px"
 clone.style.top=Math.random()*(window.innerHeight-200)+"px"
 
 document.body.appendChild(clone)
+
+clone.querySelector(".closeBtn").onclick=(e)=>{
+e.stopPropagation()
+clone.remove()
+}
 
 clone.onclick=corruptSystem
 
@@ -332,10 +382,6 @@ setTimeout(spamPopups,popupDelay)
 }
 
 setTimeout(spamPopups,12000)
-
-document.querySelectorAll(".alertPopup,.bigPopup").forEach(p=>{
-p.onclick=corruptSystem
-})
 
 function corruptSystem(){
 
@@ -442,6 +488,31 @@ window.location.href="https://merci-chi.github.io/OAS/"
 },50)
 
 }
+  function showBigPopup(){
+
+let big=document.getElementById("big")
+
+big.style.display="block"
+
+let num=0
+let max=100000
+
+let interval=setInterval(()=>{
+
+num += Math.floor(Math.random()*4000)+2000
+
+if(num>=max){
+num=max
+clearInterval(interval)
+}
+
+document.getElementById("count").innerText=num
+
+},30)
+
+}
+
+setTimeout(showBigPopup,15000)
 
 </script>
 
