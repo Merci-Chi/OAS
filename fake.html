@@ -108,13 +108,13 @@ font-size:22px;
 font-weight:bold;
 border:8px solid red;
 width:420px;
-z-index:9999;
+z-index:999999; /* ALWAYS ON TOP */
 display:none;
 text-align:center;
 animation:flash 0.4s infinite,shake .3s infinite;
 cursor:pointer;
 }
-
+  
 @keyframes flash{
 0%{background:yellow}
 50%{background:orange}
@@ -315,10 +315,41 @@ p.style.left=Math.random()*(window.innerWidth-300)+"px"
 p.style.top=Math.random()*(window.innerHeight-200)+"px"
 
 }
+/* popup spam */
 
-setTimeout(()=>showPopup("p1"),15000)
-setTimeout(()=>showPopup("p2"),17000)
-setTimeout(()=>showPopup("p3"),20000)
+let popupDelay = 900
+
+function spamPopups(){
+
+let popups=["p1","p2","p3"]
+
+setInterval(()=>{
+
+let id = popups[Math.floor(Math.random()*popups.length)]
+
+let p=document.getElementById(id)
+
+let clone=p.cloneNode(true)
+clone.style.display="block"
+
+clone.style.left=Math.random()*(window.innerWidth-300)+"px"
+clone.style.top=Math.random()*(window.innerHeight-200)+"px"
+
+document.body.appendChild(clone)
+
+clone.onclick=corruptSystem
+
+/* speed up spawn rate */
+
+if(popupDelay>120){
+popupDelay-=60
+}
+
+},popupDelay)
+
+}
+
+setTimeout(spamPopups,12000)
 
 setTimeout(()=>{
 
@@ -333,24 +364,23 @@ encrypt()
 
 },22000)
 
-/* encryption counter */
-
 function encrypt(){
 
 let num=0
+let max=100000
 
 let interval=setInterval(()=>{
 
-num+=Math.floor(Math.random()*3000)
+num += Math.floor(Math.random()*5000)+1500
 
-if(num>=100000){
-num=100000
+if(num>=max){
+num=max
 clearInterval(interval)
 }
 
-document.getElementById("count").innerText=num
+document.getElementById("count").innerText = num + " / " + max
 
-},40)
+},20)
 
 }
 
@@ -370,13 +400,16 @@ document.body.style.background=Math.random()>0.5?"red":"black"
 
 setTimeout(()=>{
 
-clearInterval(flicker)
+let p=document.getElementById("big")
 
-launchTerminal()
+p.style.display="block"
+p.style.left="50%"
+p.style.top="25%"
+p.style.transform="translateX(-50%)"
 
-},1500)
+encrypt()
 
-}
+},15000)
 
 /* terminal */
 
