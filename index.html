@@ -1338,6 +1338,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
 
 <!-- FIREBASE: SITE SETTINGS (ABOUT + DONATION) -->
 <script type="module">
+  try{
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
   import {
@@ -1549,6 +1550,11 @@ function applySiteContent(C){
       }
     }
   });
+  }catch(e){
+    window.fb = null;
+    window._fbError = (e && (e.message || e.toString())) || 'Unknown Firebase init error';
+    console.error('Firebase init failed:', e);
+  }
 
   // Firebase-backed donate()
   window.don = async function don() {
@@ -1636,18 +1642,19 @@ function renderLoadingBlock(label){
   </div>`;
 }
 function markFirebaseMissing(){
+  const err = window._fbError ? ` — ${window._fbError}` : '';
   const promo = document.getElementById('shopPromo');
-  if (promo) promo.innerHTML = renderLoadingBlock('Firebase not connected');
+  if (promo) promo.innerHTML = renderLoadingBlock('Firebase not connected'+err);
   const blog = document.getElementById('blogGrid');
-  if (blog) blog.innerHTML = renderLoadingBlock('Firebase not connected');
+  if (blog) blog.innerHTML = renderLoadingBlock('Firebase not connected'+err);
   const music = document.getElementById('musicList');
   if (music) music.innerHTML = `<div style="grid-column:1/-1;padding:24px 10px;text-align:center;">
-    <div class="sg-loading-txt">Firebase not connected</div>
+    <div class="sg-loading-txt">Firebase not connected${err}</div>
   </div>`;
   const pf = document.getElementById('pf-root');
-  if (pf) pf.innerHTML = renderLoadingBlock('Firebase not connected');
+  if (pf) pf.innerHTML = renderLoadingBlock('Firebase not connected'+err);
   const t = document.getElementById('tstack');
-  if (t) t.innerHTML = renderLoadingBlock('Firebase not connected');
+  if (t) t.innerHTML = renderLoadingBlock('Firebase not connected'+err);
 }
 function loadShop(){
   const root = document.getElementById('shopPromo');
