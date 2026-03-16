@@ -1366,7 +1366,8 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   };
 
   const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+  let analytics = null;
+  try { analytics = getAnalytics(app); } catch (e) { console.warn('Firebase analytics disabled', e); }
   const fdb = getFirestore(app);
   window.fb = { fdb, collection, query, where, orderBy, limit, onSnapshot, getDocs, doc, setDoc };
   window.solConfig = window.solConfig || {api_url:'',api_model:'@cf/meta/llama-3.1-8b-instruct',api_enabled:false,api_key:'',welcome:'',rules:'',fallback_enabled:false,fallback_keywords:''};
