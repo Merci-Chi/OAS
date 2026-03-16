@@ -2085,13 +2085,6 @@ document.getElementById('it-discount').addEventListener('change',function(){docu
 function previewImage(e,previewId,placeholderId){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const prev=document.getElementById(previewId);prev.src=ev.target.result;prev.style.display='block';document.getElementById(placeholderId).style.display='none';if(previewId==='imagePreview')currentImageDataURL=ev.target.result;else if(previewId==='imagePreview2')currentImage2DataURL=ev.target.result;};reader.readAsDataURL(file);}
 
 // ══ API KEY ══
-const DEFAULT_GROQ_KEY = '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';
-(function ensureDefaultKey(){
-  try{
-    const k = localStorage.getItem('oas_ai_key') || '';
-    if(!k){ localStorage.setItem('oas_ai_key', DEFAULT_GROQ_KEY); }
-  }catch(e){}
-})();
 
 function getApiKey(){return localStorage.getItem('oas_ai_key')||'';}
 function saveApiKey(){let key=document.getElementById('apiKeyInput').value.trim();if(key.includes('&')) key = key.split('&')[0];if(!(key.startsWith('sk-ant-')||key.startsWith('gsk_'))){showApiKeyStatus('❌ Must start with gsk_ or sk-ant-','error');return;}localStorage.setItem('oas_ai_key',key);document.getElementById('apiKeyInput').value='';showApiKeyStatus('✓ Key saved','ok');updateApiKeyUI();}
