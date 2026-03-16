@@ -249,8 +249,10 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .live-count-label{display:flex;flex-direction:column;gap:2px;}
 .draft-count-num{font-family:'Black Ops One',sans-serif;font-size:20px;color:rgba(255,204,0,0.4);}
 
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
-.topbar-actions{display:flex;gap:8px;}
+.topbar{display:flex;align-items:flex-start;justify-content:flex-start;gap:12px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--border);}
+.topbar > div{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;}
+.topbar > div .panel-sub{flex-basis:100%;}
+.topbar-actions{display:flex;gap:8px;margin-left:0;}
 .card{background:rgba(255,204,0,0.03);border:1px solid var(--border);padding:22px;margin-bottom:16px;}
 .empty-state{text-align:center;padding:48px 20px;font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;color:rgba(255,204,0,0.25);text-transform:uppercase;border:1px dashed rgba(255,204,0,0.12);}
 
@@ -873,7 +875,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="shop-layout">
     <div class="item-form" id="itemForm">
       <div class="item-form-title" id="itemFormTitle">Add New Item</div>
-      <div class="fg"><label class="fl">Item Title</label><input class="fi" id="it-title" placeholder="Product name"/></div>
+      <div class="fg"><label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Item Title</span><button class="btn-ai" onclick="enhanceItemTitleAI()">✦ Enhance Title</button></label><input class="fi" id="it-title" placeholder="Product name"/></div>
       <div class="fg"><label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Description</span><button class="btn-ai" id="aiDescBtn" onclick="enhanceDescAI()">✦ Enhance with AI</button></label><textarea class="fta" id="it-desc" style="min-height:70px;" placeholder="Describe the item…"></textarea></div>
       <div class="form-sec">Category</div>
       <div class="row row-2">
@@ -1018,7 +1020,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div id="blogForm" class="card" style="margin-bottom:22px;display:none;">
     <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">NEW BLOG POST</div>
     <div class="fg"><label class="fl">Author</label><div class="author-pick"><button class="author-btn sol" id="blogAuthorSol" onclick="selectBlogAuthor('sol')">✨ Sol</button><button class="author-btn kiara" id="blogAuthorKiara" onclick="selectBlogAuthor('kiara')">💕 Kiara</button></div><input type="hidden" id="blog-author" value="sol"/></div>
-    <div class="fg"><label class="fl">Title</label><input class="fi" id="blog-title" placeholder="Post title…"/></div>
+    <div class="fg"><label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Title</span><button class="btn-ai" onclick="enhanceBlogTitleAI()">✦ Enhance Title</button></label><input class="fi" id="blog-title" placeholder="Post title…"/></div>
     <div class="fg"><label class="fl" style="display:flex;align-items:center;justify-content:space-between;"><span>Content</span><button class="btn-ai" id="aiBlogBtn" onclick="enhanceBlogAI()">✦ Write with AI</button></label>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
         <button class="btn btn-ghost btn-sm" onclick="formatBlog('bold')"><b>B</b></button>
