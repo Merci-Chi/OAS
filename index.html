@@ -884,81 +884,9 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     <h2 class="sec-title">Music <span class="hot">Demos</span></h2>
     <div class="vhs-line"></div>
     <p style="font-family:'Share Tech Mono',monospace;font-size:15px;color:var(--mute);margin-bottom:36px;line-height:1.9;letter-spacing:1px;max-width:500px;">Raw sessions from the studio. Angel's sonic world — dark, expansive, honest.</p>
-    <div class="tl">
-      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/awaken.mp3">
-        <div class="tctrls">
-          <button class="tjb" data-act="back">-15</button>
-          <button class="tpb" data-act="play">▶</button>
-          <button class="tjb" data-act="fwd">+15</button>
-        </div>
-        <div>
-          <div class="tn">SOLXSTATE — AWAKEN</div>
-          <div class="tm">Demo</div>
-        </div>
-        <div class="tprog">
-          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
-          <div class="tt">0:00 / 0:00</div>
-        </div>
-      </div>
-      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/inner-light.mp3">
-        <div class="tctrls">
-          <button class="tjb" data-act="back">-15</button>
-          <button class="tpb" data-act="play">▶</button>
-          <button class="tjb" data-act="fwd">+15</button>
-        </div>
-        <div>
-          <div class="tn">SOLXSTATE — INNER LIGHT</div>
-          <div class="tm">Demo</div>
-        </div>
-        <div class="tprog">
-          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
-          <div class="tt">0:00 / 0:00</div>
-        </div>
-      </div>
-      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/rebuild.mp3">
-        <div class="tctrls">
-          <button class="tjb" data-act="back">-15</button>
-          <button class="tpb" data-act="play">▶</button>
-          <button class="tjb" data-act="fwd">+15</button>
-        </div>
-        <div>
-          <div class="tn">SOLXSTATE — REBUILD</div>
-          <div class="tm">Demo</div>
-        </div>
-        <div class="tprog">
-          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
-          <div class="tt">0:00 / 0:00</div>
-        </div>
-      </div>
-      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/why-f34.mp3">
-        <div class="tctrls">
-          <button class="tjb" data-act="back">-15</button>
-          <button class="tpb" data-act="play">▶</button>
-          <button class="tjb" data-act="fwd">+15</button>
-        </div>
-        <div>
-          <div class="tn">SOLXSTATE — WHY (F34)</div>
-          <div class="tm">Demo</div>
-        </div>
-        <div class="tprog">
-          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
-          <div class="tt">0:00 / 0:00</div>
-        </div>
-      </div>
-      <div class="tk" data-src="https://merci-chi.github.io/OAS/DEV/music/warrior-mastered.mp3">
-        <div class="tctrls">
-          <button class="tjb" data-act="back">-15</button>
-          <button class="tpb" data-act="play">▶</button>
-          <button class="tjb" data-act="fwd">+15</button>
-        </div>
-        <div>
-          <div class="tn">SOLXSTATE — WARRIOR (MASTERED)</div>
-          <div class="tm">Demo</div>
-        </div>
-        <div class="tprog">
-          <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
-          <div class="tt">0:00 / 0:00</div>
-        </div>
+    <div class="tl" id="musicList">
+      <div style="grid-column:1/-1;padding:24px 10px;text-align:center;">
+        <div class="sg-spinner"></div><div class="sg-loading-txt">Loading tracks...</div>
       </div>
     </div>
     <div class="m-actions">
@@ -1311,6 +1239,10 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
       <input class="solinp" id="solinp" placeholder="Ask Sol anything..." onkeydown="if(event.key==='Enter')sSol()"/>
       <button class="solsend" onclick="sSol()">↑</button>
     </div>
+    <div style="padding:8px 12px;border-top:1px solid rgba(255,0,200,.18);display:flex;gap:6px;align-items:center;">
+      <input class="solinp" id="solKeyInput" placeholder="Paste gsk_ or sk-ant_ key (private)" style="font-size:11px;"/>
+      <button class="solsend" style="padding:7px 10px;" onclick="saveSolKey()">Save</button>
+    </div>
   </div>
   <button class="solbtn" onclick="tSol()"><span class="solbtn-label">ASK SOL</span></button>
 </div>
@@ -1395,7 +1327,13 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     doc,
     onSnapshot,
     updateDoc,
-    increment
+    increment,
+    collection,
+    query,
+    where,
+    orderBy,
+    limit,
+    getDocs
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -1411,13 +1349,44 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const fdb = getFirestore(app);
+  window.fb = { fdb, collection, query, where, orderBy, limit, onSnapshot, getDocs };
+  window.solConfig = window.solConfig || {api_url:'',api_model:'@cf/meta/llama-3.1-8b-instruct',api_enabled:false,welcome:'',rules:'',fallback_enabled:false,fallback_keywords:''};
 
   const fEsc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
                            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
   const settingsRef = doc(fdb, "site_settings", "global");
   const solConfigRef = doc(fdb, "solConfig", "main");
+  const siteContentRef = doc(fdb, "siteContent", "main");
+  const donationsRef = collection(fdb, "donations");
   window.solConfig = {api_url:'',api_model:'@cf/meta/llama-3.1-8b-instruct',api_enabled:false,welcome:'',rules:''};
+
+  function applySiteContent(C){
+    const about = (C&&C.about)||{};
+    if (about.photo){
+      const av = document.getElementById('aboutPhoto');
+      if (av){
+        const corners = Array.from(av.querySelectorAll('.av-corner')).map(el=>el.outerHTML).join('');
+        av.innerHTML = `<img src="${fEsc(about.photo)}" alt="Oasense Photo"/>` + corners;
+      }
+    }
+    if (about.quote){
+      const el = document.getElementById('aboutPullquote');
+      if (el) el.textContent = about.quote;
+    }
+    if (about.message){
+      const el = document.getElementById('aboutBody');
+      if (el) {
+        el.innerHTML = String(about.message).split('\n\n').map(p=>`<p>${p.replace(/\n/g,'<br/>')}</p>`).join('');
+      }
+    }
+    if (about.title){
+      const hot = document.querySelector('#about .sec-title .hot');
+      if (hot) hot.textContent = about.title;
+    }
+    window._portfolioContent = (C&&C.portfolio)||{};
+    if (window.renderPortfolioFromContent) window.renderPortfolioFromContent();
+  }
 
   function applySiteSettings(S) {
     // ABOUT PHOTO
@@ -1522,6 +1491,35 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     };
   });
 
+  onSnapshot(siteContentRef, (snap) => {
+    if (!snap.exists()) return;
+    applySiteContent(snap.data());
+  });
+
+  onSnapshot(donationsRef, (snap) => {
+    let total = 0;
+    snap.forEach(doc => {
+      const d = doc.data()||{};
+      total += Number(d.amount||0);
+    });
+    const rnEl = document.getElementById('rn');
+    if (rnEl) rnEl.textContent = total.toLocaleString();
+    const goalBar = document.getElementById('donGoalBar');
+    const goalLbl = document.getElementById('donGoalLbl');
+    const raisedLbl = document.getElementById('donGoalRaisedLbl');
+    const fill = document.getElementById('donGoalFill');
+    if (goalLbl && raisedLbl && fill && goalBar){
+      const goalText = goalLbl.textContent.replace(/[^0-9]/g,'');
+      const goal = Number(goalText||0);
+      if (goal>0){
+        goalBar.style.display='block';
+        raisedLbl.textContent = `$${total.toLocaleString()} raised`;
+        const pct = Math.min(100, Math.round((total/goal)*100));
+        setTimeout(()=>{fill.style.width = pct + '%';}, 300);
+      }
+    }
+  });
+
   // Firebase-backed donate()
   window.don = async function don() {
     const cw = document.getElementById('cw');
@@ -1596,52 +1594,50 @@ const hasTag = (val, targets) => {
 };
 
 // ═══════════════════════════════════════════════
-//  SHOP — PROMO 4-PANEL
+//  SHOP — PROMO 4-PANEL (FIREBASE)
 // ═══════════════════════════════════════════════
 const SHOP_URL = 'https://merci-chi.github.io/OAS/shop';
-async function loadShop() {
+let _shopItems = [];
+function loadShop(){
   const root = document.getElementById('shopPromo');
-  try {
-    const { data, error } = await db.from('products').select('*').eq('status','live').order('created_at',{ascending:false}).limit(60);
-    if (error) throw error;
-    const items = (data||[]).map(r => {
-      const promoTargets = ['promo 4','promo4','promo-4'];
-      const promoSources = [
-        r.promo_group, r.promo_tag, r.promo, r.group, r.collection, r.collections,
-        r.tags, r.tag, r.featured_group
-      ];
-      const isPromo = promoSources.some(v => hasTag(v, promoTargets) || String(v||'').toLowerCase().trim() === 'promo 4');
-      return ({
-      id: r.id,
-      title: r.title || r.name || '',
-      desc: r.desc || r.description || '',
-      price: parseFloat(r.price||0),
-      discount: parseInt(r.discount || r.discount_percent || 0) || 0,
-      badge: r.badge || '',
-      img: r.img || r.image_url || r.image || '',
-      img2: r.img2 || r.image_url2 || r.image2 || '',
-      shopUrl: r.shop_url || SHOP_URL,
-      isPromo
-    });});
-
+  try{
+    const items = _shopItems.filter(i => (i.status||'') === 'live');
     const badgeRank = b => b==='%'?0:b==='New!'?1:b==='Hot!'?2:b==='Ltd'?3:4;
     items.sort((a,b) => badgeRank(a.badge) - badgeRank(b.badge));
-
-    const promoOnly = items.filter(i => i.isPromo);
+    const promoOnly = items.filter(i => i.promo === true);
     const promo = promoOnly.length ? promoOnly.slice(0,4) : items.slice(0,4);
     if (promo.length < 4) {
       const fill = items.filter(i => !promo.includes(i)).slice(0, 4 - promo.length);
       promo.push(...fill);
     }
-    if (!promo.length) {
-      root.innerHTML = renderShopEmpty(); return;
-    }
-    root.innerHTML = promo.map(item => renderPromoCard(item)).join('');
+    if (!promo.length) { root.innerHTML = renderShopEmpty(); return; }
+    root.innerHTML = promo.map(item => renderPromoCard({
+      id: item.id,
+      title: item.title || item.name || '',
+      desc: item.desc || item.description || '',
+      price: parseFloat(item.price||0),
+      discount: parseInt(item.discount || 0) || 0,
+      badge: item.badge || '',
+      img: item.img || item.image || item.image_url || '',
+      img2: item.img2 || item.image2 || item.image_url2 || '',
+      shopUrl: item.shop_url || SHOP_URL,
+      isPromo: item.promo === true
+    })).join('');
     initShopFlip();
-  } catch(e) {
+  }catch(e){
     console.error('Shop error:',e);
-    document.getElementById('shopPromo').innerHTML = renderShopEmpty();
+    root.innerHTML = renderShopEmpty();
   }
+}
+function subscribeShop(){
+  const fb = window.fb; if(!fb) return;
+  const q = fb.query(fb.collection(fb.fdb,'shopItems'), fb.orderBy('createdAt','desc'));
+  fb.onSnapshot(q, (snap)=>{
+    const items=[];
+    snap.forEach(doc=>items.push(doc.data()));
+    _shopItems = items;
+    loadShop();
+  });
 }
 function renderShopEmpty() {
   const PLACEHOLDERS = [
@@ -1744,52 +1740,28 @@ function initShopFlip() {
     card.addEventListener('click', () => window.open(card.dataset.url,'_blank'));
   });
 }
-db.channel('shop-rt').on('postgres_changes',{event:'*',schema:'public',table:'products'},loadShop).subscribe();
+
 
 // ═══════════════════════════════════════════════
-//  BLOG — OASENSE BLOG 3-CARD GRID (DEV FEED)
+//  BLOG — OASENSE BLOG 3-CARD GRID (FIREBASE)
 // ═══════════════════════════════════════════════
 const BLOG_BASE = 'https://merci-chi.github.io/OAS/blog';
-async function fetchDevBlog() {
-  const sources = ['blog.json','blogs.json','blog_posts.json','posts.json'];
-  for (const s of sources) {
-    try {
-      const res = await fetch(DEV_BASE + s, { cache: 'no-store' });
-      if (!res.ok) continue;
-      const data = await res.json();
-      const arr = Array.isArray(data) ? data : (data.posts || data.items || data.data || []);
-      if (Array.isArray(arr) && arr.length) return arr;
-    } catch (e) {}
-  }
-  return [];
-}
-async function loadBlog() {
+let _blogPosts = [];
+function loadBlog(){
   const el = document.getElementById('blogGrid');
-  try {
-    const data = await fetchDevBlog();
-    if (!data || !data.length) {
-      el.innerHTML = renderBlogEmpty(); return;
-    }
-    const rows = data
-      .slice()
-      .sort((a,b)=> {
-        const da = new Date(a.date || a.created_at || a.created || a.published_at || 0).getTime();
-        const db = new Date(b.date || b.created_at || b.created || b.published_at || 0).getTime();
-        return db - da;
-      })
-      .slice(0,3);
+  try{
+    const live = _blogPosts.filter(p => p.live === true).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,3);
+    if (!live.length){ el.innerHTML = renderBlogEmpty(); return; }
     const BG = ['linear-gradient(135deg,#1a0020,#2d0040)','linear-gradient(135deg,#18000a,#380018)','linear-gradient(135deg,#000e28,#001840)'];
-    el.innerHTML = rows.map((p,i) => {
-      const dateRaw = p.date || p.created_at || p.created || p.published_at;
-      const date = dateRaw ? new Date(dateRaw).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
+    el.innerHTML = live.map((p,i)=>{
+      const date = p.createdAt ? new Date(p.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '';
       const excerpt = String(p.excerpt || p.summary || p.content || '').substring(0,160);
-      const photo = p.photo_url || p.image_url || p.image || p.cover || p.thumbnail || '';
-      const emoji = p.emoji || '✍️';
+      const photo = p.cover || p.image || p.image_url || '';
+      const emoji = '✍️';
       const postUrl = BLOG_BASE;
       const photoHtml = photo
-        ? `<img src="${_esc(mediaUrl(photo))}" alt="${_esc(p.title||p.name||'')}"/>`
+        ? `<img src="${_esc(photo)}" alt="${_esc(p.title||'')}"/>`
         : `<span style="font-size:48px;z-index:1;">${emoji}</span>`;
-
       return `<a class="bc" href="${_esc(postUrl)}" target="_blank" style="text-decoration:none;color:inherit;">
         <div class="bc-photo" style="background:${BG[i%BG.length]};">
           ${photoHtml}
@@ -1798,7 +1770,7 @@ async function loadBlog() {
         </div>
         <div class="bc-body">
           <div class="bc-date">${_esc(date)}</div>
-          <div class="bc-title">${_esc(p.title||p.name||'Untitled')}</div>
+          <div class="bc-title">${_esc(p.title||'Untitled')}</div>
           <div class="bc-excerpt">${_esc(excerpt)}${excerpt.length>=160?'…':''}</div>
           <div class="b-actions">
             <span class="actbtn" data-act="like" data-target="blog"><span>Like</span><span class="count">0</span></span>
@@ -1808,10 +1780,20 @@ async function loadBlog() {
         </div>
       </a>`;
     }).join('');
-  } catch(e) {
+  }catch(e){
     console.error('Blog error:',e);
     el.innerHTML = renderBlogEmpty();
   }
+}
+function subscribeBlog(){
+  const fb = window.fb; if(!fb) return;
+  const q = fb.query(fb.collection(fb.fdb,'blogPosts'), fb.orderBy('createdAt','desc'));
+  fb.onSnapshot(q, (snap)=>{
+    const items=[];
+    snap.forEach(doc=>items.push(doc.data()));
+    _blogPosts = items;
+    loadBlog();
+  });
 }
 function renderBlogEmpty() {
   const PLACEHOLDERS = [
@@ -1850,19 +1832,19 @@ const PF_PANELS = [
   { section:'lifestyle', name:'Lifestyle',  cat:'Editorial', row:'bottom' },
 ];
 
-async function loadPortfolio() {
+function renderPortfolioFromContent(){
   const root = document.getElementById('pf-root');
-  try {
-    const { data, error } = await db.from('portfolio_items').select('*').order('sort_order',{ascending:true});
-    if (error) throw error;
-    const items = data || [];
-    root.innerHTML = buildUnifiedGrid(items);
-    initPanelHovers();
-  } catch(e) {
-    console.error('Portfolio error:', e);
-    root.innerHTML = buildUnifiedGrid([]);
-    initPanelHovers();
-  }
+  const content = window._portfolioContent || {};
+  const items = [];
+  const mapSec = {cinematic:'portraits',digital:'digital',video:'video',branding:'branding',lifestyle:'lifestyle'};
+  Object.keys(mapSec).forEach(k=>{
+    const arr = content[k] || [];
+    arr.forEach(it=>{
+      items.push({section: mapSec[k], media_url: it.url, media_type: it.type});
+    });
+  });
+  root.innerHTML = buildUnifiedGrid(items);
+  initPanelHovers();
 }
 
 function buildUnifiedGrid(items) {
@@ -1881,15 +1863,16 @@ function buildPanel(panelMeta, items) {
   const { section, name, cat } = panelMeta;
 
   const allPhotos = items
-    .filter(i => i.media_type !== 'video' && !/\.(mp4|webm|mov)/i.test(i.media_url || ''))
+    .filter(i => (i.media_type || i.type) !== 'video' && !/\.(mp4|webm|mov)/i.test(i.media_url || i.url || ''))
     .flatMap(i => {
-      const urls = [mediaUrl(i.media_url)];
+      const raw = i.media_url || i.url || '';
+      const urls = [raw];
       try { if (i.alt_images) urls.push(...JSON.parse(i.alt_images).map(mediaUrl)); } catch(e){}
-      return urls.filter(Boolean);
+      return urls.filter(Boolean).map(u=>u.startsWith('http')?u:mediaUrl(u));
     });
 
   const allVideos = items.filter(i =>
-    i.media_type === 'video' || /\.(mp4|webm|mov)/i.test(i.media_url || '')
+    (i.media_type || i.type) === 'video' || /\.(mp4|webm|mov)/i.test(i.media_url || i.url || '')
   );
 
   let mediaHtml = '';
@@ -2190,10 +2173,62 @@ document.addEventListener('click', (e)=>{
   }
 });
 
+function renderMusicList(items){
+  const list=document.getElementById('musicList');
+  if(!list) return;
+  if(!items.length){
+    list.innerHTML = `<div style="grid-column:1/-1;padding:24px 10px;text-align:center;"><div class="sg-loading-txt">No tracks yet</div></div>`;
+    return;
+  }
+  list.innerHTML = items.map(m=>`
+    <div class="tk" data-src="${_esc(m.audioUrl||'')}">
+      <div class="tctrls">
+        <button class="tjb" data-act="back">-15</button>
+        <button class="tpb" data-act="play">▶</button>
+        <button class="tjb" data-act="fwd">+15</button>
+      </div>
+      <div>
+        <div class="tn">${_esc(m.title||'Track')}</div>
+        <div class="tm">${_esc(m.creator||'Demo')}${m.timeframe?` · ${_esc(m.timeframe)}`:''}</div>
+      </div>
+      <div class="tprog">
+        <input class="tseek" type="range" min="0" max="100" value="0" data-act="seek"/>
+        <div class="tt">0:00 / 0:00</div>
+      </div>
+    </div>`).join('');
+  initMusicPlayer();
+}
+
+function subscribeMusic(){
+  const fb = window.fb; if(!fb) return;
+  const q = fb.query(fb.collection(fb.fdb,'musicDemos'), fb.orderBy('createdAt','desc'));
+  fb.onSnapshot(q, (snap)=>{
+    const items=[];
+    snap.forEach(doc=>items.push(doc.data()));
+    renderMusicList(items);
+  });
+}
+
 // Music (real player)
 const player = document.getElementById('audioPlayer');
-const tracks = Array.from(document.querySelectorAll('.tk'));
+let tracks = [];
 let currentTrack = -1;
+function initMusicPlayer(){
+  tracks = Array.from(document.querySelectorAll('.tk'));
+  currentTrack = -1;
+  tracks.forEach((t,i)=>{
+    const playBtn = t.querySelector('[data-act="play"]');
+    const backBtn = t.querySelector('[data-act="back"]');
+    const fwdBtn = t.querySelector('[data-act="fwd"]');
+    const seek = t.querySelector('[data-act="seek"]');
+    if (playBtn) playBtn.addEventListener('click', (e)=>{e.stopPropagation(); if (currentTrack === i && !player.paused) pauseTrack(); else playTrack(i);});
+    if (backBtn) backBtn.addEventListener('click', (e)=>{e.stopPropagation(); if (currentTrack !== i) loadTrack(i); player.currentTime = Math.max(0, player.currentTime - 15);});
+    if (fwdBtn) fwdBtn.addEventListener('click', (e)=>{e.stopPropagation(); if (currentTrack !== i) loadTrack(i); const dur = player.duration || 0; player.currentTime = Math.min(dur, player.currentTime + 15);});
+    if (seek) seek.addEventListener('input', (e)=>{e.stopPropagation(); if (currentTrack !== i) loadTrack(i); const dur = player.duration || 0; player.currentTime = (e.target.value/100) * dur;});
+    t.addEventListener('click', ()=>playTrack(i));
+  });
+}
+
 function fmtTime(s){
   if (!isFinite(s) || s < 0) return '0:00';
   const m = Math.floor(s/60);
@@ -2225,36 +2260,7 @@ function pauseTrack(){
   player.pause();
   setTrackUI(currentTrack,false);
 }
-tracks.forEach((t,i)=>{
-  const playBtn = t.querySelector('[data-act="play"]');
-  const backBtn = t.querySelector('[data-act="back"]');
-  const fwdBtn = t.querySelector('[data-act="fwd"]');
-  const seek = t.querySelector('[data-act="seek"]');
-  const timeEl = t.querySelector('.tt');
-  if (playBtn) playBtn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    if (currentTrack === i && !player.paused) pauseTrack();
-    else playTrack(i);
-  });
-  if (backBtn) backBtn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    if (currentTrack !== i) loadTrack(i);
-    player.currentTime = Math.max(0, player.currentTime - 15);
-  });
-  if (fwdBtn) fwdBtn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    if (currentTrack !== i) loadTrack(i);
-    const dur = player.duration || 0;
-    player.currentTime = Math.min(dur, player.currentTime + 15);
-  });
-  if (seek) seek.addEventListener('input', (e)=>{
-    e.stopPropagation();
-    if (currentTrack !== i) loadTrack(i);
-    const dur = player.duration || 0;
-    player.currentTime = (e.target.value/100) * dur;
-  });
-  t.addEventListener('click', ()=>playTrack(i));
-});
+
 if (player) {
   player.addEventListener('timeupdate', ()=>{
     const t = tracks[currentTrack];
@@ -2307,7 +2313,8 @@ function fq(b){b.parentElement.classList.toggle('open');}
 // Sol AI
 async function callSolAPI(message){
   const cfg = window.solConfig || {};
-  if (!cfg.api_enabled || !cfg.api_url) return null;
+  const localKey = getSolKey();
+  if (!cfg.api_enabled && !localKey) return null;
   const body = {
     model: cfg.api_model || '@cf/meta/llama-3.1-8b-instruct',
     system: cfg.rules || 'You are Sol, the AI assistant for OASENSE.',
@@ -2315,11 +2322,42 @@ async function callSolAPI(message){
     max_tokens: 220,
     context: { url: window.location.href }
   };
-  const res = await fetch(cfg.api_url, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify(body)
-  });
+  if (cfg.api_enabled && cfg.api_url){
+    const res = await fetch(cfg.api_url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) throw new Error('AI error '+res.status);
+    const data = await res.json().catch(()=>({}));
+    const reply = data.reply || data.text || data.output || data.response || data.choices?.[0]?.message?.content || '';
+    return String(reply||'').trim();
+  }
+  // direct key mode (localStorage)
+  if (localKey.startsWith('gsk_')){
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+localKey},
+      body: JSON.stringify({
+        model: cfg.api_model || 'llama-3.1-8b-instant',
+        messages:[{role:'system',content:cfg.rules||'You are Sol, the AI assistant for OASENSE.'},{role:'user',content:message}],
+        max_tokens: 220
+      })
+    });
+    if (!res.ok) throw new Error('AI error '+res.status);
+    const data = await res.json().catch(()=>({}));
+    return String((data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'').trim();
+  }
+  if (localKey.startsWith('sk-ant-')){
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':localKey,'anthropic-version':'2023-06-01','anthropic-dangerous-allow-browser':'true'},
+      body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:220,messages:[{role:'user',content:message}]})
+    });
+    if (!res.ok) throw new Error('AI error '+res.status);
+    const data = await res.json().catch(()=>({}));
+    return String((data.content||[]).map(c=>c.text||'').join('')).trim();
+  }
   if (!res.ok) throw new Error('AI error '+res.status);
   const data = await res.json().catch(()=>({}));
   const reply = data.reply || data.text || data.output || data.response || data.choices?.[0]?.message?.content || '';
@@ -2329,6 +2367,8 @@ async function callSolAPI(message){
 const skb={price:['price','cost','how much'],booking:['book','session','shoot'],shipping:['ship','delivery','track'],return:['return','refund'],points:['point','reward','sol'],social:['instagram','youtube','tiktok','discord'],music:['music','song','soundcloud','demo'],contact:['contact','email'],collab:['collab','collaboration']};
 const sr={price:'Pricing is custom per project. Shop items start at $9.99 (digital) to $64.99 (apparel). For photoshoots — use the Booking section!',booking:'Request a session in the Booking section. Full refund if you cancel 48+ hours in advance!',shipping:'Standard: 5–7 business days. Express: 2–3 days. Tracking number sent by email once shipped!',return:'Returns accepted within 30 days. Items must be unworn. Contact us to start a return.',points:'Earn Sol Points shopping (10pts/$1), reviewing (50pts), subscribing (100pts), sharing #Oasense (200pts) and more!',social:'Find Angel on Instagram @oasense.shop, TikTok @solxstate, YouTube, Discord & SoundCloud!',music:"Angel makes music as SOLXSTATE. Stream demos right here or find the full catalog on soundcloud.com/solxstate",contact:'Use the Contact form or email oasense.shop@gmail.com. We respond within 1–2 business days!',collab:"We're open for collaborations! Hit \"Start Collab Conversation\" in the Contact section."};
 function tSol(){document.getElementById('solp').classList.toggle('open');}
+function getSolKey(){return localStorage.getItem('oas_ai_key')||'';}
+function saveSolKey(){let key=(document.getElementById('solKeyInput')||{}).value||'';key=key.trim();if(key.includes('&')) key=key.split('&')[0];if(!(key.startsWith('gsk_')||key.startsWith('sk-ant-'))){toast('KEY MUST START WITH gsk_ or sk-ant-');return;}localStorage.setItem('oas_ai_key',key);toast('AI KEY SAVED');}
 function matchFallback(msg){
   const cfg = window.solConfig || {};
   if (!cfg.fallback_enabled) return null;
@@ -2501,12 +2541,25 @@ async function updateAccountUI(session){
 let tmr = null, tIndex = 0, tItems = [];
 function renderTestimonialCard(t, i, active) {
   const name = t.name || t.client_name || 'Client';
-  const role = t.role || t.type || '';
+  const role = t.role || t.type || 'Member';
   const quote = t.quote || t.message || t.testimonial || '';
+  const lvl = t.level || t.lvl || (20 + i*7);
+  const initials = name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  const rating = Math.max(1, Math.min(5, Number(t.rating||5)));
+  const stars = '★★★★★'.slice(0,rating);
   return `<div class="tcard${active?' active':''}" data-idx="${i}">
-    <div class="tbadge">${String(i+1).padStart(2,'0')}</div>
+    <div class="tcard-head">
+      <div class="tbadge">
+        <div class="tbadge-initials">${_esc(initials)}</div>
+        <div class="tbadge-lvl">LVL ${_esc(lvl)}</div>
+      </div>
+      <div class="tname">
+        <div class="tname-main">${_esc(name)} <span class="tname-check">✔</span></div>
+        <div class="trole2">${_esc(role)}</div>
+      </div>
+    </div>
+    <div class="tstars">${stars}</div>
     <div class="tq">“${_esc(quote)}”</div>
-    <div class="ta">${_esc(name)}${role?`<span class="trole">${_esc(role)}</span>`:''}</div>
   </div>`;
 }
 function showTestimonial(idx) {
@@ -2524,46 +2577,41 @@ function startTestimonialLoop() {
     showTestimonial(tIndex);
   }, 4200);
 }
-async function loadTestimonials() {
+function subscribeTestimonials(){
   const root = document.getElementById('tstack');
   if (!root) return;
-  try {
-    const { data, error } = await db
-      .from('testimonials')
-      .select('*')
-      .order('sort_order',{ascending:true})
-      .limit(50);
-    if (error) throw error;
-    const liveRows = (data||[]).filter(r => {
+  const fb = window.fb; if(!fb) return;
+  const q = fb.query(fb.collection(fb.fdb,'testimonials'), fb.orderBy('sort_order','asc'));
+  fb.onSnapshot(q, (snap)=>{
+    const rows=[];
+    snap.forEach(doc=>rows.push(doc.data()));
+    const liveRows = rows.filter(r => {
       const st = String(r.status || r.display_status || r.state || '').toLowerCase().trim();
       const liveFlag = r.is_live === true || r.live === true;
       return liveFlag || st === 'live' || st === 'displayed' || st === 'shown';
     });
     tItems = liveRows;
-    if (!liveRows.length) {
-      root.innerHTML = '';
-      return;
-    }
+    if (!liveRows.length){ root.innerHTML=''; return; }
     tIndex = 0;
-    root.innerHTML = liveRows.map((t,i) => renderTestimonialCard(t,i,i===0)).join('');
+    root.innerHTML = liveRows.map((t,i)=>renderTestimonialCard(t,i,i===0)).join('');
     showTestimonial(0);
     startTestimonialLoop();
-  } catch(e) {
-    console.error('Testimonials error:', e);
-  }
+  });
 }
-db.channel('testimonials-rt').on('postgres_changes',{event:'*',schema:'public',table:'testimonials'},loadTestimonials).subscribe();
+
+
 
 // INIT
-loadShop();
-loadBlog();
-loadPortfolio();
-loadTestimonials();
+subscribeShop();
+subscribeBlog();
+renderPortfolioFromContent();
+subscribeTestimonials();
+subscribeMusic();
 setBookingDateToday();
 db.auth.getSession().then(({data})=>updateAccountUI(data.session));
 db.auth.onAuthStateChange((_event, session)=>updateAccountUI(session));
-db.channel('blog-rt').on('postgres_changes',{event:'*',schema:'public',table:'blog_posts'},loadBlog).subscribe();
-db.channel('portfolio-rt').on('postgres_changes',{event:'*',schema:'public',table:'portfolio_items'},()=>{loadPortfolio();}).subscribe();
+
+
 </script>
 </body>
 </html>
