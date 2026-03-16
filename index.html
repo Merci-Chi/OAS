@@ -2315,6 +2315,9 @@ async function callSolAPI(message){
   const cfg = window.solConfig || {};
   const apiKey = (cfg.api_key || '').trim();
   if (!cfg.api_enabled && !apiKey) return null;
+  const groqModel = (cfg.api_model && !String(cfg.api_model).startsWith('@cf/'))
+    ? cfg.api_model
+    : 'llama-3.1-8b-instant';
   const body = {
     model: cfg.api_model || '@cf/meta/llama-3.1-8b-instruct',
     system: cfg.rules || 'You are Sol, the AI assistant for OASENSE.',
@@ -2339,7 +2342,7 @@ async function callSolAPI(message){
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},
       body: JSON.stringify({
-        model: cfg.api_model || 'llama-3.1-8b-instant',
+        model: groqModel,
         messages:[{role:'system',content:cfg.rules||'You are Sol, the AI assistant for OASENSE.'},{role:'user',content:message}],
         max_tokens: 220
       })
