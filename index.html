@@ -1024,7 +1024,26 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
       <div class="tpanel">
         <h3>Real Energy. Real Results.</h3>
         <p>Each project is built on intention — a blend of story, style, and soul. Oasense doesn’t just deliver media, it helps people see themselves as the light.</p>
-        <a class="btn-hot" href="#booking">Book a Session</a>
+        <button class="btn-hot" onclick="toggleReviewForm()">Make a Review</button>
+        <div id="reviewForm" style="display:none;margin-top:16px;border:1px solid rgba(255,0,200,0.25);padding:14px;background:rgba(255,0,200,0.05);">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--hot);margin-bottom:10px;text-transform:uppercase;">Submit Testimonial</div>
+          <div style="display:grid;gap:10px;">
+            <input class="fi" id="revName" placeholder="Your name"/>
+            <select class="fi fse" id="revStars">
+              <option value="5">★★★★★ (5)</option>
+              <option value="4">★★★★ (4)</option>
+              <option value="3">★★★ (3)</option>
+              <option value="2">★★ (2)</option>
+              <option value="1">★ (1)</option>
+            </select>
+            <textarea class="fta" id="revBody" placeholder="Your review…" style="min-height:80px;"></textarea>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px;">
+            <button class="btn btn-fill btn-sm" onclick="submitReview()">Submit</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleReviewForm()">Cancel</button>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.4);margin-top:8px;letter-spacing:1px;">Reviews go live after approval.</div>
+        </div>
         <div class="tstats">
           <div class="tstat"><div class="num">4.9★</div><div class="lbl">Avg Rating</div></div>
           <div class="tstat"><div class="num">120+</div><div class="lbl">Projects</div></div>
@@ -1324,6 +1343,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   import {
     getFirestore,
     doc,
+    setDoc,
     onSnapshot,
     updateDoc,
     increment,
@@ -1348,7 +1368,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const fdb = getFirestore(app);
-  window.fb = { fdb, collection, query, where, orderBy, limit, onSnapshot, getDocs };
+  window.fb = { fdb, collection, query, where, orderBy, limit, onSnapshot, getDocs, doc, setDoc };
   window.solConfig = window.solConfig || {api_url:'',api_model:'@cf/meta/llama-3.1-8b-instruct',api_enabled:false,api_key:'',welcome:'',rules:'',fallback_enabled:false,fallback_keywords:''};
 
   const fEsc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
@@ -1360,7 +1380,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   const donationsRef = collection(fdb, "donations");
   window.solConfig = {api_url:'',api_model:'@cf/meta/llama-3.1-8b-instruct',api_enabled:false,api_key:'',welcome:'',rules:'',fallback_enabled:false,fallback_keywords:''};
 
-  function applySiteContent(C){
+function applySiteContent(C){
     const about = (C&&C.about)||{};
     if (about.photo){
       const av = document.getElementById('aboutPhoto');
@@ -1492,7 +1512,12 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   });
 
   onSnapshot(siteContentRef, (snap) => {
-    if (!snap.exists()) return;
+    if (!snap.exists()){
+      window._portfolioLoaded = true;
+      if (window.renderPortfolioFromContent) window.renderPortfolioFromContent();
+      return;
+    }
+    window._portfolioLoaded = true;
     applySiteContent(snap.data());
   });
 
@@ -1598,8 +1623,19 @@ const hasTag = (val, targets) => {
 // ═══════════════════════════════════════════════
 const SHOP_URL = 'https://merci-chi.github.io/OAS/shop';
 let _shopItems = [];
+let _shopLoaded = false;
+function renderLoadingBlock(label){
+  return `<div class="shop-promo-loading">
+    <div class="sg-spinner"></div>
+    <div class="sg-loading-txt">${label || 'Loading…'}</div>
+  </div>`;
+}
 function loadShop(){
   const root = document.getElementById('shopPromo');
+  if (!_shopLoaded){
+    root.innerHTML = renderLoadingBlock('Loading shop…');
+    return;
+  }
   try{
     const items = _shopItems.filter(i => (i.status||'') === 'live');
     const badgeRank = b => b==='%'?0:b==='New!'?1:b==='Hot!'?2:b==='Ltd'?3:4;
@@ -1631,11 +1667,20 @@ function loadShop(){
 }
 function subscribeShop(){
   const fb = window.fb; if(!fb) return;
+  if (!_shopLoaded){
+    const root = document.getElementById('shopPromo');
+    if (root) root.innerHTML = renderLoadingBlock('Loading shop…');
+  }
   const q = fb.query(fb.collection(fb.fdb,'shopItems'), fb.orderBy('createdAt','desc'));
   fb.onSnapshot(q, (snap)=>{
     const items=[];
     snap.forEach(doc=>items.push(doc.data()));
     _shopItems = items;
+    _shopLoaded = true;
+    loadShop();
+  }, (err)=>{
+    console.error('Shop snapshot error', err);
+    _shopLoaded = true;
     loadShop();
   });
 }
@@ -1747,8 +1792,13 @@ function initShopFlip() {
 // ═══════════════════════════════════════════════
 const BLOG_BASE = 'https://merci-chi.github.io/OAS/blog';
 let _blogPosts = [];
+let _blogLoaded = false;
 function loadBlog(){
   const el = document.getElementById('blogGrid');
+  if (!_blogLoaded){
+    el.innerHTML = renderLoadingBlock('Loading posts…');
+    return;
+  }
   try{
     const live = _blogPosts.filter(p => p.live === true).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,3);
     if (!live.length){ el.innerHTML = renderBlogEmpty(); return; }
@@ -1787,11 +1837,20 @@ function loadBlog(){
 }
 function subscribeBlog(){
   const fb = window.fb; if(!fb) return;
+  if (!_blogLoaded){
+    const el = document.getElementById('blogGrid');
+    if (el) el.innerHTML = renderLoadingBlock('Loading posts…');
+  }
   const q = fb.query(fb.collection(fb.fdb,'blogPosts'), fb.orderBy('createdAt','desc'));
   fb.onSnapshot(q, (snap)=>{
     const items=[];
     snap.forEach(doc=>items.push(doc.data()));
     _blogPosts = items;
+    _blogLoaded = true;
+    loadBlog();
+  }, (err)=>{
+    console.error('Blog snapshot error', err);
+    _blogLoaded = true;
     loadBlog();
   });
 }
@@ -1832,8 +1891,13 @@ const PF_PANELS = [
   { section:'lifestyle', name:'Lifestyle',  cat:'Editorial', row:'bottom' },
 ];
 
+window._portfolioLoaded = window._portfolioLoaded || false;
 function renderPortfolioFromContent(){
   const root = document.getElementById('pf-root');
+  if (!window._portfolioLoaded){
+    root.innerHTML = renderLoadingBlock('Loading portfolio…');
+    return;
+  }
   const content = window._portfolioContent || {};
   const items = [];
   const mapSec = {cinematic:'portraits',digital:'digital',video:'video',branding:'branding',lifestyle:'lifestyle'};
@@ -1899,7 +1963,7 @@ function buildPanel(panelMeta, items) {
     const icons = {portraits:'📸',digital:'🎨',video:'🎬',branding:'✨',lifestyle:'🌆'};
     mediaHtml += `<div class="pf-panel-empty">
       <div class="pf-panel-empty-icon">${icons[section]||'🌌'}</div>
-      <div class="pf-panel-empty-txt">Add via Supabase<br/>section: ${section}</div>
+      <div class="pf-panel-empty-txt">No media yet<br/>section: ${section}</div>
     </div>`;
   }
 
@@ -2173,9 +2237,17 @@ document.addEventListener('click', (e)=>{
   }
 });
 
+let _musicLoaded = false;
 function renderMusicList(items){
   const list=document.getElementById('musicList');
   if(!list) return;
+  if(!_musicLoaded){
+    list.innerHTML = `<div style="grid-column:1/-1;padding:24px 10px;text-align:center;">
+      <div class="sg-spinner"></div>
+      <div class="sg-loading-txt">Loading tracks…</div>
+    </div>`;
+    return;
+  }
   if(!items.length){
     list.innerHTML = `<div style="grid-column:1/-1;padding:24px 10px;text-align:center;"><div class="sg-loading-txt">No tracks yet</div></div>`;
     return;
@@ -2201,11 +2273,23 @@ function renderMusicList(items){
 
 function subscribeMusic(){
   const fb = window.fb; if(!fb) return;
+  if (!_musicLoaded){
+    const list=document.getElementById('musicList');
+    if (list) list.innerHTML = `<div style="grid-column:1/-1;padding:24px 10px;text-align:center;">
+      <div class="sg-spinner"></div>
+      <div class="sg-loading-txt">Loading tracks…</div>
+    </div>`;
+  }
   const q = fb.query(fb.collection(fb.fdb,'musicDemos'), fb.orderBy('createdAt','desc'));
   fb.onSnapshot(q, (snap)=>{
     const items=[];
     snap.forEach(doc=>items.push(doc.data()));
+    _musicLoaded = true;
     renderMusicList(items);
+  }, (err)=>{
+    console.error('Music snapshot error', err);
+    _musicLoaded = true;
+    renderMusicList([]);
   });
 }
 
@@ -2615,6 +2699,40 @@ async function updateAccountUI(session){
 //  TESTIMONIALS — LIVE LOOP
 // ═══════════════════════════════════════════════
 let tmr = null, tIndex = 0, tItems = [];
+let _testimonialsLoaded = false;
+function toggleReviewForm(){
+  const f = document.getElementById('reviewForm');
+  if (!f) return;
+  f.style.display = f.style.display === 'none' || !f.style.display ? 'block' : 'none';
+}
+async function submitReview(){
+  const name = (document.getElementById('revName')||{}).value?.trim() || '';
+  const body = (document.getElementById('revBody')||{}).value?.trim() || '';
+  const stars = parseInt((document.getElementById('revStars')||{}).value || '5', 10);
+  if (!name || !body){ toast('NAME + REVIEW REQUIRED'); return; }
+  const fb = window.fb; if(!fb){ toast('NOT CONNECTED'); return; }
+  const id = Date.now();
+  const data = {
+    id,
+    author: name,
+    body,
+    stars: Math.max(1, Math.min(5, stars)),
+    live: false,
+    date: new Date().toISOString().split('T')[0],
+    createdAt: Date.now()
+  };
+  try{
+    await fb.setDoc(fb.doc(fb.fdb,'testimonials', String(id)), data);
+    document.getElementById('revName').value='';
+    document.getElementById('revBody').value='';
+    document.getElementById('revStars').value='5';
+    toggleReviewForm();
+    toast('REVIEW SUBMITTED');
+  }catch(e){
+    console.error('review submit error', e);
+    toast('SUBMIT FAILED');
+  }
+}
 function renderTestimonialCard(t, i, active) {
   const name = t.name || t.client_name || 'Client';
   const role = t.role || t.type || 'Member';
@@ -2657,6 +2775,7 @@ function subscribeTestimonials(){
   const root = document.getElementById('tstack');
   if (!root) return;
   const fb = window.fb; if(!fb) return;
+  if (!_testimonialsLoaded) root.innerHTML = renderLoadingBlock('Loading testimonials…');
   const q = fb.query(fb.collection(fb.fdb,'testimonials'), fb.orderBy('sort_order','asc'));
   fb.onSnapshot(q, (snap)=>{
     const rows=[];
@@ -2667,11 +2786,19 @@ function subscribeTestimonials(){
       return liveFlag || st === 'live' || st === 'displayed' || st === 'shown';
     });
     tItems = liveRows;
-    if (!liveRows.length){ root.innerHTML=''; return; }
+    _testimonialsLoaded = true;
+    if (!liveRows.length){
+      root.innerHTML = renderLoadingBlock('No testimonials yet');
+      return;
+    }
     tIndex = 0;
     root.innerHTML = liveRows.map((t,i)=>renderTestimonialCard(t,i,i===0)).join('');
     showTestimonial(0);
     startTestimonialLoop();
+  }, (err)=>{
+    console.error('Testimonials snapshot error', err);
+    _testimonialsLoaded = true;
+    root.innerHTML = renderLoadingBlock('Unable to load testimonials');
   });
 }
 
