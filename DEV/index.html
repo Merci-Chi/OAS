@@ -2097,11 +2097,25 @@ async function saveApiKey(){
     showApiKeyStatus('❌ Must start with gsk_ or sk-ant-','error');
     return;
   }
+  showApiKeyStatus('Saving…','warn');
+  const saveBtn = document.querySelector('#apiKeySection .btn.btn-fill');
+  if (saveBtn){saveBtn.disabled = true; saveBtn.textContent = 'Saving…';}
   solConfig.api_key = key;
-  await fsSolConfigSave(solConfig);
-  document.getElementById('apiKeyInput').value='';
-  showApiKeyStatus('✓ Key saved','ok');
-  updateApiKeyUI();
+  let timeout = setTimeout(()=>{
+    showApiKeyStatus('⏳ Still saving… check Firebase rules','warn');
+  }, 6000);
+  try{
+    await fsSolConfigSave(solConfig);
+    clearTimeout(timeout);
+    document.getElementById('apiKeyInput').value='';
+    showApiKeyStatus('✓ Key saved','ok');
+    updateApiKeyUI();
+  }catch(e){
+    clearTimeout(timeout);
+    showApiKeyStatus('❌ Save failed (check Firebase rules)','error');
+  }finally{
+    if (saveBtn){saveBtn.disabled = false; saveBtn.textContent = 'Save Key';}
+  }
 }
 async function clearApiKey(){
   solConfig.api_key = '';
