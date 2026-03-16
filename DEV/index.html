@@ -1070,10 +1070,17 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="topbar"><div><div class="panel-title">AI <span class="hot">Prompts</span></div><div class="panel-sub">// Sol Configuration · Commands · User Prompts · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-fill btn-sm" onclick="saveAIConfig()">💾 Save All</button></div></div>
   <div class="vhs-line"></div>
   <div class="ai-prompt-section" id="apiKeySection" style="border-color:rgba(255,59,59,0.3);background:rgba(255,59,59,0.03);">
-    <div class="ai-section-title" style="color:var(--red);">🔑 <span>Anthropic API Key</span><span id="apiKeyStatus" style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:2px;margin-left:auto;"></span></div>
+    <div class="ai-section-title" style="color:var(--red);">🔑 <span>Groq / Anthropic API Key</span><span id="apiKeyStatus" style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:2px;margin-left:auto;"></span></div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,59,59,0.6);margin-bottom:14px;letter-spacing:1px;line-height:1.8;">Required for ✦ Enhance with AI and ✦ Write with AI. Key is stored locally in your browser only — never sent anywhere except Anthropic.</div>
-    <div style="display:flex;gap:8px;align-items:center;"><div style="position:relative;flex:1;"><input class="fi" id="apiKeyInput" type="password" placeholder="sk-ant-api03-…" autocomplete="off" style="font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;"/></div><button class="btn btn-fill btn-sm" onclick="saveApiKey()" style="flex-shrink:0;">Save Key</button><button class="btn btn-ghost btn-sm" onclick="clearApiKey()" style="flex-shrink:0;border-color:rgba(255,59,59,0.4);color:rgba(255,59,59,0.7);">Clear</button></div>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.35);margin-top:10px;letter-spacing:1px;line-height:1.8;">Get your key at console.anthropic.com · Stored in localStorage · Never leaves your device</div>
+    <div style="display:flex;gap:8px;align-items:center;"><div style="position:relative;flex:1;"><input class="fi" id="apiKeyInput" type="password" placeholder="gsk_… or sk-ant-…" autocomplete="off" style="font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;"/></div><button class="btn btn-fill btn-sm" onclick="saveApiKey()" style="flex-shrink:0;">Save Key</button><button class="btn btn-ghost btn-sm" onclick="clearApiKey()" style="flex-shrink:0;border-color:rgba(255,59,59,0.4);color:rgba(255,59,59,0.7);">Clear</button></div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.35);margin-top:10px;letter-spacing:1px;line-height:1.8;">Get your Groq key at console.groq.com (or Anthropic at console.anthropic.com) · Stored in localStorage · Never leaves your device</div>
+  </div>
+  <div class="ai-prompt-section">
+    <div class="ai-section-title">🌐 <span>Sol — Live API Endpoint</span></div>
+    <div class="fg"><label class="fl">API URL</label><input class="fi" id="sol-api-url" placeholder="https://your-worker.your-subdomain.workers.dev/sol-chat"/></div>
+    <div class="fg"><label class="fl">Model</label><input class="fi" id="sol-api-model" placeholder="@cf/meta/llama-3.1-8b-instruct"/></div>
+    <div class="fg"><label class="fl">Enable Live AI</label><select class="fi fse" id="sol-api-enabled"><option value="false">Disabled</option><option value="true">Enabled</option></select></div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,204,0,0.5);letter-spacing:1px;line-height:1.8;">Recommended free option: Cloudflare Workers AI (use a Worker as your API URL so your key stays private).</div>
   </div>
   <div class="ai-prompt-section">
     <div class="ai-section-title">🤖 <span>Sol — Identity & Welcome</span></div>
@@ -1346,6 +1353,9 @@ function showSync(state, msg) {
 // ── LOCAL DATA ──
 let bookings=[],people=[],shopItems=[],orders=[],donations=[],invoices=[],testimonials=[],blogPosts=[],musicDemos=[],appUsers=[],auditLogData=[];
 let solConfig={
+  api_url:'',
+  api_model:'@cf/meta/llama-3.1-8b-instruct',
+  api_enabled:false,
   welcome:"Welcome to OASENSE — I’m Sol, your creative guide. Tell me what you’re dreaming up and I’ll point you to the right place, fast.",
   rules:"You are Sol, the AI companion for OASENSE — an artistic creative studio in Las Vegas.\nGuidance:\n- Be warm, confident, and cinematic in tone.\n- Ask one helpful clarifying question when the user is vague.\n- Give short, high-signal answers first, then offer a button to go deeper.\n- When the user mentions booking, scheduling, photoshoots, or appointments, show a clear booking button.\n- When they mention contacting, support, or speaking with someone, show a “Take me there” scroll button.\n- When they mention Instagram, show an “Instagram” button.\n- Never use hashtags (#) in command targets.\n- Keep it on-brand, concise, and reassuring.",
   commands:[
@@ -2068,9 +2078,16 @@ document.getElementById('it-discount').addEventListener('change',function(){docu
 function previewImage(e,previewId,placeholderId){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const prev=document.getElementById(previewId);prev.src=ev.target.result;prev.style.display='block';document.getElementById(placeholderId).style.display='none';if(previewId==='imagePreview')currentImageDataURL=ev.target.result;else if(previewId==='imagePreview2')currentImage2DataURL=ev.target.result;};reader.readAsDataURL(file);}
 
 // ══ API KEY ══
-function getApiKey(){return localStorage.getItem('oas_anthropic_key')||'';}
-function saveApiKey(){const key=document.getElementById('apiKeyInput').value.trim();if(!key.startsWith('sk-ant-')){showApiKeyStatus('❌ Must start with sk-ant-','error');return;}localStorage.setItem('oas_anthropic_key',key);document.getElementById('apiKeyInput').value='';showApiKeyStatus('✓ Key saved','ok');updateApiKeyUI();}
-function clearApiKey(){localStorage.removeItem('oas_anthropic_key');document.getElementById('apiKeyInput').value='';showApiKeyStatus('Key cleared','warn');updateApiKeyUI();}
+const DEFAULT_GROQ_KEY = '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';
+(function ensureDefaultKey(){
+  try{
+    const k = localStorage.getItem('oas_ai_key') || '';
+    if(!k){ localStorage.setItem('oas_ai_key', DEFAULT_GROQ_KEY); }
+  }catch(e){}
+})();
+function getApiKey(){return localStorage.getItem('oas_ai_key')||'';}
+function saveApiKey(){const key=document.getElementById('apiKeyInput').value.trim();if(!(key.startsWith('sk-ant-')||key.startsWith('gsk_'))){showApiKeyStatus('❌ Must start with gsk_ or sk-ant-','error');return;}localStorage.setItem('oas_ai_key',key);document.getElementById('apiKeyInput').value='';showApiKeyStatus('✓ Key saved','ok');updateApiKeyUI();}
+function clearApiKey(){localStorage.removeItem('oas_ai_key');document.getElementById('apiKeyInput').value='';showApiKeyStatus('Key cleared','warn');updateApiKeyUI();}
 function showApiKeyStatus(msg,type){const el=document.getElementById('apiKeyStatus');if(!el)return;const colors={ok:'var(--green)',error:'var(--red)',warn:'rgba(255,204,0,0.6)'};el.textContent=msg;el.style.color=colors[type]||colors.ok;el.style.border=`1px solid ${colors[type]||colors.ok}`;el.style.background=type==='ok'?'rgba(0,255,136,0.07)':type==='error'?'rgba(255,59,59,0.07)':'rgba(255,204,0,0.07)';}
 function updateApiKeyUI(){const key=getApiKey();const section=document.getElementById('apiKeySection');const status=document.getElementById('apiKeyStatus');if(!section||!status)return;if(key){section.style.borderColor='rgba(0,255,136,0.3)';section.style.background='rgba(0,255,136,0.02)';status.textContent='✓ Key configured';status.style.color='var(--green)';status.style.border='1px solid rgba(0,255,136,0.4)';status.style.background='rgba(0,255,136,0.07)';}else{section.style.borderColor='rgba(255,59,59,0.3)';section.style.background='rgba(255,59,59,0.03)';status.textContent='⚠ No key set';status.style.color='rgba(255,204,0,0.7)';status.style.border='1px solid rgba(255,204,0,0.3)';status.style.background='rgba(255,204,0,0.05)';}}
 
@@ -2080,6 +2097,47 @@ async function callClaude(prompt,maxTokens=300){
   if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||'API error '+res.status);}
   const data=await res.json();
   return(data.content?.map(c=>c.text||'').join('')||'').trim();
+}
+
+async function callGroq(prompt,maxTokens=300){
+  const key=getApiKey();if(!key)throw new Error('NO_KEY');
+  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+    body: JSON.stringify({
+      model: 'llama-3.1-8b-instant',
+      messages: [
+        {role:'system',content:(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.'},
+        {role:'user',content:prompt}
+      ],
+      max_tokens: maxTokens
+    })
+  });
+  if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err.error?.message||err.message||('API error '+res.status));}
+  const data=await res.json();
+  return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content || '').trim();
+}
+
+async function callSolAI(prompt,maxTokens=300){
+  if(solConfig && solConfig.api_enabled && solConfig.api_url){
+    const body={
+      model: solConfig.api_model || '@cf/meta/llama-3.1-8b-instruct',
+      system: solConfig.rules || 'You are Sol, the AI assistant for OASENSE.',
+      messages:[{role:'user',content:prompt}],
+      max_tokens: maxTokens
+    };
+    const res=await fetch(solConfig.api_url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok){
+      const err=await res.json().catch(()=>({}));
+      throw new Error(err.error||err.message||('API error '+res.status));
+    }
+    const data=await res.json().catch(()=>({}));
+    const reply = data.reply || data.text || data.output || data.response || data.choices?.[0]?.message?.content || '';
+    return String(reply||'').trim();
+  }
+  const key = getApiKey();
+  if(key && key.startsWith('gsk_')) return await callGroq(prompt,maxTokens);
+  return await callClaude(prompt,maxTokens);
 }
 
 let _aiPopupText='',_aiPopupTarget='desc';
@@ -2099,10 +2157,10 @@ async function runAIEnhance(){
   try{
     const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
     const prompt=existing?`${solRules}\n\nRewrite and dramatically enhance this product description for "${title}". Make it evocative, poetic, and sensory — 2-4 sentences, no clichés, no em-dashes. Original: "${existing}"`:`${solRules}\n\nWrite a rich, evocative product description for "${title}". 2-4 sentences. Make it feel alive, sensory, and aspirational. No em-dashes.`;
-    const text=await callClaude(prompt,300);
+    const text=await callSolAI(prompt,300);
     if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
   }catch(err){
-    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No API key set. Go to AI Prompts → API Key and add your Anthropic key.';}
+    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No AI endpoint configured. Enable Live AI in AI Prompts or add your Anthropic key.';}
     else if(err.message.includes('401')||err.message.includes('invalid_api_key')){document.getElementById('aiPopupContent').textContent='❌ Invalid API key. Check your key in AI Prompts → API Key.';}
     else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
   }
@@ -2515,11 +2573,11 @@ async function runAIBlogEnhance(){
     const prompt = body
       ? `${solRules}\n\nRewrite and enhance this blog post titled "${title}". Keep 3–6 short paragraphs. Make it vivid, but not cringe. Original:\n\n${body}`
       : `${solRules}\n\nWrite a 3–6 paragraph blog post titled "${title}" for a creative studio in Las Vegas.`;
-    const text = await callClaude(prompt, 800);
+    const text = await callSolAI(prompt, 800);
     if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;}
     else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
   }catch(err){
-    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No API key set. Go to AI Prompts → API Key and add your Anthropic key.';}
+    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No AI endpoint configured. Enable Live AI in AI Prompts or add your Anthropic key.';}
     else if(err.message.includes('401')||err.message.includes('invalid_api_key')){document.getElementById('aiPopupContent').textContent='❌ Invalid API key. Check your key in AI Prompts → API Key.';}
     else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
   }
@@ -2874,11 +2932,11 @@ async function enhanceNewsletterAI(){
   try{
     const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
     const prompt=`${solRules}\n\nWrite a compelling email newsletter for OASENSE.\nSubject: ${subject||'(create one)'}\nBody draft: ${content||'(create a full email)'}\nReturn the subject on the first line starting with \"Subject:\" and the email body after.`;
-    const text=await callClaude(prompt,600);
+    const text=await callSolAI(prompt,600);
     if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;const lines=text.split('\\n');const subjLine=lines.find(l=>l.toLowerCase().startsWith('subject:'));if(subjLine){document.getElementById('nl-subject').value=subjLine.replace(/subject:\\s*/i,'').trim();}const body=text.replace(/^Subject:.*\\n?/i,'').trim();if(body)document.getElementById('nl-content').value=body;}
     else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
   }catch(err){
-    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No API key set. Go to AI Prompts → API Key and add your Anthropic key.';}
+    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No AI endpoint configured. Enable Live AI in AI Prompts or add your Anthropic key.';}
     else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
   }
   setAIPopupLoading(false);
@@ -3147,6 +3205,9 @@ function removeUserPrompt(idx){
 async function saveAIConfig(){
   solConfig.welcome = document.getElementById('sol-welcome').value;
   solConfig.rules   = document.getElementById('sol-rules').value;
+  solConfig.api_url = (document.getElementById('sol-api-url').value || '').trim();
+  solConfig.api_model = (document.getElementById('sol-api-model').value || '@cf/meta/llama-3.1-8b-instruct').trim();
+  solConfig.api_enabled = document.getElementById('sol-api-enabled').value === 'true';
   await fsSolConfigSave(solConfig);
 }
 
