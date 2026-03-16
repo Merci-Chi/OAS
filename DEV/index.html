@@ -635,7 +635,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 /* AI ENHANCE POPUP */
 .ai-popup-overlay{position:fixed;inset:0;background:rgba(0,0,5,0.85);z-index:9500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(16px);padding:20px;}
 .ai-popup-overlay.open{display:flex;}
-.ai-popup-box{background:#000;border:1px solid rgba(170,102,204,0.5);width:100%;max-width:520px;position:relative;box-shadow:0 0 60px rgba(170,102,204,0.2);animation:aiPopIn .3s cubic-bezier(.34,1.56,.64,1);}
+.ai-popup-box{background:#000;border:1px solid rgba(170,102,204,0.5);width:100%;max-width:760px;max-height:82vh;position:relative;box-shadow:0 0 60px rgba(170,102,204,0.2);animation:aiPopIn .3s cubic-bezier(.34,1.56,.64,1);display:flex;flex-direction:column;}
 @keyframes aiPopIn{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
 .ai-popup-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid rgba(170,102,204,0.2);}
 .ai-popup-title{font-family:'Black Ops One',sans-serif;font-size:16px;letter-spacing:3px;color:var(--mute);text-transform:uppercase;display:flex;align-items:center;gap:10px;}
@@ -643,15 +643,15 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 @keyframes aiSpin{0%,100%{opacity:1;}50%{opacity:.3;}}
 .ai-popup-close{background:none;border:none;color:var(--mute);cursor:pointer;font-size:22px;line-height:1;transition:color .2s;padding:2px 6px;}
 .ai-popup-close:hover{color:#fff;}
-.ai-popup-body{padding:24px 22px;}
+.ai-popup-body{padding:24px 22px;overflow:auto;max-height:52vh;}
 .ai-popup-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(170,102,204,0.6);text-transform:uppercase;margin-bottom:12px;}
-.ai-popup-text{font-family:'Barlow Condensed',sans-serif;font-size:18px;color:#fff;line-height:1.7;letter-spacing:.5px;padding:16px;background:rgba(170,102,204,0.05);border:1px solid rgba(170,102,204,0.18);min-height:80px;position:relative;}
+.ai-popup-text{font-family:'Barlow Condensed',sans-serif;font-size:18px;color:#fff;line-height:1.7;letter-spacing:.5px;padding:16px;background:rgba(170,102,204,0.05);border:1px solid rgba(170,102,204,0.18);min-height:200px;max-height:46vh;overflow:auto;position:relative;}
 .ai-popup-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;}
 .ai-thinking-dot{width:8px;height:8px;border-radius:50%;background:var(--mute);animation:aiThink 1.2s ease-in-out infinite;}
 .ai-thinking-dot:nth-child(2){animation-delay:.2s;}
 .ai-thinking-dot:nth-child(3){animation-delay:.4s;}
 @keyframes aiThink{0%,80%,100%{opacity:.2;transform:scale(.8);}40%{opacity:1;transform:scale(1.2);}}
-.ai-popup-foot{display:flex;gap:8px;padding:16px 22px 20px;border-top:1px solid rgba(170,102,204,0.15);}
+.ai-popup-foot{display:flex;gap:8px;padding:16px 22px 20px;border-top:1px solid rgba(170,102,204,0.15);position:sticky;bottom:0;background:#000;}
 .ai-popup-refresh{display:flex;align-items:center;gap:7px;padding:10px 20px;background:transparent;border:1px solid rgba(170,102,204,0.4);color:var(--mute);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;flex:1;}
 .ai-popup-refresh:hover{border-color:var(--mute);color:#fff;background:rgba(170,102,204,0.1);}
 .ai-popup-refresh:disabled{opacity:.4;cursor:not-allowed;}
@@ -2168,10 +2168,32 @@ async function runAIEnhance(){
   setAIPopupLoading(false);return true;
 }
 async function enhanceDescAI(){const title=document.getElementById('it-title').value.trim();if(!title){alert('Add an item title first.');return;}await runAIEnhance();}
+async function enhanceItemTitleAI(){
+  const title=document.getElementById('it-title').value.trim();
+  if(!title){alert('Add a base title first.');return;}
+  _aiPopupTarget='itemTitle';
+  openAIPopup('Sol — Product Title', title);
+  document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
+  try{
+    const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
+    const prompt=`${solRules}
+
+Improve this product title to be punchy and stylish (max 6 words). Return only the title. Title: "${title}"`;
+    const text=await callSolAI(prompt,60);
+    if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
+  }catch(err){
+    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No AI endpoint configured. Enable Live AI in AI Prompts or add your Anthropic key.';}
+    else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
+  }
+  setAIPopupLoading(false);
+}
+
 async function refreshAIDesc(){setAIPopupLoading(true);if(_aiPopupTarget==='blog'){await runAIBlogEnhance();}else{await runAIEnhance();}}
 function copyAIDesc(){
   if(!_aiPopupText)return;
   if(_aiPopupTarget==='blog'){setBlogEditorContent(_aiPopupText);}
+  else if(_aiPopupTarget==='itemTitle'){document.getElementById('it-title').value=_aiPopupText;}
+  else if(_aiPopupTarget==='blogTitle'){document.getElementById('blog-title').value=_aiPopupText;}
   else{document.getElementById('it-desc').value=_aiPopupText;}
   const btn=document.getElementById('aiPopupCopyBtn');
   btn.classList.add('copied');
@@ -2560,6 +2582,26 @@ async function enhanceBlogAI(){
     return;
   }
   await runAIBlogEnhance();
+}
+
+async function enhanceBlogTitleAI(){
+  const title=document.getElementById('blog-title').value.trim();
+  if(!title){alert('Add a base title first.');return;}
+  _aiPopupTarget='blogTitle';
+  openAIPopup('Sol — Blog Title', title);
+  document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
+  try{
+    const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
+    const prompt=`${solRules}
+
+Improve this blog title to be punchy and intriguing (max 8 words). Return only the title. Title: "${title}"`;
+    const text=await callSolAI(prompt,60);
+    if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
+  }catch(err){
+    if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No AI endpoint configured. Enable Live AI in AI Prompts or add your Anthropic key.';}
+    else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
+  }
+  setAIPopupLoading(false);
 }
 
 async function runAIBlogEnhance(){
