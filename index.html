@@ -1519,6 +1519,10 @@ function applySiteContent(C){
     }
     window._portfolioLoaded = true;
     applySiteContent(snap.data());
+  }, (err)=>{
+    console.error('Site content snapshot error', err);
+    window._portfolioLoaded = true;
+    if (window.renderPortfolioFromContent) window.renderPortfolioFromContent();
   });
 
   onSnapshot(donationsRef, (snap) => {
@@ -1630,6 +1634,20 @@ function renderLoadingBlock(label){
     <div class="sg-loading-txt">${label || 'Loading…'}</div>
   </div>`;
 }
+function markFirebaseMissing(){
+  const promo = document.getElementById('shopPromo');
+  if (promo) promo.innerHTML = renderLoadingBlock('Firebase not connected');
+  const blog = document.getElementById('blogGrid');
+  if (blog) blog.innerHTML = renderLoadingBlock('Firebase not connected');
+  const music = document.getElementById('musicList');
+  if (music) music.innerHTML = `<div style="grid-column:1/-1;padding:24px 10px;text-align:center;">
+    <div class="sg-loading-txt">Firebase not connected</div>
+  </div>`;
+  const pf = document.getElementById('pf-root');
+  if (pf) pf.innerHTML = renderLoadingBlock('Firebase not connected');
+  const t = document.getElementById('tstack');
+  if (t) t.innerHTML = renderLoadingBlock('Firebase not connected');
+}
 function loadShop(){
   const root = document.getElementById('shopPromo');
   if (!_shopLoaded){
@@ -1681,6 +1699,8 @@ function subscribeShop(){
   }, (err)=>{
     console.error('Shop snapshot error', err);
     _shopLoaded = true;
+    const root = document.getElementById('shopPromo');
+    if (root) root.innerHTML = renderLoadingBlock('Unable to load shop');
     loadShop();
   });
 }
@@ -1851,6 +1871,8 @@ function subscribeBlog(){
   }, (err)=>{
     console.error('Blog snapshot error', err);
     _blogLoaded = true;
+    const el = document.getElementById('blogGrid');
+    if (el) el.innerHTML = renderLoadingBlock('Unable to load posts');
     loadBlog();
   });
 }
@@ -2289,6 +2311,10 @@ function subscribeMusic(){
   }, (err)=>{
     console.error('Music snapshot error', err);
     _musicLoaded = true;
+    const list=document.getElementById('musicList');
+    if (list) list.innerHTML = `<div style="grid-column:1/-1;padding:24px 10px;text-align:center;">
+      <div class="sg-loading-txt">Unable to load tracks</div>
+    </div>`;
     renderMusicList([]);
   });
 }
@@ -2805,11 +2831,15 @@ function subscribeTestimonials(){
 
 
 // INIT
-subscribeShop();
-subscribeBlog();
-renderPortfolioFromContent();
-subscribeTestimonials();
-subscribeMusic();
+if (!window.fb) {
+  markFirebaseMissing();
+} else {
+  subscribeShop();
+  subscribeBlog();
+  renderPortfolioFromContent();
+  subscribeTestimonials();
+  subscribeMusic();
+}
 setBookingDateToday();
 db.auth.getSession().then(({data})=>updateAccountUI(data.session));
 db.auth.onAuthStateChange((_event, session)=>updateAccountUI(session));
