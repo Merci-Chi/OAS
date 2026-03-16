@@ -1075,7 +1075,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
     <div class="ai-section-title" style="color:var(--red);">🔑 <span>API Key (Anthropic or Groq)</span><span id="apiKeyStatus" style="font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;padding:3px 10px;border-radius:2px;margin-left:auto;"></span></div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,59,59,0.6);margin-bottom:10px;letter-spacing:1px;line-height:1.8;">Paste your Anthropic or Groq key once and Sol powers everything: Ask Sol, Enhance, Write.</div>
     <div style="display:flex;gap:8px;align-items:center;"><div style="position:relative;flex:1;"><input class="fi" id="apiKeyInput" type="password" placeholder="gsk_… or sk-ant-…" autocomplete="off" style="font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;"/></div><button class="btn btn-fill btn-sm" onclick="saveApiKey()" style="flex-shrink:0;">Save Key</button><button class="btn btn-ghost btn-sm" onclick="clearApiKey()" style="flex-shrink:0;border-color:rgba(255,59,59,0.4);color:rgba(255,59,59,0.7);">Clear</button></div>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.35);margin-top:10px;letter-spacing:1px;line-height:1.8;">Stored locally in your browser only.</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.35);margin-top:10px;letter-spacing:1px;line-height:1.8;">Stored in Firebase (dev-only).</div>
     <div style="margin-top:14px;border-top:1px dashed rgba(255,204,0,0.25);padding-top:12px;">
       <div class="ai-section-title" style="font-size:13px;letter-spacing:2px;">🛟 <span>Fallback (If Key Fails)</span></div>
       <div class="fg"><label class="fl">Enable Fallback</label><select class="fi fse" id="sol-fallback-enabled"><option value="false">Off</option><option value="true">On</option></select></div>
@@ -1363,6 +1363,7 @@ let solConfig={
   api_url:'',
   api_model:'@cf/meta/llama-3.1-8b-instruct',
   api_enabled:false,
+  api_key:'',
   fallback_enabled:false,
   fallback_keywords:'',
   welcome:"Welcome to OASENSE — I’m Sol, your creative guide. Tell me what you’re dreaming up and I’ll point you to the right place, fast.",
@@ -2088,9 +2089,27 @@ function previewImage(e,previewId,placeholderId){const file=e.target.files[0];if
 
 // ══ API KEY ══
 
-function getApiKey(){return localStorage.getItem('oas_ai_key')||'';}
-function saveApiKey(){let key=document.getElementById('apiKeyInput').value.trim();if(key.includes('&')) key = key.split('&')[0];if(!(key.startsWith('sk-ant-')||key.startsWith('gsk_'))){showApiKeyStatus('❌ Must start with gsk_ or sk-ant-','error');return;}localStorage.setItem('oas_ai_key',key);document.getElementById('apiKeyInput').value='';showApiKeyStatus('✓ Key saved','ok');updateApiKeyUI();}
-function clearApiKey(){localStorage.removeItem('oas_ai_key');document.getElementById('apiKeyInput').value='';showApiKeyStatus('Key cleared','warn');updateApiKeyUI();}
+function getApiKey(){return (solConfig&&solConfig.api_key)||'';}
+async function saveApiKey(){
+  let key=document.getElementById('apiKeyInput').value.trim();
+  if(key.includes('&')) key = key.split('&')[0];
+  if(!(key.startsWith('sk-ant-')||key.startsWith('gsk_'))){
+    showApiKeyStatus('❌ Must start with gsk_ or sk-ant-','error');
+    return;
+  }
+  solConfig.api_key = key;
+  await fsSolConfigSave(solConfig);
+  document.getElementById('apiKeyInput').value='';
+  showApiKeyStatus('✓ Key saved','ok');
+  updateApiKeyUI();
+}
+async function clearApiKey(){
+  solConfig.api_key = '';
+  await fsSolConfigSave(solConfig);
+  document.getElementById('apiKeyInput').value='';
+  showApiKeyStatus('Key cleared','warn');
+  updateApiKeyUI();
+}
 function showApiKeyStatus(msg,type){const el=document.getElementById('apiKeyStatus');if(!el)return;const colors={ok:'var(--green)',error:'var(--red)',warn:'rgba(255,204,0,0.6)'};el.textContent=msg;el.style.color=colors[type]||colors.ok;el.style.border=`1px solid ${colors[type]||colors.ok}`;el.style.background=type==='ok'?'rgba(0,255,136,0.07)':type==='error'?'rgba(255,59,59,0.07)':'rgba(255,204,0,0.07)';}
 function updateApiKeyUI(){const key=getApiKey();const section=document.getElementById('apiKeySection');const status=document.getElementById('apiKeyStatus');if(!section||!status)return;if(key){section.style.borderColor='rgba(0,255,136,0.3)';section.style.background='rgba(0,255,136,0.02)';status.textContent='✓ Key configured';status.style.color='var(--green)';status.style.border='1px solid rgba(0,255,136,0.4)';status.style.background='rgba(0,255,136,0.07)';}else{section.style.borderColor='rgba(255,59,59,0.3)';section.style.background='rgba(255,59,59,0.03)';status.textContent='⚠ No key set';status.style.color='rgba(255,204,0,0.7)';status.style.border='1px solid rgba(255,204,0,0.3)';status.style.background='rgba(255,204,0,0.05)';}}
 
