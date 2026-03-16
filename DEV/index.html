@@ -113,8 +113,22 @@ function fsSolConfigListen(onUpdate) {
 
 async function fsSolConfigSave(config) {
   showSync('syncing','Saving…');
-  try { await db.collection('solConfig').doc('main').set(fsSafe(config)); showSync('synced','Saved ✓'); }
-  catch(e) { console.error('❌ fsSolConfigSave', e); showSync('error','Save failed: '+e.code); }
+  const timeoutMs = 8000;
+  const writePromise = db.collection('solConfig').doc('main').set(fsSafe(config));
+  const timeoutPromise = new Promise((_, rej)=>setTimeout(()=>rej(new Error('TIMEOUT')), timeoutMs));
+  try {
+    await Promise.race([writePromise, timeoutPromise]);
+    showSync('synced','Saved ✓');
+    return true;
+  } catch(e) {
+    console.error('❌ fsSolConfigSave', e);
+    if (e && e.message === 'TIMEOUT') {
+      showSync('error','Save timed out (rules/App Check?)');
+    } else {
+      showSync('error','Save failed: '+(e.code||e.message||'unknown'));
+    }
+    return false;
+  }
 }
 
 function fsSiteContentListen(onUpdate){
@@ -2105,11 +2119,15 @@ async function saveApiKey(){
     showApiKeyStatus('⏳ Still saving… check Firebase rules','warn');
   }, 6000);
   try{
-    await fsSolConfigSave(solConfig);
+    const ok = await fsSolConfigSave(solConfig);
     clearTimeout(timeout);
-    document.getElementById('apiKeyInput').value='';
-    showApiKeyStatus('✓ Key saved','ok');
-    updateApiKeyUI();
+    if (ok){
+      document.getElementById('apiKeyInput').value='';
+      showApiKeyStatus('✓ Key saved','ok');
+      updateApiKeyUI();
+    } else {
+      showApiKeyStatus('❌ Save failed (check Firebase rules)','error');
+    }
   }catch(e){
     clearTimeout(timeout);
     showApiKeyStatus('❌ Save failed (check Firebase rules)','error');
