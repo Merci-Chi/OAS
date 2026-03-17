@@ -4,7 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>OASENSE.SHOP — YOU ARE THE LIGHT</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -103,7 +102,7 @@ section{padding:100px 40px;}
 .shop-promo{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:rgba(255,204,0,0.06);border:1px solid rgba(255,204,0,0.25);padding:4px;box-shadow:0 0 60px rgba(255,204,0,0.04),0 0 120px rgba(255,136,0,0.03);}
 
 /* flip wrapper */
-.sp-card{position:relative;cursor:pointer;perspective:1100px;}
+.sp-card{position:relative;cursor:pointer;perspective:1100px;min-height:520px;}
 .sp-card::after{content:'';position:absolute;inset:0;border:1px solid transparent;transition:border-color .35s,box-shadow .35s;z-index:6;pointer-events:none;}
 .sp-card:hover::after{border-color:rgba(255,204,0,0.7);box-shadow:inset 0 0 20px rgba(255,204,0,0.04),0 0 40px rgba(255,136,0,0.12);}
 .sp-inner{width:100%;transition:transform .65s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;}
@@ -135,20 +134,20 @@ section{padding:100px 40px;}
 .sp-img-placeholder-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,204,0,0.5);text-transform:uppercase;}
 
 /* badges */
-.sp-badge{position:absolute;top:12px;left:12px;font-family:'Share Tech Mono',monospace;font-size:9px;font-weight:700;letter-spacing:2px;padding:5px 11px;text-transform:uppercase;z-index:4;}
-.sp-badge.pct{background:var(--hot);color:#000;box-shadow:0 0 12px var(--hot),0 0 24px rgba(255,204,0,0.3);}
-.sp-badge.new{background:#00ff88;color:#000;box-shadow:0 0 10px #00ff88;}
-.sp-badge.hot{background:#ff3300;color:#fff;box-shadow:0 0 10px #ff3300;}
-.sp-badge.ltd{background:#aa44ff;color:#fff;box-shadow:0 0 10px #aa44ff;}
+.sp-badge{position:absolute;top:12px;left:12px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;z-index:4;text-align:center;line-height:1.1;box-shadow:0 0 14px rgba(0,0,0,0.6);}
+.sp-badge.pct{background:radial-gradient(circle,#00ff88,#007744);color:#000;}
+.sp-badge.new{background:radial-gradient(circle,#00e5ff,#0050ff);color:#fff;}
+.sp-badge.hot{background:radial-gradient(circle,#ff6600,#cc0000);color:#fff;}
+.sp-badge.ltd{background:radial-gradient(circle,#cc66ff,#6600cc);color:#fff;}
 
 /* flip hint */
 .sp-flip-hint{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,8,.75);border:1px solid rgba(255,204,0,.6);color:rgba(255,204,0,1);font-size:14px;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.6);transition:opacity .25s,transform .25s;z-index:4;backdrop-filter:blur(10px);}
 .sp-card:hover .sp-flip-hint{opacity:1;transform:scale(1);}
 
 /* ── INFO STRIP ── */
-.sp-info{background:rgba(4,0,12,1);border:1px solid rgba(255,204,0,.18);border-top:none;padding:16px 16px 18px;}
+.sp-info{background:rgba(4,0,12,1);border:1px solid rgba(255,204,0,.18);border-top:none;padding:16px 16px 18px;min-height:190px;display:flex;flex-direction:column;justify-content:space-between;}
 .sp-name{font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:2px;text-transform:uppercase;color:#fff;margin-bottom:5px;line-height:1.25;text-shadow:0 0 20px rgba(255,255,255,0.1);}
-.sp-desc{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:rgba(255,214,245,0.65);letter-spacing:.5px;line-height:1.5;margin-bottom:12px;}
+.sp-desc{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:rgba(255,214,245,0.65);letter-spacing:.5px;line-height:1.4;margin-bottom:12px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:36px;}
 .sp-price-row{display:flex;align-items:center;justify-content:space-between;gap:6px;}
 .sp-price{font-family:'Black Ops One',sans-serif;font-size:22px;color:var(--hot);line-height:1;text-shadow:0 0 14px rgba(255,204,0,0.4);}
 .sp-was{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);text-decoration:line-through;display:block;margin-bottom:3px;}
@@ -758,6 +757,18 @@ section{padding:100px 40px;}
 .wl-link{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--hot);text-decoration:none;}
 .wl-share{margin-top:16px;display:flex;justify-content:flex-end;}
 
+/* ── COLLAB POPUP ── */
+.col-ov{position:fixed;inset:0;background:rgba(0,0,10,.85);z-index:8240;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(12px);}
+.col-ov.open{display:flex;}
+.col-card{background:#000;border:1px solid var(--hot);width:100%;max-width:640px;padding:26px;position:relative;box-shadow:0 0 40px rgba(255,0,200,.3);}
+.col-close{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:18px;}
+.col-close:hover{color:var(--hot);}
+.col-title{font-family:'Black Ops One',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;text-transform:uppercase;}
+.col-sub{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--mute);margin-top:6px;margin-bottom:16px;}
+.col-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.col-grid .fi{width:100%;}
+.col-actions{margin-top:14px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+
 /* ── FOOTER ── */
 footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px 36px;position:relative;z-index:10;}
 .ftg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;max-width:1120px;margin:0 auto 48px;}
@@ -1133,7 +1144,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
         <div class="cit"><div class="cic">📧</div><div class="citext"><h4>Email</h4><p>Messages go directly to our inbox. We reply within 1–2 business days.</p></div></div>
         <div class="cit"><div class="cic">📍</div><div class="citext"><h4>Location</h4><p>Remote &amp; in-person sessions. Based in the US.</p></div></div>
         <div class="cit"><div class="cic">📲</div><div class="citext"><h4>Social</h4><p>@oasense.shop on Instagram &amp; Facebook · @solxstate on TikTok &amp; SoundCloud</p></div></div>
-        <div class="cbc"><h3>Open for Collaboration</h3><p>Always open to working with aligned creators, brands, and dreamers. If your energy matches Oasense's vision — let's build something.</p><button class="btn-ghost" onclick="document.getElementById('si').value='Collaboration Inquiry'">Start Collab Conversation</button></div>
+        <div class="cbc"><h3>Open for Collaboration</h3><p>Always open to working with aligned creators, brands, and dreamers. If your energy matches Oasense's vision — let's build something.</p><button class="btn-ghost" onclick="openCollab()">Start Collab Conversation</button></div>
       </div>
       <div>
         <div class="fg" style="margin-bottom:14px;"><label class="fl">Preferred Response Method</label><div class="mp"><button class="mb2 on" onclick="pM(this,'email')">📧 Email</button><button class="mb2" onclick="pM(this,'phone')">📱 Phone</button></div></div>
@@ -1267,7 +1278,6 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
       <div class="ms2">Log in to access your Sol Points, orders, and more.</div>
       <div class="soa">
         <button class="sob" onclick="soc('google')">🔵 Continue with Google</button>
-        <button class="sob" onclick="soc('facebook')">🔷 Continue with Facebook</button>
         <button class="sob" onclick="soc('apple')">⚫ Continue with Apple</button>
       </div>
       <div class="ord"><span>or</span></div>
@@ -1329,6 +1339,27 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   </div>
 </div>
 
+<!-- COLLAB POPUP -->
+<div class="col-ov" id="colOv" onclick="closeCollab(event)">
+  <div class="col-card">
+    <button class="col-close" onclick="closeCollab()">×</button>
+    <div class="col-title">Start Collab Conversation</div>
+    <div class="col-sub">We’re excited to hear your idea. Tell us a bit about you and your vision.</div>
+    <div class="col-grid">
+      <div class="fg"><label class="fl">First Name</label><input class="fi" id="colFirst" placeholder="First name"/></div>
+      <div class="fg"><label class="fl">Last Name</label><input class="fi" id="colLast" placeholder="Last name"/></div>
+      <div class="fg"><label class="fl">Phone</label><input class="fi" id="colPhone" placeholder="+1 (000) 000-0000"/></div>
+      <div class="fg"><label class="fl">Email</label><input class="fi" id="colEmail" placeholder="you@email.com"/></div>
+    </div>
+    <div class="fg"><label class="fl">Subject</label><input class="fi" id="colSubject" placeholder="Collaboration inquiry"/></div>
+    <div class="fg"><label class="fl">Message</label><textarea class="fta" id="colMessage" style="min-height:110px;">Hi Oasense team! I’d love to collaborate. Here’s a quick overview of my idea:</textarea></div>
+    <div class="col-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeCollab()">Cancel</button>
+      <button class="btn btn-fill btn-sm" onclick="submitCollab()">Send Message</button>
+    </div>
+  </div>
+</div>
+
 <!-- FIREBASE: SITE SETTINGS (ABOUT + DONATION) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -1337,6 +1368,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     getFirestore,
     doc,
     setDoc,
+    getDoc,
     onSnapshot,
     updateDoc,
     increment,
@@ -1347,6 +1379,17 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     limit,
     getDocs
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    OAuthProvider,
+    signInWithPopup,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    updateProfile,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDlHu_4elXWPeckr6C7JWbcJaLrpnDpGnc",
@@ -1362,7 +1405,34 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   let analytics = null;
   try { analytics = getAnalytics(app); } catch (e) { console.warn('Firebase analytics disabled', e); }
   const fdb = getFirestore(app);
-  window.fb = { fdb, collection, query, where, orderBy, limit, onSnapshot, getDocs, doc, setDoc };
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
+  const appleProvider = new OAuthProvider('apple.com');
+  const upsertAppUser = async (user, extra={}) => {
+    if (!user) return;
+    const ref = doc(fdb, 'appUsers', String(user.uid));
+    const base = {
+      id: String(user.uid),
+      name: user.displayName || extra.name || '',
+      email: user.email || '',
+      seenAt: Date.now(),
+      provider: (user.providerData && user.providerData[0] && user.providerData[0].providerId) || 'email'
+    };
+    await setDoc(ref, { ...base, ...extra }, { merge: true });
+  };
+  window.fb = { fdb, collection, query, where, orderBy, limit, onSnapshot, getDocs, doc, setDoc, getDoc };
+  window.fbAuth = {
+    auth,
+    googleProvider,
+    appleProvider,
+    signInWithPopup,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    updateProfile,
+    onAuthStateChanged,
+    signOut,
+    upsertAppUser
+  };
   window.solConfig = window.solConfig || {api_url:'',api_model:'@cf/meta/llama-3.1-8b-instruct',api_enabled:false,api_key:'',welcome:'',rules:'',fallback_enabled:false,fallback_keywords:''};
 
   const fEsc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
@@ -1611,14 +1681,8 @@ function applySiteContent(C){
   };
  </script>
 
-<!-- MAIN JS: SUPABASE (SHOP/BLOG/PORTFOLIO) + UI -->
+<!-- MAIN JS: UI + AUTH (FIREBASE) -->
 <script>
-// ═══════════════════════════════════════════════
-//  SUPABASE INIT
-// ═══════════════════════════════════════════════
-const SUPABASE_URL = "https://smlfppydhwyqrudktzzr.supabase.co";
-const SUPABASE_KEY = "sb_publishable_NmZR8KThSmcc-yiOz7kV7Q_Nv0XZK9V";
-const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const DEV_BASE = "https://merci-chi.github.io/OAS/DEV/";
 const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1684,13 +1748,8 @@ function loadShop(){
     const items = _shopItems.filter(i => (i.status||'') === 'live');
     const badgeRank = b => b==='%'?0:b==='New!'?1:b==='Hot!'?2:b==='Ltd'?3:4;
     items.sort((a,b) => badgeRank(a.badge) - badgeRank(b.badge));
-    const promoOnly = items.filter(i => i.promo === true);
-    const promo = promoOnly.length ? promoOnly.slice(0,4) : items.slice(0,4);
-    if (promo.length < 4) {
-      const fill = items.filter(i => !promo.includes(i)).slice(0, 4 - promo.length);
-      promo.push(...fill);
-    }
-    if (!promo.length) { root.innerHTML = renderShopEmpty(); return; }
+    const promo = items.filter(i => i.promo === true).slice(0,4);
+    if (promo.length < 4) { root.innerHTML = renderShopEmpty(); return; }
     root.innerHTML = promo.map(item => renderPromoCard({
       id: item.id,
       title: item.title || item.name || '',
@@ -1765,9 +1824,9 @@ function renderPromoCard(item) {
   const hasFlip = !!item.img2;
 
   let badgeHtml = '';
-  if (item.badge==='%' && hasDisc) badgeHtml = `<div class="sp-badge pct">${item.discount}% OFF</div>`;
-  else if (item.badge==='New!')      badgeHtml = `<div class="sp-badge new">NEW</div>`;
-  else if (item.badge==='Hot!')      badgeHtml = `<div class="sp-badge hot">HOT</div>`;
+  if (item.badge==='%' && hasDisc) badgeHtml = `<div class="sp-badge pct">-${item.discount}%<br/>OFF</div>`;
+  else if (item.badge==='New!')      badgeHtml = `<div class="sp-badge new">NEW!</div>`;
+  else if (item.badge==='Hot!')      badgeHtml = `<div class="sp-badge hot">HOT!</div>`;
   else if (item.badge==='Ltd')       badgeHtml = `<div class="sp-badge ltd">LIMITED</div>`;
 
   const imgFront = item.img ? `<img src="${_esc(mediaUrl(item.img))}" alt="${_esc(item.title)}"/>` : '✨';
@@ -1789,7 +1848,7 @@ function renderPromoCard(item) {
       </div>
       <div class="sp-info">
         <div class="sp-name">${_esc(item.title)}</div>
-        ${item.desc ? `<div class="sp-desc">${_esc(item.desc.substring(0,60)+(item.desc.length>60?'...':''))}</div>` : ''}
+        ${item.desc ? `<div class="sp-desc">${_esc(item.desc.substring(0,120))}${item.desc.length>120?'…':''}</div>` : ''}
         <div class="sp-price-row">
           ${priceBlock}
           <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
@@ -1822,9 +1881,12 @@ function renderPromoCard(item) {
 }
 function initShopFlip() {
   document.querySelectorAll('.sp-card[data-flip="1"]').forEach(card => {
+    card.addEventListener('mouseenter', () => card.classList.add('flipped'));
+    card.addEventListener('mouseleave', () => card.classList.remove('flipped'));
     card.addEventListener('click', e => {
       if (e.target.closest('.sp-cta')) return;
-      card.classList.toggle('flipped');
+      const url = card.dataset.url;
+      if (url) window.open(url,'_blank');
     });
   });
   document.querySelectorAll('.sp-card:not([data-flip])').forEach(card => {
@@ -2603,11 +2665,19 @@ function cAOut(e){if(e.target===document.getElementById('ov'))cA();}
 function swA(t){document.getElementById('lv').style.display=t==='login'?'block':'none';document.getElementById('sv').style.display=t==='signup'?'block':'none';}
 async function soc(p){
   try{
-    const { error } = await db.auth.signInWithOAuth({
-      provider: p,
-      options: { redirectTo: window.location.href }
-    });
-    if (error) throw error;
+    if (!window.fbAuth) { toast('AUTH NOT READY'); return; }
+    if (p === 'google') {
+      const res = await window.fbAuth.signInWithPopup(window.fbAuth.auth, window.fbAuth.googleProvider);
+      await window.fbAuth.upsertAppUser(res.user);
+      toast('WELCOME! ☀️'); cA();
+      return;
+    }
+    if (p === 'apple') {
+      const res = await window.fbAuth.signInWithPopup(window.fbAuth.auth, window.fbAuth.appleProvider);
+      await window.fbAuth.upsertAppUser(res.user);
+      toast('WELCOME! ☀️'); cA();
+      return;
+    }
   }catch(e){
     console.error(e);
     toast('LOGIN FAILED');
@@ -2617,21 +2687,29 @@ async function dL(){
   const email = (document.getElementById('loginEmail')||{}).value || '';
   const pass  = (document.getElementById('loginPass')||{}).value || '';
   if (!email || !pass) { toast('ENTER EMAIL + PASSWORD'); return; }
-  const { error } = await db.auth.signInWithPassword({ email, password: pass });
-  if (error) { toast('LOGIN FAILED'); return; }
-  toast('WELCOME BACK! ☀️'); cA();
+  try{
+    const res = await window.fbAuth.signInWithEmailAndPassword(window.fbAuth.auth, email, pass);
+    await window.fbAuth.upsertAppUser(res.user);
+    toast('WELCOME BACK! ☀️'); cA();
+  }catch(e){
+    console.error(e);
+    toast(e.message || 'LOGIN FAILED');
+  }
 }
 async function dS(){
   const name  = (document.getElementById('signupName')||{}).value || '';
   const email = (document.getElementById('signupEmail')||{}).value || '';
   const pass  = (document.getElementById('signupPass')||{}).value || '';
-  if (!email || !pass) { toast('ENTER EMAIL + PASSWORD'); return; }
-  const { error } = await db.auth.signUp({
-    email, password: pass,
-    options: { data: { full_name: name } }
-  });
-  if (error) { toast('SIGNUP FAILED'); return; }
-  toast('ACCOUNT CREATED! CHECK YOUR EMAIL'); cA();
+  if (!name || !email || !pass) { toast('FILL ALL FIELDS'); return; }
+  try{
+    const res = await window.fbAuth.createUserWithEmailAndPassword(window.fbAuth.auth, email, pass);
+    await window.fbAuth.updateProfile(res.user, { displayName: name });
+    await window.fbAuth.upsertAppUser(res.user, { name });
+    toast('ACCOUNT CREATED!'); cA();
+  }catch(e){
+    console.error(e);
+    toast(e.message || 'SIGNUP FAILED');
+  }
 }
 function pws(){const v=document.getElementById('signupPass')?.value || '';let s=0;if(v.length>=8)s++;if(/[A-Z]/.test(v))s++;if(/[0-9]/.test(v))s++;const c=['#FF00C8','#ff9500','#39e75f'];document.getElementById('pwb').style.width=(s*33.3)+'%';document.getElementById('pwb').style.background=c[s-1]||'';}
 
@@ -2651,18 +2729,53 @@ function openWishlist(){
   document.getElementById('wlov').classList.add('open');
 }
 function closeWishlist(e){if(!e||e.target.id==='wlov')document.getElementById('wlov').classList.remove('open');}
+
+function openCollab(){document.getElementById('colOv').classList.add('open');}
+function closeCollab(e){if(!e||e.target.id==='colOv')document.getElementById('colOv').classList.remove('open');}
+async function submitCollab(){
+  const first=(document.getElementById('colFirst')||{}).value?.trim()||'';
+  const last=(document.getElementById('colLast')||{}).value?.trim()||'';
+  const phone=(document.getElementById('colPhone')||{}).value?.trim()||'';
+  const email=(document.getElementById('colEmail')||{}).value?.trim()||'';
+  const subject=(document.getElementById('colSubject')||{}).value?.trim()||'Collaboration Inquiry';
+  const message=(document.getElementById('colMessage')||{}).value?.trim()||'';
+  if(!first || !email || !message){ toast('PLEASE ADD NAME, EMAIL, MESSAGE'); return; }
+  try{
+    const fb = window.fb;
+    if (!fb) throw new Error('FB_NOT_READY');
+    const id = Date.now();
+    await fb.setDoc(fb.doc(fb.fdb,'contactMessages', String(id)), {
+      id,
+      first,
+      last,
+      phone,
+      email,
+      subject,
+      message,
+      ts: Date.now()
+    });
+    toast('MESSAGE SENT');
+    closeCollab();
+  }catch(e){
+    console.error(e);
+    toast('SEND FAILED');
+  }
+}
 async function loadWishlist(){
   const list = document.getElementById('wlList');
   if (!list || !currentUserId) return;
   list.innerHTML = '';
   try{
-    const { data, error } = await db
-      .from('wishlist_items')
-      .select('*')
-      .eq('user_id', currentUserId)
-      .order('created_at',{ascending:false});
-    if (error) throw error;
-    wishlistItems = data || [];
+    const fb = window.fb;
+    if (!fb) throw new Error('FB_NOT_READY');
+    const q = fb.query(
+      fb.collection(fb.fdb,'wishlist_items'),
+      fb.where('user_id','==',String(currentUserId)),
+      fb.orderBy('created_at','desc')
+    );
+    const snap = await fb.getDocs(q);
+    wishlistItems = [];
+    snap.forEach(doc => wishlistItems.push(doc.data()));
     if (!wishlistItems.length) {
       list.innerHTML = `<div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--mute);letter-spacing:2px;">NO ITEMS YET</div>`;
       return;
@@ -2708,13 +2821,17 @@ document.addEventListener('click', (e)=>{
   const wrap = document.getElementById('acctWrap');
   if (wrap && !wrap.contains(e.target)) closeAcctMenu();
 });
-async function doLogout(){await db.auth.signOut();toast('SIGNED OUT');}
-async function updateAccountUI(session){
+async function doLogout(){
+  if (!window.fbAuth) return;
+  await window.fbAuth.signOut(window.fbAuth.auth);
+  toast('SIGNED OUT');
+}
+async function updateAccountUI(user){
   const wrap = document.getElementById('acctWrap');
   const btns = document.querySelector('.nav-btns');
   const loginBtn = btns?.querySelector('.nbl');
   const signupBtn = btns?.querySelector('.nbr');
-  if (!session) {
+  if (!user) {
     if (wrap) wrap.style.display = 'none';
     if (loginBtn) loginBtn.style.display = '';
     if (signupBtn) signupBtn.style.display = '';
@@ -2726,10 +2843,9 @@ async function updateAccountUI(session){
   if (wrap) wrap.style.display = 'flex';
   if (loginBtn) loginBtn.style.display = 'none';
   if (signupBtn) signupBtn.style.display = 'none';
-  const user = session.user || {};
-  currentUserId = user.id || null;
-  const img = user.user_metadata?.avatar_url || '';
-  const name = user.user_metadata?.full_name || user.email || 'ME';
+  currentUserId = user.uid || null;
+  const img = user.photoURL || '';
+  const name = user.displayName || user.email || 'ME';
   const initials = name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
   const btn = document.getElementById('acctBtn');
   const init = document.getElementById('acctInitials');
@@ -2740,8 +2856,14 @@ async function updateAccountUI(session){
   }
   // load Sol Points
   try{
-    const { data, error } = await db.from('profiles').select('sol_points').eq('id', user.id).single();
-    if (!error && data) document.getElementById('rpPoints').textContent = Number(data.sol_points||0).toLocaleString();
+    if (window.fb && currentUserId){
+      const ref = window.fb.doc(window.fb.fdb,'appUsers', String(currentUserId));
+      const snap = await window.fb.getDoc(ref);
+      if (snap.exists()){
+        const data = snap.data() || {};
+        document.getElementById('rpPoints').textContent = Number(data.sol_points||0).toLocaleString();
+      }
+    }
   }catch(e){}
   const rb = document.getElementById('rewardsLoginBtn');
   if (rb) { rb.textContent = 'View My Rewards'; rb.onclick = () => openRewards(); }
@@ -2876,8 +2998,13 @@ const _fbInitTimer = setInterval(() => {
   }
 }, 200);
 setBookingDateToday();
-db.auth.getSession().then(({data})=>updateAccountUI(data.session));
-db.auth.onAuthStateChange((_event, session)=>updateAccountUI(session));
+if (window.fbAuth){
+  window.fbAuth.onAuthStateChanged(window.fbAuth.auth, (user)=>{
+    updateAccountUI(user);
+    if (user) window.fbAuth.upsertAppUser(user);
+  });
+  updateAccountUI(window.fbAuth.auth.currentUser);
+}
 
 
 </script>
