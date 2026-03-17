@@ -111,7 +111,7 @@ section{padding:100px 40px;}
 .sp-img-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
 .sp-img-face img{width:100%;height:100%;object-fit:cover;}
 .sp-img-face.back{transform:rotateY(180deg);}
-.sp-card:hover .sp-img-inner{transform:rotateY(180deg)!important;}
+.sp-card.has-flip:hover .sp-img-inner{transform:rotateY(180deg);}
 
 /* ── IMAGE ZONE — vivid gradient placeholder when no photo ── */
 .sp-img{
@@ -1841,7 +1841,7 @@ function renderPromoCard(item) {
          <div class="sp-img-face back">${imgBack || imgFront || ''}</div>
        </div>`
     : (imgFront
-        ? imgFront
+        ? `<div class="sp-img-inner"><div class="sp-img-face front">${imgFront}</div></div>`
         : `<div class="sp-img-placeholder"><div class="sp-img-placeholder-icon">✨</div><div class="sp-img-placeholder-label">IMAGE</div></div>`);
 
   const priceBlock = `<div>
@@ -1867,7 +1867,7 @@ function renderPromoCard(item) {
       </div>
     </div>`;
 
-  return `<div class="sp-card" data-url="${_esc(item.shopUrl)}" ${hasFlip?'data-flip="1"':''}>
+  return `<div class="sp-card ${hasFlip?'has-flip':''}" data-url="${_esc(item.shopUrl)}">
     <div class="sp-inner">
       ${frontFace}
     </div>
