@@ -111,7 +111,7 @@ section{padding:100px 40px;}
 .sp-img-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
 .sp-img-face img{width:100%;height:100%;object-fit:cover;}
 .sp-img-face.back{transform:rotateY(180deg);}
-.sp-card.flip-on .sp-img-inner{transform:rotateY(180deg)!important;}
+.sp-card:hover .sp-img-inner{transform:rotateY(180deg)!important;}
 
 /* ── IMAGE ZONE — vivid gradient placeholder when no photo ── */
 .sp-img{
@@ -1874,15 +1874,6 @@ function renderPromoCard(item) {
   </div>`;
 }
 function initShopFlip() {
-  document.querySelectorAll('.sp-card[data-flip="1"]').forEach(card => {
-    card.addEventListener('mouseover', (e) => {
-      card.classList.add('flip-on');
-    });
-    card.addEventListener('mouseout', (e) => {
-      if (card.contains(e.relatedTarget)) return;
-      card.classList.remove('flip-on');
-    });
-  });
   document.querySelectorAll('.sp-card').forEach(card => {
     card.addEventListener('click', e => {
       if (e.target.closest('.sp-cta')) return;
