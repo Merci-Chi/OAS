@@ -1067,17 +1067,10 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
       <button class="btn-hot" style="margin-top:20px;" id="rewardsLoginBtn" onclick="oA('login')">Log In to Check Points</button>
     </div>
     <h3 style="font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:22px;">HOW TO EARN SOL POINTS</h3>
-    <div class="rg">
+    <div class="rg" id="earnGrid">
       <div class="ri"><div class="ricon">🛍️</div><div class="rp">10 pts</div><div class="rw">Per $1 spent in the shop</div></div>
-      <div class="ri"><div class="ricon">💬</div><div class="rp">50 pts</div><div class="rw">Leave a product review</div></div>
-      <div class="ri"><div class="ricon">📧</div><div class="rp">100 pts</div><div class="rw">Subscribe to newsletter</div></div>
-      <div class="ri"><div class="ricon">📷</div><div class="rp">200 pts</div><div class="rw">Share with #Oasense</div></div>
-      <div class="ri"><div class="ricon">❤️</div><div class="rp">5 pts</div><div class="rw">Like a blog post</div></div>
-      <div class="ri"><div class="ricon">🔗</div><div class="rp">150 pts</div><div class="rw">Refer a friend</div></div>
-      <div class="ri"><div class="ricon">🎂</div><div class="rp">500 pts</div><div class="rw">Birthday bonus</div></div>
-      <div class="ri"><div class="ricon">💸</div><div class="rp">250 pts</div><div class="rw">Make a donation</div></div>
     </div>
-    <div class="rdm"><h4>Redeem Points</h4><p>500 pts = $5 off · 1,000 pts = $12 off · 2,500 pts = $35 off + exclusive digital content · 5,000 pts = free product</p></div>
+    <div class="rdm"><h4>Redeem Points</h4><p id="redeemText">500 pts = $5 off · 1,000 pts = $12 off · 2,500 pts = $35 off + exclusive digital content · 5,000 pts = free product</p></div>
   </div>
 </section>
 
@@ -1378,6 +1371,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   const settingsRef = doc(fdb, "site_settings", "global");
   const solConfigRef = doc(fdb, "solConfig", "main");
   const siteContentRef = doc(fdb, "siteContent", "main");
+  const rewardsConfigRef = doc(fdb, "rewardsConfig", "main");
   const donationsRef = collection(fdb, "donations");
   window.solConfig = {api_url:'',api_model:'@cf/meta/llama-3.1-8b-instruct',api_enabled:false,api_key:'',welcome:'',rules:'',fallback_enabled:false,fallback_keywords:''};
 
@@ -1492,6 +1486,29 @@ function applySiteContent(C){
     }
   }
 
+  function applyRewardsConfig(R){
+    const earnGrid = document.getElementById('earnGrid');
+    const redeemText = document.getElementById('redeemText');
+    const earn = (R && R.earn) || [];
+    const redeem = (R && R.redeem) || [];
+    const icons = ['🛍️','💬','📧','📷','❤️','🔗','🎂','💸','✨','⭐'];
+    if (earnGrid){
+      earnGrid.innerHTML = earn.length
+        ? earn.map((e,i)=>`
+          <div class="ri">
+            <div class="ricon">${icons[i % icons.length]}</div>
+            <div class="rp">${Number(e.points||0)} pts</div>
+            <div class="rw">${fEsc(e.label||'')}</div>
+          </div>`).join('')
+        : `<div class="ri"><div class="rw">No rewards configured yet</div></div>`;
+    }
+    if (redeemText){
+      redeemText.textContent = redeem.length
+        ? redeem.map(r=>`${Number(r.points||0).toLocaleString()} pts = ${r.label}`).join(' · ')
+        : 'Redeem options coming soon';
+    }
+  }
+
   onSnapshot(settingsRef, (snap) => {
     if (!snap.exists()) return;  // keep HTML placeholders
     applySiteSettings(snap.data());
@@ -1524,6 +1541,13 @@ function applySiteContent(C){
     console.error('Site content snapshot error', err);
     window._portfolioLoaded = true;
     if (window.renderPortfolioFromContent) window.renderPortfolioFromContent();
+  });
+
+  onSnapshot(rewardsConfigRef, (snap) => {
+    if (!snap.exists()) return;
+    applyRewardsConfig(snap.data());
+  }, (err)=>{
+    console.error('Rewards snapshot error', err);
   });
 
   onSnapshot(donationsRef, (snap) => {
