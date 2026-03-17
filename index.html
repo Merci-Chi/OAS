@@ -1686,7 +1686,11 @@ function applySiteContent(C){
 
 const DEV_BASE = "https://merci-chi.github.io/OAS/DEV/";
 const _esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const mediaUrl = f => f ? (f.startsWith('http') ? f : DEV_BASE + f) : '';
+const mediaUrl = f => {
+  if (!f) return '';
+  if (f.startsWith('http') || f.startsWith('data:') || f.startsWith('blob:')) return f;
+  return DEV_BASE + f;
+};
 const toShopUrl = u => u ? (u.startsWith('http') ? u : `https://merci-chi.github.io/OAS/shop${u.startsWith('/')?'':'/'}${u}`) : 'https://merci-chi.github.io/OAS/shop';
 const toTagList = (val) => {
   if (!val) return [];
@@ -1847,7 +1851,6 @@ function renderPromoCard(item) {
         ${hasFlip ? `<div class="sp-flip-hint" title="See other side">⟳</div>` : ''}
       </div>
       <div class="sp-info">
-        <div class="sp-name">${_esc(item.title)}</div>
         <div class="sp-price-row">
           ${priceBlock}
           <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
@@ -1863,7 +1866,6 @@ function renderPromoCard(item) {
         <div class="sp-back-label"><span>VIEW IN SHOP →</span></div>
       </div>
       <div class="sp-info">
-        <div class="sp-name">${_esc(item.title)}</div>
         <div class="sp-price-row">
           ${priceBlock}
           <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
