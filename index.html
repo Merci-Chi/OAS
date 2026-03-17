@@ -105,10 +105,12 @@ section{padding:100px 40px;}
 .sp-card{position:relative;cursor:pointer;perspective:1100px;min-height:520px;}
 .sp-card::after{content:'';position:absolute;inset:0;border:1px solid transparent;transition:border-color .35s,box-shadow .35s;z-index:6;pointer-events:none;}
 .sp-card:hover::after{border-color:rgba(255,204,0,0.7);box-shadow:inset 0 0 20px rgba(255,204,0,0.04),0 0 40px rgba(255,136,0,0.12);}
-.sp-inner{width:100%;transition:transform .65s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;}
-.sp-card.flipped .sp-inner{transform:rotateY(180deg);}
-.sp-face{width:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
-.sp-back{position:absolute;top:0;left:0;transform:rotateY(180deg);}
+.sp-inner{width:100%;}
+.sp-face{width:100%;}
+.sp-img-flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1);z-index:1;}
+.sp-img-front,.sp-img-back{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
+.sp-img-back{transform:rotateY(180deg);}
+.sp-card:hover .sp-img-flip{transform:rotateY(180deg);}
 
 /* ── IMAGE ZONE — vivid gradient placeholder when no photo ── */
 .sp-img{
@@ -156,9 +158,6 @@ section{padding:100px 40px;}
 .sp-cta:hover{background:var(--hot);color:#000;box-shadow:0 0 16px var(--hot);}
 
 /* back face */
-.sp-back .sp-img{aspect-ratio:3/4;}
-.sp-back-label{position:absolute;bottom:0;left:0;right:0;padding:24px 16px;background:linear-gradient(to top,rgba(0,0,10,.95) 0%,transparent 100%);z-index:4;text-align:center;}
-.sp-back-label span{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:5px;color:var(--hot);text-transform:uppercase;text-shadow:0 0 12px var(--hot);}
 
 /* ── MUSIC ── */
 #music{background:rgba(255,0,200,0.02);border-top:1px solid rgba(255,0,200,0.15);}
@@ -1833,8 +1832,11 @@ function renderPromoCard(item) {
   else if (item.badge==='Hot!')      badgeHtml = `<div class="sp-badge hot">HOT!</div>`;
   else if (item.badge==='Ltd')       badgeHtml = `<div class="sp-badge ltd">LIMITED</div>`;
 
-  const imgFront = item.img ? `<img src="${_esc(mediaUrl(item.img))}" alt="${_esc(item.title)}"/>` : '✨';
-  const imgBack  = item.img2? `<img src="${_esc(mediaUrl(item.img2))}" alt="${_esc(item.title)} alt"/>` : imgFront;
+  const imgFront = item.img ? `<img class="sp-img-front" src="${_esc(mediaUrl(item.img))}" alt="${_esc(item.title)}"/>` : '';
+  const imgBack  = item.img2? `<img class="sp-img-back" src="${_esc(mediaUrl(item.img2))}" alt="${_esc(item.title)} alt"/>` : '';
+  const imgBlock = (imgFront || imgBack)
+    ? `<div class="sp-img-flip">${imgFront || ''}${imgBack || imgFront || ''}</div>`
+    : `<div class="sp-img-placeholder"><div class="sp-img-placeholder-icon">✨</div><div class="sp-img-placeholder-label">IMAGE</div></div>`;
 
   const priceBlock = `<div>
     ${hasDisc ? `<span class="sp-was">$${item.price.toFixed(2)}</span>` : ''}
@@ -1845,12 +1847,14 @@ function renderPromoCard(item) {
   const frontFace = `
     <div class="sp-face">
       <div class="sp-img">
-        ${imgFront}
+        ${imgBlock}
         <div class="sp-img-grad"></div>
         ${badgeHtml}
         ${hasFlip ? `<div class="sp-flip-hint" title="See other side">⟳</div>` : ''}
       </div>
       <div class="sp-info">
+        <div class="sp-name">${_esc(item.title)}</div>
+        ${item.desc ? `<div class="sp-desc">${_esc(item.desc.substring(0,120))}${item.desc.length>120?'…':''}</div>` : ''}
         <div class="sp-price-row">
           ${priceBlock}
           <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
@@ -1858,40 +1862,19 @@ function renderPromoCard(item) {
       </div>
     </div>`;
 
-  const backFace = `
-    <div class="sp-face sp-back">
-      <div class="sp-img">
-        ${imgBack}
-        <div class="sp-img-grad"></div>
-        <div class="sp-back-label"><span>VIEW IN SHOP →</span></div>
-      </div>
-      <div class="sp-info">
-        <div class="sp-price-row">
-          ${priceBlock}
-          <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
-        </div>
-      </div>
-    </div>`;
-
-  return `<div class="sp-card" data-url="${_esc(item.shopUrl)}" ${hasFlip?'data-flip="1"':''}>
+  return `<div class="sp-card" data-url="${_esc(item.shopUrl)}">
     <div class="sp-inner">
       ${frontFace}
-      ${hasFlip ? backFace : ''}
     </div>
   </div>`;
 }
 function initShopFlip() {
-  document.querySelectorAll('.sp-card[data-flip="1"]').forEach(card => {
-    card.addEventListener('mouseenter', () => card.classList.add('flipped'));
-    card.addEventListener('mouseleave', () => card.classList.remove('flipped'));
+  document.querySelectorAll('.sp-card').forEach(card => {
     card.addEventListener('click', e => {
       if (e.target.closest('.sp-cta')) return;
       const url = card.dataset.url;
       if (url) window.open(url,'_blank');
     });
-  });
-  document.querySelectorAll('.sp-card:not([data-flip])').forEach(card => {
-    card.addEventListener('click', () => window.open(card.dataset.url,'_blank'));
   });
 }
 
