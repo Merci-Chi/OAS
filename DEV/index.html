@@ -1842,6 +1842,7 @@ function openCRMPopupByInvoiceId(invoiceId){
 let auditTabFilter='all',auditActionFilter=null;
 const ADMIN_ACTIONS=['Added Booking','Added New Item to Store','Updated Item Price','Updated Item Description','Removed Item from Store','Approved Refund','Applied Discount to Item','Deactivated User Account','Reactivated User Account','Reset User Password','Updated Store Settings','Added Admin / Staff Account','Removed Admin / Staff Account','Modified Inventory Quantity','Archived Item'];
 const USER_ACTIONS=['Login','Logout','Updated Account Details','Changed Password','Added Item to Cart','Removed Item from Cart','Applied Promo Code','Made Purchase','Scheduled Photoshoot','Added Payment Method','Removed Payment Method','Requested Refund','Subscribed to Newsletter','Unsubscribed from Newsletter','Updated Shipping / Billing Info','Updated Wishlist'];
+const AUDIT_HIDE_ACTIONS = new Set(['Login','Logout']);
 function isAdminAction(action){return ADMIN_ACTIONS.includes(action);}
 
 async function addAuditEntry(actorName,action,ref){
@@ -2207,6 +2208,19 @@ function updateShopCounts(){const live=shopItems.filter(x=>x.status==='live').le
 document.getElementById('it-discount').addEventListener('change',function(){document.getElementById('customDiscountWrap').style.display=this.value==='custom'?'block':'none';});
 function previewImage(e,previewId,placeholderId){const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=function(ev){const prev=document.getElementById(previewId);prev.src=ev.target.result;prev.style.display='block';document.getElementById(placeholderId).style.display='none';if(previewId==='imagePreview')currentImageDataURL=ev.target.result;else if(previewId==='imagePreview2')currentImage2DataURL=ev.target.result;};reader.readAsDataURL(file);}
 
+function sanitizeTitleText(t){
+  return String(t||'')
+    .replace(/[\[\]\(\)\"\'\.\?\!]/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function sanitizeDescText(t){
+  return String(t||'')
+    .replace(/[\[\]\(\)]/g,'')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+
 // ══ API KEY ══
 
 function getApiKey(){return (solConfig&&solConfig.api_key)||'';}
@@ -2316,9 +2330,9 @@ async function runAIEnhance(){
   document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
   try{
     const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
-    const prompt=existing?`${solRules}\n\nRewrite and dramatically enhance this product description for "${title}". Make it evocative, poetic, and sensory — 2-4 sentences, no clichés, no em-dashes. Original: "${existing}"`:`${solRules}\n\nWrite a rich, evocative product description for "${title}". 2-4 sentences. Make it feel alive, sensory, and aspirational. No em-dashes.`;
+    const prompt=existing?`${solRules}\n\nRewrite and dramatically enhance this product description for "${title}". Make it evocative, poetic, and sensory — 2-4 sentences, no clichés, no em-dashes. Avoid brackets () [] in output. Original: "${existing}"`:`${solRules}\n\nWrite a rich, evocative product description for "${title}". 2-4 sentences. Make it feel alive, sensory, and aspirational. No em-dashes. Avoid brackets () [] in output.`;
     const text=await callSolAI(prompt,300);
-    if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
+    if(text){_aiPopupText=sanitizeDescText(text);document.getElementById('aiPopupContent').textContent=_aiPopupText;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
   }catch(err){
     if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No AI endpoint configured. Enable Live AI in AI Prompts or add your Anthropic key.';}
     else if(err.message.includes('401')||err.message.includes('invalid_api_key')){document.getElementById('aiPopupContent').textContent='❌ Invalid API key. Check your key in AI Prompts → API Key.';}
@@ -2337,9 +2351,9 @@ async function enhanceItemTitleAI(){
     const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
     const prompt=`${solRules}
 
-Improve this product title to be punchy and stylish (max 6 words). Return only the title. Title: "${title}"`;
+Improve this product title to be punchy and stylish (max 6 words). Return only the title. Do not use brackets [], parentheses (), quotes, periods, question marks, or exclamation points. Hyphens are okay (e.g., T-Shirt). Title: "${title}"`;
     const text=await callSolAI(prompt,60);
-    if(text){_aiPopupText=text;document.getElementById('aiPopupContent').textContent=text;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
+    if(text){_aiPopupText=sanitizeTitleText(text);document.getElementById('aiPopupContent').textContent=_aiPopupText;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
   }catch(err){
     if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No AI endpoint configured. Enable Live AI in AI Prompts or add your Anthropic key.';}
     else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
@@ -2351,9 +2365,9 @@ async function refreshAIDesc(){setAIPopupLoading(true);if(_aiPopupTarget==='blog
 function copyAIDesc(){
   if(!_aiPopupText)return;
   if(_aiPopupTarget==='blog'){setBlogEditorContent(_aiPopupText);}
-  else if(_aiPopupTarget==='itemTitle'){document.getElementById('it-title').value=_aiPopupText;}
+  else if(_aiPopupTarget==='itemTitle'){document.getElementById('it-title').value=sanitizeTitleText(_aiPopupText);}
   else if(_aiPopupTarget==='blogTitle'){document.getElementById('blog-title').value=_aiPopupText;}
-  else{document.getElementById('it-desc').value=_aiPopupText;}
+  else{document.getElementById('it-desc').value=sanitizeDescText(_aiPopupText);}
   const btn=document.getElementById('aiPopupCopyBtn');
   btn.classList.add('copied');
   btn.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
@@ -3713,6 +3727,7 @@ function renderAuditLog(){
   if (!list) return;
 
   let arr = auditLogData.slice();
+  arr = arr.filter(e => !AUDIT_HIDE_ACTIONS.has(e.action || ''));
 
   if (_auditViewMonth){
     arr = arr.filter(e => (e.ts || 0) >= _auditViewMonth.start && (e.ts || 0) < _auditViewMonth.end);
@@ -4195,6 +4210,7 @@ function logUserSession(user){
 window.addEventListener('load', () => {
   updateApiKeyUI();
   initAIPrompts();
+  updateSubcatOptions();
   renderBookings();
   renderCRM();
   renderShop();
