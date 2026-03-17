@@ -144,6 +144,19 @@ async function fsSiteContentSave(config){
   catch(e) { console.error('❌ fsSiteContentSave', e); showSync('error','Save failed: '+e.code); }
 }
 
+function fsRewardsConfigListen(onUpdate){
+  const unsub = db.collection('rewardsConfig').doc('main').onSnapshot(snap => {
+    if (snap.exists) onUpdate(snap.data());
+  }, err => console.error('❌ rewardsConfig listen error', err));
+  _unsubscribers.push(unsub);
+}
+
+async function fsRewardsConfigSave(config){
+  showSync('syncing','Saving…');
+  try { await db.collection('rewardsConfig').doc('main').set(fsSafe(config)); showSync('synced','Saved ✓'); return true; }
+  catch(e) { console.error('❌ fsRewardsConfigSave', e); showSync('error','Save failed: '+e.code); return false; }
+}
+
 async function fsAuditPush(entry) {
   const id = newId();
   entry.id = id;
@@ -537,6 +550,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .blog-author-pill.sol{background:rgba(74,144,255,0.1);border:1px solid rgba(74,144,255,0.4);color:var(--blue);}
 .blog-author-pill.kiara{background:rgba(255,105,180,0.1);border:1px solid rgba(255,105,180,0.4);color:var(--pink);}
 .blog-live-badge{display:inline-block;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;border:1px solid var(--green);color:var(--green);text-transform:uppercase;}
+.blog-draft-badge{display:inline-block;padding:3px 10px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;border:1px solid rgba(255,204,0,0.35);color:rgba(255,204,0,0.6);text-transform:uppercase;}
 .blog-excerpt{font-family:'Barlow Condensed',sans-serif;font-size:16px;color:rgba(255,255,255,0.6);line-height:1.6;margin-bottom:14px;}
 .author-pick{display:flex;gap:10px;margin-bottom:16px;}
 .author-btn{padding:10px 22px;background:transparent;border:2px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;text-transform:uppercase;transition:all .2s;border-radius:4px;}
@@ -647,6 +661,25 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 .crm-bubble{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;border:1px solid rgba(0,255,136,0.4);color:rgba(0,255,136,0.8);background:rgba(0,255,136,0.06);}
 .crm-bubble:hover{background:rgba(0,255,136,0.14);border-color:var(--green);color:var(--green);}
 .crm-bubble .crm-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green);}
+
+/* REWARDS EDITOR */
+.rewards-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.reward-list{display:flex;flex-direction:column;gap:6px;}
+.reward-row{display:flex;align-items:center;gap:8px;}
+.reward-row .fi{flex:1;}
+.reward-chip{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(255,204,0,0.3);color:var(--hot);background:rgba(255,204,0,0.05);}
+
+/* PORTFOLIO CARDS */
+.pf-card{background:rgba(255,204,0,0.02);border:1px solid var(--border);padding:18px;margin-bottom:14px;}
+.pf-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.pf-card-title{font-family:'Black Ops One',sans-serif;font-size:14px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;}
+.pf-card-sub{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--mute);}
+.pf-media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;}
+.pf-tile{position:relative;border:1px solid rgba(255,204,0,0.2);background:rgba(0,0,0,0.4);padding:6px;display:flex;flex-direction:column;gap:6px;}
+.pf-thumb{width:100%;aspect-ratio:1;object-fit:cover;border:1px solid rgba(255,204,0,0.2);background:#000;}
+.pf-tile-actions{display:flex;gap:6px;}
+.pf-video-slot{grid-column:1/-1;display:flex;gap:10px;align-items:center;border:1px dashed rgba(74,144,255,0.3);padding:10px;background:rgba(0,0,0,0.35);}
+.pf-video-thumb{width:120px;height:70px;object-fit:cover;border:1px solid rgba(74,144,255,0.3);background:#000;}
 
 /* AI ENHANCE POPUP */
 .ai-popup-overlay{position:fixed;inset:0;background:rgba(0,0,5,0.85);z-index:9500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(16px);padding:20px;}
@@ -768,6 +801,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="sb-section">System</div>
   <a class="sb-link" onclick="showSection('aiprompts',this)"><span class="sb-icon">🤖</span><span>AI Prompts</span></a>
   <a class="sb-link" onclick="showSection('database',this)"><span class="sb-icon">🗄️</span><span>Database</span><span class="sb-badge" id="usersBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('rewards',this)"><span class="sb-icon">🎁</span><span>Rewards</span></a>
   <div class="sb-firebase"><div class="sb-fb-dot"></div><span>Firebase Live</span></div>
   <div class="sb-section" style="margin-top:auto;">Links</div>
   <a class="sb-link" href="https://merci-chi.github.io/OAS/" target="_blank"><span class="sb-icon">🌐</span><span>Live Site</span></a>
@@ -1072,7 +1106,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       <div class="fg"><label class="fl">Creator</label><input class="fi" id="md-creator" placeholder="Creator / Artist"/></div>
     </div>
     <div class="row row-2">
-      <div class="fg"><label class="fl">Timeframe</label><input class="fi" id="md-timeframe" placeholder="e.g. 2024 — 2025"/></div>
+      <div class="fg"><label class="fl">Track Length</label><input class="fi" id="md-timeframe" placeholder="e.g. 4:30"/></div>
       <div class="fg"><label class="fl">Audio URL</label><input class="fi" id="md-audio" placeholder="https://..."/></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:4px;"><button class="btn btn-fill btn-sm" onclick="saveMusicDemo()">Save Track</button><button class="btn btn-ghost btn-sm" onclick="closeMusicForm()">Cancel</button></div>
@@ -1174,6 +1208,49 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
     </div>
     <div id="dbLookupResults"></div>
     <div class="empty-state" id="dbLookupEmpty" style="display:none;">No results found — try a different term ☀️</div>
+</div>
+</div>
+
+<!-- PORTFOLIO CONTENT -->
+<div class="dev-section" id="sec-rewards">
+  <div class="topbar">
+    <div>
+      <div class="panel-title">Rew<span class="hot">ards</span></div>
+      <div class="panel-sub">// Edit Sol Points earning + redemption · 🔥 Firebase Synced</div>
+    </div>
+    <div class="topbar-actions"><button class="btn btn-fill btn-sm" onclick="saveRewardsConfig()">💾 Save Rewards</button></div>
+  </div>
+  <div class="vhs-line"></div>
+
+  <div class="rewards-grid">
+    <div class="card">
+      <div class="content-title">How To Earn</div>
+      <div class="reward-list" id="earnList"></div>
+      <div class="reward-row" style="margin-top:10px;">
+        <input class="fi" id="earnLabelNew" placeholder="Label e.g. Leave a review"/>
+        <input class="fi" id="earnPointsNew" type="number" placeholder="Points" style="max-width:120px;"/>
+        <button class="btn btn-ghost btn-sm" onclick="addEarnOption()">+ Add</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="content-title">Redeem Options</div>
+      <div class="reward-list" id="redeemList"></div>
+      <div class="reward-row" style="margin-top:10px;">
+        <input class="fi" id="redeemLabelNew" placeholder="Label e.g. $5 off"/>
+        <input class="fi" id="redeemPointsNew" type="number" placeholder="Points" style="max-width:120px;"/>
+        <button class="btn btn-ghost btn-sm" onclick="addRedeemOption()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px;">
+    <div class="content-title">Rewards Lookup</div>
+    <div class="reward-row" style="margin-bottom:10px;">
+      <input class="fi" id="rewardsLookupInput" placeholder="Search by name, email, or phone…" style="flex:1;"/>
+      <button class="btn btn-ghost btn-sm" onclick="runRewardsLookup()">Search</button>
+    </div>
+    <div id="rewardsLookupResults"></div>
+    <div class="empty-state" id="rewardsLookupEmpty" style="display:none;">No matches found</div>
   </div>
 </div>
 
@@ -1391,6 +1468,24 @@ let solConfig={
   ],
   userPrompts:['BOOK A PHOTOSHOOT','CONTACT OASENSE','VIEW PORTFOLIO','OPEN SHOP','SEE PRICING']
 };
+let rewardsConfig={
+  earn:[
+    {label:'Per $1 spent in the shop',points:10},
+    {label:'Leave a product review',points:50},
+    {label:'Subscribe to newsletter',points:100},
+    {label:'Share with #Oasense',points:200},
+    {label:'Like a blog post',points:5},
+    {label:'Refer a friend',points:150},
+    {label:'Birthday bonus',points:500},
+    {label:'Make a donation',points:250}
+  ],
+  redeem:[
+    {label:'$5 off',points:500},
+    {label:'$12 off',points:1000},
+    {label:'$35 off + exclusive digital content',points:2500},
+    {label:'Free product',points:5000}
+  ]
+};
 let siteContent={
   about:{title:'',quote:'',message:'',photo:''},
   portfolio:{
@@ -1424,6 +1519,10 @@ function startFirebaseListeners(){
     const welcomeEl=document.getElementById('dsolWelcome');
     if(welcomeEl&&config.welcome) welcomeEl.textContent=config.welcome+' (DEV MODE ☀️)';
     if(_dsolOpen) renderSolPrompts();
+  });
+  fsRewardsConfigListen(config=>{
+    rewardsConfig = config || rewardsConfig;
+    renderRewardsConfig();
   });
   fsSiteContentListen(config=>{
     siteContent=config;
@@ -1969,7 +2068,15 @@ function renderCRM(){
   const list=document.getElementById('crmList'),empty=document.getElementById('crmEmpty');
   let filtered;
   if(crmFilter==='admin')filtered=people.filter(p=>isAdminPerson(p));
-  else if(crmFilter==='user'){const siteUserNames=new Set(appUsers.map(u=>(u.name||'').toLowerCase()));filtered=people.filter(p=>{if(isAdminPerson(p))return false;return siteUserNames.has((p.name||'').toLowerCase())||p.cat==='user';});}
+  else if(crmFilter==='user'){
+    const siteUserNames=new Set(appUsers.map(u=>(u.name||'').toLowerCase()));
+    const cats=new Set(['user','prospect','client','subscriber']);
+    filtered=people.filter(p=>{
+      if(isAdminPerson(p))return false;
+      const cat=(p.cat||'').toLowerCase();
+      return siteUserNames.has((p.name||'').toLowerCase()) || cats.has(cat);
+    });
+  }
   else if(crmFilter==='all')filtered=people;
   else filtered=people.filter(p=>p.cat===crmFilter&&!isAdminPerson(p));
   const q=(document.getElementById('crmSearchInput')?.value||'').toLowerCase().trim();
@@ -2042,7 +2149,7 @@ function renderCRM(){
             <div style="display:flex;gap:8px;">
               <button class="btn btn-fill btn-sm" onclick="updatePerson(${p.id})">Save</button>
               <button class="btn btn-ghost btn-sm" onclick="toggleEditForm(${p.id})">Cancel</button>
-              ${!isAdminPerson(p)?`<button class="btn btn-red btn-sm" style="margin-left:auto;" onclick="deletePerson(${p.id})">Delete</button>`:'<span style="margin-left:auto;font-family:\'Share Tech Mono\',monospace;font-size:9px;color:rgba(255,59,59,0.4);letter-spacing:1px;padding-top:6px;">ADMIN — cannot delete</span>'}
+              <button class="btn btn-red btn-sm" style="margin-left:auto;" onclick="deletePerson(${p.id})">Delete</button>
             </div>
           </div>
         </div>
@@ -2059,7 +2166,6 @@ async function updatePerson(id){const p=people.find(x=>String(x.id)===String(id)
 async function deletePerson(id){
   const p=people.find(x=>String(x.id)===String(id));
   if(!p)return;
-  if(isAdminPerson(p)){alert('Admin profiles cannot be deleted.');return;}
   if(!confirm('Delete this person?'))return;
   await deletePersonFS(id);
 }
@@ -3152,7 +3258,7 @@ function renderBlog(){
               <span style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--mute);letter-spacing:1px;">
                 ${new Date(p.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
               </span>` : ''}
-              ${live ? `<span class="blog-live-badge">Live</span>` : ''}
+              ${live ? `<span class="blog-live-badge">Live</span>` : `<span class="blog-draft-badge">Draft</span>`}
             </div>
           </div>
           <button class="btn-edit-white" onclick="editBlogPost(${p.id})">Edit</button>
@@ -3161,7 +3267,7 @@ function renderBlog(){
           ${esc(excerpt)}${excerpt.length > 220 ? '…' : ''}
         </div>
         <div class="test-card-actions">
-          <button class="btn-live" onclick="toggleBlogLive(${p.id})">
+          <button class="btn-live" style="display:inline-block;" onclick="toggleBlogLive(${p.id})">
             ${live ? 'Pull Back' : 'Go Live ↗'}
           </button>
           <button class="btn btn-ghost btn-sm" onclick="toggleBlogStats(${p.id})">Stats</button>
@@ -3309,6 +3415,87 @@ async function saveAIConfig(){
   await fsSolConfigSave(solConfig);
 }
 
+/* ═════════════ REWARDS CONFIG ═════════════ */
+function renderRewardsConfig(){
+  const earnWrap = document.getElementById('earnList');
+  const redeemWrap = document.getElementById('redeemList');
+  if(!earnWrap || !redeemWrap) return;
+  const earn = rewardsConfig.earn || [];
+  const redeem = rewardsConfig.redeem || [];
+  earnWrap.innerHTML = earn.map((r,i)=>`
+    <div class="reward-row">
+      <input class="fi" value="${esc(r.label||'')}" onchange="updateReward('earn',${i},'label',this.value)"/>
+      <input class="fi" type="number" value="${r.points||0}" style="max-width:120px;" onchange="updateReward('earn',${i},'points',this.value)"/>
+      <button class="btn btn-red btn-sm" onclick="removeReward('earn',${i})">✕</button>
+    </div>
+  `).join('') || `<div class="empty-state" style="padding:18px 10px;">No earn options yet</div>`;
+  redeemWrap.innerHTML = redeem.map((r,i)=>`
+    <div class="reward-row">
+      <input class="fi" value="${esc(r.label||'')}" onchange="updateReward('redeem',${i},'label',this.value)"/>
+      <input class="fi" type="number" value="${r.points||0}" style="max-width:120px;" onchange="updateReward('redeem',${i},'points',this.value)"/>
+      <button class="btn btn-red btn-sm" onclick="removeReward('redeem',${i})">✕</button>
+    </div>
+  `).join('') || `<div class="empty-state" style="padding:18px 10px;">No redeem options yet</div>`;
+}
+function updateReward(group,idx,field,val){
+  const arr = rewardsConfig[group] || [];
+  if (!arr[idx]) return;
+  arr[idx][field] = field==='points' ? (parseInt(val)||0) : val;
+}
+function removeReward(group,idx){
+  rewardsConfig[group] = (rewardsConfig[group]||[]).filter((_,i)=>i!==idx);
+  renderRewardsConfig();
+}
+function addEarnOption(){
+  const label = (document.getElementById('earnLabelNew')||{}).value?.trim()||'';
+  const points = parseInt((document.getElementById('earnPointsNew')||{}).value||'0')||0;
+  if(!label) return;
+  rewardsConfig.earn = rewardsConfig.earn || [];
+  rewardsConfig.earn.push({label,points});
+  document.getElementById('earnLabelNew').value='';
+  document.getElementById('earnPointsNew').value='';
+  renderRewardsConfig();
+}
+function addRedeemOption(){
+  const label = (document.getElementById('redeemLabelNew')||{}).value?.trim()||'';
+  const points = parseInt((document.getElementById('redeemPointsNew')||{}).value||'0')||0;
+  if(!label) return;
+  rewardsConfig.redeem = rewardsConfig.redeem || [];
+  rewardsConfig.redeem.push({label,points});
+  document.getElementById('redeemLabelNew').value='';
+  document.getElementById('redeemPointsNew').value='';
+  renderRewardsConfig();
+}
+async function saveRewardsConfig(){
+  await fsRewardsConfigSave(rewardsConfig);
+}
+function runRewardsLookup(){
+  const q = (document.getElementById('rewardsLookupInput')||{}).value?.toLowerCase().trim()||'';
+  const res = document.getElementById('rewardsLookupResults');
+  const empty = document.getElementById('rewardsLookupEmpty');
+  if(!res || !empty) return;
+  if(!q){res.innerHTML='';empty.style.display='none';return;}
+  const hits = people.filter(p=>{
+    const hay = [p.name,p.email,p.phone].map(v=>(v||'').toLowerCase()).join(' ');
+    return hay.includes(q);
+  });
+  if(!hits.length){res.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  res.innerHTML = hits.map(p=>{
+    const pts = parseInt(p.points||0)||0;
+    const hist = (p.pointsHistory||[]).slice(0,8);
+    return `
+      <div class="db-lookup-result">
+        <div class="db-lookup-key">CRM · ${esc(p.name||'—')} <span class="reward-chip" style="margin-left:8px;">${pts} PTS</span></div>
+        <div class="db-lookup-field"><div class="db-lookup-field-lbl">Email</div><div>${esc(p.email||'—')}</div></div>
+        <div class="db-lookup-field"><div class="db-lookup-field-lbl">Phone</div><div>${esc(p.phone||'—')}</div></div>
+        <div class="db-lookup-field"><div class="db-lookup-field-lbl">History</div>
+          <div>${hist.length?hist.map(h=>`${(h.delta>0?'+':'')+h.delta} pts · ${esc(h.reason||'')}`).join('<br/>'):'—'}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
 /* ═════════════ DATABASE: USERS / LOOKUP / AUDIT ═════════════ */
 
 function updateUsersBadge(){
@@ -3318,6 +3505,7 @@ function updateUsersBadge(){
   appUsers.forEach(u => {
     const key = (u.email || u.name || '').toLowerCase().trim();
     if (!key) return;
+    if (getAdminKey(u.name || '')) return;
     if (!unique[key] || (u.seenAt || 0) > (unique[key].seenAt||0)) {
       unique[key] = u;
     }
@@ -3383,6 +3571,7 @@ function renderUsers(){
     }
   });
   let arr = Object.values(byKey);
+  arr = arr.filter(u => !getAdminKey(u.name || ''));
 
   if (search){
     arr = arr.filter(u => {
@@ -3602,76 +3791,61 @@ function renderPortfolioSections(){
   if(!wrap)return;
   wrap.innerHTML=PORTFOLIO_SECTIONS.map(sec=>{
     const items=(siteContent.portfolio?.[sec.key]||[]);
-    const previewImgs=items.filter(i=>i.type==='image').map(i=>i.url);
-    const previewVideos=items.filter(i=>i.type==='video').map(i=>i.url);
+    const images=items.filter(i=>i.type==='image');
+    const videos=items.filter(i=>i.type==='video');
+    const video=videos[0];
     return `
-      <div class="content-card" data-sec="${sec.key}">
-        <div class="content-title">${sec.label}</div>
-        <div class="section-preview">
-          <div class="section-preview-title">Hover Preview</div>
-          <div class="section-preview-box" id="preview-${sec.key}">
-            ${previewImgs.map((u,i)=>`<img src="${esc(u)}" class="${i===0?'active':''}" data-idx="${i}"/>`).join('')}
-            ${previewVideos.length?`<video src="${esc(previewVideos[0])}" muted loop playsinline class="${previewImgs.length?'' :'active'}"></video>`:''}
+      <div class="pf-card" data-sec="${sec.key}">
+        <div class="pf-card-head">
+          <div>
+            <div class="pf-card-title">${sec.label}</div>
+            <div class="pf-card-sub">Images: ${images.length} · Video: ${video?1:0}</div>
           </div>
+          <button class="btn btn-ghost btn-sm" onclick="clearSectionMedia('${sec.key}')">Clear</button>
         </div>
         <div class="media-row">
-          <select class="fi fse" id="media-type-${sec.key}" style="max-width:160px;">
-            <option value="image">Image</option>
-            <option value="video">Video</option>
-          </select>
-          <input class="fi" id="media-url-${sec.key}" placeholder="Paste image/video URL"/>
-          <button class="btn btn-ghost btn-sm" onclick="addMediaUrl('${sec.key}')">Add URL</button>
+          <span class="reward-chip">Add Image</span>
+          <input class="fi" id="media-img-url-${sec.key}" placeholder="Paste image URL"/>
+          <button class="btn btn-ghost btn-sm" onclick="addMediaUrl('${sec.key}','image')">Add Image</button>
           <label class="btn btn-ghost btn-sm" style="cursor:pointer;">
-            Upload
-            <input type="file" accept="image/*,video/*" style="display:none;" onchange="addMediaFile('${sec.key}',event)"/>
+            Upload Image
+            <input type="file" accept="image/*" style="display:none;" onchange="addMediaFile('${sec.key}','image',event)"/>
           </label>
         </div>
-        <div class="media-list">
-          ${items.map((m,i)=>`
-            <div class="media-tile">
-              ${m.type==='video'
-                ? `<video class="media-thumb" src="${esc(m.url)}" muted loop playsinline onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>`
-                : `<img class="media-thumb" src="${esc(m.url)}" alt="media"/>`
-              }
-              <div class="media-type">${m.type}</div>
-              <div class="media-actions">
-                <button class="btn btn-red btn-sm" onclick="removeMedia('${sec.key}',${i})">✕</button>
+        <div class="media-row">
+          <span class="reward-chip">Add Video (1 max)</span>
+          <input class="fi" id="media-vid-url-${sec.key}" placeholder="Paste video URL"/>
+          <button class="btn btn-ghost btn-sm" onclick="addMediaUrl('${sec.key}','video')">Add Video</button>
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer;">
+            Upload Video
+            <input type="file" accept="video/*" style="display:none;" onchange="addMediaFile('${sec.key}','video',event)"/>
+          </label>
+        </div>
+        <div class="pf-media-grid">
+          ${images.map((m,i)=>`
+            <div class="pf-tile">
+              <img class="pf-thumb" src="${esc(m.url)}" alt="media"/>
+              <div class="pf-tile-actions">
+                <button class="btn btn-red btn-sm" onclick="removeMedia('${sec.key}',${i},'image')">✕</button>
               </div>
             </div>
           `).join('')}
+          ${video?`
+            <div class="pf-video-slot">
+              <video class="pf-video-thumb" src="${esc(video.url)}" muted loop playsinline></video>
+              <div style="flex:1;">
+                <div class="media-type" style="margin-bottom:6px;">Video</div>
+                <div class="pf-tile-actions">
+                  <button class="btn btn-red btn-sm" onclick="removeMedia('${sec.key}',0,'video')">Remove Video</button>
+                </div>
+              </div>
+            </div>
+          `:''}
+          ${!images.length && !video ? `<div class="empty-state" style="grid-column:1/-1;">No media yet — add images or one video</div>`:''}
         </div>
       </div>
     `;
   }).join('');
-  initPreviewHover();
-}
-
-function initPreviewHover(){
-  PORTFOLIO_SECTIONS.forEach(sec=>{
-    const box=document.getElementById('preview-'+sec.key);
-    if(!box)return;
-    const imgs=[...box.querySelectorAll('img')];
-    const vid=box.querySelector('video');
-    let idx=0, timer=null;
-    box.onmouseenter=()=>{
-      if(vid){vid.classList.add('active');vid.play().catch(()=>{});}
-      if(imgs.length>1){
-        timer=setInterval(()=>{
-          imgs[idx].classList.remove('active');
-          idx=(idx+1)%imgs.length;
-          imgs[idx].classList.add('active');
-        },1200);
-      }
-    };
-    box.onmouseleave=()=>{
-      if(timer){clearInterval(timer);timer=null;}
-      if(imgs.length){
-        imgs.forEach((img,i)=>img.classList.toggle('active',i===0));
-        idx=0;
-      }
-      if(vid){vid.pause();vid.currentTime=0;vid.classList.remove('active');}
-    };
-  });
 }
 
 function setAboutPhotoFromUrl(){
@@ -3693,33 +3867,53 @@ function setAboutPhotoFromFile(e){
   reader.readAsDataURL(file);
 }
 
-function addMediaUrl(sectionKey){
-  const url=document.getElementById('media-url-'+sectionKey).value.trim();
+function addMediaItem(sectionKey,item){
+  const arr=siteContent.portfolio[sectionKey]||[];
+  if(item.type==='video'){
+    const filtered=arr.filter(i=>i.type!=='video');
+    filtered.push(item);
+    siteContent.portfolio[sectionKey]=filtered;
+  }else{
+    arr.push(item);
+    siteContent.portfolio[sectionKey]=arr;
+  }
+}
+function addMediaUrl(sectionKey,type){
+  const inpId = type==='video' ? `media-vid-url-${sectionKey}` : `media-img-url-${sectionKey}`;
+  const url=document.getElementById(inpId).value.trim();
   if(!url)return;
-  const type=document.getElementById('media-type-'+sectionKey).value;
-  siteContent.portfolio[sectionKey]=siteContent.portfolio[sectionKey]||[];
-  siteContent.portfolio[sectionKey].push({type,url});
-  document.getElementById('media-url-'+sectionKey).value='';
+  addMediaItem(sectionKey,{type,url});
+  document.getElementById(inpId).value='';
   renderPortfolioSections();
 }
 
-function addMediaFile(sectionKey,e){
+function addMediaFile(sectionKey,type,e){
   const file=e.target.files[0];
   if(!file)return;
-  const type=file.type.startsWith('video')?'video':'image';
   const reader=new FileReader();
   reader.onload=function(ev){
-    siteContent.portfolio[sectionKey]=siteContent.portfolio[sectionKey]||[];
-    siteContent.portfolio[sectionKey].push({type,url:ev.target.result});
+    addMediaItem(sectionKey,{type,url:ev.target.result});
     renderPortfolioSections();
   };
   reader.readAsDataURL(file);
 }
 
-function removeMedia(sectionKey,idx){
+function removeMedia(sectionKey,idx,type){
   const arr=siteContent.portfolio[sectionKey]||[];
-  arr.splice(idx,1);
-  siteContent.portfolio[sectionKey]=arr;
+  if(type==='video'){
+    siteContent.portfolio[sectionKey]=arr.filter(i=>i.type!=='video');
+  }else{
+    let imgIndex=-1;
+    siteContent.portfolio[sectionKey]=arr.filter(i=>{
+      if(i.type!=='image') return true;
+      imgIndex++;
+      return imgIndex!==idx;
+    });
+  }
+  renderPortfolioSections();
+}
+function clearSectionMedia(sectionKey){
+  siteContent.portfolio[sectionKey]=[];
   renderPortfolioSections();
 }
 
