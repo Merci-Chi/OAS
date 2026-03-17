@@ -769,6 +769,18 @@ section{padding:100px 40px;}
 .col-grid .fi{width:100%;}
 .col-actions{margin-top:14px;display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
 
+/* ── EARN POPUP ── */
+.earn-ov{position:fixed;inset:0;background:rgba(0,0,10,.85);z-index:8245;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(12px);}
+.earn-ov.open{display:flex;}
+.earn-card{background:#000;border:1px solid var(--hot);width:100%;max-width:560px;padding:26px;position:relative;box-shadow:0 0 40px rgba(255,0,200,.3);max-height:80vh;display:flex;flex-direction:column;}
+.earn-close{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--mute);cursor:pointer;font-size:18px;}
+.earn-close:hover{color:var(--hot);}
+.earn-title{font-family:'Black Ops One',sans-serif;font-size:22px;color:#fff;letter-spacing:2px;text-transform:uppercase;}
+.earn-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;overflow:auto;padding-right:4px;}
+.earn-item{display:flex;justify-content:space-between;gap:10px;border:1px solid rgba(255,0,200,0.2);background:rgba(255,0,200,0.04);padding:10px;}
+.earn-item .rp{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--hot);}
+.earn-item .rw{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:#fff;}
+
 /* ── FOOTER ── */
 footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px 36px;position:relative;z-index:10;}
 .ftg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;max-width:1120px;margin:0 auto 48px;}
@@ -1050,15 +1062,14 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
             <textarea class="fta" id="revBody" placeholder="Your review…" style="min-height:80px;"></textarea>
           </div>
           <div style="display:flex;gap:8px;margin-top:10px;">
-            <button class="btn btn-fill btn-sm" onclick="submitReview()">Submit</button>
+        <button class="btn-hot" onclick="submitReview()">Submit Review</button>
             <button class="btn btn-ghost btn-sm" onclick="toggleReviewForm()">Cancel</button>
           </div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:9px;color:rgba(255,204,0,0.4);margin-top:8px;letter-spacing:1px;">Reviews go live after approval.</div>
         </div>
         <div class="tstats">
-          <div class="tstat"><div class="num">4.9★</div><div class="lbl">Avg Rating</div></div>
-          <div class="tstat"><div class="num">120+</div><div class="lbl">Projects</div></div>
-          <div class="tstat"><div class="num">24H</div><div class="lbl">Turnaround</div></div>
+          <div class="tstat"><div class="num" id="testAvgRating">—</div><div class="lbl">Avg Rating</div></div>
+          <div class="tstat"><div class="num" id="testTotalProjects">—</div><div class="lbl">Projects</div></div>
         </div>
       </div>
     </div>
@@ -1078,10 +1089,13 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
       <button class="btn-hot" style="margin-top:20px;" id="rewardsLoginBtn" onclick="oA('login')">Log In to Check Points</button>
     </div>
     <h3 style="font-family:'Black Ops One',sans-serif;font-size:18px;letter-spacing:3px;color:var(--hot);text-transform:uppercase;margin-bottom:22px;">HOW TO EARN SOL POINTS</h3>
-    <div class="rg" id="earnGrid">
-      <div class="ri"><div class="ricon">🛍️</div><div class="rp">10 pts</div><div class="rw">Per $1 spent in the shop</div></div>
+  <div class="rg" id="earnGrid">
+    <div class="ri"><div class="ricon">🛍️</div><div class="rp">10 pts</div><div class="rw">Per $1 spent in the shop</div></div>
+  </div>
+    <div class="rdm"><h4>Redeem Points</h4><div id="redeemList" style="margin-top:12px;"></div></div>
+    <div style="margin-top:14px;">
+      <button class="btn-hot" onclick="openEarnPopup()">How To Earn Points</button>
     </div>
-    <div class="rdm"><h4>Redeem Points</h4><p id="redeemText">500 pts = $5 off · 1,000 pts = $12 off · 2,500 pts = $35 off + exclusive digital content · 5,000 pts = free product</p></div>
   </div>
 </section>
 
@@ -1360,6 +1374,15 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   </div>
 </div>
 
+<!-- EARN POPUP -->
+<div class="earn-ov" id="earnOv" onclick="closeEarnPopup(event)">
+  <div class="earn-card">
+    <button class="earn-close" onclick="closeEarnPopup()">×</button>
+    <div class="earn-title">How To Earn Points</div>
+    <div class="earn-list" id="earnList"></div>
+  </div>
+</div>
+
 <!-- FIREBASE: SITE SETTINGS (ABOUT + DONATION) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -1558,9 +1581,10 @@ function applySiteContent(C){
 
   function applyRewardsConfig(R){
     const earnGrid = document.getElementById('earnGrid');
-    const redeemText = document.getElementById('redeemText');
-    const earn = (R && R.earn) || [];
-    const redeem = (R && R.redeem) || [];
+    const redeemList = document.getElementById('redeemList');
+    const earnList = document.getElementById('earnList');
+    const earn = ((R && R.earn) || []).filter(e => (e.status||'live')==='live');
+    const redeem = ((R && R.redeem) || []).filter(r => (r.status||'live')==='live');
     const icons = ['🛍️','💬','📧','📷','❤️','🔗','🎂','💸','✨','⭐'];
     if (earnGrid){
       earnGrid.innerHTML = earn.length
@@ -1572,10 +1596,24 @@ function applySiteContent(C){
           </div>`).join('')
         : `<div class="ri"><div class="rw">No rewards configured yet</div></div>`;
     }
-    if (redeemText){
-      redeemText.textContent = redeem.length
-        ? redeem.map(r=>`${Number(r.points||0).toLocaleString()} pts = ${r.label}`).join(' · ')
-        : 'Redeem options coming soon';
+    if (redeemList){
+      redeemList.innerHTML = redeem.length
+        ? redeem.map(r=>`
+          <div class="ri" style="margin-bottom:10px;">
+            <div class="ricon">🎁</div>
+            <div class="rp">${Number(r.points||0).toLocaleString()} pts</div>
+            <div class="rw">${fEsc(r.label||'')}</div>
+          </div>`).join('')
+        : `<div class="ri"><div class="rw">Redeem options coming soon</div></div>`;
+    }
+    if (earnList){
+      earnList.innerHTML = earn.length
+        ? earn.map((e,i)=>`
+          <div class="earn-item">
+            <div class="rp">${Number(e.points||0)} pts</div>
+            <div class="rw">${fEsc(e.label||'')}</div>
+          </div>`).join('')
+        : `<div class="earn-item"><div class="rw">No earn options yet</div></div>`;
     }
   }
 
@@ -2869,6 +2907,17 @@ async function updateAccountUI(user){
   if (rb) { rb.textContent = 'View My Rewards'; rb.onclick = () => openRewards(); }
 }
 
+function openEarnPopup(){
+  const ov = document.getElementById('earnOv');
+  if (ov) ov.classList.add('open');
+}
+function closeEarnPopup(e){
+  const ov = document.getElementById('earnOv');
+  if (!ov) return;
+  if (e && e.target && e.target !== ov) return;
+  ov.classList.remove('open');
+}
+
 // ═══════════════════════════════════════════════
 //  TESTIMONIALS — LIVE LOOP
 // ═══════════════════════════════════════════════
@@ -2913,7 +2962,7 @@ function renderTestimonialCard(t, i, active) {
   const quote = t.quote || t.message || t.testimonial || '';
   const lvl = t.level || t.lvl || (20 + i*7);
   const initials = name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
-  const rating = Math.max(1, Math.min(5, Number(t.rating||5)));
+  const rating = Math.max(1, Math.min(5, Number(t.rating || t.stars || 5)));
   const stars = '★★★★★'.slice(0,rating);
   return `<div class="tcard${active?' active':''}" data-idx="${i}">
     <div class="tcard-head">
@@ -2963,8 +3012,19 @@ function subscribeTestimonials(){
     _testimonialsLoaded = true;
     if (!liveRows.length){
       root.innerHTML = renderLoadingBlock('No testimonials yet');
+      const avgEl = document.getElementById('testAvgRating');
+      const totalEl = document.getElementById('testTotalProjects');
+      if (avgEl) avgEl.textContent = '—';
+      if (totalEl) totalEl.textContent = '0';
       return;
     }
+    const total = liveRows.length;
+    const sum = liveRows.reduce((acc,r)=>acc + Math.max(1, Math.min(5, Number(r.rating || r.stars || 5))), 0);
+    const avg = total ? (sum / total) : 0;
+    const avgEl = document.getElementById('testAvgRating');
+    const totalEl = document.getElementById('testTotalProjects');
+    if (avgEl) avgEl.textContent = total ? (Math.round(avg * 10) / 10).toString() : '—';
+    if (totalEl) totalEl.textContent = String(total);
     tIndex = 0;
     root.innerHTML = liveRows.map((t,i)=>renderTestimonialCard(t,i,i===0)).join('');
     showTestimonial(0);
