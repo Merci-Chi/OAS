@@ -37,11 +37,30 @@ try {
 
 let _fbFirstSnapshots = {};
 let _fbLastError = '';
+let _debugEvents = [];
 function setFbDebug(msg){
   const el = document.getElementById('fbDebug');
   if(!el) return;
   el.textContent = msg;
-  el.style.display = 'block';
+}
+function logDebug(type, msg){
+  _debugEvents.unshift({ts:Date.now(),type,msg});
+  if(_debugEvents.length>200)_debugEvents.pop();
+  renderDebugLog();
+}
+function renderDebugLog(){
+  const wrap=document.getElementById('debugLog');
+  const empty=document.getElementById('debugEmpty');
+  if(!wrap||!empty)return;
+  if(!_debugEvents.length){wrap.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  wrap.innerHTML=_debugEvents.map(e=>{
+    const t=new Date(e.ts).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    return `<div class="db-lookup-result" style="margin-bottom:6px;">
+      <div class="db-lookup-key">${e.type.toUpperCase()} · ${t}</div>
+      <div class="db-lookup-field"><div>${esc(e.msg)}</div></div>
+    </div>`;
+  }).join('');
 }
 
 let _unsubscribers = [];
@@ -112,6 +131,7 @@ function fsListen(collection, localArrRef, renderFn) {
     console.error('❌ fsListen error', collection, err.code, err.message);
     _fbLastError = `${collection}: ${err.code || err.message || 'unknown'}`;
     setFbDebug('Firebase error — ' + _fbLastError);
+    logDebug('error', _fbLastError);
     showSync('error', collection + ': ' + err.code);
   });
   _unsubscribers.push(unsub);
@@ -129,6 +149,7 @@ async function fsSolConfigSave(config) {
   const timeoutMs = 8000;
   if (navigator && navigator.onLine === false) {
     showSync('error','Offline — cannot save');
+    logDebug('error','Offline — cannot save');
     return false;
   }
   try { await db.enableNetwork(); } catch(e) {}
@@ -153,10 +174,12 @@ async function fsSolConfigSave(config) {
       }catch(e2){
         console.error('❌ fsSolConfigSave retry failed', e2);
         showSync('error','Save timed out (network blocked)');
+        logDebug('error','Save timed out (network blocked)');
         return false;
       }
     }
     showSync('error','Save failed: '+(e.code||e.message||'unknown'));
+    logDebug('error','Save failed: '+(e.code||e.message||'unknown'));
     return false;
   }
 }
@@ -831,8 +854,9 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <a class="sb-link" onclick="showSection('newsletter',this)"><span class="sb-icon">📬</span><span>Newsletter</span></a>
   <a class="sb-link" onclick="showSection('testimonials',this)"><span class="sb-icon">⭐</span><span>Testimonials</span><span class="sb-badge" id="testBadge">0</span></a>
   <div class="sb-section">System</div>
-  <a class="sb-link" onclick="showSection('aiprompts',this)"><span class="sb-icon">🤖</span><span>AI Prompts</span></a>
+  <a class="sb-link" onclick="showSection('aiprompts',this)"><span class="sb-icon">🤖</span><span>AI SYSTEM</span></a>
   <a class="sb-link" onclick="showSection('database',this)"><span class="sb-icon">🗄️</span><span>Database</span><span class="sb-badge" id="usersBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('debug',this)"><span class="sb-icon">🧪</span><span>Debug</span></a>
   <div class="sb-firebase"><div class="sb-fb-dot"></div><span>Firebase Live</span></div>
   <div class="sb-section" style="margin-top:auto;">Links</div>
   <a class="sb-link" href="https://merci-chi.github.io/OAS/" target="_blank"><span class="sb-icon">🌐</span><span>Live Site</span></a>
@@ -1189,10 +1213,6 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 <div class="dev-section" id="sec-database">
   <div class="topbar"><div><div class="panel-title">Data<span class="hot">base</span></div><div class="panel-sub">// Audit Log · User Registry · DB Lookup · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openAddUser()">+ Add User</button></div></div>
   <div class="vhs-line"></div>
-  <div class="card" id="fbDebugCard">
-    <div class="content-title">System Debug</div>
-    <div id="fbDebug">Firebase: connecting…</div>
-  </div>
   <div id="addUserFormWrap" class="card" style="display:none;margin-bottom:22px;">
     <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">ADD USER</div>
     <div class="row row-3">
@@ -1259,7 +1279,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 
   <div class="rewards-grid">
     <div class="card">
-      <div class="content-title">How To Earn</div>
+      <div class="content-title">How To Earn Points</div>
       <div class="reward-list" id="earnList"></div>
       <div class="reward-row" style="margin-top:10px;">
         <input class="fi" id="earnLabelNew" placeholder="Label e.g. Leave a review"/>
@@ -1268,7 +1288,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
       </div>
     </div>
     <div class="card">
-      <div class="content-title">Redeem Options</div>
+      <div class="content-title">Redeem Points</div>
       <div class="reward-list" id="redeemList"></div>
       <div class="reward-row" style="margin-top:10px;">
         <input class="fi" id="redeemLabelNew" placeholder="Label e.g. $5 off"/>
@@ -1286,6 +1306,26 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
     </div>
     <div id="rewardsLookupResults"></div>
     <div class="empty-state" id="rewardsLookupEmpty" style="display:none;">No matches found</div>
+  </div>
+</div>
+
+<!-- DEBUG -->
+<div class="dev-section" id="sec-debug">
+  <div class="topbar">
+    <div>
+      <div class="panel-title">Sys<span class="hot">tem</span> Debug</div>
+      <div class="panel-sub">// Errors · Warnings · Firebase Status</div>
+    </div>
+  </div>
+  <div class="vhs-line"></div>
+  <div class="card">
+    <div class="content-title">Firebase Status</div>
+    <div id="fbDebug">Firebase: connecting…</div>
+  </div>
+  <div class="card">
+    <div class="content-title">Error Log</div>
+    <div id="debugLog"></div>
+    <div class="empty-state" id="debugEmpty">No errors yet</div>
   </div>
 </div>
 
@@ -1505,20 +1545,20 @@ let solConfig={
 };
 let rewardsConfig={
   earn:[
-    {label:'Per $1 spent in the shop',points:10},
-    {label:'Leave a product review',points:50},
-    {label:'Subscribe to newsletter',points:100},
-    {label:'Share with #Oasense',points:200},
-    {label:'Like a blog post',points:5},
-    {label:'Refer a friend',points:150},
-    {label:'Birthday bonus',points:500},
-    {label:'Make a donation',points:250}
+    {label:'Per $1 spent in the shop',points:10,status:'live'},
+    {label:'Leave a product review',points:50,status:'live'},
+    {label:'Subscribe to newsletter',points:100,status:'live'},
+    {label:'Share with #Oasense',points:200,status:'live'},
+    {label:'Like a blog post',points:5,status:'live'},
+    {label:'Refer a friend',points:150,status:'live'},
+    {label:'Birthday bonus',points:500,status:'live'},
+    {label:'Make a donation',points:250,status:'live'}
   ],
   redeem:[
-    {label:'$5 off',points:500},
-    {label:'$12 off',points:1000},
-    {label:'$35 off + exclusive digital content',points:2500},
-    {label:'Free product',points:5000}
+    {label:'$5 off',points:500,status:'live'},
+    {label:'$12 off',points:1000,status:'live'},
+    {label:'$35 off + exclusive digital content',points:2500,status:'live'},
+    {label:'Free product',points:5000,status:'live'}
   ]
 };
 let siteContent={
@@ -1569,6 +1609,7 @@ function startFirebaseListeners(){
     if(!hasAny && !_fbLastError){
       setFbDebug('Firebase: no response (blocked?)');
       showSync('error','No Firestore response');
+      logDebug('error','No Firestore response (blocked?)');
     }else{
       showSync('synced','Firebase Connected');
     }
@@ -3485,6 +3526,10 @@ function renderRewardsConfig(){
     <div class="reward-row">
       <input class="fi" value="${esc(r.label||'')}" onchange="updateReward('earn',${i},'label',this.value)"/>
       <input class="fi" type="number" value="${r.points||0}" style="max-width:120px;" onchange="updateReward('earn',${i},'points',this.value)"/>
+      <select class="fi fse" style="max-width:120px;" onchange="updateReward('earn',${i},'status',this.value)">
+        <option value="live" ${r.status==='live'?'selected':''}>Live</option>
+        <option value="draft" ${r.status==='draft'?'selected':''}>Draft</option>
+      </select>
       <button class="btn btn-red btn-sm" onclick="removeReward('earn',${i})">✕</button>
     </div>
   `).join('') || `<div class="empty-state" style="padding:18px 10px;">No earn options yet</div>`;
@@ -3492,6 +3537,10 @@ function renderRewardsConfig(){
     <div class="reward-row">
       <input class="fi" value="${esc(r.label||'')}" onchange="updateReward('redeem',${i},'label',this.value)"/>
       <input class="fi" type="number" value="${r.points||0}" style="max-width:120px;" onchange="updateReward('redeem',${i},'points',this.value)"/>
+      <select class="fi fse" style="max-width:120px;" onchange="updateReward('redeem',${i},'status',this.value)">
+        <option value="live" ${r.status==='live'?'selected':''}>Live</option>
+        <option value="draft" ${r.status==='draft'?'selected':''}>Draft</option>
+      </select>
       <button class="btn btn-red btn-sm" onclick="removeReward('redeem',${i})">✕</button>
     </div>
   `).join('') || `<div class="empty-state" style="padding:18px 10px;">No redeem options yet</div>`;
@@ -3499,7 +3548,8 @@ function renderRewardsConfig(){
 function updateReward(group,idx,field,val){
   const arr = rewardsConfig[group] || [];
   if (!arr[idx]) return;
-  arr[idx][field] = field==='points' ? (parseInt(val)||0) : val;
+  if (field==='points') arr[idx][field] = parseInt(val)||0;
+  else arr[idx][field] = val;
 }
 function removeReward(group,idx){
   rewardsConfig[group] = (rewardsConfig[group]||[]).filter((_,i)=>i!==idx);
@@ -3510,7 +3560,7 @@ function addEarnOption(){
   const points = parseInt((document.getElementById('earnPointsNew')||{}).value||'0')||0;
   if(!label) return;
   rewardsConfig.earn = rewardsConfig.earn || [];
-  rewardsConfig.earn.push({label,points});
+  rewardsConfig.earn.push({label,points,status:'draft'});
   document.getElementById('earnLabelNew').value='';
   document.getElementById('earnPointsNew').value='';
   renderRewardsConfig();
@@ -3520,7 +3570,7 @@ function addRedeemOption(){
   const points = parseInt((document.getElementById('redeemPointsNew')||{}).value||'0')||0;
   if(!label) return;
   rewardsConfig.redeem = rewardsConfig.redeem || [];
-  rewardsConfig.redeem.push({label,points});
+  rewardsConfig.redeem.push({label,points,status:'draft'});
   document.getElementById('redeemLabelNew').value='';
   document.getElementById('redeemPointsNew').value='';
   renderRewardsConfig();
