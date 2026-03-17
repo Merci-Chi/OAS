@@ -1401,17 +1401,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
     limit,
     getDocs
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-  import {
-    getAuth,
-    GoogleAuthProvider,
-    OAuthProvider,
-    signInWithPopup,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    updateProfile,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  // Auth imports removed — auth disabled on main site
 
   const firebaseConfig = {
     apiKey: "AIzaSyBn3RhtO7-EN6w5urGlTBEipENbgOqrUto",
@@ -1425,34 +1415,9 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
 
   const app = initializeApp(firebaseConfig);
   const fdb = initializeFirestore(app, { experimentalForceLongPolling: true, useFetchStreams: false });
-  const auth = getAuth(app);
-  const googleProvider = new GoogleAuthProvider();
-  const appleProvider = new OAuthProvider('apple.com');
-  const upsertAppUser = async (user, extra={}) => {
-    if (!user) return;
-    const ref = doc(fdb, 'appUsers', String(user.uid));
-    const base = {
-      id: String(user.uid),
-      name: user.displayName || extra.name || '',
-      email: user.email || '',
-      seenAt: Date.now(),
-      provider: (user.providerData && user.providerData[0] && user.providerData[0].providerId) || 'email'
-    };
-    await setDoc(ref, { ...base, ...extra }, { merge: true });
-  };
+  const upsertAppUser = async () => {};
   window.fb = { fdb, collection, query, where, orderBy, limit, onSnapshot, getDocs, doc, setDoc, getDoc };
-  window.fbAuth = {
-    auth,
-    googleProvider,
-    appleProvider,
-    signInWithPopup,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    updateProfile,
-    onAuthStateChanged,
-    signOut,
-    upsertAppUser
-  };
+  window.fbAuth = null;
   window.solConfig = window.solConfig || {api_url:'',api_model:'@cf/meta/llama-3.1-8b-instruct',api_enabled:false,api_key:'',welcome:'',rules:'',fallback_enabled:false,fallback_keywords:''};
 
   const fEsc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
@@ -2694,7 +2659,14 @@ async function sSol(){
 }
 
 // Auth
-function oA(t){document.getElementById('ov').classList.add('open');swA(t);}
+function oA(t){
+  if (!window.fbAuth){
+    toast('LOGIN DISABLED ON MAIN SITE');
+    return;
+  }
+  document.getElementById('ov').classList.add('open');
+  swA(t);
+}
 function cA(){document.getElementById('ov').classList.remove('open');}
 function cAOut(e){if(e.target===document.getElementById('ov'))cA();}
 function swA(t){document.getElementById('lv').style.display=t==='login'?'block':'none';document.getElementById('sv').style.display=t==='signup'?'block':'none';}
@@ -2857,7 +2829,7 @@ document.addEventListener('click', (e)=>{
   if (wrap && !wrap.contains(e.target)) closeAcctMenu();
 });
 async function doLogout(){
-  if (!window.fbAuth) return;
+  if (!window.fbAuth) { toast('LOGIN DISABLED'); return; }
   await window.fbAuth.signOut(window.fbAuth.auth);
   toast('SIGNED OUT');
 }
@@ -3061,6 +3033,16 @@ if (window.fbAuth){
     if (user) window.fbAuth.upsertAppUser(user);
   });
   updateAccountUI(window.fbAuth.auth.currentUser);
+} else {
+  const btns = document.querySelector('.nav-btns');
+  if (btns){
+    const loginBtn = btns.querySelector('.nbl');
+    const signupBtn = btns.querySelector('.nbr');
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (signupBtn) signupBtn.style.display = 'none';
+  }
+  const rb = document.getElementById('rewardsLoginBtn');
+  if (rb) { rb.textContent = 'Login Unavailable'; rb.onclick = () => toast('LOGIN DISABLED'); }
 }
 
 
