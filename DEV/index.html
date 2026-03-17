@@ -48,6 +48,20 @@ function logDebug(type, msg){
   if(_debugEvents.length>200)_debugEvents.pop();
   renderDebugLog();
 }
+async function debugPingFirestore(){
+  if(!db){logDebug('error','Ping: Firestore not initialized');return;}
+  const t0 = Date.now();
+  try{
+    const snap = await db.collection('solConfig').doc('main').get();
+    const ms = Date.now() - t0;
+    logDebug('info', `Ping: solConfig/main ${snap.exists?'OK':'MISSING'} (${ms}ms)`);
+    setFbDebug('Firebase: connected');
+  }catch(e){
+    const code = e.code || e.message || 'unknown';
+    logDebug('error', `Ping failed: ${code}`);
+    setFbDebug('Firebase error — ' + code);
+  }
+}
 function renderDebugLog(){
   const wrap=document.getElementById('debugLog');
   const empty=document.getElementById('debugEmpty');
@@ -1351,6 +1365,9 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="card">
     <div class="content-title">Firebase Status</div>
     <div id="fbDebug">Firebase: connecting…</div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" onclick="debugPingFirestore()">Ping Firestore</button>
+    </div>
   </div>
   <div class="card">
     <div class="content-title">Error Log</div>
@@ -1645,6 +1662,7 @@ function startFirebaseListeners(){
     }
     setTimeout(()=>{archiveOldEntries();loadArchiveMonthList();},3000);
   },12000);
+  setTimeout(()=>{debugPingFirestore();},2000);
 }
 
 // ── SAVE/DELETE WRAPPERS ──
