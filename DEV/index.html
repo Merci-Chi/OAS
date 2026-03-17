@@ -12,14 +12,14 @@
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyDlHu_4elXWPeckr6C7JWbcJaLrpnDpGnc",
-  authDomain: "oasense-a4582.firebaseapp.com",
-  databaseURL: "https://oasense-a4582-default-rtdb.firebaseio.com",
-  projectId: "oasense-a4582",
-  storageBucket: "oasense-a4582.firebasestorage.app",
-  messagingSenderId: "517676734280",
-  appId: "1:517676734280:web:63644bb6ffb0c43185c57d",
-  measurementId: "G-HQRCX63FYG"
+  apiKey: "AIzaSyBn3RhtO7-EN6w5urGlTBEipENbgOqrUto",
+  authDomain: "oasense-556ec.firebaseapp.com",
+  databaseURL: "https://oasense-556ec-default-rtdb.firebaseio.com",
+  projectId: "oasense-556ec",
+  storageBucket: "oasense-556ec.firebasestorage.app",
+  messagingSenderId: "278957207508",
+  appId: "1:278957207508:web:6b714063cd75a971f2b041",
+  measurementId: "G-2Z3Q2XF1EQ"
 };
 
 let db;
@@ -30,6 +30,8 @@ try {
     if(err.code==='failed-precondition') console.warn('Persistence: multiple tabs open');
     else if(err.code==='unimplemented') console.warn('Persistence not available');
   });
+  db.enableNetwork().then(()=>{ if (typeof logDebug === 'function') logDebug('info','Firestore network enabled'); })
+    .catch(e=>{ if (typeof logDebug === 'function') logDebug('error','Firestore enableNetwork failed: '+(e.code||e.message||'unknown')); });
   console.log('✅ Firebase initialized OK');
 } catch(e) {
   console.error('❌ Firebase init failed:', e);
