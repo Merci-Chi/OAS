@@ -134,7 +134,7 @@ section{padding:100px 40px;}
 .sp-img-placeholder-label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,204,0,0.5);text-transform:uppercase;}
 
 /* badges */
-.sp-badge{position:absolute;top:12px;left:12px;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Share Tech Mono',monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;z-index:4;text-align:center;line-height:1.1;box-shadow:0 0 14px rgba(0,0,0,0.6);}
+.sp-badge{position:absolute;top:12px;left:12px;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Black Ops One',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;z-index:4;text-align:center;line-height:1.1;box-shadow:0 0 14px rgba(0,0,0,0.6);}
 .sp-badge.pct{background:radial-gradient(circle,#00ff88,#007744);color:#000;}
 .sp-badge.new{background:radial-gradient(circle,#00e5ff,#0050ff);color:#fff;}
 .sp-badge.hot{background:radial-gradient(circle,#ff6600,#cc0000);color:#fff;}
@@ -1848,7 +1848,6 @@ function renderPromoCard(item) {
       </div>
       <div class="sp-info">
         <div class="sp-name">${_esc(item.title)}</div>
-        ${item.desc ? `<div class="sp-desc">${_esc(item.desc.substring(0,120))}${item.desc.length>120?'…':''}</div>` : ''}
         <div class="sp-price-row">
           ${priceBlock}
           <a class="sp-cta" href="${_esc(item.shopUrl)}" target="_blank" onclick="event.stopPropagation()">Shop →</a>
