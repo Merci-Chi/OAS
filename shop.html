@@ -527,6 +527,7 @@ let db;
 try {
   if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   db = firebase.firestore();
+  db.settings({ experimentalForceLongPolling: true, useFetchStreams: false });
 } catch(e) {
   console.error('Firebase init failed:', e);
 }
@@ -617,6 +618,7 @@ function startShopListener() {
           badge:       d.badge       || '',
           img:         d.img         || '',
           img2:        d.img2        || '',
+          promo:       !!d.promo,
           sold:        d.sold        || 0,
           createdAt:   d.createdAt   || '',
           _isNew:      !_knownIds.has(String(d.id)) && !_initialLoad,
@@ -624,13 +626,15 @@ function startShopListener() {
       });
 
       // Update state
-      allItems = newItems;
+      const promoItems = newItems.filter(i => i.promo);
+      promoItems.sort((a,b) => new Date(b.createdAt||0) - new Date(a.createdAt||0));
+      allItems = promoItems.slice(0,4);
       _knownIds = freshIds;
       _initialLoad = false;
 
       // Update sync dot
-      const count = newItems.length;
-      setSyncDot('live', `${count} item${count !== 1 ? 's' : ''} · Live`);
+      const count = allItems.length;
+      setSyncDot('live', `${count} promo${count !== 1 ? 's' : ''} · Live`);
 
       renderGrid();
 
@@ -683,8 +687,8 @@ function renderGrid() {
   if (!items.length) {
     grid.innerHTML = `<div class="empty-state">
       <div class="empty-icon">🌌</div>
-      <div class="empty-title">${allItems.length === 0 ? 'Shop Coming Soon' : 'No Items Found'}</div>
-      <div class="empty-sub">${allItems.length === 0 ? 'Items will appear here the moment they go live ✨' : 'Try adjusting your filters or search'}</div>
+      <div class="empty-title">${allItems.length === 0 ? 'No Promos Yet' : 'No Items Found'}</div>
+      <div class="empty-sub">${allItems.length === 0 ? 'Promo items will appear here once they are marked ★ Promo in DEV ✨' : 'Try adjusting your filters or search'}</div>
     </div>`;
     return;
   }
