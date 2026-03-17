@@ -114,19 +114,36 @@ function fsSolConfigListen(onUpdate) {
 async function fsSolConfigSave(config) {
   showSync('syncing','Saving…');
   const timeoutMs = 8000;
-  const writePromise = db.collection('solConfig').doc('main').set(fsSafe(config));
-  const timeoutPromise = new Promise((_, rej)=>setTimeout(()=>rej(new Error('TIMEOUT')), timeoutMs));
+  if (navigator && navigator.onLine === false) {
+    showSync('error','Offline — cannot save');
+    return false;
+  }
+  try { await db.enableNetwork(); } catch(e) {}
+  const doWrite = () => db.collection('solConfig').doc('main').set(fsSafe(config));
+  const withTimeout = (p) => Promise.race([
+    p,
+    new Promise((_, rej)=>setTimeout(()=>rej(new Error('TIMEOUT')), timeoutMs))
+  ]);
   try {
-    await Promise.race([writePromise, timeoutPromise]);
+    await withTimeout(doWrite());
     showSync('synced','Saved ✓');
     return true;
   } catch(e) {
     console.error('❌ fsSolConfigSave', e);
     if (e && e.message === 'TIMEOUT') {
-      showSync('error','Save timed out (rules/App Check?)');
-    } else {
-      showSync('error','Save failed: '+(e.code||e.message||'unknown'));
+      // retry once after a short delay
+      try{
+        await new Promise(r=>setTimeout(r,600));
+        await withTimeout(doWrite());
+        showSync('synced','Saved ✓');
+        return true;
+      }catch(e2){
+        console.error('❌ fsSolConfigSave retry failed', e2);
+        showSync('error','Save timed out (network blocked)');
+        return false;
+      }
     }
+    showSync('error','Save failed: '+(e.code||e.message||'unknown'));
     return false;
   }
 }
