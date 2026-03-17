@@ -1749,7 +1749,7 @@ function loadShop(){
     const badgeRank = b => b==='%'?0:b==='New!'?1:b==='Hot!'?2:b==='Ltd'?3:4;
     items.sort((a,b) => badgeRank(a.badge) - badgeRank(b.badge));
     const promo = items.filter(i => i.promo === true).slice(0,4);
-    if (promo.length < 4) { root.innerHTML = renderShopEmpty(); return; }
+    if (promo.length === 0) { root.innerHTML = renderShopEmpty(); return; }
     root.innerHTML = promo.map(item => renderPromoCard({
       id: item.id,
       title: item.title || item.name || '',
