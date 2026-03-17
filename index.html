@@ -107,11 +107,12 @@ section{padding:100px 40px;}
 .sp-card:hover::after{border-color:rgba(255,204,0,0.7);box-shadow:inset 0 0 20px rgba(255,204,0,0.04),0 0 40px rgba(255,136,0,0.12);}
 .sp-inner{width:100%;}
 .sp-face{width:100%;}
-.sp-img-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,0,.2,1);z-index:1;pointer-events:none;}
+.sp-img-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,0,.2,1);z-index:1;pointer-events:none;will-change:transform;}
 .sp-img-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;}
 .sp-img-face img{width:100%;height:100%;object-fit:cover;}
 .sp-img-face.back{transform:rotateY(180deg);}
-.sp-card.has-flip:hover .sp-img-inner{transform:rotateY(180deg);}
+.sp-card.has-flip .sp-img-inner{transform:rotateY(0deg);}
+.sp-card.has-flip.flip-on .sp-img-inner{transform:rotateY(180deg)!important;}
 
 /* ── IMAGE ZONE — vivid gradient placeholder when no photo ── */
 .sp-img{
@@ -1874,6 +1875,14 @@ function renderPromoCard(item) {
   </div>`;
 }
 function initShopFlip() {
+  document.querySelectorAll('.sp-card.has-flip').forEach(card => {
+    const on = () => card.classList.add('flip-on');
+    const off = () => card.classList.remove('flip-on');
+    card.addEventListener('pointerenter', on);
+    card.addEventListener('pointerleave', off);
+    card.addEventListener('mouseenter', on);
+    card.addEventListener('mouseleave', off);
+  });
   document.querySelectorAll('.sp-card').forEach(card => {
     card.addEventListener('click', e => {
       if (e.target.closest('.sp-cta')) return;
