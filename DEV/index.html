@@ -35,6 +35,15 @@ try {
   console.error('❌ Firebase init failed:', e);
 }
 
+let _fbFirstSnapshots = {};
+let _fbLastError = '';
+function setFbDebug(msg){
+  const el = document.getElementById('fbDebug');
+  if(!el) return;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
 let _unsubscribers = [];
 function unsubscribeAll(){ _unsubscribers.forEach(fn=>{try{fn();}catch(e){}});_unsubscribers=[]; }
 
@@ -91,6 +100,8 @@ async function fsDelete(collection, id, localArr, renderFn) {
 
 function fsListen(collection, localArrRef, renderFn) {
   const unsub = db.collection(collection).onSnapshot(snap => {
+    if(!_fbFirstSnapshots[collection]) _fbFirstSnapshots[collection] = Date.now();
+    setFbDebug('Firebase: connected');
     const items = [];
     snap.forEach(doc => items.push(doc.data()));
     items.sort((a,b) => (b.id||0) - (a.id||0));
@@ -99,6 +110,8 @@ function fsListen(collection, localArrRef, renderFn) {
     renderFn();
   }, err => {
     console.error('❌ fsListen error', collection, err.code, err.message);
+    _fbLastError = `${collection}: ${err.code || err.message || 'unknown'}`;
+    setFbDebug('Firebase error — ' + _fbLastError);
     showSync('error', collection + ': ' + err.code);
   });
   _unsubscribers.push(unsub);
@@ -212,6 +225,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 #scanlines{position:fixed;inset:0;pointer-events:none;z-index:9998;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,204,0,0.012) 2px,rgba(255,204,0,0.012) 4px);}
 
 #syncStatus{position:fixed;bottom:16px;right:16px;z-index:9990;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;padding:6px 14px;border-radius:2px;display:none;transition:all .3s;}
+#fbDebug{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:rgba(255,204,0,0.7);}
 #syncStatus.syncing{display:block;background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.4);color:var(--hot);}
 #syncStatus.synced{display:block;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);color:var(--green);}
 #syncStatus.error{display:block;background:rgba(255,59,59,0.1);border:1px solid rgba(255,59,59,0.4);color:var(--red);}
@@ -808,6 +822,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <a class="sb-link" onclick="showSection('orders',this)"><span class="sb-icon">🧾</span><span>Orders</span><span class="sb-badge" id="orderBadge">0</span></a>
   <a class="sb-link" onclick="showSection('donations',this)"><span class="sb-icon">💝</span><span>Donations</span></a>
   <a class="sb-link" onclick="showSection('invoices',this)"><span class="sb-icon">💳</span><span>Invoices</span><span class="sb-badge" id="invBadge">0</span></a>
+  <a class="sb-link" onclick="showSection('rewards',this)"><span class="sb-icon">🎁</span><span>Rewards</span></a>
   <div class="sb-section">Content</div>
   <a class="sb-link" onclick="showSection('blog',this)"><span class="sb-icon">✍️</span><span>Blog</span><span class="sb-badge" id="blogBadge">0</span></a>
   <a class="sb-link" onclick="showSection('music',this)"><span class="sb-icon">🎵</span><span>Music</span></a>
@@ -818,7 +833,6 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="sb-section">System</div>
   <a class="sb-link" onclick="showSection('aiprompts',this)"><span class="sb-icon">🤖</span><span>AI Prompts</span></a>
   <a class="sb-link" onclick="showSection('database',this)"><span class="sb-icon">🗄️</span><span>Database</span><span class="sb-badge" id="usersBadge">0</span></a>
-  <a class="sb-link" onclick="showSection('rewards',this)"><span class="sb-icon">🎁</span><span>Rewards</span></a>
   <div class="sb-firebase"><div class="sb-fb-dot"></div><span>Firebase Live</span></div>
   <div class="sb-section" style="margin-top:auto;">Links</div>
   <a class="sb-link" href="https://merci-chi.github.io/OAS/" target="_blank"><span class="sb-icon">🌐</span><span>Live Site</span></a>
@@ -1175,6 +1189,10 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 <div class="dev-section" id="sec-database">
   <div class="topbar"><div><div class="panel-title">Data<span class="hot">base</span></div><div class="panel-sub">// Audit Log · User Registry · DB Lookup · 🔥 Firebase Synced</div></div><div class="topbar-actions"><button class="btn btn-sm" onclick="openAddUser()">+ Add User</button></div></div>
   <div class="vhs-line"></div>
+  <div class="card" id="fbDebugCard">
+    <div class="content-title">System Debug</div>
+    <div id="fbDebug">Firebase: connecting…</div>
+  </div>
   <div id="addUserFormWrap" class="card" style="display:none;margin-bottom:22px;">
     <div style="font-family:'Black Ops One',sans-serif;font-size:15px;letter-spacing:3px;color:var(--hot);margin-bottom:16px;">ADD USER</div>
     <div class="row row-3">
@@ -1517,6 +1535,7 @@ let siteContent={
 // ── FIREBASE LISTENERS ──
 function startFirebaseListeners(){
   showSync('syncing','Connecting to Firebase…');
+  setFbDebug('Firebase: connecting…');
   fsListen('bookings',   bookings,     renderBookings);
   fsListen('crm',        people,       ()=>{ensureCRMIds();dedupPeople();renderCRM();updateCRMBadge();});
   fsListen('shopItems',  shopItems,    ()=>{renderShop();});
@@ -1545,7 +1564,16 @@ function startFirebaseListeners(){
     siteContent=config;
     renderSiteContent();
   });
-  setTimeout(()=>{showSync('synced','Firebase Connected');setTimeout(()=>{archiveOldEntries();loadArchiveMonthList();},3000);},2000);
+  setTimeout(()=>{
+    const hasAny = Object.keys(_fbFirstSnapshots).length > 0;
+    if(!hasAny && !_fbLastError){
+      setFbDebug('Firebase: no response (blocked?)');
+      showSync('error','No Firestore response');
+    }else{
+      showSync('synced','Firebase Connected');
+    }
+    setTimeout(()=>{archiveOldEntries();loadArchiveMonthList();},3000);
+  },4000);
 }
 
 // ── SAVE/DELETE WRAPPERS ──
