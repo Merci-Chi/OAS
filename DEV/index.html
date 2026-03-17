@@ -96,6 +96,7 @@ async function fsSet(collection, item, localArr, renderFn) {
     showSync('synced', 'Saved ✓');
   } catch(e) {
     console.error('❌ fsSet error', collection, docId, e);
+    logDebug('error', `${collection} save failed: ${e.code || e.message || 'unknown'}`);
     showSync('error', 'Save failed: ' + e.code);
   }
 }
@@ -113,6 +114,7 @@ async function fsDelete(collection, id, localArr, renderFn) {
     showSync('synced', 'Deleted ✓');
   } catch(e) {
     console.error('❌ fsDelete error', collection, docId, e);
+    logDebug('error', `${collection} delete failed: ${e.code || e.message || 'unknown'}`);
     showSync('error', 'Delete failed: ' + e.code);
   }
 }
@@ -139,8 +141,15 @@ function fsListen(collection, localArrRef, renderFn) {
 
 function fsSolConfigListen(onUpdate) {
   const unsub = db.collection('solConfig').doc('main').onSnapshot(snap => {
+    if(!_fbFirstSnapshots.solConfig) _fbFirstSnapshots.solConfig = Date.now();
+    setFbDebug('Firebase: connected');
     if (snap.exists) onUpdate(snap.data());
-  }, err => console.error('❌ solConfig listen error', err));
+  }, err => {
+    console.error('❌ solConfig listen error', err);
+    _fbLastError = `solConfig: ${err.code || err.message || 'unknown'}`;
+    setFbDebug('Firebase error — ' + _fbLastError);
+    logDebug('error', _fbLastError);
+  });
   _unsubscribers.push(unsub);
 }
 
@@ -186,28 +195,49 @@ async function fsSolConfigSave(config) {
 
 function fsSiteContentListen(onUpdate){
   const unsub = db.collection('siteContent').doc('main').onSnapshot(snap => {
+    if(!_fbFirstSnapshots.siteContent) _fbFirstSnapshots.siteContent = Date.now();
+    setFbDebug('Firebase: connected');
     if (snap.exists) onUpdate(snap.data());
-  }, err => console.error('❌ siteContent listen error', err));
+  }, err => {
+    console.error('❌ siteContent listen error', err);
+    _fbLastError = `siteContent: ${err.code || err.message || 'unknown'}`;
+    setFbDebug('Firebase error — ' + _fbLastError);
+    logDebug('error', _fbLastError);
+  });
   _unsubscribers.push(unsub);
 }
 
 async function fsSiteContentSave(config){
   showSync('syncing','Saving…');
   try { await db.collection('siteContent').doc('main').set(fsSafe(config)); showSync('synced','Saved ✓'); }
-  catch(e) { console.error('❌ fsSiteContentSave', e); showSync('error','Save failed: '+e.code); }
+  catch(e) {
+    console.error('❌ fsSiteContentSave', e);
+    logDebug('error', `siteContent save failed: ${e.code || e.message || 'unknown'}`);
+    showSync('error','Save failed: '+e.code);
+  }
 }
 
 function fsRewardsConfigListen(onUpdate){
   const unsub = db.collection('rewardsConfig').doc('main').onSnapshot(snap => {
     if (snap.exists) onUpdate(snap.data());
-  }, err => console.error('❌ rewardsConfig listen error', err));
+  }, err => {
+    console.error('❌ rewardsConfig listen error', err);
+    _fbLastError = `rewardsConfig: ${err.code || err.message || 'unknown'}`;
+    setFbDebug('Firebase error — ' + _fbLastError);
+    logDebug('error', _fbLastError);
+  });
   _unsubscribers.push(unsub);
 }
 
 async function fsRewardsConfigSave(config){
   showSync('syncing','Saving…');
   try { await db.collection('rewardsConfig').doc('main').set(fsSafe(config)); showSync('synced','Saved ✓'); return true; }
-  catch(e) { console.error('❌ fsRewardsConfigSave', e); showSync('error','Save failed: '+e.code); return false; }
+  catch(e) {
+    console.error('❌ fsRewardsConfigSave', e);
+    logDebug('error', `rewardsConfig save failed: ${e.code || e.message || 'unknown'}`);
+    showSync('error','Save failed: '+e.code);
+    return false;
+  }
 }
 
 async function fsAuditPush(entry) {
@@ -1607,14 +1637,14 @@ function startFirebaseListeners(){
   setTimeout(()=>{
     const hasAny = Object.keys(_fbFirstSnapshots).length > 0;
     if(!hasAny && !_fbLastError){
-      setFbDebug('Firebase: no response (blocked?)');
+      setFbDebug('Firebase: no response yet (check rules/network)');
       showSync('error','No Firestore response');
-      logDebug('error','No Firestore response (blocked?)');
+      logDebug('error','No Firestore response yet (check rules/network)');
     }else{
       showSync('synced','Firebase Connected');
     }
     setTimeout(()=>{archiveOldEntries();loadArchiveMonthList();},3000);
-  },4000);
+  },12000);
 }
 
 // ── SAVE/DELETE WRAPPERS ──
