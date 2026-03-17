@@ -1386,9 +1386,8 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
 <!-- FIREBASE: SITE SETTINGS (ABOUT + DONATION) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
   import {
-    getFirestore,
+    initializeFirestore,
     doc,
     setDoc,
     getDoc,
@@ -1425,10 +1424,7 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
   };
 
   const app = initializeApp(firebaseConfig);
-  let analytics = null;
-  try { analytics = getAnalytics(app); } catch (e) { console.warn('Firebase analytics disabled', e); }
-  const fdb = getFirestore(app);
-  try { fdb._settings = { ...fdb._settings, experimentalForceLongPolling: true, useFetchStreams: false }; } catch(e){}
+  const fdb = initializeFirestore(app, { experimentalForceLongPolling: true, useFetchStreams: false });
   const auth = getAuth(app);
   const googleProvider = new GoogleAuthProvider();
   const appleProvider = new OAuthProvider('apple.com');
