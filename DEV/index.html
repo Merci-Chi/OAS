@@ -2350,6 +2350,18 @@ function sanitizeTitleText(t){
     .replace(/\s+/g,' ')
     .trim();
 }
+function formatTitleText(t){
+  const raw = sanitizeTitleText(t);
+  const words = raw.split(/\s+/).filter(Boolean).slice(0,6);
+  const titleCased = words.map(w=>{
+    if (/[A-Z]{2,}/.test(w) || /\d/.test(w)) return w; // keep acronyms / numbers
+    if (w.includes('-')) {
+      return w.split('-').map(p=>p? (p[0].toUpperCase()+p.slice(1).toLowerCase()) : p).join('-');
+    }
+    return w ? (w[0].toUpperCase() + w.slice(1).toLowerCase()) : w;
+  }).join(' ');
+  return titleCased.trim();
+}
 function sanitizeDescText(t){
   return String(t||'')
     .replace(/[\[\]\(\)]/g,'')
@@ -2482,14 +2494,21 @@ async function enhanceItemTitleAI(){
   if(!title){alert('Add a base title first.');return;}
   _aiPopupTarget='itemTitle';
   openAIPopup('Sol — Product Title', title);
+  await runAIItemTitleEnhance();
+}
+
+async function runAIItemTitleEnhance(){
+  const title=document.getElementById('it-title').value.trim();
   document.getElementById('aiPopupContent').textContent='';setAIPopupLoading(true);
   try{
     const solRules=(solConfig&&solConfig.rules)?solConfig.rules:'You are Sol, the AI assistant for OASENSE.';
     const prompt=`${solRules}
 
-Improve this product title to be punchy and stylish (max 6 words). Return only the title. Do not use brackets [], parentheses (), quotes, periods, question marks, or exclamation points. Hyphens are okay (e.g., T-Shirt). Title: "${title}"`;
+Enhance (do not replace) this product title. Keep the core words and meaning, just polish it so it sounds like a real product title.
+Rules: 1–6 words, Title Case, no brackets [], parentheses (), quotes, periods, question marks, or exclamation points. Hyphens are okay (e.g., T-Shirt).
+Return only the improved title. Base title: "${title}"`;
     const text=await callSolAI(prompt,60);
-    if(text){_aiPopupText=sanitizeTitleText(text);document.getElementById('aiPopupContent').textContent=_aiPopupText;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
+    if(text){_aiPopupText=formatTitleText(text);document.getElementById('aiPopupContent').textContent=_aiPopupText;}else{document.getElementById('aiPopupContent').textContent='No response generated. Try again.';}
   }catch(err){
     if(err.message==='NO_KEY'){document.getElementById('aiPopupContent').textContent='⚠ No AI endpoint configured. Enable Live AI in AI Prompts or add your Anthropic key.';}
     else{document.getElementById('aiPopupContent').textContent='❌ Error: '+err.message;}
@@ -2497,11 +2516,17 @@ Improve this product title to be punchy and stylish (max 6 words). Return only t
   setAIPopupLoading(false);
 }
 
-async function refreshAIDesc(){setAIPopupLoading(true);if(_aiPopupTarget==='blog'){await runAIBlogEnhance();}else{await runAIEnhance();}}
+async function refreshAIDesc(){
+  setAIPopupLoading(true);
+  if(_aiPopupTarget==='blog'){await runAIBlogEnhance();}
+  else if(_aiPopupTarget==='itemTitle'){await runAIItemTitleEnhance();}
+  else if(_aiPopupTarget==='blogTitle'){await enhanceBlogTitleAI();}
+  else{await runAIEnhance();}
+}
 function copyAIDesc(){
   if(!_aiPopupText)return;
   if(_aiPopupTarget==='blog'){setBlogEditorContent(_aiPopupText);}
-  else if(_aiPopupTarget==='itemTitle'){document.getElementById('it-title').value=sanitizeTitleText(_aiPopupText);}
+  else if(_aiPopupTarget==='itemTitle'){document.getElementById('it-title').value=formatTitleText(_aiPopupText);}
   else if(_aiPopupTarget==='blogTitle'){document.getElementById('blog-title').value=_aiPopupText;}
   else{document.getElementById('it-desc').value=sanitizeDescText(_aiPopupText);}
   const btn=document.getElementById('aiPopupCopyBtn');
