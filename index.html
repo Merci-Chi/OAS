@@ -977,9 +977,9 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
         <div class="pnote">Pricing is custom to each project. Contact us to discuss your vision — we'll find what works.</div>
       </div>
       <div class="fm">
-        <div class="fg"><label class="fl">Your Name</label><input class="fi" placeholder="Full name"/></div>
-        <div class="fg"><label class="fl">Email (optional)</label><input type="email" class="fi" placeholder="you@example.com"/></div>
-        <div class="fg"><label class="fl">Phone (optional)</label><input type="tel" class="fi" placeholder="+1 (555) 000-0000"/></div>
+        <div class="fg"><label class="fl">Your Name</label><input class="fi" id="bookingName" placeholder="Full name"/></div>
+        <div class="fg"><label class="fl">Email (optional)</label><input type="email" class="fi" id="bookingEmail" placeholder="you@example.com"/></div>
+        <div class="fg"><label class="fl">Phone (optional)</label><input type="tel" class="fi" id="bookingPhone" placeholder="+1 (555) 000-0000"/></div>
         <div class="fg"><label class="fl">Preferred Date</label><input type="date" class="fi" id="bookingDate"/></div>
         <div class="fg"><label class="fl">Session Type</label>
           <div class="csel" id="cselWrap">
@@ -996,8 +996,8 @@ footer{background:#000;border-top:1px solid rgba(255,0,200,.2);padding:60px 40px
           </div>
           <input type="hidden" id="svSel" value="Cinematic Portraits"/>
         </div>
-        <div class="fg"><label class="fl">Your Vision</label><textarea class="fta" placeholder="Describe the vibe, the purpose, the feeling you want to capture..."></textarea></div>
-        <button class="fbtn" onclick="toast('REQUEST SENT — WE\'LL BE IN TOUCH ✓')">Send Request</button>
+        <div class="fg"><label class="fl">Your Vision</label><textarea class="fta" id="bookingVision" placeholder="Describe the vibe, the purpose, the feeling you want to capture..."></textarea></div>
+        <button class="fbtn" onclick="submitBookingRequest()">Send Request</button>
       </div>
     </div>
   </div>
@@ -1493,7 +1493,8 @@ function applySiteContent(C){
 
     // DONATION TOTAL / DESC
     if (Object.prototype.hasOwnProperty.call(S, 'donation_total')) {
-      const total = Number(S.donation_total || 0);
+      const collectionTotal = Number(window._donationsTotal);
+      const total = Number.isFinite(collectionTotal) ? collectionTotal : Number(S.donation_total || 0);
       const rnEl = document.getElementById('rn');
       if (rnEl && !Number.isNaN(total)) rnEl.textContent = total.toLocaleString();
     }
@@ -1505,12 +1506,14 @@ function applySiteContent(C){
 
     // DONATION GOAL + PROGRESS
     if (Object.prototype.hasOwnProperty.call(S, 'donation_goal')) {
-      const total = Number(S.donation_total || 0);
+      const collectionTotal = Number(window._donationsTotal);
+      const total = Number.isFinite(collectionTotal) ? collectionTotal : Number(S.donation_total || 0);
       const goal  = Number(S.donation_goal || 0);
       const bar   = document.getElementById('donGoalBar');
       const raisedLbl = document.getElementById('donGoalRaisedLbl');
       const goalLbl   = document.getElementById('donGoalLbl');
       const fill      = document.getElementById('donGoalFill');
+      window._donationGoal = goal;
       if (bar && raisedLbl && goalLbl && fill && goal > 0 && !Number.isNaN(goal)) {
         bar.style.display = 'block';
         raisedLbl.textContent = `$${total.toLocaleString()} raised`;
@@ -1627,6 +1630,7 @@ function applySiteContent(C){
       const d = doc.data()||{};
       total += Number(d.amount||0);
     });
+    window._donationsTotal = total;
     const rnEl = document.getElementById('rn');
     if (rnEl) rnEl.textContent = total.toLocaleString();
     const goalBar = document.getElementById('donGoalBar');
@@ -1635,7 +1639,8 @@ function applySiteContent(C){
     const fill = document.getElementById('donGoalFill');
     if (goalLbl && raisedLbl && fill && goalBar){
       const goalText = goalLbl.textContent.replace(/[^0-9]/g,'');
-      const goal = Number(goalText||0);
+      const goalCfg = Number(window._donationGoal || 0);
+      const goal = Number(goalCfg || goalText || 0);
       if (goal>0){
         goalBar.style.display='block';
         raisedLbl.textContent = `$${total.toLocaleString()} raised`;
@@ -1643,6 +1648,9 @@ function applySiteContent(C){
         setTimeout(()=>{fill.style.width = pct + '%';}, 300);
       }
     }
+  }, (err)=>{
+    console.error('Donations snapshot error', err);
+    window._fbError = err?.code || err?.message || 'donations snapshot error';
   });
 
   // Firebase-backed donate()
@@ -1667,16 +1675,29 @@ function applySiteContent(C){
     toast(`THANK YOU FOR YOUR $${amount} DONATION! ☀️`);
 
     try {
-      await updateDoc(settingsRef, {
-        donation_total: increment(amount)
+      const id = Date.now();
+      await setDoc(doc(fdb, "donations", String(id)), {
+        id,
+        name: 'Anonymous',
+        amount: Math.round(Number(amount) * 100) / 100,
+        points: Math.floor(Number(amount)),
+        anon: true,
+        comment: '',
+        crmPersonId: null,
+        ts: Date.now(),
+        source: 'site'
       });
-      // UI will update via onSnapshot
+      // UI will update via donations onSnapshot
     } catch (e) {
       console.error(e);
-      const rnEl = document.getElementById('rn');
-      if (rnEl) {
-        const cur = Number(rnEl.textContent.replace(/,/g,'')) || 0;
-        rnEl.textContent = (cur + amount).toLocaleString();
+      try{
+        await setDoc(settingsRef, { donation_total: increment(amount) }, { merge: true });
+      }catch(e2){
+        const rnEl = document.getElementById('rn');
+        if (rnEl) {
+          const cur = Number(rnEl.textContent.replace(/,/g,'')) || 0;
+          rnEl.textContent = (cur + amount).toLocaleString();
+        }
       }
     }
   };
@@ -2314,6 +2335,45 @@ function setBookingDateToday(){
   const day = String(d.getDate()).padStart(2,'0');
   el.value = `${y}-${m}-${day}`;
 }
+async function submitBookingRequest(){
+  const name  = (document.getElementById('bookingName')||{}).value?.trim() || '';
+  const email = (document.getElementById('bookingEmail')||{}).value?.trim() || '';
+  const phone = (document.getElementById('bookingPhone')||{}).value?.trim() || '';
+  const date  = (document.getElementById('bookingDate')||{}).value || '';
+  const type  = (document.getElementById('svSel')||{}).value || 'Session';
+  const notes = (document.getElementById('bookingVision')||{}).value?.trim() || '';
+  if(!name){ toast('PLEASE ENTER YOUR NAME'); return; }
+  const fb = window.fb; if(!fb){ toast('NOT CONNECTED'); return; }
+  const id = Date.now();
+  const data = {
+    id,
+    status: 'pending',
+    name,
+    type,
+    date,
+    time: '',
+    timeDisplay: '',
+    durMin: null,
+    durLabel: '',
+    phone,
+    email,
+    ig: '',
+    loc: '',
+    notes,
+    crmPersonId: null,
+    createdAt: Date.now(),
+    source: 'site'
+  };
+  try{
+    await fb.setDoc(fb.doc(fb.fdb,'bookings', String(id)), data);
+    toast('REQUEST SENT — WE\\'LL BE IN TOUCH ✓');
+    const vision = document.getElementById('bookingVision');
+    if (vision) vision.value = '';
+  }catch(e){
+    console.error('booking submit error', e);
+    toast('REQUEST FAILED');
+  }
+}
 document.addEventListener('click', (e)=>{
   const btn = e.target.closest('.actbtn');
   if (!btn) return;
@@ -2501,7 +2561,37 @@ function pA(a,b){document.querySelectorAll('.ab').forEach(x=>x.classList.remove(
 function pF(b){document.querySelectorAll('.frb').forEach(x=>x.classList.remove('on'));b.classList.add('on');}
 
 // Newsletter
-function jNL(){const v=document.getElementById('nle').value;if(!v||!v.includes('@')){toast('PLEASE ENTER A VALID EMAIL');return;}toast("YOU'RE IN! WELCOME TO THE LIGHT ☀️");document.getElementById('nle').value='';}
+async function jNL(){
+  const v = (document.getElementById('nle')||{}).value?.trim() || '';
+  if(!v||!v.includes('@')){toast('PLEASE ENTER A VALID EMAIL');return;}
+  const fb = window.fb; if(!fb){ toast('NOT CONNECTED'); return; }
+  const id = Date.now();
+  const name = v.split('@')[0].replace(/[._-]+/g,' ').trim() || 'Subscriber';
+  const data = {
+    id,
+    cat: 'subscriber',
+    name,
+    age: '',
+    phone: '',
+    email: v,
+    ig: '',
+    addr: '',
+    notes: 'Newsletter signup',
+    rating: '',
+    points: 0,
+    pointsHistory: [],
+    ts: Date.now(),
+    source: 'site'
+  };
+  try{
+    await fb.setDoc(fb.doc(fb.fdb,'crm', String(id)), data);
+    toast("YOU'RE IN! WELCOME TO THE LIGHT ☀️");
+    document.getElementById('nle').value='';
+  }catch(e){
+    console.error('newsletter signup error', e);
+    toast('SIGNUP FAILED');
+  }
+}
 
 // FAQ
 function fq(b){b.parentElement.classList.toggle('open');}
@@ -2550,7 +2640,7 @@ async function callSolAPI(message){
   if (apiKey.startsWith('sk-ant-')){
     const res = await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-allow-browser':'true'},
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:220,messages:[{role:'user',content:message}]})
     });
     if (!res.ok) throw new Error('AI error '+res.status);
@@ -2905,8 +2995,11 @@ async function submitReview(){
   const data = {
     id,
     author: name,
+    name,
     body,
+    quote: body,
     stars: Math.max(1, Math.min(5, stars)),
+    rating: Math.max(1, Math.min(5, stars)),
     live: false,
     date: new Date().toISOString().split('T')[0],
     createdAt: Date.now()
@@ -2924,11 +3017,11 @@ async function submitReview(){
   }
 }
 function renderTestimonialCard(t, i, active) {
-  const name = t.name || t.client_name || 'Client';
+  const name = t.author || t.name || t.client_name || 'Client';
   const role = t.role || t.type || 'Member';
-  const quote = t.quote || t.message || t.testimonial || '';
+  const quote = t.body || t.quote || t.message || t.testimonial || '';
   const lvl = t.level || t.lvl || (20 + i*7);
-  const initials = name.split(' ').map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  const initials = String(name).split(' ').filter(Boolean).map(p=>p[0]).slice(0,2).join('').toUpperCase();
   const rating = Math.max(1, Math.min(5, Number(t.rating || t.stars || 5)));
   const stars = '★★★★★'.slice(0,rating);
   return `<div class="tcard${active?' active':''}" data-idx="${i}">
@@ -2966,7 +3059,7 @@ function subscribeTestimonials(){
   if (!root) return;
   const fb = window.fb; if(!fb) return;
   if (!_testimonialsLoaded) root.innerHTML = renderLoadingBlock('Loading testimonials…');
-  const q = fb.query(fb.collection(fb.fdb,'testimonials'), fb.orderBy('sort_order','asc'));
+  const q = fb.query(fb.collection(fb.fdb,'testimonials'), fb.orderBy('id','desc'));
   fb.onSnapshot(q, (snap)=>{
     const rows=[];
     snap.forEach(doc=>rows.push(doc.data()));
