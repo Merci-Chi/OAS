@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>OASENSE — DEV PANEL</title>
+<title>TECHSAVY — DEV PANEL</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Barlow+Condensed:ital,wght@0,300;0,400;0,700;0,900;1,700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -279,21 +279,41 @@ function fsAuditListen(onUpdate) {
 
 <style>
 :root{
-  --hot:#FFCC00;--mag:#FF8800;--deep:#CC5500;--hot2:#FFDD44;
-  --void:#000005;--txt:#FFD6F5;--mute:#AA66CC;
-  --red:#FF3B3B;--yellow:#FFD600;--green:#00FF88;
-  --blue:#4A90FF;--pink:#FF69B4;
-  --border:rgba(255,204,0,0.22);
+  --hot:#4AB3FF;         /* primary neon blue */
+  --hot2:#6CC8FF;
+  --mag:#2388FF;
+  --deep:#0D3A66;
+
+  --void:#00030A;        /* dark futuristic background */
+  --txt:#D9EEFF;         /* soft ice text */
+  --mute:#88AACC;
+
+  --red:#FF4A4A;
+  --yellow:#ffd85e;
+  --green:#4dffa6;
+
+  --blue:#4A90FF;
+  --pink:#7BA0FF;        /* swapped pink → purple‑blue */
+
+  --border:rgba(90,160,255,0.22);
+
   --nv-tax:0.08375;
 }
+
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans-serif;overflow-x:hidden;min-height:100vh;}
-::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:rgba(255,204,0,0.04);}
-::-webkit-scrollbar-thumb{background:var(--hot);border-radius:3px;}
-#scanlines{position:fixed;inset:0;pointer-events:none;z-index:9998;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,204,0,0.012) 2px,rgba(255,204,0,0.012) 4px);}
-
+body{
+  background: radial-gradient(circle at 50% 20%, #021327 0%, #00030A 70%);
+}
+#scanlines{
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(90,160,255,0.03) 2px,
+    rgba(90,160,255,0.03) 4px
+  );
+}
 #syncStatus{position:fixed;bottom:16px;right:16px;z-index:9990;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;padding:6px 14px;border-radius:2px;display:none;transition:all .3s;}
 #fbDebug{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:1px;color:rgba(255,204,0,0.7);}
 #syncStatus.syncing{display:block;background:rgba(255,204,0,0.1);border:1px solid rgba(255,204,0,0.4);color:var(--hot);}
@@ -857,7 +877,7 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
 <!-- LOGIN -->
 <div id="loginOverlay">
   <div class="login-box">
-    <div class="login-logo">OASENSE</div>
+    <div class="login-logo">TECCSAVY</div>
     <div class="login-sub">// DEV PANEL — SECURE ACCESS</div>
     <div class="login-firebase-badge">🔥 Firebase Realtime Sync · Live</div>
     <div style="font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1px;color:rgba(255,59,59,0.5);text-align:center;margin-bottom:16px;line-height:1.6;">If saves fail: set Firestore rules to<br/>allow read, write: if true;</div>
@@ -1401,14 +1421,14 @@ body{background:var(--void);color:var(--txt);font-family:'Barlow Condensed',sans
   <div class="topbar">
     <div>
       <div class="panel-title">About <span class="hot">Us</span></div>
-      <div class="panel-sub">// ABOUT “OASENSE” · Portfolio Media · 🔥 Firebase Synced</div>
+      <div class="panel-sub">// ABOUT “TECHSAVY” · Portfolio Media · 🔥 Firebase Synced</div>
     </div>
     <div class="topbar-actions"><button class="btn btn-fill btn-sm" onclick="saveSiteContent()">💾 Save Content</button></div>
   </div>
   <div class="vhs-line"></div>
 
   <div class="content-card">
-    <div class="content-title">ABOUT “OASENSE”</div>
+    <div class="content-title">ABOUT “TECHSAVY”</div>
     <div class="row row-2">
       <div class="fg"><label class="fl">Title</label><input class="fi" id="about-title" placeholder="Title"/></div>
       <div class="fg"><label class="fl">Quote</label><input class="fi" id="about-quote" placeholder="Short quote"/></div>
